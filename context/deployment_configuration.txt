@@ -1,0 +1,787 @@
+# docker-compose.yml - Local Development Setup
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: musical_instruments_db
+    environment:
+      POSTGRES_DB: musical_instruments
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: musical_instruments_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # FastAPI Backend
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: musical_instruments_api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/musical_instruments
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: musical_instruments_web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+---
+# backend/Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
+USER app
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+---
+# frontend/Dockerfile
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build application
+RUN npm run build
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+CMD ["node", "server.js"]
+
+---
+# .env.example
+# Database Configuration
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/musical_instruments
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Security
+SECRET_KEY=your_super_secret_key_here_make_it_long_and_random
+
+# API Configuration
+DEBUG=false
+ENVIRONMENT=production
+
+# Affiliate Program IDs
+AMAZON_ASSOCIATE_TAG=your_amazon_tag
+THOMANN_AFFILIATE_ID=your_thomann_id
+
+# Frontend Configuration
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
+
+---
+# backend/alembic.ini
+[alembic]
+script_location = alembic
+prepend_sys_path = .
+version_path_separator = os
+sqlalchemy.url = postgresql+asyncpg://postgres:postgres@localhost:5432/musical_instruments
+
+[post_write_hooks]
+hooks = black
+black.type = console_scripts
+black.entrypoints = black
+black.options = -l 79 REVISION_SCRIPT_FILENAME
+
+[loggers]
+keys = root,sqlalchemy,alembic
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+qualname =
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+
+---
+# backend/alembic/env.py
+import asyncio
+from logging.config import fileConfig
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
+from alembic import context
+import os
+import sys
+
+# Add the app directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from app.models import Base
+from app.config import settings
+
+# this is the Alembic Config object
+config = context.config
+
+# Interpret the config file for Python logging
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Set the SQLAlchemy URL from settings
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("+asyncpg", ""))
+
+target_metadata = Base.metadata
+
+def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode."""
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+def do_run_migrations(connection: Connection) -> None:
+    context.configure(connection=connection, target_metadata=target_metadata)
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+async def run_async_migrations() -> None:
+    """In this scenario we need to create an Engine and associate a connection with the context."""
+    connectable = async_engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
+
+    await connectable.dispose()
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
+    asyncio.run(run_async_migrations())
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+---
+# frontend/package.json
+{
+  "name": "musical-instruments-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0",
+    "lucide-react": "^0.300.0",
+    "class-variance-authority": "^0.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.0.4"
+  }
+}
+
+---
+# frontend/next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
+  images: {
+    domains: [
+      'example.com',
+      'images.unsplash.com',
+      'thomann.de',
+      'gear4music.com',
+      'amazon.es',
+      'kytary.de'
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap',
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
+
+---
+# frontend/tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+  ],
+}
+
+---
+# scripts/setup_project.sh
+#!/bin/bash
+
+echo "🎵 Setting up Musical Instruments Platform..."
+
+# Create project structure
+mkdir -p musical-instruments-platform/{backend,frontend,scripts}
+cd musical-instruments-platform
+
+# Backend setup
+echo "📦 Setting up backend..."
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Initialize database migrations
+alembic init alembic
+alembic revision --autogenerate -m "Initial migration"
+
+cd ..
+
+# Frontend setup
+echo "🌐 Setting up frontend..."
+cd frontend
+npm install
+
+cd ..
+
+# Environment setup
+echo "⚙️ Setting up environment..."
+cp .env.example .env
+echo "Please edit .env file with your configuration"
+
+# Docker setup
+echo "🐳 Starting services with Docker..."
+docker-compose up -d postgres redis
+
+echo "✅ Setup complete!"
+echo ""
+echo "Next steps:"
+echo "1. Edit .env file with your API keys"
+echo "2. Run 'cd backend && alembic upgrade head' to create database tables"
+echo "3. Run 'python scripts/import_sample_data.py' to add sample data"
+echo "4. Start backend: 'cd backend && uvicorn app.main:app --reload'"
+echo "5. Start frontend: 'cd frontend && npm run dev'"
+echo ""
+echo "🎉 Your platform will be available at:"
+echo "   Frontend: http://localhost:3000"
+echo "   Backend API: http://localhost:8000"
+echo "   API Docs: http://localhost:8000/docs"
+
+---
+# scripts/deploy_production.sh
+#!/bin/bash
+
+echo "🚀 Deploying Musical Instruments Platform to Production..."
+
+# Build and deploy backend (Railway/Render example)
+echo "📦 Building backend..."
+cd backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run database migrations
+alembic upgrade head
+
+# Import sample data (only on first deploy)
+if [ "$FIRST_DEPLOY" = "true" ]; then
+    python scripts/import_sample_data.py
+fi
+
+echo "✅ Backend deployed!"
+
+# Build and deploy frontend (Vercel example)
+echo "🌐 Building frontend..."
+cd ../frontend
+
+# Install dependencies and build
+npm ci
+npm run build
+
+echo "✅ Frontend built!"
+
+echo "🎉 Deployment complete!"
+
+---
+# README.md
+# European Musical Instruments Comparison Platform
+
+A modern, scalable platform for comparing musical instrument prices across Europe, built with FastAPI and Next.js.
+
+## 🎯 Features
+
+- **Product Comparison**: Compare 2-10 musical instruments side by side
+- **Price Tracking**: Real-time price updates from major European stores
+- **AI-Powered Content**: Automatically generated product descriptions and reviews
+- **Smart Search**: Advanced filtering and search capabilities
+- **Mobile Responsive**: Optimized for all devices
+- **SEO Optimized**: Built for search engine visibility
+- **Affiliate Integration**: Multiple revenue streams through affiliate programs
+
+## 🏗️ Tech Stack
+
+### Backend
+- **FastAPI**: High-performance Python web framework
+- **PostgreSQL**: Robust relational database with JSON support
+- **Redis**: Caching layer for performance optimization
+- **OpenAI API**: AI content generation
+- **SQLAlchemy**: ORM with async support
+- **Alembic**: Database migrations
+
+### Frontend
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide React**: Beautiful icons
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL 15+
+- Redis 7+
+- OpenAI API key
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd musical-instruments-platform
+```
+
+2. **Setup environment**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+3. **Start with Docker (Recommended)**
+```bash
+docker-compose up -d
+```
+
+4. **Or setup manually**
+
+Backend:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+alembic upgrade head
+python scripts/import_sample_data.py
+uvicorn app.main:app --reload
+```
+
+Frontend:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## 📁 Project Structure
+
+```
+musical-instruments-platform/
+├── backend/                 # FastAPI Backend
+│   ├── app/
+│   │   ├── main.py         # Main application
+│   │   ├── models.py       # Database models
+│   │   ├── schemas.py      # Pydantic schemas
+│   │   ├── database.py     # Database configuration
+│   │   ├── config.py       # Settings
+│   │   ├── api/            # API endpoints
+│   │   └── services/       # Business logic
+│   ├── alembic/            # Database migrations
+│   └── requirements.txt
+├── frontend/               # Next.js Frontend
+│   ├── src/
+│   │   ├── app/           # App Router pages
+│   │   ├── components/    # React components
+│   │   ├── lib/          # Utilities and API client
+│   │   └── types/        # TypeScript types
+│   └── package.json
+├── scripts/               # Utility scripts
+└── docker-compose.yml    # Development environment
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# Database
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# OpenAI
+OPENAI_API_KEY=your_openai_key
+
+# Security
+SECRET_KEY=your_secret_key
+
+# Affiliate Programs
+AMAZON_ASSOCIATE_TAG=your_tag
+THOMANN_AFFILIATE_ID=your_id
+```
+
+## 📊 API Endpoints
+
+### Products
+- `GET /api/products` - Search and filter products
+- `GET /api/products/{id}` - Get product details
+- `POST /api/compare` - Compare multiple products
+
+### Categories & Brands
+- `GET /api/categories` - List categories
+- `GET /api/brands` - List brands
+
+### Analytics
+- `GET /api/analytics/popular-comparisons` - Popular comparisons
+- `GET /api/analytics/revenue` - Revenue analytics
+
+### Affiliate
+- `GET /api/redirect/{product_id}/{store_id}` - Affiliate link tracking
+
+## 🎨 Frontend Pages
+
+### Core Pages
+- `/` - Homepage with search and categories
+- `/products` - Product listing with filters
+- `/products/[slug]-[id]` - Product detail page
+- `/compare` - Product comparison page
+
+### SEO Pages
+- `/category/[slug]` - Category pages
+- `/brand/[slug]` - Brand pages
+- `/guides/[slug]` - Buying guides
+
+## 🔄 Data Flow
+
+1. **Product Import**: Automated scripts import products from affiliate APIs
+2. **Price Updates**: Scheduled tasks update prices from multiple stores
+3. **AI Content**: OpenAI generates product descriptions and comparisons
+4. **Caching**: Redis caches frequently accessed data
+5. **Analytics**: User interactions tracked for business insights
+
+## 📈 SEO Strategy
+
+### Technical SEO
+- Server-side rendering with Next.js
+- Structured data markup (JSON-LD)
+- Optimized meta tags and descriptions
+- Clean URL structure
+- Fast loading times (<3s)
+
+### Content Strategy
+- Product comparison pages
+- Buying guides for each category
+- Price history and deal alerts
+- User reviews and ratings
+
+## 💰 Monetization
+
+### Revenue Streams
+1. **Affiliate Commissions** (Primary)
+   - Amazon Associates (3-7%)
+   - Thomann (2-4.5%)
+   - Gear4Music (3.5-5%)
+   - Kytary (0.2-6.2%)
+
+2. **Display Advertising**
+   - Google AdSense
+   - Direct partnerships
+
+3. **Premium Features** (Future)
+   - Price alerts
+   - Advanced analytics
+   - Extended comparisons
+
+## 🚀 Deployment
+
+### Production Setup
+
+**Backend** (Railway/Render):
+```bash
+# Automatic deployment from Git
+# Environment variables configured in dashboard
+# Database migrations run automatically
+```
+
+**Frontend** (Vercel):
+```bash
+# Connect GitHub repository
+# Auto-deploy on push to main
+# Environment variables in dashboard
+```
+
+### Performance Targets
+- Page load time: <2 seconds
+- API response time: <300ms
+- Uptime: 99.9%
+- Mobile PageSpeed: >90
+
+## 📊 Success Metrics
+
+### Technical KPIs
+- Page load performance
+- API response times
+- Error rates and uptime
+- SEO rankings
+
+### Business KPIs
+- Monthly active users
+- Affiliate conversion rates
+- Revenue per visitor
+- Search rankings
+
+## 🔐 Security & Compliance
+
+### Security Measures
+- HTTPS everywhere
+- Input validation and sanitization
+- SQL injection prevention
+- Rate limiting
+- CORS configuration
+
+### GDPR Compliance
+- Cookie consent management
+- Data processing transparency
+- User data export/deletion
+- Privacy policy and terms
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support, email support@musical-instruments-platform.com or create an issue in the repository.
+
+---
+
+**Ready to build the next generation of musical instrument comparison platform!** 🎵
