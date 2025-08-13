@@ -16,6 +16,7 @@ export interface Category {
 }
 
 export interface ProductPrice {
+  id: number;
   store: {
     id: number;
     name: string;
@@ -26,6 +27,7 @@ export interface ProductPrice {
   currency: string;
   affiliate_url: string;
   last_checked: string;
+  is_available: boolean;
 }
 
 export interface Product {
@@ -43,6 +45,9 @@ export interface Product {
   prices?: ProductPrice[];
   avg_rating: number;
   review_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
   ai_content?: {
     summary?: string;
     pros?: string[];
@@ -50,6 +55,8 @@ export interface Product {
     best_for?: string[];
     genres?: string[];
     skill_level?: string;
+    use_cases?: string;
+    recommendations?: string;
   };
 }
 

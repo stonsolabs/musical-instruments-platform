@@ -5,4 +5,27 @@
 html, body { height: 100%; }
 body { background: #f9fafb; color: #111827; }
 
+@layer components {
+  .card { @apply bg-white border border-gray-200 rounded-xl shadow-card; }
+  .card-hover { @apply transition-shadow hover:shadow-soft; }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors; }
+  .btn-primary { @apply btn px-5 py-2.5 bg-brand-600 text-white hover:bg-brand-700; }
+  .btn-outline { @apply btn px-5 py-2.5 border border-gray-300 text-gray-800 hover:bg-gray-50; }
+  .btn-ghost { @apply btn px-4 py-2 text-gray-700 hover:bg-gray-100; }
+  .btn-orange { @apply btn px-5 py-2.5 bg-accent-500 text-white hover:bg-accent-600; }
+
+  .input { @apply w-full rounded-lg border-gray-300 shadow-sm focus:ring-brand-500 focus:border-brand-500; }
+  .select { @apply rounded-lg border-gray-300 shadow-sm focus:ring-brand-500 focus:border-brand-500; }
+
+  .badge { @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium; }
+  .badge-green { @apply badge bg-green-100 text-green-800; }
+  .badge-gray { @apply badge bg-gray-100 text-gray-700; }
+  .score-pill { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700; }
+  .store-button { @apply w-full btn px-4 py-3 bg-[#ff7a00] text-white hover:bg-[#ff6a00]; }
+
+  .section-title { @apply text-3xl font-bold text-gray-900; }
+  .subtle { @apply text-gray-600; }
+}
+
 
