@@ -85,4 +85,32 @@ export interface ComparisonResponse {
   generated_at: string;
 }
 
+export interface SearchAutocompleteProduct {
+  id: number;
+  name: string;
+  slug: string;
+  brand: Brand;
+  category: Category;
+  avg_rating: number;
+  review_count: number;
+  best_price?: {
+    price: number;
+    currency: string;
+    store: {
+      id: number;
+      name: string;
+      slug: string;
+    };
+    affiliate_url: string;
+  };
+  rank: number;
+  search_highlight: string;
+}
+
+export interface SearchAutocompleteResponse {
+  query: string;
+  results: SearchAutocompleteProduct[];
+  total: number;
+}
+
 

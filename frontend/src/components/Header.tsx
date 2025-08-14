@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import SearchAutocomplete from './SearchAutocomplete';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,6 +17,14 @@ export function Header() {
               MusicEurope
             </Link>
             <div className="ml-2 text-sm text-gray-600 hidden md:block">The Instrument Database</div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="hidden md:block flex-1 max-w-2xl mx-8">
+            <SearchAutocomplete 
+              placeholder="Search guitars, pianos, drums..."
+              className="w-full"
+            />
           </div>
 
           {/* Desktop Navigation */}
@@ -76,7 +85,15 @@ export function Header() {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t animate-slide-up">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="px-4 pt-4 pb-3 space-y-3">
+            {/* Mobile Search */}
+            <div className="mb-4">
+              <SearchAutocomplete 
+                placeholder="Search instruments..."
+                className="w-full"
+              />
+            </div>
+            
             <Link href="/products" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">All Products</Link>
             <Link href="/products?category=electric" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Electric Guitars</Link>
             <Link href="/products?category=acoustic" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Acoustic Guitars</Link>
