@@ -3,10 +3,27 @@ FROM node:18-alpine AS frontend-builder
 
 # Build frontend
 WORKDIR /app/frontend
+
+# Copy package files
 COPY frontend/package*.json ./
+COPY frontend/next.config.js ./
+COPY frontend/tailwind.config.js ./
+COPY frontend/postcss.config.js ./
+COPY frontend/tsconfig.json ./
+COPY frontend/next-env.d.ts ./
+
+# Install dependencies
 RUN npm ci
 
-COPY frontend/ ./
+# Copy source code
+COPY frontend/src ./src
+COPY frontend/public ./public
+
+# Set build environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build the application
 RUN npm run build
 
 # Python backend stage
