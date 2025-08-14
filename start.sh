@@ -1,23 +1,13 @@
 #!/bin/bash
+set -e
 
-# Replace $PORT in nginx config with actual PORT value
-export PORT=${PORT:-10000}
-envsubst '${PORT}' < /etc/nginx/nginx.conf > /tmp/nginx.conf
-cp /tmp/nginx.conf /etc/nginx/nginx.conf
-
-# Start nginx in background
-nginx &
-
-# Start FastAPI backend in background
+# Start backend
 cd /app
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
-# Start Next.js frontend in background
+# Start frontend SSR
 cd /app/frontend
-npm start -- --port 3000 --hostname 127.0.0.1 &
+npm start -- --port 3000 --hostname 0.0.0.0 &
 
-# Wait for any process to exit
-wait -n
-
-# Exit with status of process that exited first
-exit $?
+# Start nginx (PID 1)
+exec nginx -g 'daemon off;'
