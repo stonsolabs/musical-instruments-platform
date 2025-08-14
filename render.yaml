@@ -1,0 +1,32 @@
+services:
+  # Combined Frontend + Backend Service
+  - type: web
+    name: getyourmusicgear
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DOMAIN
+        value: getyourmusicgear.com
+      - key: FRONTEND_URL
+        value: https://getyourmusicgear.onrender.com
+      - key: BACKEND_URL
+        value: https://getyourmusicgear.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://getyourmusicgear.onrender.com
+      - key: NODE_ENV
+        value: production
+
+databases:
+  # PostgreSQL Database
+  - name: getyourmusicgear-db
+    plan: free
+    
+  # Redis Cache
+  - name: getyourmusicgear-redis
+    plan: free

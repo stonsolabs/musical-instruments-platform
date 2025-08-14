@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     domains: [
       'example.com',
@@ -7,7 +8,8 @@ const nextConfig = {
       'thomann.de',
       'gear4music.com',
       'amazon.es',
-      'kytary.de'
+      'kytary.de',
+      'getyourmusicgear.com'
     ],
   },
   async rewrites() {

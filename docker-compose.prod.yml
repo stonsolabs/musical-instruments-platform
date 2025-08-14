@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: getyourmusicgear_api
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/musical_instruments
+      - REDIS_URL=redis://redis:6379
+      - DEBUG=false
+      - DOMAIN=getyourmusicgear.com
+      - FRONTEND_URL=https://getyourmusicgear.com
+      - BACKEND_URL=https://api.getyourmusicgear.com
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AMAZON_ASSOCIATE_TAG=${AMAZON_ASSOCIATE_TAG}
+      - THOMANN_AFFILIATE_ID=${THOMANN_AFFILIATE_ID}
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: getyourmusicgear_frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: getyourmusicgear_db
+    environment:
+      POSTGRES_DB: musical_instruments
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: getyourmusicgear_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
