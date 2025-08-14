@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import SearchAutocomplete from './SearchAutocomplete';
 
 export function Header() {
@@ -13,10 +14,19 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-              MusicEurope
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <Image 
+                src="/logo.png" 
+                alt="MusicEurope Logo" 
+                width={40} 
+                height={40}
+                className="rounded"
+              />
+              <div>
+                <div className="text-xl font-bold text-gray-900">MusicEurope</div>
+                <div className="text-xs text-gray-600 hidden sm:block">The Instrument Database</div>
+              </div>
             </Link>
-            <div className="ml-2 text-sm text-gray-600 hidden md:block">The Instrument Database</div>
           </div>
 
           {/* Search Bar */}
