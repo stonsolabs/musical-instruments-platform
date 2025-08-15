@@ -5,6 +5,9 @@ import { Product, SearchResponse, Category, Brand } from '../../types';
 import ProductsClient from './ProductsClient';
 import { API_BASE_URL } from '../../lib/api';
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 async function fetchProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<SearchResponse> {
   try {
     const params = new URLSearchParams();

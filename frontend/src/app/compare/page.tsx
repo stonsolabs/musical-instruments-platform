@@ -6,6 +6,9 @@ import CompareClient from './CompareClient';
 
 import { API_BASE_URL } from '../../lib/api';
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 async function fetchComparison(productIds: number[]): Promise<ComparisonResponse | null> {
   if (productIds.length < 2) {
     return null;

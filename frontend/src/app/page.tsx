@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { Product } from '../types';
 import { getApiBaseUrl } from '../lib/api';
 
+// Force dynamic rendering since this is a client component
+export const dynamic = 'force-dynamic';
+
 const API_BASE_URL = getApiBaseUrl();
 
 async function searchProducts(params: any): Promise<{ products: Product[] }> {

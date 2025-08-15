@@ -62,8 +62,8 @@ export function GoogleAnalytics() {
   )
 }
 
-// Hook for tracking page views
-export function useGoogleAnalytics() {
+// Component for tracking page views (wrapped in Suspense)
+export function GoogleAnalyticsTracker() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -77,6 +77,24 @@ export function useGoogleAnalytics() {
       })
     }
   }, [pathname, searchParams])
+
+  return null
+}
+
+// Hook for tracking page views (deprecated - use GoogleAnalyticsTracker component)
+export function useGoogleAnalytics() {
+  const pathname = usePathname()
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      const url = pathname
+      
+      window.gtag('config', process.env.NEXT_PUBLIC_GA_ID!, {
+        page_title: document.title,
+        page_location: window.location.origin + url,
+      })
+    }
+  }, [pathname])
 }
 
 // Helper functions for custom event tracking

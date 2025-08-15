@@ -1,10 +1,10 @@
 'use client'
 
-import { useGoogleAnalytics } from './Analytics'
-import { useEffect } from 'react'
+import { GoogleAnalyticsTracker, useGoogleAnalytics } from './Analytics'
+import { useEffect, Suspense } from 'react'
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  // This will automatically track page views
+  // This will automatically track page views (without searchParams)
   useGoogleAnalytics()
 
   // Track initial page load
@@ -18,5 +18,13 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  return <>{children}</>
+  return (
+    <>
+      {children}
+      {/* Track page views with search params in a Suspense boundary */}
+      <Suspense fallback={null}>
+        <GoogleAnalyticsTracker />
+      </Suspense>
+    </>
+  )
 }
