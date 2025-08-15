@@ -22,6 +22,12 @@ services:
     # Auto-deploy on commits
     autoDeployTrigger: commit
     
+    # Build command override (optional)
+    buildCommand: echo "Using Dockerfile build"
+    
+    # Start command override (optional)
+    startCommand: python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    
     # Custom domains
     domains:
       - www.getyourmusicgear.com
