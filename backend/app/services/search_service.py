@@ -62,10 +62,12 @@ class SearchService:
         """
         # Create search vector and query
         search_vector = func.to_tsvector('english', 
-            func.coalesce(Product.name, '') || ' ' ||
-            func.coalesce(Product.description, '') || ' ' ||
-            func.coalesce(Brand.name, '') || ' ' ||
-            func.coalesce(Category.name, '')
+            func.concat(
+                func.coalesce(Product.name, ''), ' ',
+                func.coalesce(Product.description, ''), ' ',
+                func.coalesce(Brand.name, ''), ' ',
+                func.coalesce(Category.name, '')
+            )
         )
         
         search_query = func.plainto_tsquery('english', query)
