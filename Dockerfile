@@ -12,7 +12,7 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 
 # Install dependencies in a separate layer for better caching
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 # Copy configuration files
 COPY frontend/next.config.js ./
@@ -30,6 +30,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV CI=true
 ENV NPM_CONFIG_LOGLEVEL=error
+ENV NEXT_PUBLIC_API_URL=https://getyourmusicgear.com
 
 # Clear any existing build cache and build with verbose output for debugging
 RUN rm -rf .next && \
