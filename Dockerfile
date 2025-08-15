@@ -1,4 +1,4 @@
-# Optimized Dockerfile for Render.com deployment
+# Full-stack Dockerfile for Render.com - Optimized for reliability
 FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app
@@ -6,21 +6,21 @@ WORKDIR /app
 # Copy package files
 COPY frontend/package*.json ./
 
-# Clear npm cache and install dependencies with better error handling
+# Install dependencies with better error handling
 RUN npm cache clean --force && \
     npm install --production=false --no-audit --no-fund --legacy-peer-deps --verbose
 
 # Copy frontend source
 COPY frontend/ ./
 
-# Clear Next.js cache and build with better error handling
+# Build frontend with error handling
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV CI=true
 
 RUN rm -rf .next && \
     rm -rf node_modules/.cache && \
-    npm run build || (echo "Build failed, trying with legacy peer deps" && npm install --legacy-peer-deps && npm run build)
+    npm run build || (echo "Build failed, trying alternative approach" && npm install --legacy-peer-deps && npm run build)
 
 # Production stage
 FROM python:3.11-slim
@@ -32,16 +32,18 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     curl \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy backend
 COPY backend/ ./backend/
 
-# Copy built frontend (if it exists)
+# Copy built frontend (if available)
 COPY --from=frontend-builder /app/.next ./frontend/.next 2>/dev/null || echo "Frontend build not available"
 COPY --from=frontend-builder /app/public ./frontend/public 2>/dev/null || echo "Frontend public not available"
 COPY --from=frontend-builder /app/package.json ./frontend/package.json 2>/dev/null || echo "Frontend package.json not available"
@@ -49,6 +51,8 @@ COPY --from=frontend-builder /app/package.json ./frontend/package.json 2>/dev/nu
 # Set environment
 ENV PYTHONPATH=/app
 ENV PORT=10000
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE $PORT
 

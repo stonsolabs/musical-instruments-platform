@@ -3,8 +3,15 @@ from pydantic_settings import BaseSettings
 from typing import Optional, List
 
 class Settings(BaseSettings):
-    # Database
+    # Database - Ensure asyncpg is used
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/musical_instruments")
+    
+    # Fix DATABASE_URL to use asyncpg if it doesn't already
+    @property
+    def ASYNC_DATABASE_URL(self) -> str:
+        if self.DATABASE_URL.startswith("postgresql://"):
+            return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return self.DATABASE_URL
     
     # Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
