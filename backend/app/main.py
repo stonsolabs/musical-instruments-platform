@@ -45,30 +45,30 @@ async def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 # Static file serving for frontend (if available)
-static_dir = Path(__file__).parent.parent / "static"
-if static_dir.exists():
-    app.mount("/_next", StaticFiles(directory=static_dir / ".next"), name="nextjs_static")
-    app.mount("/static", StaticFiles(directory=static_dir / "public"), name="public_static")
+frontend_dir = Path(__file__).parent.parent / "frontend"
+if frontend_dir.exists() and (frontend_dir / ".next").exists():
+    app.mount("/_next", StaticFiles(directory=frontend_dir / ".next"), name="nextjs_static")
+    app.mount("/static", StaticFiles(directory=frontend_dir / "public"), name="public_static")
 
 # Catch-all route for frontend SPA
 @app.get("/")
 async def root():
-    static_index = static_dir / ".next" / "server" / "app" / "page.html"
-    if static_index.exists():
-        return FileResponse(static_index)
+    frontend_index = frontend_dir / ".next" / "server" / "app" / "page.html"
+    if frontend_index.exists():
+        return FileResponse(frontend_index)
     return {"status": "ok", "name": settings.PROJECT_NAME, "mode": "api_only"}
 
 @app.get("/{path:path}")
 async def catch_all(path: str):
     # Try to serve static file first
-    static_file = static_dir / "public" / path
+    static_file = frontend_dir / "public" / path
     if static_file.exists() and static_file.is_file():
         return FileResponse(static_file)
     
     # For SPA routing, return index.html
-    static_index = static_dir / ".next" / "server" / "app" / "page.html"
-    if static_index.exists():
-        return FileResponse(static_index)
+    frontend_index = frontend_dir / ".next" / "server" / "app" / "page.html"
+    if frontend_index.exists():
+        return FileResponse(frontend_index)
     
     # API-only mode
     raise HTTPException(status_code=404, detail="Page not found")

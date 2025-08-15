@@ -1,4 +1,4 @@
-# Full-stack Dockerfile for Render.com - Optimized for reliability
+# Full-stack Dockerfile for Render.com - Simplified and reliable
 FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app
@@ -6,21 +6,16 @@ WORKDIR /app
 # Copy package files
 COPY frontend/package*.json ./
 
-# Install dependencies with better error handling
-RUN npm cache clean --force && \
-    npm install --production=false --no-audit --no-fund --legacy-peer-deps --verbose
+# Install dependencies
+RUN npm install --production=false --no-audit --no-fund --legacy-peer-deps
 
 # Copy frontend source
 COPY frontend/ ./
 
-# Build frontend with error handling
+# Build frontend
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV CI=true
-
-RUN rm -rf .next && \
-    rm -rf node_modules/.cache && \
-    npm run build || (echo "Build failed, trying alternative approach" && npm install --legacy-peer-deps && npm run build)
+RUN npm run build
 
 # Production stage
 FROM python:3.11-slim
@@ -43,10 +38,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy backend
 COPY backend/ ./backend/
 
-# Copy built frontend (if available)
-COPY --from=frontend-builder /app/.next ./frontend/.next 2>/dev/null || echo "Frontend build not available"
-COPY --from=frontend-builder /app/public ./frontend/public 2>/dev/null || echo "Frontend public not available"
-COPY --from=frontend-builder /app/package.json ./frontend/package.json 2>/dev/null || echo "Frontend package.json not available"
+# Copy built frontend
+COPY --from=frontend-builder /app/.next ./frontend/.next
+COPY --from=frontend-builder /app/public ./frontend/public
+COPY --from=frontend-builder /app/package.json ./frontend/package.json
 
 # Set environment
 ENV PYTHONPATH=/app

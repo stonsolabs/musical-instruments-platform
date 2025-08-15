@@ -6,7 +6,7 @@ services:
     plan: free
     region: frankfurt
     dockerContext: .
-    dockerfilePath: ./Dockerfile.simple-fullstack
+    dockerfilePath: ./Dockerfile.simple-backend
     
     envVars:
       - fromGroup: production_vars
