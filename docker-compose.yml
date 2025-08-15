@@ -36,8 +36,8 @@ services:
   # Backend API Service
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: musical_instruments_backend
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/musical_instruments

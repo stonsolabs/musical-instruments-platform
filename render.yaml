@@ -5,7 +5,7 @@ services:
     repo: https://github.com/stonsolabs/musical-instruments-platform
     plan: free
     region: frankfurt
-    dockerContext: ./backend
+    dockerContext: .
     dockerfilePath: ./backend/Dockerfile
     
     envVars:

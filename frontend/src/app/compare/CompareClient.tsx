@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '../../types';
+import { getApiBaseUrl } from '../../lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -15,21 +16,6 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
 
 const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
-
-// Client-side API client
-const getApiBaseUrl = (): string => {
-  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
-  
-  if (envApiUrl) {
-    return envApiUrl;
-  }
-  
-  if (typeof window !== 'undefined') {
-    return window.location.origin;
-  }
-  
-  return 'http://localhost:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();

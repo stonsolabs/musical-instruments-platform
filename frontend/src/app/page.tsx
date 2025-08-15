@@ -3,24 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '../types';
-
-// API client with proper environment variable handling
-const getApiBaseUrl = (): string => {
-  // Priority: Environment variable > window.location.origin (for production) > localhost (for development)
-  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
-  
-  if (envApiUrl) {
-    return envApiUrl;
-  }
-  
-  // In production (when window is available), use the same origin as the frontend
-  if (typeof window !== 'undefined') {
-    return window.location.origin;
-  }
-  
-  // Fallback for build time
-  return 'http://localhost:8000';
-};
+import { getApiBaseUrl } from '../lib/api';
 
 const API_BASE_URL = getApiBaseUrl();
 

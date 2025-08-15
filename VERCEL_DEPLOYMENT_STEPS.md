@@ -41,7 +41,10 @@ Click **"Environment Variables"** and add these:
 
 ### **Required Variables:**
 ```bash
-# Backend API URL - Replace with your actual Render URL
+# Backend API URL - MUST include https:// protocol
+# Replace with your actual Render URL
+# WRONG: your-backend-app.onrender.com  
+# CORRECT: https://your-backend-app.onrender.com
 NEXT_PUBLIC_API_URL=https://your-backend-app.onrender.com
 
 # Domain (for production)

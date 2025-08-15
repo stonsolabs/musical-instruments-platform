@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import type { Product } from '../../../types';
 import { trackProductView, trackEvent } from '../../../components/Analytics';
+import { getApiBaseUrl } from '../../../lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -17,24 +18,6 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
 
 const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
-
-// API client with proper environment variable handling
-const getApiBaseUrl = (): string => {
-  // Priority: Environment variable > window.location.origin (for production) > localhost (for development)
-  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
-  
-  if (envApiUrl) {
-    return envApiUrl;
-  }
-  
-  // In production (when window is available), use the same origin as the frontend
-  if (typeof window !== 'undefined') {
-    return window.location.origin;
-  }
-  
-  // Fallback for build time
-  return 'http://localhost:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();

@@ -3,13 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { Product, SearchResponse, Category, Brand } from '../../types';
 import ProductsClient from './ProductsClient';
-
-// Server-side API client
-const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+import { API_BASE_URL } from '../../lib/api';
 
 async function fetchProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<SearchResponse> {
   try {

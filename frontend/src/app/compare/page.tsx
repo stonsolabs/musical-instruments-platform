@@ -4,12 +4,7 @@ import { Metadata } from 'next';
 import type { ComparisonResponse, Product } from '../../types';
 import CompareClient from './CompareClient';
 
-// Server-side API client
-const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+import { API_BASE_URL } from '../../lib/api';
 
 async function fetchComparison(productIds: number[]): Promise<ComparisonResponse | null> {
   if (productIds.length < 2) {

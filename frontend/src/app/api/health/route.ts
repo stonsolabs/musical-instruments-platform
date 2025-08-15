@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { getApiBaseUrl } from '../../../lib/api';
 
 export async function GET() {
   try {
     // Check if we can connect to the backend API
-    const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const apiUrl = envApiUrl || (typeof window === 'undefined' ? 'http://localhost:8000' : '');
+    const apiUrl = getApiBaseUrl();
     
     let backendStatus = 'unknown';
     
