@@ -1,31 +1,17 @@
+# Exported from Render on 2025-08-15T10:17:39Z
 services:
-  # Single container with backend and frontend
-  - type: web
-    name: getyourmusicgear
-    env: docker
-    dockerfilePath: ./Dockerfile
-    plan: free
-    region: ohio
-    envVars:
-      - key: ENVIRONMENT
-        value: production
-      - key: DEBUG
-        value: "false"
-      - key: SECRET_KEY
-        generateValue: true
-      - key: PROJECT_NAME
-        value: "Musical Instruments Platform"
-      - key: API_V1_STR
-        value: "/api/v1"
-      - key: DATABASE_URL
-        sync: false
-      - key: REDIS_URL
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: AFFILIATE_AMAZON_ACCESS_KEY
-        sync: false
-      - key: AFFILIATE_AMAZON_SECRET_KEY
-        sync: false
-      - key: AFFILIATE_AMAZON_PARTNER_TAG
-        sync: false
+- type: web
+  name: musical-instruments-platform
+  runtime: docker
+  repo: https://github.com/stonsolabs/musical-instruments-platform
+  plan: free
+  envVars:
+  - fromGroup: production_vars
+  region: frankfurt
+  dockerContext: .
+  dockerfilePath: ./Dockerfile
+  domains:
+  - www.getyourmusicgear.com
+  - getyourmusicgear.com
+  autoDeployTrigger: commit
+version: "1"
