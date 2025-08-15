@@ -3,9 +3,35 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api';
-import type { Product } from '@/types';
-import { formatPrice, formatRating } from '@/lib/utils';
+import type { Product } from '../../../types';
+
+// Inline utility functions
+const formatPrice = (price: number, currency: string = 'EUR'): string => {
+  try {
+    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
+  } catch {
+    return `${currency} ${price.toFixed(2)}`;
+  }
+};
+
+const formatRating = (rating: number): string => {
+  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
+};
+
+// Inline API client
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const apiClient = {
+  async getProduct(productId: number): Promise<Product> {
+    if (typeof window === 'undefined') {
+      throw new Error('API calls are not available during build time');
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/products/${productId}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  }
+};
 
 export default function ProductDetailPage() {
   const params = useParams();

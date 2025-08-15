@@ -2,9 +2,40 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { SearchAutocompleteProduct } from '@/types';
-import { apiClient } from '@/lib/api';
-import { formatPrice, formatRating } from '@/lib/utils';
+import { SearchAutocompleteProduct } from '../types';
+
+// Inline utility functions
+const formatPrice = (price: number, currency: string = 'EUR'): string => {
+  try {
+    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
+  } catch {
+    return `${currency} ${price.toFixed(2)}`;
+  }
+};
+
+const formatRating = (rating: number): string => {
+  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
+};
+
+// Inline API client
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const apiClient = {
+  async searchAutocomplete(query: string, limit: number = 8): Promise<{ results: SearchAutocompleteProduct[] }> {
+    if (typeof window === 'undefined') {
+      return { results: [] };
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Autocomplete API call failed:', error);
+      return { results: [] };
+    }
+  }
+};
 
 interface SearchAutocompleteProps {
   placeholder?: string;
