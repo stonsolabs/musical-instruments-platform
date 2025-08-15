@@ -10,7 +10,7 @@ services:
     plan: free
     region: frankfurt
     dockerContext: .
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.simple
     
     # Environment variables from existing group
     envVars:
