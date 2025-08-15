@@ -15,6 +15,8 @@ const nextConfig = {
     unoptimized: true
   },
   
+  // API routing handled by nginx reverse proxy
+  
   // Webpack configuration for path resolution
   webpack: (config) => {
     config.resolve.alias = {

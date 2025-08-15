@@ -1,14 +1,7 @@
 from __future__ import annotations
 
-import asyncio
-import os
-from pathlib import Path
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from fastapi.exceptions import HTTPException
 
 from .config import settings
 from .database import init_db
@@ -44,33 +37,6 @@ app.include_router(search.router, prefix=settings.API_V1_STR)
 async def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
-# Static file serving for frontend (if available)
-frontend_dir = Path(__file__).parent.parent / "frontend"
-if frontend_dir.exists() and (frontend_dir / ".next").exists():
-    app.mount("/_next", StaticFiles(directory=frontend_dir / ".next"), name="nextjs_static")
-    app.mount("/static", StaticFiles(directory=frontend_dir / "public"), name="public_static")
-
-# Catch-all route for frontend SPA
-@app.get("/")
-async def root():
-    frontend_index = frontend_dir / ".next" / "server" / "app" / "page.html"
-    if frontend_index.exists():
-        return FileResponse(frontend_index)
-    return {"status": "ok", "name": settings.PROJECT_NAME, "mode": "api_only"}
-
-@app.get("/{path:path}")
-async def catch_all(path: str):
-    # Try to serve static file first
-    static_file = frontend_dir / "public" / path
-    if static_file.exists() and static_file.is_file():
-        return FileResponse(static_file)
-    
-    # For SPA routing, return index.html
-    frontend_index = frontend_dir / ".next" / "server" / "app" / "page.html"
-    if frontend_index.exists():
-        return FileResponse(frontend_index)
-    
-    # API-only mode
-    raise HTTPException(status_code=404, detail="Page not found")
+# API-only routes - frontend is served by nginx reverse proxy
 
 

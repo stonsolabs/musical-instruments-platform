@@ -22,12 +22,19 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including Node.js and nginx
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     curl \
+    wget \
+    nginx \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 18
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
 
 # Install Python dependencies
 COPY backend/requirements.txt .
@@ -36,9 +43,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend
 COPY backend/ ./backend/
 
-# Copy frontend build
-COPY --from=frontend /app/.next ./frontend/.next
+# Copy frontend standalone build
+COPY --from=frontend /app/.next/standalone ./frontend/
+COPY --from=frontend /app/.next/static ./frontend/.next/static
 COPY --from=frontend /app/public ./frontend/public
+
+# Copy configuration files
+COPY nginx-fullstack.conf /etc/nginx/sites-available/default
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Remove default nginx config and create required directories
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/ && \
+    mkdir -p /var/log/supervisor
 
 # Environment
 ENV PYTHONPATH=/app
@@ -52,5 +69,5 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Start
-CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Start all services with supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
