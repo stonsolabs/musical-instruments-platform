@@ -1,4 +1,14 @@
-# Simple backend-only Dockerfile for Render
+# Simple single-container Dockerfile for Render.com
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+
+COPY frontend/ ./
+RUN npm run build
+
+# Backend with Python
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -10,22 +20,24 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python dependencies
+# Install Python dependencies
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend application
+# Copy backend
 COPY backend/ ./
 
-# Set environment
+# Install Node.js for serving frontend
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
+# Copy built frontend
+COPY --from=frontend-builder /app/frontend/.next ./static
+COPY --from=frontend-builder /app/frontend/public ./public
+
 ENV PYTHONPATH=/app
 ENV PORT=10000
 
 EXPOSE $PORT
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:$PORT/health || exit 1
-
-# Start application
 CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000"]

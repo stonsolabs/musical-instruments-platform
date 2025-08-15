@@ -40,6 +40,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .npm-cache/
+package-lock.json
+.npmrc
 
 # Next.js
 .next/
