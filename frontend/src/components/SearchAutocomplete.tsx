@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { SearchAutocompleteProduct } from '../types';
+import { trackSearch, trackEvent } from './Analytics';
+import { apiClient } from '../lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -17,25 +19,7 @@ const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
 };
 
-// Inline API client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const apiClient = {
-  async searchAutocomplete(query: string, limit: number = 8): Promise<{ results: SearchAutocompleteProduct[] }> {
-    if (typeof window === 'undefined') {
-      return { results: [] };
-    }
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error('Autocomplete API call failed:', error);
-      return { results: [] };
-    }
-  }
-};
 
 interface SearchAutocompleteProps {
   placeholder?: string;
@@ -135,6 +119,14 @@ export default function SearchAutocomplete({
     setShowDropdown(false);
     setSelectedIndex(-1);
     
+    // Track autocomplete selection
+    trackEvent('search_suggestion_click', {
+      search_term: query,
+      selected_item: suggestion.name,
+      item_id: suggestion.id,
+      item_category: suggestion.category?.name || 'unknown'
+    });
+    
     // Navigate to product page
     window.location.href = `/products/${suggestion.slug}-${suggestion.id}`;
   };
@@ -143,6 +135,10 @@ export default function SearchAutocomplete({
   const handleSearch = () => {
     if (query.trim()) {
       setShowDropdown(false);
+      
+      // Track search
+      trackSearch(query.trim(), suggestions.length);
+      
       onSearch?.(query.trim());
       // Navigate to products page with search query
       window.location.href = `/products?q=${encodeURIComponent(query.trim())}`;

@@ -19,7 +19,7 @@ const formatRating = (rating: number): string => {
 };
 
 // Inline API client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000');
 
 const apiClient = {
   async searchProducts(params: any): Promise<SearchResponse> {

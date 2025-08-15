@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '../../types';
+import { trackCompare, trackEvent } from '../../components/Analytics';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -19,7 +20,7 @@ const formatRating = (rating: number): string => {
 };
 
 // Inline API client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000');
 
 const apiClient = {
   async compareProducts(productIds: number[]): Promise<ComparisonResponse> {
@@ -60,6 +61,10 @@ function ComparePageContent() {
       try {
         const res = await apiClient.compareProducts(ids);
         setData(res);
+        
+        // Track comparison
+        const productNames = res.products.map(p => p.name);
+        trackCompare(productNames);
       } catch (e) {
         setError('Failed to load comparison');
       } finally {

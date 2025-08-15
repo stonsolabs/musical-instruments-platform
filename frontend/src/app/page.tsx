@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '../types';
+import { apiClient } from '../lib/api';
 
-// Create a simple API client directly in the component to avoid import issues
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
+// Use centralized API client
 async function searchProducts(params: any): Promise<{ products: Product[] }> {
   if (typeof window === 'undefined') {
     // Return empty results during build
@@ -14,14 +13,7 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
   }
   
   try {
-    const sp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') sp.append(k, String(v));
-    });
-    
-    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
-    if (!response.ok) throw new Error('Failed to fetch');
-    return await response.json();
+    return await apiClient.searchProducts(params);
   } catch (error) {
     console.error('API call failed:', error);
     return { products: [] };

@@ -44,10 +44,12 @@ class Settings(BaseSettings):
                 f"https://www.{self.DOMAIN}",
                 "https://getyourmusicgear.onrender.com",
                 "http://127.0.0.1:3000",  # For internal nginx proxy
-                "http://localhost:3000"   # For internal nginx proxy
+                "http://localhost:3000",   # For internal nginx proxy
+                "http://127.0.0.1:10000",  # For nginx main port
+                "http://localhost:10000"   # For nginx main port
             ]
         else:
-            return ["http://localhost:3000", "http://localhost:3001"]
+            return ["*"]  # Allow all origins in development for easier debugging
     
     ALLOWED_HOSTS: List[str] = ["*"]
     

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import type { Product } from '../../../types';
+import { trackProductView, trackEvent } from '../../../components/Analytics';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -19,7 +20,7 @@ const formatRating = (rating: number): string => {
 };
 
 // Inline API client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000');
 
 const apiClient = {
   async getProduct(productId: number): Promise<Product> {
@@ -58,6 +59,14 @@ export default function ProductDetailPage() {
       try {
         const data = await apiClient.getProduct(productId);
         setProduct(data);
+        
+        // Track product view
+        trackProductView(
+          data.id.toString(),
+          data.name,
+          data.category?.name || 'unknown',
+          data.best_price?.price
+        );
       } catch (e) {
         setError('Product not found');
       } finally {
