@@ -33,8 +33,8 @@ ENV NPM_CONFIG_LOGLEVEL=error
 
 # Clear any existing build cache and build with verbose output for debugging
 RUN rm -rf .next && \
-    npm run build 2>&1 | tee build.log && \
-    echo "Build completed successfully" && \
+    npm run build && \
+    echo "Frontend build completed successfully" && \
     ls -la .next/
 
 # Stage 2: Production Runtime
@@ -77,11 +77,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 
 # Copy backend application
 COPY backend/app ./app
+COPY backend/alembic.ini ./alembic.ini
 COPY backend/alembic ./alembic
 
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/.next ./frontend/.next
 COPY --from=frontend-builder /app/public ./frontend/public
+COPY --from=frontend-builder /app/package.json ./frontend/package.json
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 appgroup \
@@ -104,5 +106,14 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/health || exit 1
 
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+echo "Starting Musical Instruments Platform..."\n\
+echo "Running database migrations..."\n\
+python -m alembic upgrade head || echo "Migrations failed, continuing..."\n\
+echo "Starting application..."\n\
+exec python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1\n\
+' > /app/start.sh && chmod +x /app/start.sh
+
 # Start the application
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000", "--workers", "1"]
+CMD ["/app/start.sh"]

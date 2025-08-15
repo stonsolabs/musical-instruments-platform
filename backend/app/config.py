@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     
     # API Settings
-    API_V1_STR: str = "/api"
-    PROJECT_NAME: str = "Get Your Music Gear"
+    API_V1_STR: str = os.getenv("API_V1_STR", "/api/v1")
+    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Musical Instruments Platform")
     
     # Environment
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"

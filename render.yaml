@@ -1,17 +1,30 @@
-# Exported from Render on 2025-08-15T10:17:39Z
+# Musical Instruments Platform - Render.com Deployment Configuration
+# ================================================================
+
 services:
-- type: web
-  name: musical-instruments-platform
-  runtime: docker
-  repo: https://github.com/stonsolabs/musical-instruments-platform
-  plan: free
-  envVars:
-  - fromGroup: production_vars
-  region: frankfurt
-  dockerContext: .
-  dockerfilePath: ./Dockerfile
-  domains:
-  - www.getyourmusicgear.com
-  - getyourmusicgear.com
-  autoDeployTrigger: commit
+  # Main web application
+  - type: web
+    name: musical-instruments-platform
+    runtime: docker
+    repo: https://github.com/stonsolabs/musical-instruments-platform
+    plan: free
+    region: frankfurt
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    
+    # Environment variables from existing group
+    envVars:
+      - fromGroup: production_vars
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Auto-deploy on commits
+    autoDeployTrigger: commit
+    
+    # Custom domains
+    domains:
+      - www.getyourmusicgear.com
+      - getyourmusicgear.com
+
 version: "1"
