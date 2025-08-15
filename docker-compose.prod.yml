@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Backend API
+  # Backend API (Production optimized)
   backend:
     build: 
       context: ./backend
@@ -19,28 +19,42 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - AMAZON_ASSOCIATE_TAG=${AMAZON_ASSOCIATE_TAG}
       - THOMANN_AFFILIATE_ID=${THOMANN_AFFILIATE_ID}
-      - PORT=8000
+      - PORT=10000
     ports:
-      - "8000:8000"
+      - "10000:10000"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Frontend Next.js
+  # Frontend Next.js (SEO-optimized with SSR)
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: getyourmusicgear_frontend
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://backend:10000
+      - BUILD_STANDALONE=true
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # PostgreSQL Database
   postgres:
@@ -55,6 +69,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Redis Cache
   redis:
@@ -63,6 +82,11 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:

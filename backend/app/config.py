@@ -35,19 +35,23 @@ class Settings(BaseSettings):
     BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:8000")
     DOMAIN: str = os.getenv("DOMAIN", "getyourmusicgear.com")
     
-    # CORS - Updated for production
+    # CORS - Updated for Render backend + Vercel frontend
     @property
     def ALLOWED_ORIGINS(self) -> List[str]:
         if self.ENVIRONMENT == "production":
-            return [
+            # Allow Vercel frontend domains
+            vercel_origins = [
                 f"https://{self.DOMAIN}",
                 f"https://www.{self.DOMAIN}",
-                "https://getyourmusicgear.onrender.com",
-                "http://127.0.0.1:3000",  # For internal nginx proxy
-                "http://localhost:3000",   # For internal nginx proxy
-                "http://127.0.0.1:10000",  # For nginx main port
-                "http://localhost:10000"   # For nginx main port
+                "https://getyourmusicgear.vercel.app",  # Default Vercel domain
+                "https://musical-instruments-platform.vercel.app",  # Alternative Vercel domain
             ]
+            
+            # Add any custom Vercel preview domains
+            vercel_preview = os.getenv("VERCEL_PREVIEW_DOMAINS", "").split(",")
+            vercel_origins.extend([domain.strip() for domain in vercel_preview if domain.strip()])
+            
+            return vercel_origins
         else:
             return ["*"]  # Allow all origins in development for easier debugging
     

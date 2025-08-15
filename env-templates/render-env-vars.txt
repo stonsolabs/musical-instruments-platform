@@ -1,0 +1,34 @@
+# Render Backend Environment Variables
+# Copy these to your Render service settings > Environment Variables
+# Create an environment group called "backend_vars"
+
+# Database - Replace with your Render PostgreSQL URL
+DATABASE_URL=postgresql+asyncpg://user:password@host:port/database
+
+# Redis - Replace with your Render Redis URL (optional)
+REDIS_URL=redis://host:port
+
+# Environment
+ENVIRONMENT=production
+DEBUG=false
+
+# Domain Configuration - Update with your domains
+DOMAIN=getyourmusicgear.com
+FRONTEND_URL=https://getyourmusicgear.com
+BACKEND_URL=https://your-backend-app.onrender.com
+
+# Security - Generate a secure secret key
+SECRET_KEY=your-super-secret-key-here-make-it-long-and-random
+
+# OpenAI (for AI features) - Add your OpenAI API key
+OPENAI_API_KEY=sk-your-openai-key-here
+
+# Affiliate Programs - Add your affiliate IDs
+AMAZON_ASSOCIATE_TAG=your-amazon-tag
+THOMANN_AFFILIATE_ID=your-thomann-id
+
+# CORS Configuration - Add your Vercel domains
+VERCEL_PREVIEW_DOMAINS=your-project.vercel.app,your-project-git-main.vercel.app
+
+# Render Port (automatically set by Render)
+PORT=10000

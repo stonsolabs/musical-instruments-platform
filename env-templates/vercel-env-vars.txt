@@ -1,0 +1,12 @@
+# Vercel Environment Variables
+# Copy these to your Vercel project settings > Environment Variables
+
+# Backend API URL - Replace with your Render backend URL
+NEXT_PUBLIC_API_URL=https://your-backend-app.onrender.com
+
+# Analytics (Optional)
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+
+# Domain
+NEXT_PUBLIC_DOMAIN=getyourmusicgear.com

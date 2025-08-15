@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Conditional output based on deployment target
+  output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
   experimental: {
     serverComponentsExternalPackages: []
   },
