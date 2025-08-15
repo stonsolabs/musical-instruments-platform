@@ -78,7 +78,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Copy backend application
 COPY backend/app ./app
 COPY backend/alembic ./alembic
-COPY backend/alembic.ini ./alembic.ini
 
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/.next ./frontend/.next
