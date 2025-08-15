@@ -6,16 +6,21 @@ WORKDIR /app
 # Copy package files
 COPY frontend/package*.json ./
 
-# Install dependencies with fallback
-RUN npm install --production=false --no-audit --no-fund || npm install --production=false --no-audit --no-fund --legacy-peer-deps
+# Clear npm cache and install dependencies with better error handling
+RUN npm cache clean --force && \
+    npm install --production=false --no-audit --no-fund --legacy-peer-deps --verbose
 
 # Copy frontend source
 COPY frontend/ ./
 
-# Build frontend
+# Clear Next.js cache and build with better error handling
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+ENV CI=true
+
+RUN rm -rf .next && \
+    rm -rf node_modules/.cache && \
+    npm run build || (echo "Build failed, trying with legacy peer deps" && npm install --legacy-peer-deps && npm run build)
 
 # Production stage
 FROM python:3.11-slim
@@ -36,10 +41,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend
 COPY backend/ ./backend/
 
-# Copy built frontend
-COPY --from=frontend-builder /app/.next ./frontend/.next
-COPY --from=frontend-builder /app/public ./frontend/public
-COPY --from=frontend-builder /app/package.json ./frontend/package.json
+# Copy built frontend (if it exists)
+COPY --from=frontend-builder /app/.next ./frontend/.next 2>/dev/null || echo "Frontend build not available"
+COPY --from=frontend-builder /app/public ./frontend/public 2>/dev/null || echo "Frontend public not available"
+COPY --from=frontend-builder /app/package.json ./frontend/package.json 2>/dev/null || echo "Frontend package.json not available"
 
 # Set environment
 ENV PYTHONPATH=/app

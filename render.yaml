@@ -10,7 +10,7 @@ services:
     plan: free
     region: frankfurt
     dockerContext: .
-    dockerfilePath: ./Dockerfile.simple
+    dockerfilePath: ./Dockerfile.backend-only
     
     # Environment variables from existing group
     envVars:
@@ -23,7 +23,7 @@ services:
     autoDeployTrigger: commit
     
     # Build command override (optional)
-    buildCommand: echo "Using Dockerfile build"
+    buildCommand: echo "Using backend-only Dockerfile"
     
     # Start command override (optional)
     startCommand: python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
