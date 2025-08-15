@@ -29,9 +29,6 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname, 'src'),
-      '@/lib': require('path').resolve(__dirname, 'src/lib'),
-      '@/types': require('path').resolve(__dirname, 'src/types'),
-      '@/components': require('path').resolve(__dirname, 'src/components'),
     };
 
     // Optimize for production builds
