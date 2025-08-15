@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { SearchAutocompleteProduct } from '../types';
-import { trackSearch, trackEvent } from './Analytics';
-import { getApiBaseUrl } from '../lib/api';
+import { SearchAutocompleteProduct } from '@/types';
+import { trackSearch, trackEvent } from '@/components/Analytics';
+import { getApiBaseUrl } from '@/lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {

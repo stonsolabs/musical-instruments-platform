@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Product } from '../../../types';
-import { trackProductView, trackEvent } from '../../../components/Analytics';
-import { getApiBaseUrl } from '../../../lib/api';
+import type { Product } from '@/types';
+import { trackProductView, trackEvent } from '@/components/Analytics';
+import { getApiBaseUrl } from '@/lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {

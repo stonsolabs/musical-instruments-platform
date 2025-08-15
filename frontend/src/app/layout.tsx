@@ -1,9 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import { GoogleTagManager, GoogleAnalytics } from '../components/Analytics'
-import { AnalyticsProvider } from '../components/AnalyticsProvider'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { GoogleTagManager, GoogleAnalytics } from '@/components/Analytics'
+import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 
 export const metadata: Metadata = {
   title: 'MusicEurope - Compare Musical Instruments Across Europe',

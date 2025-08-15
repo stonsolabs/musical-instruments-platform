@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Product } from '../types';
-import { getApiBaseUrl } from '../lib/api';
+import { Product } from '@/types';
+import { getApiBaseUrl } from '@/lib/api';
 
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';

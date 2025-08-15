@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import type { ComparisonResponse, Product } from '../../types';
+import type { ComparisonResponse, Product } from '@/types';
 import CompareClient from './CompareClient';
 
-import { API_BASE_URL } from '../../lib/api';
+import { API_BASE_URL } from '@/lib/api';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';

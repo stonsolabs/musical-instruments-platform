@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import type { ComparisonResponse, Product } from '../../types';
-import { getApiBaseUrl } from '../../lib/api';
+import type { ComparisonResponse, Product } from '@/types';
+import { getApiBaseUrl } from '@/lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {

@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { Product, SearchResponse, Category, Brand } from '../../types';
+import { Product, SearchResponse, Category, Brand } from '@/types';
 import ProductsClient from './ProductsClient';
-import { API_BASE_URL } from '../../lib/api';
+import { API_BASE_URL } from '@/lib/api';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';

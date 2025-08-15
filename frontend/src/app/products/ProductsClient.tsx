@@ -3,8 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Product, SearchResponse, Category, Brand } from '../../types';
-import { getApiBaseUrl } from '../../lib/api';
+import { Product, SearchResponse, Category, Brand } from '@/types';
+import { getApiBaseUrl } from '@/lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
