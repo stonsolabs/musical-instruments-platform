@@ -1,18 +1,25 @@
-# Simple single-container Dockerfile for Render.com
+# Optimized single-container Dockerfile for Render.com
+# =======================================================
+
+# Stage 1: Frontend Builder
+# -------------------------
 FROM node:18-alpine AS frontend-builder
 
-WORKDIR /app/frontend
+# Set working directory
+WORKDIR /app
 
-# Copy package files first for better caching
-COPY frontend/package*.json ./
+# Copy package files first for optimal Docker layer caching
+COPY frontend/package.json frontend/package-lock.json ./
+
+# Install dependencies in a separate layer for better caching
+RUN npm ci --only=production
+
+# Copy configuration files
 COPY frontend/next.config.js ./
 COPY frontend/tailwind.config.js ./
 COPY frontend/postcss.config.js ./
 COPY frontend/tsconfig.json ./
 COPY frontend/next-env.d.ts ./
-
-# Install dependencies
-RUN npm ci
 
 # Copy source code
 COPY frontend/src ./src
@@ -23,36 +30,73 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-# Backend with Python
-FROM python:3.11-slim
+# Stage 2: Production Runtime
+# ---------------------------
+FROM python:3.11-slim AS production
 
+# Add metadata labels
+LABEL maintainer="Musical Instruments Platform"
+LABEL description="Single container with FastAPI backend and Next.js frontend"
+LABEL version="1.0"
+
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install system dependencies in a single layer
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+        curl \
+        ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* \
+    && rm -rf /var/tmp/*
+
+# Copy Python requirements first for better caching
+COPY backend/requirements.txt ./requirements.txt
 
 # Install Python dependencies
-COPY backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && rm -rf /root/.cache/pip
 
-# Copy backend
-COPY backend/ ./
+# Install Node.js for serving frontend (if needed)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js for serving frontend
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
+# Copy backend application
+COPY backend/app ./app
+COPY backend/alembic ./alembic
+COPY backend/alembic.ini ./alembic.ini
 
-# Copy built frontend
-COPY --from=frontend-builder /app/frontend/.next ./static
-COPY --from=frontend-builder /app/frontend/public ./public
+# Copy built frontend from previous stage
+COPY --from=frontend-builder /app/.next ./frontend/.next
+COPY --from=frontend-builder /app/public ./frontend/public
 
+# Create non-root user for security
+RUN addgroup --system --gid 1001 appgroup \
+    && adduser --system --uid 1001 --gid 1001 --shell /bin/bash appuser \
+    && chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Set environment variables
 ENV PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV PORT=10000
 
+# Expose port
 EXPOSE $PORT
 
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Start the application
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000", "--workers", "1"]
