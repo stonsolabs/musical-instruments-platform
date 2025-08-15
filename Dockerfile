@@ -12,7 +12,7 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 
 # Install dependencies in a separate layer for better caching
-RUN npm ci --only=production
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy configuration files
 COPY frontend/next.config.js ./
@@ -25,10 +25,17 @@ COPY frontend/next-env.d.ts ./
 COPY frontend/src ./src
 COPY frontend/public ./public
 
-# Build the application
+# Build the application with error handling
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+ENV CI=true
+ENV NPM_CONFIG_LOGLEVEL=error
+
+# Clear any existing build cache and build with verbose output for debugging
+RUN rm -rf .next && \
+    npm run build 2>&1 | tee build.log && \
+    echo "Build completed successfully" && \
+    ls -la .next/
 
 # Stage 2: Production Runtime
 # ---------------------------

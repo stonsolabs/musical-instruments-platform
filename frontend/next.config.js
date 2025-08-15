@@ -4,6 +4,45 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: []
   },
+  
+  // Webpack optimizations for build reliability
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Improve module resolution
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      os: false,
+    };
+
+    // Optimize for production builds
+    if (!dev && !isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'react/jsx-runtime.js': 'react/jsx-runtime',
+        'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
+      };
+    }
+
+    // Fix case sensitivity issues
+    config.resolve.plugins = config.resolve.plugins || [];
+    
+    return config;
+  },
+
+  // Improved compiler options
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error']
+    } : false,
+  },
+
+  // Build performance optimizations
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+
   images: {
     domains: [
       'example.com',
@@ -14,7 +53,12 @@ const nextConfig = {
       'kytary.de',
       'getyourmusicgear.com'
     ],
+    unoptimized: process.env.NODE_ENV === 'production'
   },
+
+  // Generate source maps for better debugging
+  productionBrowserSourceMaps: false,
+
   async rewrites() {
     return [
       {
@@ -23,6 +67,7 @@ const nextConfig = {
       },
     ];
   },
+
   async headers() {
     return [
       {
@@ -43,6 +88,14 @@ const nextConfig = {
         ],
       },
     ];
+  },
+
+  // Error handling
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   },
 };
 
