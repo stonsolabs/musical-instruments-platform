@@ -2,8 +2,31 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api';
-import { Product } from '@/types';
+import { Product } from '../types';
+
+// Create a simple API client directly in the component to avoid import issues
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+async function searchProducts(params: any): Promise<{ products: Product[] }> {
+  if (typeof window === 'undefined') {
+    // Return empty results during build
+    return { products: [] };
+  }
+  
+  try {
+    const sp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') sp.append(k, String(v));
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.json();
+  } catch (error) {
+    console.error('API call failed:', error);
+    return { products: [] };
+  }
+}
 
 export default function HomePage() {
   const [searchItems, setSearchItems] = useState(['', '']);
@@ -17,8 +40,8 @@ export default function HomePage() {
     const loadProducts = async () => {
       try {
         const [popular, topRated] = await Promise.all([
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
+          searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
+          searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
         ]);
         setPopularProducts(popular.products);
         setTopRatedProducts(topRated.products);
@@ -254,7 +277,7 @@ export default function HomePage() {
                     <span className="text-gray-400 text-2xl">🎸</span>
                   </div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">{product.brand.name}</span>
+                    <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
                     <span className="text-sm text-gray-500">1000+ watching</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
@@ -264,7 +287,7 @@ export default function HomePage() {
                       <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
                     </div>
                     <span className="text-lg font-bold text-green-600">
-                      €{product.best_price?.price.toFixed(2) || product.msrp_price?.toFixed(2) || '299'}
+                      €{product.best_price?.price?.toFixed(2) || product.msrp_price?.toFixed(2) || '299'}
                     </span>
                   </div>
                   <div className="flex gap-2">
@@ -299,7 +322,7 @@ export default function HomePage() {
                   <span className="text-gray-400 text-2xl">🎸</span>
                 </div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">{product.brand.name}</span>
+                  <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
                   <div className="flex items-center gap-1">
                     <span className="text-yellow-500">★★★★★</span>
                     <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.8'}</span>
@@ -311,7 +334,7 @@ export default function HomePage() {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-green-600">
-                    €{product.best_price?.price.toFixed(2) || product.msrp_price?.toFixed(2) || '399'}
+                    €{product.best_price?.price?.toFixed(2) || product.msrp_price?.toFixed(2) || '399'}
                   </span>
                   <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
                 </div>

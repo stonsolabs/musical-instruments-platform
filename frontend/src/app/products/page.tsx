@@ -3,9 +3,56 @@
 import React, { useCallback, useEffect, useMemo, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api';
-import { Product, SearchResponse, Category, Brand } from '@/types';
-import { formatPrice, formatRating } from '@/lib/utils';
+import { Product, SearchResponse, Category, Brand } from '../../types';
+
+// Inline utility functions
+const formatPrice = (price: number, currency: string = 'EUR'): string => {
+  try {
+    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
+  } catch {
+    return `${currency} ${price.toFixed(2)}`;
+  }
+};
+
+const formatRating = (rating: number): string => {
+  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
+};
+
+// Inline API client
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const apiClient = {
+  async searchProducts(params: any): Promise<SearchResponse> {
+    if (typeof window === 'undefined') {
+      return { products: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 } };
+    }
+    
+    const sp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') sp.append(k, String(v));
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  },
+
+  async getCategories(): Promise<Category[]> {
+    if (typeof window === 'undefined') return [];
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/categories`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  },
+
+  async getBrands(): Promise<Brand[]> {
+    if (typeof window === 'undefined') return [];
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/brands`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  }
+};
 
 function ProductsPageContent() {
   const searchParams = useSearchParams();
