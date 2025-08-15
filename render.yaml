@@ -1,32 +1,60 @@
 services:
-  # Combined Frontend + Backend Service
+  # Backend API Service
   - type: web
-    name: getyourmusicgear
+    name: getyourmusicgear-api
     env: docker
     dockerfilePath: ./Dockerfile
+    plan: free
+    region: ohio
     envVars:
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
-        value: false
+        value: "false"
       - key: SECRET_KEY
         generateValue: true
-      - key: DOMAIN
-        value: getyourmusicgear.com
-      - key: FRONTEND_URL
-        value: https://getyourmusicgear.onrender.com
-      - key: BACKEND_URL
-        value: https://getyourmusicgear.onrender.com
-      - key: NEXT_PUBLIC_API_URL
-        value: https://getyourmusicgear.onrender.com
+      - key: PROJECT_NAME
+        value: "Musical Instruments Platform API"
+      - key: API_V1_STR
+        value: "/api/v1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: getyourmusicgear-db
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: getyourmusicgear-redis
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AFFILIATE_AMAZON_ACCESS_KEY
+        sync: false
+      - key: AFFILIATE_AMAZON_SECRET_KEY
+        sync: false
+      - key: AFFILIATE_AMAZON_PARTNER_TAG
+        sync: false
+        
+  # Frontend Service (Static Next.js)
+  - type: static
+    name: getyourmusicgear-frontend
+    buildCommand: cd frontend && npm ci && npm run build
+    publishDir: frontend/.next
+    pullRequestPreviewsEnabled: false
+    envVars:
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://getyourmusicgear-api.onrender.com
 
 databases:
   # PostgreSQL Database
   - name: getyourmusicgear-db
+    databaseName: musicgear
+    user: musicgear
     plan: free
+    region: ohio
     
   # Redis Cache
   - name: getyourmusicgear-redis
     plan: free
+    region: ohio
