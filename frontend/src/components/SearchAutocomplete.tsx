@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { SearchAutocompleteProduct } from '../types';
 import { trackSearch, trackEvent } from './Analytics';
-import { apiClient } from '../lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -19,6 +18,42 @@ const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
 };
 
+// API client with proper environment variable handling
+const getApiBaseUrl = (): string => {
+  // Priority: Environment variable > window.location.origin (for production) > localhost (for development)
+  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
+  // In production (when window is available), use the same origin as the frontend
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  
+  // Fallback for build time
+  return 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+const apiClient = {
+  async searchAutocomplete(query: string, limit: number = 8): Promise<{ results: SearchAutocompleteProduct[] }> {
+    if (typeof window === 'undefined') {
+      return { results: [] };
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Autocomplete API call failed:', error);
+      return { results: [] };
+    }
+  }
+};
 
 
 interface SearchAutocompleteProps {

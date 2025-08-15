@@ -3,9 +3,27 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '../types';
-import { apiClient } from '../lib/api';
 
-// Use centralized API client
+// API client with proper environment variable handling
+const getApiBaseUrl = (): string => {
+  // Priority: Environment variable > window.location.origin (for production) > localhost (for development)
+  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
+  // In production (when window is available), use the same origin as the frontend
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  
+  // Fallback for build time
+  return 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
 async function searchProducts(params: any): Promise<{ products: Product[] }> {
   if (typeof window === 'undefined') {
     // Return empty results during build
@@ -13,7 +31,14 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
   }
   
   try {
-    return await apiClient.searchProducts(params);
+    const sp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') sp.append(k, String(v));
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.json();
   } catch (error) {
     console.error('API call failed:', error);
     return { products: [] };
