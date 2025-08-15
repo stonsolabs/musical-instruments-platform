@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "vercel-build": "NEXT_TELEMETRY_DISABLED=1 npm run build"
   },
   "dependencies": {
     "@types/node": "^20.10.5",
@@ -30,7 +31,11 @@
     "@tailwindcss/typography": "^0.5.16"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "14.2.31"
+  },
+  "engines": {
+    "node": ">=18.18.0",
+    "npm": ">=9.0.0"
   }
 }

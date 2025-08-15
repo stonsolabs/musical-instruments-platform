@@ -6,6 +6,9 @@ const nextConfig = {
     serverComponentsExternalPackages: []
   },
   
+  // Ensure compatibility with Node.js 22+
+  transpilePackages: [],
+  
   // Webpack optimizations for build reliability
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Improve module resolution
@@ -14,6 +17,12 @@ const nextConfig = {
       fs: false,
       path: false,
       os: false,
+    };
+
+    // Ensure proper module resolution for Node.js 22+
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+      '.jsx': ['.jsx', '.tsx'],
     };
 
     // Optimize for production builds
