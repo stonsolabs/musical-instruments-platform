@@ -84,6 +84,36 @@ const nextConfig = {
     ];
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/deals',
+        destination: '/products',
+        permanent: false,
+      },
+      {
+        source: '/blog',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/how-to-use',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/about',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/pro',
+        destination: '/',
+        permanent: false,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

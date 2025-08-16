@@ -11,6 +11,15 @@ export async function GET(
   const url = new URL(request.url);
   const searchParams = url.searchParams.toString();
   
+  // Debug logging
+  console.log('Proxy GET request:', {
+    path,
+    searchParams,
+    apiBaseUrl: API_BASE_URL,
+    hasApiKey: !!API_KEY,
+    fullUrl: `${API_BASE_URL}/api/v1/${path}?${searchParams}`
+  });
+  
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/${path}?${searchParams}`, {
       headers: {
@@ -19,9 +28,21 @@ export async function GET(
       },
     });
 
+    console.log('Backend response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Backend error response:', errorText);
       return NextResponse.json(
-        { error: 'Backend request failed' },
+        { 
+          error: 'Backend request failed',
+          details: errorText,
+          status: response.status
+        },
         { status: response.status }
       );
     }
@@ -31,7 +52,12 @@ export async function GET(
   } catch (error) {
     console.error('Proxy error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        apiBaseUrl: API_BASE_URL,
+        hasApiKey: !!API_KEY
+      },
       { status: 500 }
     );
   }
