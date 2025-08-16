@@ -2,7 +2,7 @@
 
 ## Generated API Key
 ```
-acbaca27974a8d46016841197bedda986d9ceb7427e05b080592d9cf576501d6
+[GENERATE YOUR OWN API KEY - DO NOT USE THIS ONE]
 ```
 
 ## Step 1: Render Backend Configuration
@@ -12,7 +12,7 @@ Go to Render dashboard → musical-instruments-platform service → Environment 
 
 Add these variables:
 ```
-API_KEY=acbaca27974a8d46016841197bedda986d9ceb7427e05b080592d9cf576501d6
+API_KEY=[YOUR-GENERATED-API-KEY-HERE]
 BACKEND_URL=https://musical-instruments-platform.onrender.com
 VERCEL_PREVIEW_DOMAINS=getyourmusicgear.vercel.app,getyourmusicgear-felipes-projects-28a54414.vercel.app,getyourmusicgear-git-main-felipes-projects-28a54414.vercel.app,getyourmusicgear-i27l76pvy-felipes-projects-28a54414.vercel.app
 ```
@@ -26,10 +26,12 @@ VERCEL_PREVIEW_DOMAINS=getyourmusicgear.vercel.app,getyourmusicgear-felipes-proj
 ### 2.1 Add Environment Variables
 Go to Vercel dashboard → getyourmusicgear project → Settings → Environment Variables
 
+**Important:** We use `API_KEY` (not `NEXT_PUBLIC_API_KEY`) to keep the key server-side only!
+
 Add these variables:
 ```
 NEXT_PUBLIC_API_BASE_URL=https://musical-instruments-platform.onrender.com
-NEXT_PUBLIC_API_KEY=acbaca27974a8d46016841197bedda986d9ceb7427e05b080592d9cf576501d6
+API_KEY=[YOUR-GENERATED-API-KEY-HERE]
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX (your actual GTM ID)
 NEXT_PUBLIC_DOMAIN=getyourmusicgear.com
 NEXT_TELEMETRY_DISABLED=1
@@ -82,7 +84,7 @@ curl https://musical-instruments-platform.onrender.com/api/v1/compare
 ### 4.3 Test API with Key
 ```bash
 # This should work (replace with your actual API key)
-curl -H "X-API-Key: acbaca27974a8d46016841197bedda986d9ceb7427e05b080592d9cf576501d6" \
+curl -H "X-API-Key: [YOUR-GENERATED-API-KEY-HERE]" \
      https://musical-instruments-platform.onrender.com/api/v1/products
 ```
 
@@ -90,7 +92,8 @@ curl -H "X-API-Key: acbaca27974a8d46016841197bedda986d9ceb7427e05b080592d9cf5765
 
 ✅ **Backend Protected** - API key required for all endpoints  
 ✅ **No Public Access** - Backend returns 401 without key  
-✅ **Frontend Works** - Vercel can access backend with key  
+✅ **API Key Secure** - Server-side proxy keeps key hidden from client  
+✅ **Frontend Works** - Vercel can access backend through secure proxy  
 ✅ **Cloudflare Protection** - DDoS, WAF, rate limiting  
 ✅ **SSL Everywhere** - Encrypted communication  
 

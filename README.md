@@ -4,30 +4,17 @@ A modern, scalable platform for comparing musical instrument prices across Europ
 
 ## 🚀 Quick Start
 
-1. **Setup development environment:**
+### Development
 ```bash
-./scripts/setup_dev_environment.sh
-```
-
-2. **Configure environment variables:**
-```bash
-cp .env.example .env
-# Edit .env with your API keys
-```
-
-3. **Start development servers:**
-```bash
-# Backend (Terminal 1)
+# Backend
 cd backend && source venv/bin/activate && uvicorn app.main:app --reload
 
-# Frontend (Terminal 2)  
+# Frontend  
 cd frontend && npm run dev
 ```
 
-4. **Access the application:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+### Production Deployment
+See `API_KEY_SETUP.md` for complete deployment guide with security setup.
 
 ## 🎯 Features
 
@@ -42,7 +29,15 @@ cd frontend && npm run dev
 
 - **Backend**: FastAPI + PostgreSQL + Redis + OpenAI API
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
-- **Deployment**: Vercel (Frontend) + Railway/Render (Backend)
+- **Deployment**: Vercel (Frontend) + Render (Backend)
+- **Security**: API key authentication + Cloudflare protection
+
+## 🔐 Security
+
+- **API Key Authentication**: Backend protected with secure API keys
+- **Server-Side Proxy**: API keys never exposed to client-side
+- **Cloudflare Protection**: DDoS protection, WAF, rate limiting
+- **CORS Configuration**: Restricted to authorized domains only
 
 ## 💰 Revenue Model
 
@@ -56,14 +51,8 @@ cd frontend && npm run dev
 - ✅ AI content generation system
 - ✅ Multi-store price comparison
 - ✅ Production deployment scripts
-- 🔄 Ready for customization and launch
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+- ✅ Security implementation
+- 🔄 Ready for launch
 
 ## 📄 License
 

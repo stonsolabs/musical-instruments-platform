@@ -5,14 +5,13 @@ export const getApiBaseUrl = (): string => {
   return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 };
 
-// API client with authentication
+// API client for client-side calls (no API key exposed)
 export const apiClient = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`/api/proxy${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.NEXT_PUBLIC_API_KEY || '',
         ...options.headers,
       },
     });

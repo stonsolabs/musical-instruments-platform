@@ -4,8 +4,8 @@
 # Backend API URL (your Render backend)
 NEXT_PUBLIC_API_BASE_URL=https://musical-instruments-platform.onrender.com
 
-# API Key for backend authentication (same as Render API_KEY)
-NEXT_PUBLIC_API_KEY=your-api-key-here-same-as-render-api-key
+# API Key for backend authentication (server-side only, not exposed to client)
+API_KEY=your-api-key-here-same-as-render-api-key
 
 # Google Tag Manager ID (replace with your actual GTM ID)
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
