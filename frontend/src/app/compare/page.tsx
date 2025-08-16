@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import type { ComparisonResponse, Product } from '@/types';
 import CompareClient from './CompareClient';
 
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, apiClient } from '@/lib/api';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
@@ -15,10 +15,12 @@ async function fetchComparison(productIds: number[]): Promise<ComparisonResponse
   }
 
   try {
+    // For server-side rendering, we need to manually add the API key
     const response = await fetch(`${API_BASE_URL}/api/v1/compare`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
+        'X-API-Key': process.env.API_KEY || '',
       },
       body: JSON.stringify(productIds),
       next: { revalidate: 300 }, // Revalidate every 5 minutes

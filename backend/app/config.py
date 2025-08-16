@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
+    API_KEY: str = os.getenv("API_KEY", "")
     
     # API Settings
     API_V1_STR: str = os.getenv("API_V1_STR", "/api/v1")

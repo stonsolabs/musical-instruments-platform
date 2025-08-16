@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: musical-instruments-backend
+    name: getyourmusicgear-backend
     runtime: docker
     repo: https://github.com/stonsolabs/musical-instruments-platform
     plan: free

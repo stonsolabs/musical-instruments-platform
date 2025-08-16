@@ -15,10 +15,11 @@ DEBUG=false
 # Domain Configuration - Update with your domains
 DOMAIN=getyourmusicgear.com
 FRONTEND_URL=https://getyourmusicgear.com
-BACKEND_URL=https://your-backend-app.onrender.com
+BACKEND_URL=https://musical-instruments-platform.onrender.com
 
 # Security - Generate a secure secret key
 SECRET_KEY=your-super-secret-key-here-make-it-long-and-random
+API_KEY=your-api-key-here-generate-with-openssl-rand-hex-32
 
 # OpenAI (for AI features) - Add your OpenAI API key
 OPENAI_API_KEY=sk-your-openai-key-here
@@ -28,7 +29,7 @@ AMAZON_ASSOCIATE_TAG=your-amazon-tag
 THOMANN_AFFILIATE_ID=your-thomann-id
 
 # CORS Configuration - Add your Vercel domains
-VERCEL_PREVIEW_DOMAINS=your-project.vercel.app,your-project-git-main.vercel.app
+VERCEL_PREVIEW_DOMAINS=getyourmusicgear.vercel.app,getyourmusicgear-felipes-projects-28a54414.vercel.app,getyourmusicgear-git-main-felipes-projects-28a54414.vercel.app,getyourmusicgear-i27l76pvy-felipes-projects-28a54414.vercel.app
 
 # Render Port (automatically set by Render)
 PORT=10000

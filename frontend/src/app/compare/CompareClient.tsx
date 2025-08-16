@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
-import { getApiBaseUrl } from '@/lib/api';
+import { apiClient } from '@/lib/api';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -16,21 +16,6 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
 
 const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
-
-const API_BASE_URL = getApiBaseUrl();
-
-const apiClient = {
-  async compareProducts(productIds: number[]): Promise<ComparisonResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/compare`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(productIds),
-    });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  }
 };
 
 interface CompareClientProps {
@@ -49,7 +34,7 @@ export default function CompareClient({ productIds, initialData }: CompareClient
     if (!initialData && productIds.length >= 2) {
       const loadData = async () => {
         try {
-          const result = await apiClient.compareProducts(productIds);
+          const result = await apiClient.post('/api/v1/compare', productIds);
           setData(result);
           
           // Track comparison analytics

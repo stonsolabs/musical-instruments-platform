@@ -1,12 +1,17 @@
-# Vercel Environment Variables
+# Vercel Frontend Environment Variables
 # Copy these to your Vercel project settings > Environment Variables
 
-# Backend API URL - Replace with your Render backend URL
-NEXT_PUBLIC_API_URL=https://your-backend-app.onrender.com
+# Backend API URL (your Render backend)
+NEXT_PUBLIC_API_BASE_URL=https://musical-instruments-platform.onrender.com
 
-# Analytics (Optional)
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+# API Key for backend authentication (same as Render API_KEY)
+NEXT_PUBLIC_API_KEY=your-api-key-here-same-as-render-api-key
+
+# Google Tag Manager ID (replace with your actual GTM ID)
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 
-# Domain
+# Domain configuration
 NEXT_PUBLIC_DOMAIN=getyourmusicgear.com
+
+# Vercel Analytics (optional)
+NEXT_TELEMETRY_DISABLED=1
