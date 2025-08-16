@@ -28,7 +28,7 @@ const apiClient = {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
+      const response = await fetch(`/api/proxy/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return await response.json();
     } catch (error) {

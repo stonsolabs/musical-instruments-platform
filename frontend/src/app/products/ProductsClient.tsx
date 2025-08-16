@@ -28,7 +28,7 @@ const apiClient = {
       if (v !== undefined && v !== '') sp.append(k, String(v));
     });
     
-    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
+    const response = await fetch(`/api/proxy/products?${sp.toString()}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   },

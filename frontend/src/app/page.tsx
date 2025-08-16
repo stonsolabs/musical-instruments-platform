@@ -22,7 +22,7 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
       if (v !== undefined && v !== '') sp.append(k, String(v));
     });
     
-    const response = await fetch(`${API_BASE_URL}/api/v1/products?${sp.toString()}`);
+    const response = await fetch(`/api/proxy/products?${sp.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch');
     return await response.json();
   } catch (error) {

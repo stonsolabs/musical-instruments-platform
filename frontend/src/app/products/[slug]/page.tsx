@@ -28,7 +28,7 @@ const apiClient = {
       throw new Error('API calls are not available during build time');
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/v1/products/${productId}`);
+    const response = await fetch(`/api/proxy/products/${productId}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   }

@@ -28,6 +28,7 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
       next: { revalidate: 300 }, // Revalidate every 5 minutes
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': process.env.API_KEY || '',
       },
     });
 
@@ -57,6 +58,7 @@ async function fetchCategories(): Promise<Category[]> {
       next: { revalidate: 3600 }, // Revalidate every hour
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': process.env.API_KEY || '',
       },
     });
 
@@ -78,6 +80,7 @@ async function fetchBrands(): Promise<Brand[]> {
       next: { revalidate: 3600 }, // Revalidate every hour
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': process.env.API_KEY || '',
       },
     });
 
