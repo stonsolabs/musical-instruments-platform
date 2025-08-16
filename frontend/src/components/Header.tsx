@@ -17,13 +17,13 @@ export function Header() {
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <Image 
                 src="/logo.png" 
-                alt="MusicEurope Logo" 
+                alt="GetYourMusicGear Logo" 
                 width={40} 
                 height={40}
                 className="rounded"
               />
               <div>
-                <div className="text-xl font-bold text-gray-900">MusicEurope</div>
+                <div className="text-xl font-bold text-gray-900">GetYourMusicGear</div>
                 <div className="text-xs text-gray-600 hidden sm:block">The Instrument Database</div>
               </div>
             </Link>
@@ -74,9 +74,6 @@ export function Header() {
             </Link>
             <Link href="/pro" className="hidden md:block bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
               PRO
-            </Link>
-            <Link href="/signin" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Sign in
             </Link>
 
             {/* Mobile menu button */}

@@ -2,11 +2,11 @@ import './globals.css'
 import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { GoogleTagManager, GoogleAnalytics } from '@/components/Analytics'
+import { GoogleTagManager, VercelAnalytics } from '@/components/Analytics'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 
 export const metadata: Metadata = {
-  title: 'MusicEurope - Compare Musical Instruments Across Europe',
+  title: 'GetYourMusicGear - Compare Musical Instruments Across Europe',
   description: 'Find the best deals on musical instruments across Europe. Compare prices, read reviews, and discover your next instrument.',
 }
 
@@ -15,7 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <GoogleTagManager />
-        <GoogleAnalytics />
       </head>
       <body className="bg-gray-50">
         {/* GTM noscript fallback */}
@@ -35,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
         </AnalyticsProvider>
+        <VercelAnalytics />
       </body>
     </html>
   )

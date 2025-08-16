@@ -147,9 +147,9 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           }}
         />
         
-        <div className="min-h-screen bg-gray-50">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Compare Musical Instruments</h1>
               <p className="text-lg text-gray-600 mb-8">
                 Select at least two instruments to see a detailed side-by-side comparison
@@ -162,10 +162,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </Link>
-            </div>
+            </Link>
           </div>
         </div>
+      </div>
       </>
     );
   }
@@ -180,25 +180,25 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         />
       )}
 
-      <div className="min-h-screen bg-gray-50">
-        {/* Ad Space - Top */}
-        <section className="py-4 bg-white border-b">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white text-center">
-              <p className="text-sm">🎵 Compare prices across Europe's top music stores</p>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Ad Space - Top */}
+      <section className="py-4 bg-white border-b">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white text-center">
+            <p className="text-sm">🎵 Compare prices across Europe's top music stores</p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Breadcrumb */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb */}
           <nav className="mb-6" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-2 text-sm text-gray-600">
-              <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
-              <li>/</li>
+          <ol className="flex items-center space-x-2 text-sm text-gray-600">
+            <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
+            <li>/</li>
               <li className="text-gray-900" aria-current="page">Compare</li>
-            </ol>
-          </nav>
+          </ol>
+        </nav>
 
           {/* Page Header */}
           <div className="mb-8">
@@ -216,17 +216,17 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           {/* Client-side interactive component */}
           <Suspense fallback={
             <div className="animate-pulse">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                    <div className="space-y-3">
+                  <div className="space-y-3">
                       <div className="h-4 bg-gray-200 rounded"></div>
                       <div className="h-6 bg-gray-200 rounded"></div>
                       <div className="h-4 bg-gray-200 rounded"></div>
-                    </div>
-                  </div>
-                ))}
+                        </div>
+                      </div>
+                    ))}
               </div>
             </div>
           }>
@@ -235,7 +235,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
               initialData={comparisonData}
             />
           </Suspense>
-        </div>
+            </div>
       </div>
     </>
   );
