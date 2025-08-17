@@ -149,36 +149,69 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           }}
         />
         
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-400">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Compare Musical Instruments</h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <h1 className="text-3xl font-bold text-white mb-4">Compare Musical Instruments</h1>
+              <p className="text-lg text-blue-100 mb-8">
                 Search and select at least two instruments to see a detailed side-by-side comparison
               </p>
               
-              {/* Search Section */}
-              <div className="max-w-2xl mx-auto mb-8">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Search Instruments to Compare</h2>
-                  <SearchAutocomplete 
-                    placeholder="Search for guitars, pianos, drums, amplifiers..."
-                    className="w-full"
-                    onSearch={(query) => {
-                      // Navigate to products page with search query
-                      window.location.href = `/products?q=${encodeURIComponent(query)}`;
-                    }}
-                  />
-                  <p className="text-sm text-gray-500 mt-3">
-                    Start typing to find instruments. Click on a result to view details and add to comparison.
-                  </p>
+              {/* Compare Interface */}
+              <div className="max-w-4xl mx-auto mb-8">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Compare Instruments</h2>
+                  
+                  {/* Search Fields */}
+                  <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+                    <div className="flex-1 w-full">
+                      <SearchAutocomplete 
+                        placeholder="Search instrument 1"
+                        className="w-full"
+                        onSearch={(query) => {
+                          // Handle instrument 1 selection
+                          console.log('Instrument 1 selected:', query);
+                        }}
+                      />
+                    </div>
+                    
+                    <div className="text-gray-500 font-semibold text-lg">vs</div>
+                    
+                    <div className="flex-1 w-full">
+                      <SearchAutocomplete 
+                        placeholder="Search instrument 2"
+                        className="w-full"
+                        onSearch={(query) => {
+                          // Handle instrument 2 selection
+                          console.log('Instrument 2 selected:', query);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Add Another Instrument */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <span className="font-medium">Add another instrument</span>
+                    </div>
+                  </div>
+                  
+                  {/* Compare Button */}
+                  <div className="mt-6 text-center">
+                    <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-lg">
+                      Compare 1 Instruments
+                    </button>
+                  </div>
                 </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
                   href="/products" 
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                 >
                   Browse All Products
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,8 +219,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                   </svg>
                 </Link>
                 <Link 
-                  href="/products?category=electric" 
-                  className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                  href="/products?category=electric-guitars" 
+                  className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                 >
                   Popular Categories
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

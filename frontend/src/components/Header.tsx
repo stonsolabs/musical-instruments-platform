@@ -14,23 +14,14 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               <Image 
                 src="/logo.png" 
                 alt="GetYourMusicGear Logo" 
-                width={40} 
+                width={120} 
                 height={40}
-                className="rounded"
+                className="h-8 w-auto"
               />
-              <div>
-                <div className="text-xl font-bold text-gray-900">
-                  <div>Get</div>
-                  <div>Your</div>
-                  <div>Music</div>
-                  <div>Gear</div>
-                </div>
-                <div className="text-xs text-gray-600 hidden sm:block">Compare Musical Instruments</div>
-              </div>
             </Link>
           </div>
 
@@ -55,12 +46,12 @@ export function Header() {
                 <div className="p-4">
                   <div className="text-sm font-medium text-gray-900 mb-2">Categories</div>
                   <div className="space-y-1 text-sm">
-                    <Link href="/products?category=electric" className="block hover:text-blue-600 transition-colors">Electric Guitars</Link>
-                    <Link href="/products?category=acoustic" className="block hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
-                    <Link href="/products?category=bass" className="block hover:text-blue-600 transition-colors">Bass Guitars</Link>
-                    <Link href="/products?category=drums" className="block hover:text-blue-600 transition-colors">Drums</Link>
-                    <Link href="/products?category=keyboards" className="block hover:text-blue-600 transition-colors">Keyboards</Link>
+                    <Link href="/products?category=electric-guitars" className="block hover:text-blue-600 transition-colors">Electric Guitars</Link>
+                    <Link href="/products?category=acoustic-guitars" className="block hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
+                    <Link href="/products?category=digital-keyboards" className="block hover:text-blue-600 transition-colors">Digital Keyboards</Link>
+                    <Link href="/products?category=synthesizers" className="block hover:text-blue-600 transition-colors">Synthesizers</Link>
                     <Link href="/products?category=amplifiers" className="block hover:text-blue-600 transition-colors">Amplifiers</Link>
+                    <Link href="/products?category=audio-interfaces" className="block hover:text-blue-600 transition-colors">Audio Interfaces</Link>
                   </div>
                 </div>
               </div>
@@ -74,13 +65,6 @@ export function Header() {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
-            <Link href="/compare" className="hidden md:flex items-center text-gray-700 hover:text-gray-900 transition-colors font-medium">
-              <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Compare Instruments
-            </Link>
-
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -107,18 +91,13 @@ export function Header() {
             </div>
             
             <Link href="/products" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">All Products</Link>
-            <Link href="/products?category=electric" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Electric Guitars</Link>
-            <Link href="/products?category=acoustic" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Acoustic Guitars</Link>
-            <Link href="/products?category=bass" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Bass Guitars</Link>
+            <Link href="/products?category=electric-guitars" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Electric Guitars</Link>
+            <Link href="/products?category=acoustic-guitars" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Acoustic Guitars</Link>
+            <Link href="/products?category=digital-keyboards" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Digital Keyboards</Link>
+            <Link href="/products?category=synthesizers" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Synthesizers</Link>
+            <Link href="/products?category=amplifiers" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Amplifiers</Link>
+            <Link href="/products?category=audio-interfaces" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Audio Interfaces</Link>
             <Link href="/deals" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors">Deals</Link>
-            <Link href="/compare" className="block px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Compare Instruments
-              </div>
-            </Link>
           </div>
         </div>
       )}
