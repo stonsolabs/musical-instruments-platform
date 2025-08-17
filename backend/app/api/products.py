@@ -166,7 +166,7 @@ async def search_products(
         
         # Build prices array if prices are loaded (for comparison)
         prices = None
-        if hasattr(p, 'prices') and p.prices:
+        if slugs and hasattr(p, 'prices') and p.prices:
             prices = [
                 {
                     "id": pr.id,
