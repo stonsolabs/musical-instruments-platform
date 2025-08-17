@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { SearchAutocompleteProduct } from '@/types';
 import { trackSearch, trackEvent } from '@/components/Analytics';
 import { getApiBaseUrl } from '@/lib/api';
@@ -246,35 +247,55 @@ export default function ProductSearchAutocomplete({
                       )}
                     </div>
 
-                    {/* Best price store */}
+                    {/* Store availability indicator */}
                     <div className="ml-4 text-right">
-                      {suggestion.best_price ? (
+                      {suggestion.prices && suggestion.prices.length > 0 ? (
                         <div>
                           <div className="font-bold text-green-600">
-                            {formatPrice(suggestion.best_price.price, suggestion.best_price.currency)}
+                            {suggestion.prices.length}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Best Price
+                            Store{suggestion.prices.length > 1 ? 's' : ''}
                           </div>
                         </div>
                       ) : (
-                        <div className="text-sm text-gray-500">No price</div>
+                        <div className="text-sm text-gray-500">No stores</div>
                       )}
                     </div>
                   </div>
                   
                                     {/* Store Buttons */}
-                  {suggestion.best_price && (
-                    <div className="mt-2 space-y-1">
-                      <a 
-                        href={suggestion.best_price.affiliate_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="block w-full text-center bg-orange-500 text-white py-1 px-2 rounded text-xs font-medium hover:bg-orange-600 transition-colors"
-                      >
-                        🏆 Buy at {suggestion.best_price.store.name}
-                      </a>
+                  {suggestion.prices && suggestion.prices.length > 0 && (
+                    <div className="mt-2">
+                      <div className="flex flex-wrap gap-1">
+                        {suggestion.prices.slice(0, 3).map((price) => (
+                          <a
+                            key={price.id}
+                            href={price.affiliate_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                                                         className={`flex items-center justify-center px-2 py-1 rounded text-xs font-medium transition-colors ${
+                               price.is_available
+                                 ? 'bg-gray-800 text-white hover:bg-gray-700'
+                                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                             }`}
+                            title={`Buy at ${price.store.name}`}
+                          >
+                            {price.store.name}
+                          </a>
+                        ))}
+                        {suggestion.prices.length > 3 && (
+                          <Link
+                            href={`/products/${suggestion.slug}-${suggestion.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center justify-center px-2 py-1 bg-gray-600 text-white rounded text-xs font-medium hover:bg-gray-700 transition-colors"
+                            title={`View all ${suggestion.prices.length} stores`}
+                          >
+                            +{suggestion.prices.length - 3}
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

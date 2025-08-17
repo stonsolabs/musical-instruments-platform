@@ -100,13 +100,15 @@ class SearchService:
         # Get product IDs for price lookup
         product_ids = [row[0].id for row in rows]
 
-        # Get best prices for these products
+        # Get best prices and all prices for these products
         best_prices = await self._get_best_prices(product_ids, db)
+        all_prices = await self._get_all_prices(product_ids, db)
 
         # Build response
         search_results = []
         for product, brand, category, rank in rows:
             best_price = best_prices.get(product.id)
+            product_prices = all_prices.get(product.id, [])
             
             search_results.append({
                 "id": product.id,
@@ -125,6 +127,7 @@ class SearchService:
                 "avg_rating": float(product.avg_rating) if product.avg_rating else 0.0,
                 "review_count": product.review_count,
                 "best_price": best_price,
+                "prices": product_prices,
                 "rank": float(rank),
                 "search_highlight": self._highlight_search_terms(product.name, query)
             })
@@ -182,6 +185,49 @@ class SearchService:
             }
 
         return best_prices
+
+    async def _get_all_prices(
+        self,
+        product_ids: List[int],
+        db: AsyncSession
+    ) -> Dict[int, List[Dict[str, Any]]]:
+        """
+        Get all prices for a list of products
+        """
+        if not product_ids:
+            return {}
+
+        # Get all prices with store information
+        stmt = (
+            select(ProductPrice, AffiliateStore)
+            .join(AffiliateStore, AffiliateStore.id == ProductPrice.store_id)
+            .where(ProductPrice.product_id.in_(product_ids))
+            .order_by(ProductPrice.product_id, ProductPrice.price)
+        )
+
+        result = await db.execute(stmt)
+        rows = result.all()
+
+        all_prices = {}
+        for price, store in rows:
+            if price.product_id not in all_prices:
+                all_prices[price.product_id] = []
+            
+            all_prices[price.product_id].append({
+                "id": price.id,
+                "price": float(price.price),
+                "currency": price.currency,
+                "store": {
+                    "id": store.id,
+                    "name": store.name,
+                    "slug": store.slug
+                },
+                "affiliate_url": price.affiliate_url,
+                "is_available": price.is_available,
+                "last_checked": price.last_checked.isoformat() if price.last_checked else None
+            })
+
+        return all_prices
 
     def _highlight_search_terms(self, text: str, query: str) -> str:
         """

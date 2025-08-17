@@ -11,7 +11,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center mb-6">
               <Image 
-                src="/logo.png" 
+                src="/logo-white.png" 
                 alt="GetYourMusicGear Logo" 
                 width={140} 
                 height={45}

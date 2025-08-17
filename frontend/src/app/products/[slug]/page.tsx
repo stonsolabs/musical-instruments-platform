@@ -103,11 +103,7 @@ export default function ProductDetailPage() {
     { id: 'specs', label: 'Specifications', icon: '⚙️' },
     { id: 'prices', label: 'Prices', icon: '💰' },
     { id: 'reviews', label: 'Reviews', icon: '⭐' },
-    { id: 'ai-analysis', label: 'AI Analysis', icon: '🤖' },
   ];
-
-  const bestPrice = product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : 
-                   product.msrp_price ? formatPrice(product.msrp_price) : '—';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -181,23 +177,16 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Best Price */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              {/* Store Availability */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-700 font-medium">Best Price</p>
-                    <p className="text-2xl font-bold text-green-600">{bestPrice}</p>
+                    <p className="text-sm text-blue-700 font-medium">Available at</p>
+                    <p className="text-2xl font-bold text-blue-600">{product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
                   </div>
-                  {product.best_price && (
-                    <a 
-                      href={product.best_price.affiliate_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      Buy Now
-                    </a>
-                  )}
+                  <div className="text-right">
+                    <p className="text-sm text-blue-600">Check prices below</p>
+                  </div>
                 </div>
               </div>
 
@@ -412,47 +401,7 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {activeTab === 'ai-analysis' && (
-              <div className="space-y-6">
-                <h3 className="font-semibold text-gray-900 mb-4">AI Analysis</h3>
-                {product.ai_content ? (
-                  <div className="space-y-4">
-                    {product.ai_content.summary && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="font-medium text-blue-900 mb-2">Summary</h4>
-                        <p className="text-blue-800">{product.ai_content.summary}</p>
-                      </div>
-                    )}
-                    {product.ai_content.pros && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 className="font-medium text-green-900 mb-2">Pros</h4>
-                        <p className="text-green-800">{product.ai_content.pros}</p>
-                      </div>
-                    )}
-                    {product.ai_content.cons && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <h4 className="font-medium text-red-900 mb-2">Cons</h4>
-                        <p className="text-red-800">{product.ai_content.cons}</p>
-                      </div>
-                    )}
-                    {product.ai_content.use_cases && (
-                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <h4 className="font-medium text-purple-900 mb-2">Best Use Cases</h4>
-                        <p className="text-purple-800">{product.ai_content.use_cases}</p>
-                      </div>
-                    )}
-                    {product.ai_content.recommendations && (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <h4 className="font-medium text-orange-900 mb-2">Recommendations</h4>
-                        <p className="text-orange-800">{product.ai_content.recommendations}</p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No AI analysis available for this product.</p>
-                )}
-              </div>
-            )}
+
           </div>
         </div>
       </div>

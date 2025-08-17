@@ -97,7 +97,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 text-white">
+      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
@@ -108,8 +108,8 @@ export default function HomePage() {
               <h2 className="text-2xl md:text-3xl font-semibold mb-4">
                 Find your next instrument today
               </h2>
-              <p className="text-xl text-blue-100 mb-8">
-                At MusicEurope you can compare prices on thousands of instruments from Europe's top music stores
+              <p className="text-xl text-gray-200 mb-8">
+                At GetYourMusicGear you can compare prices on thousands of instruments from Europe's top music stores
               </p>
             </div>
 
@@ -155,7 +155,7 @@ export default function HomePage() {
 
               <button
                 onClick={handleCompare}
-                className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
+                className="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
               >
                 Compare {selectedProducts.filter(product => product !== null).length} Instrument{selectedProducts.filter(product => product !== null).length !== 1 ? 's' : ''}
               </button>
@@ -353,22 +353,9 @@ export default function HomePage() {
                   <div className="space-y-2">
                     {product.prices && product.prices.length > 0 ? (
                       <>
-                        {/* Best Price Button (Highlighted) */}
-                        {product.best_price && (
-                          <a 
-                            href={product.best_price.affiliate_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                          >
-                            🏆 Best Price: €{product.best_price.price.toFixed(2)} at {product.best_price.store.name}
-                          </a>
-                        )}
-                        
-                        {/* All Other Store Buttons */}
+                        {/* All Store Buttons */}
                         {product.prices
-                          .filter(price => !product.best_price || price.id !== product.best_price.id)
-                          .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                          .slice(0, 3) // Show max 3 stores to avoid clutter
                           .map((price) => (
                             <a 
                               key={price.id}
@@ -377,7 +364,7 @@ export default function HomePage() {
                               rel="noopener noreferrer"
                               className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
                                 price.is_available 
-                                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
                                   : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                               }`}
                             >
@@ -400,7 +387,7 @@ export default function HomePage() {
                     ) : (
                       <Link 
                         href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
                       >
                         View Details
                       </Link>
@@ -440,22 +427,9 @@ export default function HomePage() {
                 <div className="space-y-2 mt-4">
                   {product.prices && product.prices.length > 0 ? (
                     <>
-                      {/* Best Price Button (Highlighted) */}
-                      {product.best_price && (
-                        <a 
-                          href={product.best_price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                        >
-                          🏆 Best Price: €{product.best_price.price.toFixed(2)} at {product.best_price.store.name}
-                        </a>
-                      )}
-                      
-                      {/* All Other Store Buttons */}
+                      {/* All Store Buttons */}
                       {product.prices
-                        .filter(price => !product.best_price || price.id !== product.best_price.id)
-                        .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                        .slice(0, 3) // Show max 3 stores to avoid clutter
                         .map((price) => (
                           <a 
                             key={price.id}

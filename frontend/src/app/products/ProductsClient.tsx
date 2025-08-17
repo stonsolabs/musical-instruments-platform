@@ -140,7 +140,12 @@ export default function ProductsClient({
 
   const compareSelected = () => {
     if (selectedProducts.length >= 2) {
-      router.push(`/compare?ids=${selectedProducts.join(',')}`);
+      // Get the product slugs for the selected products
+      const selectedProductSlugs = products
+        .filter(product => selectedProducts.includes(product.id))
+        .map(product => product.slug)
+        .join(',');
+      router.push(`/compare?products=${selectedProductSlugs}`);
     }
   };
 
@@ -382,23 +387,9 @@ export default function ProductsClient({
                     <div className="space-y-2">
                       {product.prices && product.prices.length > 0 ? (
                         <>
-                          {/* Best Price Button (Highlighted) */}
-                          {product.best_price && (
-                            <a 
-                              href={product.best_price.affiliate_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
-                            >
-                              🏆 Best Price: {formatPrice(product.best_price.price, product.best_price.currency)} at {product.best_price.store.name}
-                            </a>
-                          )}
-                          
-                          {/* All Other Store Buttons */}
+                          {/* All Store Buttons */}
                           {product.prices
-                            .filter(price => !product.best_price || price.id !== product.best_price.id)
-                            .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                            .slice(0, 3) // Show max 3 stores to avoid clutter
                             .map((price) => (
                               <a 
                                 key={price.id}
@@ -408,7 +399,7 @@ export default function ProductsClient({
                                 onClick={(e) => e.stopPropagation()}
                                 className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
                                   price.is_available 
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                    ? 'bg-gray-800 text-white hover:bg-gray-700' 
                                     : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                 }`}
                               >
@@ -433,7 +424,7 @@ export default function ProductsClient({
                         <Link 
                           href={`/products/${product.slug}-${product.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                          className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
                         >
                           View Details
                         </Link>

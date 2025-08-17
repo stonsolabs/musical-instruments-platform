@@ -103,6 +103,19 @@ export interface SearchAutocompleteProduct {
     };
     affiliate_url: string;
   };
+  prices?: {
+    id: number;
+    price: number;
+    currency: string;
+    store: {
+      id: number;
+      name: string;
+      slug: string;
+    };
+    affiliate_url: string;
+    is_available: boolean;
+    last_checked?: string;
+  }[];
   rank: number;
   search_highlight: string;
 }

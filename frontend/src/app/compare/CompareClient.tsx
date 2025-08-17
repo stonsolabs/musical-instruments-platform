@@ -162,34 +162,18 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     </>
                   )}
                 </div>
-                {product.best_price && (
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-green-600">{bestPrice(product)}</div>
-                    <div className="text-xs text-gray-500">Best Price</div>
-                  </div>
-                )}
+                <div className="text-right">
+                  <div className="text-lg font-bold text-blue-600">{product.prices?.length || 0}</div>
+                  <div className="text-xs text-gray-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
+                </div>
               </div>
 
               {/* Store Buttons - Show all available stores */}
               <div className="space-y-2">
                 {product.prices && product.prices.length > 0 ? (
                   <>
-                    {/* Best Price Button (Highlighted) */}
-                    {product.best_price && (
-                      <a 
-                        href={product.best_price.affiliate_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
-                      >
-                        🏆 Best Price: {formatPrice(product.best_price.price, product.best_price.currency)} at {product.best_price.store.name}
-                      </a>
-                    )}
-                    
-                    {/* All Other Store Buttons */}
-                    {product.prices
-                      .filter(price => !product.best_price || price.id !== product.best_price.id)
-                      .map((price) => (
+                    {/* All Store Buttons */}
+                    {product.prices.map((price) => (
                         <a 
                           key={price.id}
                           href={price.affiliate_url}
@@ -197,7 +181,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           rel="noopener noreferrer"
                           className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
                             price.is_available 
-                              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                              ? 'bg-gray-800 text-white hover:bg-gray-700' 
                               : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                           }`}
                         >
@@ -210,7 +194,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                 ) : (
                   <Link 
                     href={`/products/${product.slug}-${product.id}`}
-                    className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
                   >
                     View Details
                   </Link>
@@ -245,14 +229,14 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       )}
 
-      {/* Ad Space - Middle */}
+      {/* Promo Section */}
       <section className="py-4 mb-8">
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
-          <h3 className="text-lg font-bold mb-2">🎵 Price Alert</h3>
-          <p className="mb-4">Get notified when prices drop on these instruments</p>
-          <button className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-            Set Alert
-          </button>
+        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-6 text-white text-center">
+          <h3 className="text-lg font-bold mb-2">🎉 Special Offers</h3>
+          <p className="mb-4">Exclusive deals and promotions from our partner stores</p>
+          <Link href="/deals" className="inline-block bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            View All Deals
+          </Link>
         </div>
       </section>
 
