@@ -18,6 +18,10 @@ export default function ComparePage() {
   });
   
   const productSlugs = searchParams.products ? searchParams.products.split(',').filter(slug => slug.trim()) : [];
+  
+  // Debug logging
+  console.log('🔍 Compare page - searchParams:', searchParams);
+  console.log('🔍 Compare page - productSlugs:', productSlugs);
 
   // Handle case where no valid product slugs are provided
   if (productSlugs.length < 1) {

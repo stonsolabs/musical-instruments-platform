@@ -350,30 +350,61 @@ export default function HomePage() {
                       <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {product.best_price ? (
-                      <a 
-                        href={product.best_price.affiliate_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                      >
-                        Buy at {product.best_price.store.name}
-                      </a>
+                  <div className="space-y-2">
+                    {product.prices && product.prices.length > 0 ? (
+                      <>
+                        {/* Best Price Button (Highlighted) */}
+                        {product.best_price && (
+                          <a 
+                            href={product.best_price.affiliate_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                          >
+                            🏆 Best Price: €{product.best_price.price.toFixed(2)} at {product.best_price.store.name}
+                          </a>
+                        )}
+                        
+                        {/* All Other Store Buttons */}
+                        {product.prices
+                          .filter(price => !product.best_price || price.id !== product.best_price.id)
+                          .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                          .map((price) => (
+                            <a 
+                              key={price.id}
+                              href={price.affiliate_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                price.is_available 
+                                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                              }`}
+                            >
+                              €{price.price.toFixed(2)} at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </a>
+                          ))
+                        }
+                        
+                        {/* Show more stores link if there are more than 3 */}
+                        {product.prices.length > 3 && (
+                          <Link 
+                            href={`/products/${product.slug}-${product.id}`}
+                            className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                          >
+                            View All {product.prices.length} Stores
+                          </Link>
+                        )}
+                      </>
                     ) : (
                       <Link 
                         href={`/products/${product.slug}-${product.id}`}
-                        className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
                       >
                         View Details
                       </Link>
                     )}
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      View Details
-                    </Link>
                   </div>
                 </div>
               ))}
@@ -406,30 +437,61 @@ export default function HomePage() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
                 </div>
-                <div className="flex gap-2 mt-4">
-                  {product.best_price ? (
-                    <a 
-                      href={product.best_price.affiliate_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                    >
-                      Buy at {product.best_price.store.name}
-                    </a>
+                <div className="space-y-2 mt-4">
+                  {product.prices && product.prices.length > 0 ? (
+                    <>
+                      {/* Best Price Button (Highlighted) */}
+                      {product.best_price && (
+                        <a 
+                          href={product.best_price.affiliate_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                        >
+                          🏆 Best Price: €{product.best_price.price.toFixed(2)} at {product.best_price.store.name}
+                        </a>
+                      )}
+                      
+                      {/* All Other Store Buttons */}
+                      {product.prices
+                        .filter(price => !product.best_price || price.id !== product.best_price.id)
+                        .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                        .map((price) => (
+                          <a 
+                            key={price.id}
+                            href={price.affiliate_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                              price.is_available 
+                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            }`}
+                          >
+                            €{price.price.toFixed(2)} at {price.store.name}
+                            {!price.is_available && ' (Out of Stock)'}
+                          </a>
+                        ))
+                      }
+                      
+                      {/* Show more stores link if there are more than 3 */}
+                      {product.prices.length > 3 && (
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                        >
+                          View All {product.prices.length} Stores
+                        </Link>
+                      )}
+                    </>
                   ) : (
                     <Link 
                       href={`/products/${product.slug}-${product.id}`}
-                      className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       View Details
                     </Link>
                   )}
-                  <Link 
-                    href={`/products/${product.slug}-${product.id}`}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    View Details
-                  </Link>
                 </div>
               </div>
             ))}

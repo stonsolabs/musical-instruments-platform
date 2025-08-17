@@ -5,7 +5,6 @@ import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
 
-
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
   try {
@@ -28,7 +27,7 @@ interface CompareClientProps {
 export default function CompareClient({ productSlugs, productIds, initialData }: CompareClientProps) {
   const [data, setData] = useState<ComparisonResponse | null>(initialData);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(!initialData && productIds.length >= 1);
+  const [loading, setLoading] = useState<boolean>(!initialData && productSlugs.length >= 1);
   const [activeTab, setActiveTab] = useState('specs');
 
   // Load data if not provided by server
@@ -37,12 +36,18 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       const loadData = async () => {
         try {
           // Fetch products directly using slugs
+          console.log('🔍 Fetching products with slugs:', productSlugs);
           const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
+          console.log('📡 Response status:', response.status);
+          
           if (!response.ok) {
-            throw new Error('Failed to fetch products');
+            const errorText = await response.text();
+            console.error('❌ API Error:', errorText);
+            throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
           }
           
           const productsData = await response.json();
+          console.log('✅ Products data received:', productsData);
           
           if (productsData.products.length === 0) {
             throw new Error('No products found for the provided slugs');
@@ -160,32 +165,56 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                 {product.best_price && (
                   <div className="text-right">
                     <div className="text-lg font-bold text-green-600">{bestPrice(product)}</div>
-                    <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
+                    <div className="text-xs text-gray-500">Best Price</div>
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-2">
-                {product.best_price ? (
-                  <a 
-                    href={product.best_price.affiliate_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
-                  >
-                    Buy at {product.best_price.store.name}
-                  </a>
+              {/* Store Buttons - Show all available stores */}
+              <div className="space-y-2">
+                {product.prices && product.prices.length > 0 ? (
+                  <>
+                    {/* Best Price Button (Highlighted) */}
+                    {product.best_price && (
+                      <a 
+                        href={product.best_price.affiliate_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
+                      >
+                        🏆 Best Price: {formatPrice(product.best_price.price, product.best_price.currency)} at {product.best_price.store.name}
+                      </a>
+                    )}
+                    
+                    {/* All Other Store Buttons */}
+                    {product.prices
+                      .filter(price => !product.best_price || price.id !== product.best_price.id)
+                      .map((price) => (
+                        <a 
+                          key={price.id}
+                          href={price.affiliate_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                            price.is_available 
+                              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                          }`}
+                        >
+                          {formatPrice(price.price, price.currency)} at {price.store.name}
+                          {!price.is_available && ' (Out of Stock)'}
+                        </a>
+                      ))
+                    }
+                  </>
                 ) : (
                   <Link 
                     href={`/products/${product.slug}-${product.id}`}
-                    className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                   >
                     View Details
                   </Link>
                 )}
-                <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                  Remove
-                </button>
               </div>
             </div>
           </div>
@@ -366,9 +395,14 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                             href={price.affiliate_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                            className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                              price.is_available 
+                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            }`}
                           >
                             Buy at {price.store.name}
+                            {!price.is_available && ' (Out of Stock)'}
                           </a>
                         </div>
                       ))
@@ -442,36 +476,16 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Add More Instruments to Compare</h3>
           <div className="max-w-2xl">
-            <SearchAutocomplete 
-              placeholder="Search for more instruments to add to comparison..."
-              className="w-full"
-              onSearch={(query) => {
-                // Navigate to products page with search query
-                window.location.href = `/products?q=${encodeURIComponent(query)}`;
-              }}
-            />
-            <p className="text-sm text-gray-500 mt-3">
-              Search for instruments and click on results to view details and add to your comparison.
+            <p className="text-gray-600 mb-4">
+              Want to compare more instruments? Search and add them to your comparison.
             </p>
-          </div>
-          
-          <div className="mt-6 flex flex-col sm:flex-row gap-4">
-            <Link 
+            <Link
               href="/products"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+              className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
             >
-              <span>Browse All Products</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </Link>
-            <Link 
-              href="/products?category=electric"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium"
-            >
-              <span>Popular Categories</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              Browse All Products
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
           </div>

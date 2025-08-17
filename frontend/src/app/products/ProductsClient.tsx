@@ -328,57 +328,119 @@ export default function ProductsClient({
           <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
-                <Link 
-                  key={product.id} 
-                  href={`/products/${product.slug}-${product.id}`}
-                  className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
-                >
-                  <div className="relative">
-                    <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                      <span className="text-gray-400 text-5xl">🎸</span>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleProductSelection(product.id);
-                      }}
-                      className={`absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        selectedProducts.includes(product.id)
-                          ? 'bg-blue-600 border-blue-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-400 hover:border-blue-600'
-                      }`}
-                    >
-                      {selectedProducts.includes(product.id) && (
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </button>
-                  </div>
-                  
-                  <div className="p-6">
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
+                <div key={product.id} className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300">
+                  <Link href={`/products/${product.slug}-${product.id}`}>
+                    <div className="relative">
+                      <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                        <span className="text-gray-400 text-5xl">🎸</span>
                       </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {product.avg_rating > 0 && (
-                            <>
-                              <span className="text-yellow-500">★</span>
-                              <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
-                              <span className="text-sm text-gray-500">({product.review_count})</span>
-                            </>
-                          )}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleProductSelection(product.id);
+                        }}
+                        className={`absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          selectedProducts.includes(product.id)
+                            ? 'bg-blue-600 border-blue-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-400 hover:border-blue-600'
+                        }`}
+                      >
+                        {selectedProducts.includes(product.id) && (
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    
+                    <div className="p-6">
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
+                          <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                         </div>
-                        <span className="text-sm text-gray-600">{product.category.name}</span>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {product.avg_rating > 0 && (
+                              <>
+                                <span className="text-yellow-500">★</span>
+                                <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
+                                <span className="text-sm text-gray-500">({product.review_count})</span>
+                              </>
+                            )}
+                          </div>
+                          <span className="text-sm text-gray-600">{product.category.name}</span>
+                        </div>
                       </div>
                     </div>
+                  </Link>
+                  
+                  {/* Store Buttons Section */}
+                  <div className="px-6 pb-6">
+                    <div className="space-y-2">
+                      {product.prices && product.prices.length > 0 ? (
+                        <>
+                          {/* Best Price Button (Highlighted) */}
+                          {product.best_price && (
+                            <a 
+                              href={product.best_price.affiliate_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
+                            >
+                              🏆 Best Price: {formatPrice(product.best_price.price, product.best_price.currency)} at {product.best_price.store.name}
+                            </a>
+                          )}
+                          
+                          {/* All Other Store Buttons */}
+                          {product.prices
+                            .filter(price => !product.best_price || price.id !== product.best_price.id)
+                            .slice(0, 2) // Show max 2 additional stores to avoid clutter
+                            .map((price) => (
+                              <a 
+                                key={price.id}
+                                href={price.affiliate_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                  price.is_available 
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                }`}
+                              >
+                                {formatPrice(price.price, price.currency)} at {price.store.name}
+                                {!price.is_available && ' (Out of Stock)'}
+                              </a>
+                            ))
+                          }
+                          
+                          {/* Show more stores link if there are more than 3 */}
+                          {product.prices.length > 3 && (
+                            <Link 
+                              href={`/products/${product.slug}-${product.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                            >
+                              View All {product.prices.length} Stores
+                            </Link>
+                          )}
+                        </>
+                      ) : (
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          View Details
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
 

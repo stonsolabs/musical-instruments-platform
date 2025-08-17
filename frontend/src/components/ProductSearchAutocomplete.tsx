@@ -254,7 +254,7 @@ export default function ProductSearchAutocomplete({
                             {formatPrice(suggestion.best_price.price, suggestion.best_price.currency)}
                           </div>
                           <div className="text-xs text-gray-500">
-                            at {suggestion.best_price.store.name}
+                            Best Price
                           </div>
                         </div>
                       ) : (
@@ -262,6 +262,21 @@ export default function ProductSearchAutocomplete({
                       )}
                     </div>
                   </div>
+                  
+                                    {/* Store Buttons */}
+                  {suggestion.best_price && (
+                    <div className="mt-2 space-y-1">
+                      <a 
+                        href={suggestion.best_price.affiliate_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="block w-full text-center bg-orange-500 text-white py-1 px-2 rounded text-xs font-medium hover:bg-orange-600 transition-colors"
+                      >
+                        🏆 Buy at {suggestion.best_price.store.name}
+                      </a>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
