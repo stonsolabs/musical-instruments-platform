@@ -6,6 +6,15 @@ import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
 
+// Inline utility functions
+const formatPrice = (price: number, currency: string = 'EUR'): string => {
+  try {
+    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
+  } catch {
+    return `${currency} ${price.toFixed(2)}`;
+  }
+};
+
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';
 
@@ -212,9 +221,9 @@ export default function HomePage() {
                 color: 'from-green-500 to-green-600'
               },
               { 
-                name: 'Audio Interfaces', 
+                name: 'Studio and Recording Equipment', 
                 description: 'Professional audio recording gear',
-                href: '/products?category=audio-interfaces',
+                href: '/products?category=studio-and-recording-equipment',
                 image: '/images/audio-interfaces.jpg',
                 color: 'from-indigo-500 to-indigo-600'
               },
@@ -232,7 +241,7 @@ export default function HomePage() {
                     {category.name === 'Digital Keyboards' && '🎹'}
                     {category.name === 'Synthesizers' && '🎹'}
                     {category.name === 'Amplifiers' && '🔊'}
-                    {category.name === 'Audio Interfaces' && '🎛️'}
+                    {category.name === 'Studio and Recording Equipment' && '🎛️'}
                   </div>
                 </div>
                 <div className="p-6">
@@ -368,7 +377,7 @@ export default function HomePage() {
                                   : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                               }`}
                             >
-                              €{price.price.toFixed(2)} at {price.store.name}
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
                             </a>
                           ))
@@ -384,14 +393,43 @@ export default function HomePage() {
                           </Link>
                         )}
                       </>
-                    ) : (
+                                      ) : (
+                    <>
+                      {/* Default affiliate store links when no prices available */}
+                      <div className="space-y-2 mb-2">
+                        <a 
+                          href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
+                        >
+                          Check on Amazon
+                        </a>
+                        <a 
+                          href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                        >
+                          Check on Thomann
+                        </a>
+                        <a 
+                          href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                        >
+                          Check on Gear4Music
+                        </a>
+                      </div>
                       <Link 
                         href={`/products/${product.slug}-${product.id}`}
                         className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
                       >
                         View Details
                       </Link>
-                    )}
+                    </>
+                  )}
                   </div>
                 </div>
               ))}
@@ -442,7 +480,7 @@ export default function HomePage() {
                                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                             }`}
                           >
-                            €{price.price.toFixed(2)} at {price.store.name}
+                            {formatPrice(price.price, price.currency)} at {price.store.name}
                             {!price.is_available && ' (Out of Stock)'}
                           </a>
                         ))

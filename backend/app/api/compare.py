@@ -38,11 +38,13 @@ async def compare_products(
     for p in products:
         prices = [
             {
-                "store": {"id": pr.store_id},
+                "id": pr.id,
+                "store": {"id": pr.store_id, "name": pr.store.name, "slug": pr.store.slug},
                 "price": float(pr.price),
                 "currency": pr.currency,
                 "affiliate_url": pr.affiliate_url,
                 "last_checked": pr.last_checked.isoformat(),
+                "is_available": pr.is_available,
             }
             for pr in p.prices
             if pr.is_available

@@ -167,7 +167,7 @@ INSERT INTO products (sku, name, slug, brand_id, category_id, description, msrp_
  'Steinberg UR22C USB Audio Interface', 
  'steinberg-ur22c-usb-audio-interface',
  (SELECT id FROM brands WHERE slug = 'steinberg'),
- (SELECT id FROM categories WHERE slug = 'audio-interfaces'),
+ (SELECT id FROM categories WHERE slug = 'studio-and-recording-equipment'),
  '2x2 USB-C audio interface with premium D-PRE preamps.',
  189.00,
  '{"inputs": "2 x XLR/TRS combo", "outputs": "2 x TRS", "sample_rate": "192 kHz", "bit_depth": "32-bit", "connectivity": "USB-C", "software": "Cubase AI included"}',

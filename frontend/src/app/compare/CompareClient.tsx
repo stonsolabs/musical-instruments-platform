@@ -186,12 +186,41 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     }
                   </>
                 ) : (
-                  <Link 
-                    href={`/products/${product.slug}-${product.id}`}
-                    className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-                  >
-                    View Details
-                  </Link>
+                  <>
+                    {/* Default affiliate store links when no prices available */}
+                    <div className="space-y-2 mb-2">
+                      <a 
+                        href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
+                      >
+                        Check on Amazon
+                      </a>
+                      <a 
+                        href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        Check on Thomann
+                      </a>
+                      <a 
+                        href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                      >
+                        Check on Gear4Music
+                      </a>
+                    </div>
+                    <Link 
+                      href={`/products/${product.slug}-${product.id}`}
+                      className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                    >
+                      View Details
+                    </Link>
+                  </>
                 )}
               </div>
             </div>
@@ -298,10 +327,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   ))}
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-6 font-medium text-gray-700">Available Stores</td>
+                  <td className="py-4 px-6 font-medium text-gray-700">Best Price</td>
                   {data.products.map((product) => (
                     <td key={product.id} className="py-4 px-6 text-gray-900">
-                      {product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}
+                      {product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : '—'}
                     </td>
                   ))}
                 </tr>
@@ -383,90 +412,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           </div>
         </div>
       </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900 w-1/4 text-lg">Specification</th>
-                    {data.products.map((product) => (
-                      <th key={product.id} className="text-left py-4 px-6 font-semibold text-gray-900 text-lg">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">🎸</span>
-                          <div>
-                            <div className="font-bold">{product.brand.name}</div>
-                            <div className="text-sm font-normal text-gray-600">{product.name}</div>
-                          </div>
-                        </div>
-                      </th>
-                    ))}
-                    {isSingleProduct && (
-                      <th className="text-left py-4 px-6 font-semibold text-gray-400 text-lg">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">➕</span>
-                          <div>
-                            <div className="font-bold text-gray-400">Add Another</div>
-                            <div className="text-sm font-normal text-gray-400">For comparison</div>
-                          </div>
-                        </div>
-                      </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Basic Product Info */}
-                  <tr className="border-b border-gray-100 bg-gray-50">
-                    <td className="py-4 px-6 font-medium text-gray-700">Brand</td>
-                    {data.products.map((product) => (
-                      <td key={product.id} className="py-4 px-6 text-gray-900">{product.brand.name}</td>
-                    ))}
-                    {isSingleProduct && (
-                      <td className="py-4 px-6 text-gray-400">—</td>
-                    )}
-                  </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 font-medium text-gray-700">Category</td>
-                    {data.products.map((product) => (
-                      <td key={product.id} className="py-4 px-6 text-gray-900">{product.category.name}</td>
-                    ))}
-                  </tr>
-                  <tr className="border-b border-gray-100 bg-gray-50">
-                    <td className="py-4 px-6 font-medium text-gray-700">Average Rating</td>
-                    {data.products.map((product) => (
-                      <td key={product.id} className="py-4 px-6 text-gray-900">
-                        {product.avg_rating > 0 ? (
-                          <div className="flex items-center gap-1">
-                            <span className="text-yellow-500">★</span>
-                            <span>{formatRating(product.avg_rating)}</span>
-                          </div>
-                        ) : '—'}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 font-medium text-gray-700">Best Price</td>
-                    {data.products.map((product) => (
-                      <td key={product.id} className="py-4 px-6 text-gray-900">
-                        {product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : '—'}
-                      </td>
-                    ))}
-                  </tr>
 
-                  {/* Specifications */}
-                  {data.common_specs.map((spec, index) => (
-                    <tr key={spec} className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                      <td className="py-4 px-6 font-medium text-gray-700 capitalize">
-                        {spec.replace(/_/g, ' ')}
-                      </td>
-                      {data.products.map((product) => (
-                        <td key={product.id} className="py-4 px-6 text-gray-900">
-                          {String(data.comparison_matrix[spec]?.[String(product.id)] ?? 'N/A')}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
 
 
       {/* Add more to comparison */}

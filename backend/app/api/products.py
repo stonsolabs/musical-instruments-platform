@@ -17,17 +17,24 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 @router.get("")
 async def search_products(
-    q: Optional[str] = Query(None),
+    q: Optional[str] = Query(None, alias="query"),
+    query: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     brand: Optional[str] = Query(None),
     slugs: Optional[str] = Query(None),
-    min_price: Optional[float] = Query(None),
-    max_price: Optional[float] = Query(None),
+    min_price: Optional[float] = Query(None, alias="price_min"),
+    max_price: Optional[float] = Query(None, alias="price_max"),
+    price_min: Optional[float] = Query(None),
+    price_max: Optional[float] = Query(None),
     sort_by: str = Query("name"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
+    # Handle parameter aliases
+    search_query = q or query
+    min_price_filter = min_price or price_min
+    max_price_filter = max_price or price_max
     offset = (page - 1) * limit
 
     base_stmt = (
@@ -37,8 +44,8 @@ async def search_products(
     )
 
     # Filters
-    if q:
-        like_expr = f"%{q.lower()}%"
+    if search_query:
+        like_expr = f"%{search_query.lower()}%"
         base_stmt = base_stmt.where(func.lower(Product.name).like(like_expr))
     if category:
         from ..models import Category
@@ -54,9 +61,9 @@ async def search_products(
         if slug_list:
             base_stmt = base_stmt.where(Product.slug.in_(slug_list))
 
-    # Sorting
-    if sort_by == "price":
-        # Sort by best available price
+    # Price filtering
+    if min_price_filter is not None or max_price_filter is not None:
+        # Create subquery for best prices
         price_subq = (
             select(
                 ProductPrice.product_id,
@@ -66,13 +73,39 @@ async def search_products(
             .group_by(ProductPrice.product_id)
             .subquery()
         )
-        base_stmt = (
-            base_stmt.outerjoin(price_subq, price_subq.c.product_id == Product.id).order_by(
-                asc(price_subq.c.best_price.nullslast())
+        base_stmt = base_stmt.outerjoin(price_subq, price_subq.c.product_id == Product.id)
+        
+        if min_price_filter is not None:
+            base_stmt = base_stmt.where(price_subq.c.best_price >= min_price_filter)
+        if max_price_filter is not None:
+            base_stmt = base_stmt.where(price_subq.c.best_price <= max_price_filter)
+
+    # Sorting
+    if sort_by == "price":
+        # Sort by best available price
+        if min_price_filter is not None or max_price_filter is not None:
+            # Price subquery already joined above
+            base_stmt = base_stmt.order_by(asc(price_subq.c.best_price.nullslast()))
+        else:
+            price_subq = (
+                select(
+                    ProductPrice.product_id,
+                    func.min(ProductPrice.price).label("best_price"),
+                )
+                .where(ProductPrice.is_available.is_(True))
+                .group_by(ProductPrice.product_id)
+                .subquery()
             )
-        )
+            base_stmt = (
+                base_stmt.outerjoin(price_subq, price_subq.c.product_id == Product.id).order_by(
+                    asc(price_subq.c.best_price.nullslast())
+                )
+            )
     elif sort_by == "rating":
         base_stmt = base_stmt.order_by(desc(Product.avg_rating))
+    elif sort_by == "popularity":
+        # Sort by review count as a proxy for popularity
+        base_stmt = base_stmt.order_by(desc(Product.review_count))
     else:
         base_stmt = base_stmt.order_by(asc(Product.name))
 
@@ -84,6 +117,10 @@ async def search_products(
     stmt = base_stmt.offset(offset).limit(limit)
     result = await db.execute(stmt)
     products: List[Product] = result.scalars().unique().all()
+    
+    # Debug logging
+    print(f"🔍 Products API - Filters: query='{search_query}', category='{category}', brand='{brand}', price_min={min_price_filter}, price_max={max_price_filter}, sort_by='{sort_by}'")
+    print(f"📊 Products API - Results: {len(products)} products, total={total}, page={page}, limit={limit}")
 
     # Compute best price per product
     product_ids = [p.id for p in products]
@@ -165,11 +202,11 @@ async def search_products(
         "filters_applied": {
             k: v
             for k, v in {
-                "q": q,
+                "query": search_query,
                 "category": category,
                 "brand": brand,
-                "min_price": min_price,
-                "max_price": max_price,
+                "price_min": min_price_filter,
+                "price_max": max_price_filter,
                 "sort_by": sort_by,
             }.items()
             if v not in (None, "")

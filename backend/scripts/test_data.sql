@@ -85,7 +85,7 @@ INSERT INTO categories (name, slug, description, is_active, created_at) VALUES
 ('Digital Keyboards', 'digital-keyboards', 'Digital pianos and keyboards', TRUE, CURRENT_TIMESTAMP),
 ('Synthesizers', 'synthesizers', 'Analog and digital synthesizers', TRUE, CURRENT_TIMESTAMP),
 ('Amplifiers', 'amplifiers', 'Guitar and bass amplifiers', TRUE, CURRENT_TIMESTAMP),
-('Audio Interfaces', 'audio-interfaces', 'Recording interfaces and equipment', TRUE, CURRENT_TIMESTAMP)
+('Studio and Recording Equipment', 'studio-and-recording-equipment', 'Recording interfaces and equipment', TRUE, CURRENT_TIMESTAMP)
 ON CONFLICT (slug) DO NOTHING;
 
 -- Affiliate Stores

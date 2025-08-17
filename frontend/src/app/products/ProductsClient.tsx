@@ -77,10 +77,12 @@ export default function ProductsClient({
     setLoading(true);
     setError(null);
     try {
+      console.log('🔍 Loading products with filters:', currentFilters);
       const data = await apiClient.searchProducts({
         ...currentFilters,
         limit: 20,
       });
+      console.log('✅ Products loaded:', data.products.length, 'products');
       setProducts(data.products);
       setPagination(data.pagination);
     } catch (e) {
@@ -121,13 +123,14 @@ export default function ProductsClient({
   const updateFilters = (newFilters: Partial<typeof currentFilters>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
+      if (value !== undefined && value !== null && value !== '') {
         params.set(key, value.toString());
       } else {
         params.delete(key);
       }
     });
     params.set('page', '1'); // Reset to first page
+    console.log('🔍 Updating filters:', newFilters, 'New URL:', `/products?${params.toString()}`);
     router.push(`/products?${params.toString()}`);
   };
 
@@ -140,7 +143,7 @@ export default function ProductsClient({
   };
 
   const compareSelected = () => {
-    if (selectedProducts.length >= 2) {
+    if (selectedProducts.length >= 1) {
       // Get the product slugs for the selected products
       const selectedProductSlugs = products
         .filter(product => selectedProducts.includes(product.id))
@@ -211,20 +214,20 @@ export default function ProductsClient({
 
           {/* Price Range */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Price Range (€)</label>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="number"
                 placeholder="Min"
                 value={currentFilters.price_min}
-                onChange={(e) => updateFilters({ price_min: e.target.value })}
+                onChange={(e) => updateFilters({ price_min: e.target.value || undefined })}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <input
                 type="number"
                 placeholder="Max"
                 value={currentFilters.price_max}
-                onChange={(e) => updateFilters({ price_max: e.target.value })}
+                onChange={(e) => updateFilters({ price_max: e.target.value || undefined })}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -247,10 +250,13 @@ export default function ProductsClient({
 
           {/* Clear Filters */}
           <button
-            onClick={() => router.push('/products')}
+            onClick={() => {
+              setSearchQuery('');
+              router.push('/products');
+            }}
             className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Clear Filters
+            Clear All Filters
           </button>
         </div>
       </div>
@@ -260,12 +266,16 @@ export default function ProductsClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
+            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
             <p className="text-gray-600 mt-1">
               {pagination.total} products found
+              {Object.keys(currentFilters).some(key => currentFilters[key as keyof typeof currentFilters]) && (
+                <span className="ml-2 text-sm text-blue-600">
+                  (Filters applied)
+                </span>
+              )}
             </p>
           </div>
-          
-
         </div>
 
         {/* Category Disclaimer */}
@@ -413,13 +423,45 @@ export default function ProductsClient({
                           )}
                         </>
                       ) : (
-                        <Link 
-                          href={`/products/${product.slug}-${product.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-                        >
-                          View Details
-                        </Link>
+                        <>
+                          {/* Default affiliate store links when no prices available */}
+                          <div className="space-y-2 mb-2">
+                            <a 
+                              href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
+                            >
+                              Check on Amazon
+                            </a>
+                            <a 
+                              href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                              Check on Thomann
+                            </a>
+                            <a 
+                              href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                            >
+                              Check on Gear4Music
+                            </a>
+                          </div>
+                          <Link 
+                            href={`/products/${product.slug}-${product.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                          >
+                            View Details
+                          </Link>
+                        </>
                       )}
                     </div>
                   </div>
@@ -486,7 +528,7 @@ export default function ProductsClient({
       <FloatingCompareButton
         selectedCount={selectedProducts.length}
         onCompare={compareSelected}
-        isVisible={selectedProducts.length >= 2}
+        isVisible={selectedProducts.length >= 1}
       />
     </div>
   );

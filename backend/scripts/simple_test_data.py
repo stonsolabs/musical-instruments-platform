@@ -112,7 +112,7 @@ async def insert_test_data(conn):
         ("Digital Keyboards", "digital-keyboards", "Digital pianos and keyboards"),
         ("Synthesizers", "synthesizers", "Analog and digital synthesizers"),
         ("Amplifiers", "amplifiers", "Guitar and bass amplifiers"),
-        ("Audio Interfaces", "audio-interfaces", "Recording interfaces and equipment"),
+        ("Studio and Recording Equipment", "studio-and-recording-equipment", "Recording interfaces and equipment"),
     ]
     
     for name, slug, desc in categories:

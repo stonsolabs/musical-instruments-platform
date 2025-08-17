@@ -86,7 +86,7 @@ export default function DealsPage() {
       salePrice: "€119",
       discount: "20%",
       store: "Gear4Music",
-      category: "Audio Interfaces",
+      category: "Studio and Recording Equipment",
       image: "/images/focusrite-scarlett.jpg",
       affiliateUrl: "https://www.gear4music.com/focusrite_scarlett_2i2.html",
       validUntil: "Jan 28, 2025",

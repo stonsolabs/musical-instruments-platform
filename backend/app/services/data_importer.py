@@ -43,7 +43,7 @@ class DataImporter:
             {"name": "Digital Keyboards", "slug": "digital-keyboards", "description": "Digital pianos and keyboards"},
             {"name": "Synthesizers", "slug": "synthesizers", "description": "Analog and digital synthesizers"},
             {"name": "Amplifiers", "slug": "amplifiers", "description": "Guitar and bass amplifiers"},
-            {"name": "Audio Interfaces", "slug": "audio-interfaces", "description": "Recording interfaces and equipment"},
+            {"name": "Studio and Recording Equipment", "slug": "studio-and-recording-equipment", "description": "Recording interfaces and equipment"},
             {"name": "Microphones", "slug": "microphones", "description": "Studio and live microphones"},
             {"name": "Headphones", "slug": "headphones", "description": "Studio and consumer headphones"},
         ]
