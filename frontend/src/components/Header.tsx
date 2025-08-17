@@ -9,58 +9,57 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               <Image 
                 src="/logo.png" 
                 alt="GetYourMusicGear Logo" 
-                width={120} 
-                height={40}
-                className="h-8 w-auto"
+                width={180} 
+                height={60}
+                className="h-12 w-auto"
               />
             </Link>
           </div>
 
           {/* Search Bar */}
-          <div className="hidden md:block flex-1 max-w-2xl mx-8">
+          <div className="hidden md:block flex-1 max-w-xl mx-12">
             <SearchAutocomplete 
-              placeholder="Search guitars, pianos, drums..."
+              placeholder="Search instruments..."
               className="w-full"
             />
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-10">
             <div className="relative group">
-              <button className="flex items-center text-gray-700 hover:text-gray-900 py-2 transition-colors">
-                All Categories
+              <button className="flex items-center text-gray-600 hover:text-gray-900 py-2 transition-colors text-sm font-medium">
+                Categories
                 <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className="absolute top-full left-0 w-64 bg-white shadow-lg border rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="p-4">
-                  <div className="text-sm font-medium text-gray-900 mb-2">Categories</div>
-                  <div className="space-y-1 text-sm">
-                    <Link href="/products?category=electric-guitars" className="block hover:text-blue-600 transition-colors">Electric Guitars</Link>
-                    <Link href="/products?category=acoustic-guitars" className="block hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
-                    <Link href="/products?category=digital-keyboards" className="block hover:text-blue-600 transition-colors">Digital Keyboards</Link>
-                    <Link href="/products?category=synthesizers" className="block hover:text-blue-600 transition-colors">Synthesizers</Link>
-                    <Link href="/products?category=amplifiers" className="block hover:text-blue-600 transition-colors">Amplifiers</Link>
-                    <Link href="/products?category=audio-interfaces" className="block hover:text-blue-600 transition-colors">Audio Interfaces</Link>
+              <div className="absolute top-full left-0 w-72 bg-white border border-gray-100 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-sm">
+                <div className="p-6">
+                  <div className="text-sm font-semibold text-gray-900 mb-4">Shop by Category</div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <Link href="/products?category=electric-guitars" className="block hover:text-gray-900 transition-colors text-gray-600">Electric Guitars</Link>
+                    <Link href="/products?category=acoustic-guitars" className="block hover:text-gray-900 transition-colors text-gray-600">Acoustic Guitars</Link>
+                    <Link href="/products?category=digital-keyboards" className="block hover:text-gray-900 transition-colors text-gray-600">Digital Keyboards</Link>
+                    <Link href="/products?category=synthesizers" className="block hover:text-gray-900 transition-colors text-gray-600">Synthesizers</Link>
+                    <Link href="/products?category=amplifiers" className="block hover:text-gray-900 transition-colors text-gray-600">Amplifiers</Link>
+                    <Link href="/products?category=audio-interfaces" className="block hover:text-gray-900 transition-colors text-gray-600">Audio Interfaces</Link>
                   </div>
                 </div>
               </div>
             </div>
 
-            <Link href="/deals" className="text-gray-700 hover:text-gray-900 transition-colors">Deals</Link>
-            <Link href="/blog" className="text-gray-700 hover:text-gray-900 transition-colors">Blog</Link>
-            <Link href="/how-to-use" className="text-gray-700 hover:text-gray-900 transition-colors">How to use</Link>
-            <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About us</Link>
+            <Link href="/deals" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Deals</Link>
+            <Link href="/blog" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Blog</Link>
+            <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">About</Link>
           </nav>
 
           {/* Right side */}

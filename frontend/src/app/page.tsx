@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
+import ControlledSearchAutocomplete from '@/components/ControlledSearchAutocomplete';
 
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';
@@ -124,13 +125,17 @@ export default function HomePage() {
                 {searchItems.map((item, index) => (
                   <div key={index} className="relative">
                     <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        placeholder={`Search instrument ${index + 1}`}
-                        value={item}
-                        onChange={(e) => updateSearchItem(index, e.target.value)}
-                        className="flex-1 px-4 py-3 rounded-lg border-0 bg-white/90 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all"
-                      />
+                      <div className="flex-1">
+                        <ControlledSearchAutocomplete
+                          placeholder={`Search instrument ${index + 1}`}
+                          className="w-full"
+                          value={item}
+                          onChange={(query) => updateSearchItem(index, query)}
+                          onSearch={(query) => {
+                            updateSearchItem(index, query);
+                          }}
+                        />
+                      </div>
                       {searchItems.length > 2 && (
                         <button
                           onClick={() => removeSearchField(index)}
@@ -219,13 +224,13 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
             {[
-              { name: 'Electric Guitars', icon: '', href: '/products?category=electric' },
-              { name: 'Acoustic Guitars', icon: '', href: '/products?category=acoustic' },
-              { name: 'Bass Guitars', icon: '', href: '/products?category=bass' },
-              { name: 'Drums', icon: '', href: '/products?category=drums' },
-              { name: 'Keyboards', icon: '', href: '/products?category=keyboards' },
-              { name: 'Amplifiers', icon: '', href: '/products?category=amplifiers' },
-              { name: 'Accessories', icon: '', href: '/products?category=accessories' },
+              { name: 'Electric Guitars', icon: '🎸', href: '/products?category=electric-guitars' },
+              { name: 'Acoustic Guitars', icon: '🎸', href: '/products?category=acoustic-guitars' },
+              { name: 'Digital Keyboards', icon: '🎹', href: '/products?category=digital-keyboards' },
+              { name: 'Synthesizers', icon: '🎹', href: '/products?category=synthesizers' },
+              { name: 'Amplifiers', icon: '🔊', href: '/products?category=amplifiers' },
+              { name: 'Audio Interfaces', icon: '🎛️', href: '/products?category=audio-interfaces' },
+              { name: 'All Instruments', icon: '🎵', href: '/products' },
             ].map((category) => (
               <Link
                 key={category.name}

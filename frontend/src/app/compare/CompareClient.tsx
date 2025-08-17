@@ -105,10 +105,16 @@ export default function CompareClient({ productIds, initialData }: CompareClient
 
   return (
     <>
-      {/* Product Header Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {data.products.map((product) => (
+      {/* Product Header Cards - Aligned with specs table */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
+        {data.products.map((product, index) => (
           <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {/* VS indicator between cards */}
+            {index === 0 && data.products.length > 1 && (
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-md">
+                <span className="text-gray-600 font-semibold text-sm">VS</span>
+              </div>
+            )}
             <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center">
               <span className="text-gray-400 text-4xl">🎸</span>
             </div>
@@ -227,10 +233,16 @@ export default function CompareClient({ productIds, initialData }: CompareClient
               <table className="min-w-full">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/4">Specification</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 w-1/4 text-lg">Specification</th>
                     {data.products.map((product) => (
-                      <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
-                        {product.name}
+                      <th key={product.id} className="text-left py-4 px-6 font-semibold text-gray-900 text-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">🎸</span>
+                          <div>
+                            <div className="font-bold">{product.brand.name}</div>
+                            <div className="text-sm font-normal text-gray-600">{product.name}</div>
+                          </div>
+                        </div>
                       </th>
                     ))}
                   </tr>
@@ -238,21 +250,21 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                 <tbody>
                   {/* Basic Product Info */}
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    <td className="py-3 px-4 font-medium text-gray-700">Brand</td>
+                    <td className="py-4 px-6 font-medium text-gray-700">Brand</td>
                     {data.products.map((product) => (
-                      <td key={product.id} className="py-3 px-4 text-gray-900">{product.brand.name}</td>
+                      <td key={product.id} className="py-4 px-6 text-gray-900">{product.brand.name}</td>
                     ))}
                   </tr>
                   <tr className="border-b border-gray-100">
-                    <td className="py-3 px-4 font-medium text-gray-700">Category</td>
+                    <td className="py-4 px-6 font-medium text-gray-700">Category</td>
                     {data.products.map((product) => (
-                      <td key={product.id} className="py-3 px-4 text-gray-900">{product.category.name}</td>
+                      <td key={product.id} className="py-4 px-6 text-gray-900">{product.category.name}</td>
                     ))}
                   </tr>
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    <td className="py-3 px-4 font-medium text-gray-700">Average Rating</td>
+                    <td className="py-4 px-6 font-medium text-gray-700">Average Rating</td>
                     {data.products.map((product) => (
-                      <td key={product.id} className="py-3 px-4 text-gray-900">
+                      <td key={product.id} className="py-4 px-6 text-gray-900">
                         {product.avg_rating > 0 ? (
                           <div className="flex items-center gap-1">
                             <span className="text-yellow-500">★</span>
@@ -263,9 +275,9 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                     ))}
                   </tr>
                   <tr className="border-b border-gray-100">
-                    <td className="py-3 px-4 font-medium text-gray-700">Best Price</td>
+                    <td className="py-4 px-6 font-medium text-gray-700">Best Price</td>
                     {data.products.map((product) => (
-                      <td key={product.id} className="py-3 px-4 text-gray-900">
+                      <td key={product.id} className="py-4 px-6 text-gray-900">
                         {product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : '—'}
                       </td>
                     ))}
@@ -274,11 +286,11 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                   {/* Specifications */}
                   {data.common_specs.map((spec, index) => (
                     <tr key={spec} className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                      <td className="py-3 px-4 font-medium text-gray-700 capitalize">
+                      <td className="py-4 px-6 font-medium text-gray-700 capitalize">
                         {spec.replace(/_/g, ' ')}
                       </td>
                       {data.products.map((product) => (
-                        <td key={product.id} className="py-3 px-4 text-gray-900">
+                        <td key={product.id} className="py-4 px-6 text-gray-900">
                           {String(data.comparison_matrix[spec]?.[String(product.id)] ?? 'N/A')}
                         </td>
                       ))}

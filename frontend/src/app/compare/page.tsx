@@ -163,27 +163,31 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Compare Instruments</h2>
                   
                   {/* Search Fields */}
-                  <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+                  <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                     <div className="flex-1 w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Instrument 1</label>
                       <SearchAutocomplete 
-                        placeholder="Search instrument 1"
+                        placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
                         onSearch={(query) => {
                           // Handle instrument 1 selection
                           console.log('Instrument 1 selected:', query);
+                          // You can add logic here to store the selected instrument
                         }}
                       />
                     </div>
                     
-                    <div className="text-gray-500 font-semibold text-lg">vs</div>
+                    <div className="text-gray-400 font-semibold text-xl">vs</div>
                     
                     <div className="flex-1 w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Instrument 2</label>
                       <SearchAutocomplete 
-                        placeholder="Search instrument 2"
+                        placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
                         onSearch={(query) => {
                           // Handle instrument 2 selection
                           console.log('Instrument 2 selected:', query);
+                          // You can add logic here to store the selected instrument
                         }}
                       />
                     </div>
@@ -257,26 +261,26 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-          <nav className="mb-6" aria-label="Breadcrumb">
+        <nav className="mb-8" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2 text-sm text-gray-600">
             <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
             <li>/</li>
-              <li className="text-gray-900" aria-current="page">Compare</li>
+            <li><Link href="/compare" className="hover:text-blue-600">Compare</Link></li>
+            {comparisonData && comparisonData.products.length > 0 && (
+              <>
+                <li>/</li>
+                <li className="text-gray-900 font-medium" aria-current="page">
+                  {comparisonData.products.map((product, index) => (
+                    <span key={product.id}>
+                      {index > 0 && <span className="mx-2">VS</span>}
+                      {product.name}
+                    </span>
+                  ))}
+                </li>
+              </>
+            )}
           </ol>
         </nav>
-
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Compare Musical Instruments
-            </h1>
-            {comparisonData && comparisonData.products.length > 0 && (
-              <p className="text-lg text-gray-600">
-                Comparing {comparisonData.products.length} instruments side by side. 
-                Find the perfect match for your needs.
-              </p>
-            )}
-          </div>
 
           {/* Client-side interactive component */}
           <Suspense fallback={
