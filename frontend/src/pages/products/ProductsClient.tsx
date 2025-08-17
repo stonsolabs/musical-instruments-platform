@@ -423,9 +423,13 @@ export default function ProductsClient({
                           
                           {/* Show more stores link if there are more than 3 */}
                           {product.prices.length > 3 && (
-                            <div className="text-center py-2 text-sm text-gray-500">
-                              +{product.prices.length - 3} more stores available
-                            </div>
+                            <Link 
+                              href={`/products/${product.slug}-${product.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                            >
+                              View All {product.prices.length} Stores
+                            </Link>
                           )}
                         </>
                       ) : (
@@ -460,7 +464,13 @@ export default function ProductsClient({
                               Check on Gear4Music
                             </a>
                           </div>
-
+                          <Link 
+                            href={`/products/${product.slug}-${product.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                          >
+                            View Details
+                          </Link>
                         </>
                       )}
                     </div>

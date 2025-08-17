@@ -19,7 +19,7 @@ export function Header() {
                 alt="GetYourMusicGear Logo" 
                 width={220} 
                 height={70}
-                className="h-14 w-auto"
+                className="h-24 w-auto"
               />
             </Link>
           </div>

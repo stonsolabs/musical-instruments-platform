@@ -42,6 +42,10 @@ async def search_products(
         .options(joinedload(Product.brand), joinedload(Product.category))
         .where(Product.is_active.is_(True))
     )
+    
+    # If fetching by slugs, also load prices for comparison
+    if slugs:
+        base_stmt = base_stmt.options(joinedload(Product.prices).joinedload(ProductPrice.store))
 
     # Filters
     if search_query:
@@ -159,6 +163,29 @@ async def search_products(
     items: List[Dict[str, Any]] = []
     for p in products:
         bp = best_prices.get(p.id)
+        
+        # Build prices array if prices are loaded (for comparison)
+        prices = None
+        if hasattr(p, 'prices') and p.prices:
+            prices = [
+                {
+                    "id": pr.id,
+                    "store": {
+                        "id": pr.store.id,
+                        "name": pr.store.name,
+                        "logo_url": pr.store.logo_url,
+                        "website_url": pr.store.website_url,
+                    },
+                    "price": float(pr.price),
+                    "currency": pr.currency,
+                    "affiliate_url": pr.affiliate_url,
+                    "last_checked": pr.last_checked.isoformat() if pr.last_checked else None,
+                    "is_available": pr.is_available,
+                }
+                for pr in sorted(p.prices, key=lambda x: (x.price or Decimal("0")))
+                if pr.is_available
+            ]
+        
         items.append(
             {
                 "id": p.id,
@@ -187,6 +214,7 @@ async def search_products(
                     if bp
                     else None
                 ),
+                "prices": prices,
                 "ai_content": p.ai_generated_content or {},
             }
         )
