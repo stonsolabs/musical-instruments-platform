@@ -328,13 +328,21 @@ export default function ProductsClient({
           <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                <Link 
+                  key={product.id} 
+                  href={`/products/${product.slug}-${product.id}`}
+                  className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+                >
                   <div className="relative">
-                    <div className="aspect-square bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                      <span className="text-gray-400 text-4xl">🎸</span>
+                    <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <span className="text-gray-400 text-5xl">🎸</span>
                     </div>
                     <button
-                      onClick={() => toggleProductSelection(product.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleProductSelection(product.id);
+                      }}
                       className={`absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                         selectedProducts.includes(product.id)
                           ? 'bg-blue-600 border-blue-600 text-white'
@@ -349,48 +357,28 @@ export default function ProductsClient({
                     </button>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
-                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{product.name}</h3>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {product.avg_rating > 0 && (
-                          <>
-                            <span className="text-yellow-500">★</span>
-                            <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
-                            <span className="text-sm text-gray-500">({product.review_count})</span>
-                          </>
-                        )}
+                  <div className="p-6">
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
+                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                       </div>
-                      <span className="text-sm text-gray-600">{product.category.name}</span>
-                    </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-green-600">
-                        {product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : 
-                         product.msrp_price ? formatPrice(product.msrp_price) : '—'}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Link 
-                        href={`/products/${product.slug}-${product.id}`}
-                        className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                      >
-                        View Details
-                      </Link>
-                      <button 
-                        onClick={() => toggleProductSelection(product.id)}
-                        className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                      >
-                        {selectedProducts.includes(product.id) ? 'Remove' : 'Add'}
-                      </button>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {product.avg_rating > 0 && (
+                            <>
+                              <span className="text-yellow-500">★</span>
+                              <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
+                              <span className="text-sm text-gray-500">({product.review_count})</span>
+                            </>
+                          )}
+                        </div>
+                        <span className="text-sm text-gray-600">{product.category.name}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 

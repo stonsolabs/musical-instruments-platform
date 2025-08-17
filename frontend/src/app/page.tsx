@@ -349,14 +349,6 @@ export default function HomePage() {
                       <span className="text-yellow-500">★</span>
                       <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
                     </div>
-                    {product.best_price && (
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-green-600">
-                          €{product.best_price.price.toFixed(2)}
-                        </div>
-                        <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
-                      </div>
-                    )}
                   </div>
                   <div className="flex gap-2">
                     {product.best_price ? (
@@ -377,10 +369,10 @@ export default function HomePage() {
                       </Link>
                     )}
                     <Link 
-                      href={`/compare?products=${product.slug}`}
+                      href={`/products/${product.slug}-${product.id}`}
                       className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      Compare
+                      View Details
                     </Link>
                   </div>
                 </div>
@@ -412,43 +404,126 @@ export default function HomePage() {
                   {product.description || "Excellent quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
                 <div className="flex items-center justify-between">
-                  {product.best_price ? (
-                    <div>
-                      <span className="text-lg font-bold text-green-600">
-                        €{product.best_price.price.toFixed(2)}
-                      </span>
-                      <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
-                    </div>
-                  ) : (
-                    <span className="text-lg font-bold text-gray-400">Price not available</span>
-                  )}
                   <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
                 </div>
-                {product.best_price ? (
-                  <a 
-                    href={product.best_price.affiliate_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block mt-4 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                  >
-                    Buy at {product.best_price.store.name}
-                  </a>
-                ) : (
+                <div className="flex gap-2 mt-4">
+                  {product.best_price ? (
+                    <a 
+                      href={product.best_price.affiliate_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                    >
+                      Buy at {product.best_price.store.name}
+                    </a>
+                  ) : (
+                    <Link 
+                      href={`/products/${product.slug}-${product.id}`}
+                      className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      View Details
+                    </Link>
+                  )}
                   <Link 
                     href={`/products/${product.slug}-${product.id}`}
-                    className="block mt-4 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     View Details
                   </Link>
-                )}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Blog Section */}
       <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest from Our Blog</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Stay updated with the latest instrument reviews, buying guides, and industry insights
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Best Electric Guitars for Beginners in 2025",
+                excerpt: "Discover the perfect electric guitar to start your musical journey with our comprehensive guide.",
+                image: "/images/blog-electric-guitars.jpg",
+                category: "Buying Guide",
+                date: "Jan 15, 2025",
+                href: "/blog/best-electric-guitars-beginners-2025"
+              },
+              {
+                title: "How to Choose the Right Digital Piano",
+                excerpt: "Everything you need to know about selecting the perfect digital piano for your needs and budget.",
+                image: "/images/blog-digital-piano.jpg",
+                category: "Buying Guide",
+                date: "Jan 12, 2025",
+                href: "/blog/how-choose-right-digital-piano"
+              },
+              {
+                title: "Top 10 Studio Monitors Under €500",
+                excerpt: "Professional-quality studio monitors that won't break the bank for home recording setups.",
+                image: "/images/blog-studio-monitors.jpg",
+                category: "Reviews",
+                date: "Jan 10, 2025",
+                href: "/blog/top-10-studio-monitors-under-500"
+              }
+            ].map((post, index) => (
+              <Link
+                key={index}
+                href={post.href}
+                className="group block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+              >
+                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                  <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">
+                    📝
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">{post.category}</span>
+                    <span className="text-xs text-gray-500">•</span>
+                    <span className="text-xs text-gray-500">{post.date}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
+                    Read More
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          
+          <div className="text-center mt-8">
+            <Link
+              href="/blog"
+              className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
+            >
+              View All Blog Posts
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
           <p className="text-gray-600 mb-8 text-lg">

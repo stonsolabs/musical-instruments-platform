@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
-import SearchAutocomplete from '@/components/SearchAutocomplete';
+
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -36,30 +36,31 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
     if (!initialData && productSlugs.length >= 1) {
       const loadData = async () => {
         try {
-          // If we don't have product IDs, fetch them from slugs first
-          let idsToUse = productIds;
-          if (productIds.length === 0) {
-            const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch product IDs');
-            }
-            
-            const productsData = await response.json();
-            idsToUse = productsData.products.map((product: any) => product.id);
-            
-            if (idsToUse.length === 0) {
-              throw new Error('No product IDs found for the provided slugs');
-            }
+          // Fetch products directly using slugs
+          const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch products');
+          }
+          
+          const productsData = await response.json();
+          
+          if (productsData.products.length === 0) {
+            throw new Error('No products found for the provided slugs');
           }
 
-          // Use the IDs to fetch comparison data
-          const result = await apiClient.post('/compare', idsToUse);
-          setData(result);
+          // Create comparison data structure
+          const comparisonData: ComparisonResponse = {
+            products: productsData.products,
+            common_specs: [], // This would be populated by the backend in a real implementation
+            comparison_matrix: {}, // This would be populated by the backend in a real implementation
+            generated_at: new Date().toISOString()
+          };
+          
+          setData(comparisonData);
           
           // Track comparison analytics
           if (typeof window !== 'undefined') {
-            // You can add analytics tracking here
-            console.log('Comparison loaded:', result.products.map(p => p.name));
+            console.log('Comparison loaded:', comparisonData.products.map(p => p.name));
           }
         } catch (e) {
           setError('Failed to load comparison');

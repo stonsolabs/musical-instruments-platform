@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import CompareClient from './CompareClient';
-import SearchAutocomplete from '@/components/SearchAutocomplete';
+import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
 
 export default function ComparePage() {
   // Get search params from URL on client side
@@ -39,12 +39,12 @@ export default function ComparePage() {
                   <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                     <div className="flex-1 w-full">
                       <label className="block text-sm font-medium text-gray-700 mb-2">Instrument 1</label>
-                      <SearchAutocomplete 
+                      <ProductSearchAutocomplete 
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
-                        onSearch={(query) => {
+                        onProductSelect={(product) => {
                           // Handle instrument 1 selection
-                          console.log('Instrument 1 selected:', query);
+                          console.log('Instrument 1 selected:', product);
                           // You can add logic here to store the selected instrument
                         }}
                       />
@@ -54,12 +54,12 @@ export default function ComparePage() {
                     
                     <div className="flex-1 w-full">
                       <label className="block text-sm font-medium text-gray-700 mb-2">Instrument 2</label>
-                      <SearchAutocomplete 
+                      <ProductSearchAutocomplete 
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
-                        onSearch={(query) => {
+                        onProductSelect={(product) => {
                           // Handle instrument 2 selection
-                          console.log('Instrument 2 selected:', query);
+                          console.log('Instrument 2 selected:', product);
                           // You can add logic here to store the selected instrument
                         }}
                       />
