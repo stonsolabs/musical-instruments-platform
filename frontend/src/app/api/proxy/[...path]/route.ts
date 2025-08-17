@@ -30,7 +30,8 @@ export async function GET(
       { 
         error: 'API_BASE_URL not configured properly',
         currentValue: API_BASE_URL,
-        expected: 'https://your-backend-app.onrender.com'
+        expected: 'https://musical-instruments-platform.onrender.com',
+        instructions: 'Set NEXT_PUBLIC_API_BASE_URL environment variable in Vercel dashboard'
       },
       { status: 500 }
     );

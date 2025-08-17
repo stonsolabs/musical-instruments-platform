@@ -179,7 +179,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                               : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                           }`}
                         >
-                          {formatPrice(price.price, price.currency)} at {price.store.name}
+                          Buy at {price.store.name}
                           {!price.is_available && ' (Out of Stock)'}
                         </a>
                       ))
@@ -327,10 +327,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   ))}
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-6 font-medium text-gray-700">Best Price</td>
+                  <td className="py-4 px-6 font-medium text-gray-700">Available Stores</td>
                   {data.products.map((product) => (
                     <td key={product.id} className="py-4 px-6 text-gray-900">
-                      {product.best_price ? formatPrice(product.best_price.price, product.best_price.currency) : '—'}
+                      {product.prices?.length || 0} store{product.prices?.length !== 1 ? 's' : ''}
                     </td>
                   ))}
                 </tr>
