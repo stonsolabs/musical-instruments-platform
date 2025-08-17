@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import type { ComparisonResponse, Product } from '@/types';
 import CompareClient from './CompareClient';
+import SearchAutocomplete from '@/components/SearchAutocomplete';
 
 import { API_BASE_URL, apiClient } from '@/lib/api';
 
@@ -153,18 +154,48 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Compare Musical Instruments</h1>
               <p className="text-lg text-gray-600 mb-8">
-                Select at least two instruments to see a detailed side-by-side comparison
+                Search and select at least two instruments to see a detailed side-by-side comparison
               </p>
-              <Link 
-                href="/products" 
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Browse Products
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-            </Link>
-          </div>
+              
+              {/* Search Section */}
+              <div className="max-w-2xl mx-auto mb-8">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Search Instruments to Compare</h2>
+                  <SearchAutocomplete 
+                    placeholder="Search for guitars, pianos, drums, amplifiers..."
+                    className="w-full"
+                    onSearch={(query) => {
+                      // Navigate to products page with search query
+                      window.location.href = `/products?q=${encodeURIComponent(query)}`;
+                    }}
+                  />
+                  <p className="text-sm text-gray-500 mt-3">
+                    Start typing to find instruments. Click on a result to view details and add to comparison.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  href="/products" 
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Browse All Products
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <Link 
+                  href="/products?category=electric" 
+                  className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Popular Categories
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
         </div>
       </div>
       </>

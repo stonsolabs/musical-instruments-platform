@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
+import SearchAutocomplete from '@/components/SearchAutocomplete';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -388,16 +389,44 @@ export default function CompareClient({ productIds, initialData }: CompareClient
       </div>
 
       {/* Add more to comparison */}
-      <div className="mt-8 text-center">
-        <Link 
-          href="/products"
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
-        >
-          <span>Add more to comparison</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </Link>
+      <div className="mt-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Add More Instruments to Compare</h3>
+          <div className="max-w-2xl">
+            <SearchAutocomplete 
+              placeholder="Search for more instruments to add to comparison..."
+              className="w-full"
+              onSearch={(query) => {
+                // Navigate to products page with search query
+                window.location.href = `/products?q=${encodeURIComponent(query)}`;
+              }}
+            />
+            <p className="text-sm text-gray-500 mt-3">
+              Search for instruments and click on results to view details and add to your comparison.
+            </p>
+          </div>
+          
+          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+            <Link 
+              href="/products"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <span>Browse All Products</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </Link>
+            <Link 
+              href="/products?category=electric"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium"
+            >
+              <span>Popular Categories</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -157,9 +157,13 @@ export default function SearchAutocomplete({
       // Track search
       trackSearch(query.trim(), suggestions.length);
       
-      onSearch?.(query.trim());
-      // Navigate to products page with search query
-      window.location.href = `/products?q=${encodeURIComponent(query.trim())}`;
+      // Call custom onSearch handler if provided, otherwise use default navigation
+      if (onSearch) {
+        onSearch(query.trim());
+      } else {
+        // Default navigation to products page with search query
+        window.location.href = `/products?q=${encodeURIComponent(query.trim())}`;
+      }
     }
   };
 

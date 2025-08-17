@@ -6,8 +6,8 @@ import { GoogleTagManager, VercelAnalytics } from '@/components/Analytics'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 
 export const metadata: Metadata = {
-  title: 'GetYourMusicGear - Compare Musical Instruments Across Europe',
-  description: 'Find the best deals on musical instruments across Europe. Compare prices, read reviews, and discover your next instrument.',
+  title: 'Compare Musical Instruments',
+  description: 'Find the best deals on musical instruments. Compare specs, read reviews, and discover your next instrument.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

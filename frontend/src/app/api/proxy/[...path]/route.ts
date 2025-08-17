@@ -49,7 +49,9 @@ export async function GET(
   }
   
   try {
-    const targetUrl = `${API_BASE_URL}/api/v1/${path}?${searchParams}`;
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const targetUrl = `${baseUrl}/api/v1/${path}?${searchParams}`;
     console.log('🚀 Making request to:', targetUrl);
     
     const response = await fetch(targetUrl, {
@@ -135,7 +137,9 @@ export async function POST(
   const body = await request.json();
   
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/${path}`, {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
       method: 'POST',
       headers: {
         'X-API-Key': API_KEY,
@@ -170,7 +174,9 @@ export async function PUT(
   const body = await request.json();
   
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/${path}`, {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
       method: 'PUT',
       headers: {
         'X-API-Key': API_KEY,
@@ -204,7 +210,9 @@ export async function DELETE(
   const path = params.path.join('/');
   
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/${path}`, {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
       method: 'DELETE',
       headers: {
         'X-API-Key': API_KEY,
