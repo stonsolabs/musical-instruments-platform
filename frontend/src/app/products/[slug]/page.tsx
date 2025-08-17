@@ -40,7 +40,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [activeTab, setActiveTab] = useState('overview');
 
   const productId = useMemo(() => {
     const slug = (params?.slug as string) || '';
@@ -98,12 +97,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📋' },
-    { id: 'specs', label: 'Specifications', icon: '⚙️' },
-    { id: 'prices', label: 'Prices', icon: '💰' },
-    { id: 'reviews', label: 'Reviews', icon: '⭐' },
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -178,15 +172,36 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Store Availability */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-blue-700 font-medium">Available at</p>
-                    <p className="text-2xl font-bold text-blue-600">{product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-blue-600">Check prices below</p>
-                  </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div>
+                  <p className="text-sm text-gray-700 font-medium mb-3">Available at {product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
+                  {product.prices && product.prices.length > 0 ? (
+                    <div className="space-y-2">
+                      {product.prices.slice(0, 3).map((price) => (
+                        <a
+                          key={price.id}
+                          href={price.affiliate_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                            price.is_available
+                              ? 'bg-gray-800 text-white hover:bg-gray-700'
+                              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                          }`}
+                        >
+                          {price.store.name}
+                          {!price.is_available && ' (Out of Stock)'}
+                        </a>
+                      ))}
+                      {product.prices.length > 3 && (
+                        <p className="text-xs text-gray-500 text-center">
+                          +{product.prices.length - 3} more stores available
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No stores available</p>
+                  )}
                 </div>
               </div>
 
@@ -217,191 +232,161 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
+        {/* Product Content - All Sections */}
+        <div className="space-y-8">
+          {/* Overview Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Overview</h3>
+            
+            {/* AI Summary */}
+            {product.ai_content?.summary && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-gray-900 mb-2">Summary</h4>
+                <p className="text-gray-800">{product.ai_content.summary}</p>
+              </div>
+            )}
+
+            {/* Key Specifications */}
+            {product.specifications && Object.keys(product.specifications).length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-4">Key Specifications</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {Object.entries(product.specifications).slice(0, 8).map(([key, value]) => (
+                    <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                      <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
+                      <span className="text-gray-900">{String(value)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Product Details */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Product Details</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Brand:</span>
+                    <span className="font-medium">{product.brand.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Category:</span>
+                    <span className="font-medium">{product.category.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">SKU:</span>
+                    <span className="font-medium">{product.sku}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Added:</span>
+                    <span className="font-medium">{new Date(product.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Last Updated:</span>
+                    <span className="font-medium">{new Date(product.updated_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Rating & Reviews</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Average Rating:</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-500">★</span>
+                      <span className="font-medium">{formatRating(product.avg_rating)}</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Review Count:</span>
+                    <span className="font-medium">{product.review_count}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">MSRP:</span>
+                    <span className="font-medium">{product.msrp_price ? formatPrice(product.msrp_price) : '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <span className={`font-medium ${product.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                      {product.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Tab Content */}
-          <div className="p-6">
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                {/* AI Summary */}
-                {product.ai_content?.summary && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-900 mb-2">AI Summary</h3>
-                    <p className="text-blue-800">{product.ai_content.summary}</p>
+          {/* Full Specifications Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Full Specifications</h3>
+            {product.specifications && Object.keys(product.specifications).length > 0 ? (
+              <div className="grid md:grid-cols-2 gap-4">
+                {Object.entries(product.specifications).map(([key, value]) => (
+                  <div key={key} className="flex justify-between py-3 border-b border-gray-100">
+                    <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
+                    <span className="text-gray-900">{String(value)}</span>
                   </div>
-                )}
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No specifications available for this product.</p>
+            )}
+          </div>
 
-                {/* Key Specifications */}
-                {product.specifications && Object.keys(product.specifications).length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Key Specifications</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {Object.entries(product.specifications).slice(0, 8).map(([key, value]) => (
-                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                          <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
-                          <span className="text-gray-900">{String(value)}</span>
+          {/* Stores Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Available Stores</h3>
+            {product.prices && product.prices.length > 0 ? (
+              <div className="space-y-4">
+                {product.prices.map((price, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <span className="text-gray-500 text-lg">🏪</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Product Details */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Product Details</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Brand:</span>
-                        <span className="font-medium">{product.brand.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Category:</span>
-                        <span className="font-medium">{product.category.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">SKU:</span>
-                        <span className="font-medium">{product.sku}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Added:</span>
-                        <span className="font-medium">{new Date(product.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Last Updated:</span>
-                        <span className="font-medium">{new Date(product.updated_at).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Rating & Reviews</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Average Rating:</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-500">★</span>
-                          <span className="font-medium">{formatRating(product.avg_rating)}</span>
+                        <div>
+                          <h4 className="font-medium text-gray-900">{price.store.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            Last checked: {new Date(price.last_checked).toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Review Count:</span>
-                        <span className="font-medium">{product.review_count}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">MSRP:</span>
-                        <span className="font-medium">{product.msrp_price ? formatPrice(product.msrp_price) : '—'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Status:</span>
-                        <span className={`font-medium ${product.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                          {product.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'specs' && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Full Specifications</h3>
-                {product.specifications && Object.keys(product.specifications).length > 0 ? (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-3 border-b border-gray-100">
-                        <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
-                        <span className="text-gray-900">{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No specifications available for this product.</p>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'prices' && (
-              <div className="space-y-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Price Comparison</h3>
-                {product.prices && product.prices.length > 0 ? (
-                  <div className="space-y-4">
-                    {product.prices.map((price, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <span className="text-gray-500 text-lg">🏪</span>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-gray-900">{price.store.name}</h4>
-                              <p className="text-sm text-gray-600">
-                                Last checked: {new Date(price.last_checked).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <div className="text-2xl font-bold text-green-600">
-                                {formatPrice(price.price, price.currency)}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {price.is_available ? 'In Stock' : 'Out of Stock'}
-                              </div>
-                            </div>
-                            <a 
-                              href={price.affiliate_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                              Buy Now
-                            </a>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500">
+                            {price.is_available ? 'In Stock' : 'Out of Stock'}
                           </div>
                         </div>
+                        <a 
+                          href={price.affiliate_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                        >
+                          Buy Now
+                        </a>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-gray-500">No price information available for this product.</p>
-                )}
+                ))}
               </div>
+            ) : (
+              <p className="text-gray-500">No stores available for this product.</p>
             )}
+          </div>
 
-            {activeTab === 'reviews' && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Reviews & Ratings</h3>
-                <div className="bg-gray-50 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-2">⭐</div>
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{formatRating(product.avg_rating)}</div>
-                  <div className="text-gray-600 mb-4">Based on {product.review_count} reviews</div>
-                  <p className="text-gray-500">Review system coming soon...</p>
-                </div>
-              </div>
-            )}
-
-
+          {/* Reviews Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Reviews & Ratings</h3>
+            <div className="bg-gray-50 rounded-lg p-6 text-center">
+              <div className="text-4xl mb-2">⭐</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{formatRating(product.avg_rating)}</div>
+              <div className="text-gray-600 mb-4">Based on {product.review_count} reviews</div>
+              <p className="text-gray-500">Review system coming soon...</p>
+            </div>
           </div>
         </div>
       </div>

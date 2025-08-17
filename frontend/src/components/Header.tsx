@@ -25,29 +25,12 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation - Centered and larger text */}
-          <nav className="hidden md:flex items-center space-x-10">
-            <div className="relative group">
-              <button className="flex items-center text-gray-900 hover:text-gray-700 py-2 transition-colors text-base font-medium">
-                Instruments
-                <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute top-full left-0 w-72 bg-white border border-gray-300 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-lg">
-                <div className="p-6">
-                  <div className="text-base font-semibold text-gray-900 mb-4">Shop by Category</div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <Link href="/products?category=electric-guitars" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Electric Guitars</Link>
-                    <Link href="/products?category=acoustic-guitars" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Acoustic Guitars</Link>
-                    <Link href="/products?category=digital-keyboards" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Digital Keyboards</Link>
-                    <Link href="/products?category=synthesizers" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Synthesizers</Link>
-                    <Link href="/products?category=amplifiers" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Amplifiers</Link>
-                    <Link href="/products?category=audio-interfaces" className="block hover:text-gray-700 transition-colors text-gray-600 py-1">Audio Interfaces</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Electric Guitars</Link>
+            <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Acoustic Guitars</Link>
+            <Link href="/products?category=digital-keyboards" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Keyboards</Link>
+            <Link href="/products?category=synthesizers" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Synthesizers</Link>
+            <Link href="/products?category=amplifiers" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Amplifiers</Link>
             <Link href="/deals" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Deals</Link>
             <Link href="/blog" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Blog</Link>
             <Link href="/about" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">About</Link>
@@ -72,7 +55,11 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-300 animate-slide-up">
           <div className="px-4 pt-4 pb-3 space-y-3">
-            <Link href="/products" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">All Products</Link>
+            <Link href="/products?category=electric-guitars" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Electric Guitars</Link>
+            <Link href="/products?category=acoustic-guitars" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Acoustic Guitars</Link>
+            <Link href="/products?category=digital-keyboards" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Keyboards</Link>
+            <Link href="/products?category=synthesizers" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Synthesizers</Link>
+            <Link href="/products?category=amplifiers" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Amplifiers</Link>
             <Link href="/deals" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Deals</Link>
             <Link href="/blog" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Blog</Link>
             <Link href="/about" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">About</Link>

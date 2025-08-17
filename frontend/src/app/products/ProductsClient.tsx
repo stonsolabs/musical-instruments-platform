@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
+import FloatingCompareButton from '@/components/FloatingCompareButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -264,16 +265,7 @@ export default function ProductsClient({
             </p>
           </div>
           
-          {/* Compare Selected */}
-          {selectedProducts.length > 0 && (
-            <button
-              onClick={compareSelected}
-              disabled={selectedProducts.length < 2}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-            >
-              Compare ({selectedProducts.length})
-            </button>
-          )}
+
         </div>
 
         {/* Category Disclaimer */}
@@ -489,6 +481,13 @@ export default function ProductsClient({
           </div>
         )}
       </div>
+      
+      {/* Floating Compare Button */}
+      <FloatingCompareButton
+        selectedCount={selectedProducts.length}
+        onCompare={compareSelected}
+        isVisible={selectedProducts.length >= 2}
+      />
     </div>
   );
 }
