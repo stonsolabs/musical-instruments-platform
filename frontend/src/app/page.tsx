@@ -85,7 +85,7 @@ export default function HomePage() {
 
   const handleCompare = () => {
     const validItems = searchItems.filter(item => item.trim() !== '');
-    if (validItems.length >= 2) {
+    if (validItems.length >= 1) {
       const queryString = validItems.join(',');
       window.location.href = `/compare?ids=${queryString}`;
     }
@@ -165,9 +165,100 @@ export default function HomePage() {
                 onClick={handleCompare}
                 className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
               >
-                Compare {searchItems.filter(item => item.trim() !== '').length} Instruments
+                Compare {searchItems.filter(item => item.trim() !== '').length} Instrument{searchItems.filter(item => item.trim() !== '').length !== 1 ? 's' : ''}
               </button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Shop by Category - Baum Guitars Style */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore our comprehensive collection of musical instruments across all categories
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { 
+                name: 'Electric Guitars', 
+                description: 'From classic to modern electric guitars',
+                href: '/products?category=electric-guitars',
+                image: '/images/electric-guitars.jpg',
+                color: 'from-red-500 to-red-600'
+              },
+              { 
+                name: 'Acoustic Guitars', 
+                description: 'Beautiful acoustic and classical guitars',
+                href: '/products?category=acoustic-guitars',
+                image: '/images/acoustic-guitars.jpg',
+                color: 'from-amber-500 to-amber-600'
+              },
+              { 
+                name: 'Digital Keyboards', 
+                description: 'Professional keyboards and pianos',
+                href: '/products?category=digital-keyboards',
+                image: '/images/keyboards.jpg',
+                color: 'from-blue-500 to-blue-600'
+              },
+              { 
+                name: 'Synthesizers', 
+                description: 'Analog and digital synthesizers',
+                href: '/products?category=synthesizers',
+                image: '/images/synthesizers.jpg',
+                color: 'from-purple-500 to-purple-600'
+              },
+              { 
+                name: 'Amplifiers', 
+                description: 'Guitar and bass amplifiers',
+                href: '/products?category=amplifiers',
+                image: '/images/amplifiers.jpg',
+                color: 'from-green-500 to-green-600'
+              },
+              { 
+                name: 'Audio Interfaces', 
+                description: 'Professional audio recording gear',
+                href: '/products?category=audio-interfaces',
+                image: '/images/audio-interfaces.jpg',
+                color: 'from-indigo-500 to-indigo-600'
+              },
+            ].map((category) => (
+              <Link
+                key={category.name}
+                href={category.href}
+                className="group block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+              >
+                <div className={`h-48 bg-gradient-to-br ${category.color} flex items-center justify-center relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                  <div className="text-white text-6xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">
+                    {category.name === 'Electric Guitars' && '🎸'}
+                    {category.name === 'Acoustic Guitars' && '🎸'}
+                    {category.name === 'Digital Keyboards' && '🎹'}
+                    {category.name === 'Synthesizers' && '🎹'}
+                    {category.name === 'Amplifiers' && '🔊'}
+                    {category.name === 'Audio Interfaces' && '🎛️'}
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {category.name}
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {category.description}
+                  </p>
+                  <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
+                    Shop {category.name}
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -219,35 +310,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Category Icons */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
-            {[
-              { name: 'Electric Guitars', icon: '🎸', href: '/products?category=electric-guitars' },
-              { name: 'Acoustic Guitars', icon: '🎸', href: '/products?category=acoustic-guitars' },
-              { name: 'Digital Keyboards', icon: '🎹', href: '/products?category=digital-keyboards' },
-              { name: 'Synthesizers', icon: '🎹', href: '/products?category=synthesizers' },
-              { name: 'Amplifiers', icon: '🔊', href: '/products?category=amplifiers' },
-              { name: 'Audio Interfaces', icon: '🎛️', href: '/products?category=audio-interfaces' },
-              { name: 'All Instruments', icon: '🎵', href: '/products' },
-            ].map((category) => (
-              <Link
-                key={category.name}
-                href={category.href}
-                className="group text-center p-4 rounded-lg hover:bg-white hover:shadow-md transition-all"
-              >
-                <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">
-                  {category.icon}
-                </div>
-                <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                  {category.name}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Ad Space - Middle Banner */}
       <section className="py-4 bg-white">

@@ -132,7 +132,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   } : null;
 
   // Handle case where no valid IDs are provided
-  if (ids.length < 2) {
+  if (ids.length < 1) {
     return (
       <>
         {/* Basic structured data for empty state */}
@@ -154,7 +154,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           <div className="text-center">
               <h1 className="text-3xl font-bold text-white mb-4">Compare Musical Instruments</h1>
               <p className="text-lg text-blue-100 mb-8">
-                Search and select at least two instruments to see a detailed side-by-side comparison
+                Search and select at least one instrument to see detailed information and comparison options
               </p>
               
               {/* Compare Interface */}

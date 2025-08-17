@@ -32,7 +32,7 @@ export default function CompareClient({ productIds, initialData }: CompareClient
 
   // Load data if not provided by server
   useEffect(() => {
-    if (!initialData && productIds.length >= 2) {
+    if (!initialData && productIds.length >= 1) {
       const loadData = async () => {
         try {
           const result = await apiClient.post('/compare', productIds);
@@ -100,13 +100,16 @@ export default function CompareClient({ productIds, initialData }: CompareClient
     );
   }
 
+  // Handle single product display
+  const isSingleProduct = data.products.length === 1;
+
   // Check if comparing across different categories
   const hasDifferentCategories = new Set(data.products.map(p => p.category.name)).size > 1;
 
   return (
     <>
       {/* Product Header Cards - Aligned with specs table */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
+      <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
         {data.products.map((product, index) => (
           <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             {/* VS indicator between cards */}
@@ -245,6 +248,17 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                         </div>
                       </th>
                     ))}
+                    {isSingleProduct && (
+                      <th className="text-left py-4 px-6 font-semibold text-gray-400 text-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">➕</span>
+                          <div>
+                            <div className="font-bold text-gray-400">Add Another</div>
+                            <div className="text-sm font-normal text-gray-400">For comparison</div>
+                          </div>
+                        </div>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -254,6 +268,9 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                     {data.products.map((product) => (
                       <td key={product.id} className="py-4 px-6 text-gray-900">{product.brand.name}</td>
                     ))}
+                    {isSingleProduct && (
+                      <td className="py-4 px-6 text-gray-400">—</td>
+                    )}
                   </tr>
                   <tr className="border-b border-gray-100">
                     <td className="py-4 px-6 font-medium text-gray-700">Category</td>
