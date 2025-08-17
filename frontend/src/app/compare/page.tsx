@@ -1,186 +1,27 @@
-import React, { Suspense } from 'react';
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-import type { ComparisonResponse, Product } from '@/types';
 import CompareClient from './CompareClient';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 
-import { API_BASE_URL, apiClient } from '@/lib/api';
-
-// Force dynamic rendering since we use searchParams
-export const dynamic = 'force-dynamic';
-
-async function fetchProductIdsFromSlugs(productSlugs: string[]): Promise<number[]> {
-  if (productSlugs.length === 0) return [];
-  
-  try {
-    // Fetch product IDs from slugs using the products API
-    const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
-    if (!response.ok) {
-      console.error(`Products API Error: ${response.status} ${response.statusText}`);
-      return [];
+export default function ComparePage() {
+  // Get search params from URL on client side
+  const [searchParams] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      return {
+        products: urlParams.get('products') || ''
+      };
     }
-    
-    const data = await response.json();
-    return data.products.map((product: any) => product.id);
-  } catch (error) {
-    console.error('Error fetching product IDs:', error);
-    return [];
-  }
-}
-
-async function fetchComparison(productIds: number[]): Promise<ComparisonResponse | null> {
-  if (productIds.length < 1) {
-    return null;
-  }
-
-  try {
-    // Use the IDs directly to fetch comparison data
-    const response = await fetch(`/api/proxy/compare`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(productIds),
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-    });
-    
-    if (!response.ok) {
-      console.error(`Compare API Error: ${response.status} ${response.statusText}`);
-      return null;
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching comparison:', error);
-    return null;
-  }
-}
-
-// Generate metadata for SEO
-export async function generateMetadata({ searchParams }: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}): Promise<Metadata> {
-  const productsParam = searchParams.products as string;
-  const productSlugs = productsParam ? productsParam.split(',').filter(slug => slug.trim()) : [];
+    return { products: '' };
+  });
   
+  const productSlugs = searchParams.products ? searchParams.products.split(',').filter(slug => slug.trim()) : [];
+
+  // Handle case where no valid product slugs are provided
   if (productSlugs.length < 1) {
-    return {
-      title: 'Compare Musical Instruments',
-      description: 'Compare musical instruments side by side. Find the best deals and features across different brands and models.',
-      keywords: 'compare musical instruments, instrument comparison, music gear comparison',
-    };
-  }
-
-  // Fetch product IDs from slugs internally
-  const productIds = await fetchProductIdsFromSlugs(productSlugs);
-  if (productIds.length < 1) {
-    return {
-      title: 'Compare Musical Instruments',
-      description: 'Compare musical instruments side by side. Find the best deals and features across different brands and models.',
-      keywords: 'compare musical instruments, instrument comparison, music gear comparison',
-    };
-  }
-
-  // Try to fetch product data for better metadata
-  const comparisonData = await fetchComparison(productIds);
-  
-  if (comparisonData && comparisonData.products.length > 0) {
-    const productNames = comparisonData.products.map(p => p.name).join(' vs ');
-    const brands = Array.from(new Set(comparisonData.products.map(p => p.brand.name))).join(', ');
-    
-    return {
-      title: `Compare: ${productNames} - Musical Instruments`,
-      description: `Compare ${productNames}. Side-by-side comparison of specifications, prices, and reviews from ${brands}.`,
-      keywords: `compare ${productNames.toLowerCase()}, ${brands.toLowerCase()}, musical instruments comparison`,
-      openGraph: {
-        title: `Compare: ${productNames}`,
-        description: `Side-by-side comparison of ${productNames}. Find the best deals and features.`,
-        type: 'website',
-        url: 'https://getyourmusicgear.com/compare',
-      },
-      twitter: {
-        card: 'summary',
-        title: `Compare: ${productNames}`,
-        description: `Side-by-side comparison of ${productNames}.`,
-      },
-    };
-  }
-
-  return {
-    title: 'Compare Musical Instruments',
-    description: 'Compare musical instruments side by side. Find the best deals and features across different brands and models.',
-    keywords: 'compare musical instruments, instrument comparison, music gear comparison',
-  };
-}
-
-interface ComparePageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default async function ComparePage({ searchParams }: ComparePageProps) {
-  const productsParam = searchParams.products as string;
-  const productSlugs = productsParam ? productsParam.split(',').filter(slug => slug.trim()) : [];
-  
-  // Fetch product IDs from slugs internally
-  const productIds = await fetchProductIdsFromSlugs(productSlugs);
-  
-  // Fetch comparison data on the server
-  const comparisonData = await fetchComparison(productIds);
-
-  // Generate structured data for SEO
-  const structuredData = comparisonData ? {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Musical Instruments Comparison',
-    description: 'Compare musical instruments side by side',
-    url: 'https://getyourmusicgear.com/compare',
-    mainEntity: {
-      '@type': 'ItemList',
-      numberOfItems: comparisonData.products.length,
-      itemListElement: comparisonData.products.map((product, index) => ({
-        '@type': 'Product',
-        position: index + 1,
-        name: product.name,
-        brand: {
-          '@type': 'Brand',
-          name: product.brand.name,
-        },
-        category: product.category.name,
-        url: `https://getyourmusicgear.com/products/${product.slug}-${product.id}`,
-        offers: product.best_price ? {
-          '@type': 'Offer',
-          price: product.best_price.price,
-          priceCurrency: product.best_price.currency,
-          availability: 'https://schema.org/InStock',
-        } : undefined,
-        aggregateRating: product.avg_rating > 0 ? {
-          '@type': 'AggregateRating',
-          ratingValue: product.avg_rating,
-          reviewCount: product.review_count,
-        } : undefined,
-      })),
-    },
-  } : null;
-
-  // Handle case where no valid product IDs are provided
-  if (productIds.length < 1) {
     return (
-      <>
-        {/* Basic structured data for empty state */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ 
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebPage',
-              name: 'Compare Musical Instruments',
-              description: 'Compare musical instruments side by side',
-              url: 'https://getyourmusicgear.com/compare',
-            })
-          }}
-        />
-        
       <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-400">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
@@ -267,20 +108,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             </div>
         </div>
       </div>
-      </>
     );
   }
 
   return (
-    <>
-      {/* Structured Data */}
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      )}
-
     <div className="min-h-screen bg-gray-50">
       {/* Ad Space - Top */}
       <section className="py-4 bg-white border-b">
@@ -298,14 +129,14 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
             <li>/</li>
             <li><Link href="/compare" className="hover:text-blue-600">Compare</Link></li>
-            {comparisonData && comparisonData.products.length > 0 && (
+            {productSlugs.length > 0 && (
               <>
                 <li>/</li>
                 <li className="text-gray-900 font-medium" aria-current="page">
-                  {comparisonData.products.map((product, index) => (
-                    <span key={product.id}>
+                  {productSlugs.map((slug, index) => (
+                    <span key={slug}>
                       {index > 0 && <span className="mx-2">VS</span>}
-                      {product.name}
+                      {slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </span>
                   ))}
                 </li>
@@ -314,31 +145,13 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           </ol>
         </nav>
 
-          {/* Client-side interactive component */}
-          <Suspense fallback={
-            <div className="animate-pulse">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="space-y-3">
-                      <div className="h-4 bg-gray-200 rounded"></div>
-                      <div className="h-6 bg-gray-200 rounded"></div>
-                      <div className="h-4 bg-gray-200 rounded"></div>
-                        </div>
-                      </div>
-                    ))}
-              </div>
-            </div>
-          }>
-            <CompareClient
-              productSlugs={productSlugs}
-              productIds={productIds}
-              initialData={comparisonData}
-            />
-          </Suspense>
-            </div>
+        {/* Client-side interactive component */}
+        <CompareClient
+          productSlugs={productSlugs}
+          productIds={[]}
+          initialData={null}
+        />
       </div>
-    </>
+    </div>
   );
 }
