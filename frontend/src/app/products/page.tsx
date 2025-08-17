@@ -24,12 +24,9 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
     if (!params.has('page')) params.set('page', '1');
     if (!params.has('sort_by')) params.set('sort_by', 'name');
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/products?${params.toString()}`, {
+    // Use proxy route instead of direct backend call
+    const response = await fetch(`/api/proxy/products?${params.toString()}`, {
       next: { revalidate: 300 }, // Revalidate every 5 minutes
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': process.env.API_KEY || '',
-      },
     });
 
     if (!response.ok) {
@@ -54,12 +51,8 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
 async function fetchCategories(): Promise<Category[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+    const response = await fetch(`/api/proxy/categories`, {
       next: { revalidate: 3600 }, // Revalidate every hour
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': process.env.API_KEY || '',
-      },
     });
 
     if (!response.ok) {
@@ -76,12 +69,8 @@ async function fetchCategories(): Promise<Category[]> {
 
 async function fetchBrands(): Promise<Brand[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/brands`, {
+    const response = await fetch(`/api/proxy/brands`, {
       next: { revalidate: 3600 }, // Revalidate every hour
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': process.env.API_KEY || '',
-      },
     });
 
     if (!response.ok) {

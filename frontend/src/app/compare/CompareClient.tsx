@@ -34,7 +34,7 @@ export default function CompareClient({ productIds, initialData }: CompareClient
     if (!initialData && productIds.length >= 2) {
       const loadData = async () => {
         try {
-          const result = await apiClient.post('/api/v1/compare', productIds);
+          const result = await apiClient.post('/compare', productIds);
           setData(result);
           
           // Track comparison analytics

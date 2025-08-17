@@ -15,12 +15,11 @@ async function fetchComparison(productIds: number[]): Promise<ComparisonResponse
   }
 
   try {
-    // For server-side rendering, we need to manually add the API key
-    const response = await fetch(`${API_BASE_URL}/api/v1/compare`, {
+    // Use proxy route instead of direct backend call
+    const response = await fetch(`/api/proxy/compare`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.API_KEY || '',
       },
       body: JSON.stringify(productIds),
       next: { revalidate: 300 }, // Revalidate every 5 minutes

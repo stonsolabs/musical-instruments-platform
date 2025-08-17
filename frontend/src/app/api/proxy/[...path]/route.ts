@@ -11,46 +11,110 @@ export async function GET(
   const url = new URL(request.url);
   const searchParams = url.searchParams.toString();
   
-  // Debug logging
-  console.log('Proxy GET request:', {
+  // Enhanced debug logging
+  console.log('🔍 Proxy GET request:', {
     path,
     searchParams,
     apiBaseUrl: API_BASE_URL,
     hasApiKey: !!API_KEY,
-    fullUrl: `${API_BASE_URL}/api/v1/${path}?${searchParams}`
+    apiKeyLength: API_KEY ? API_KEY.length : 0,
+    fullUrl: `${API_BASE_URL}/api/v1/${path}?${searchParams}`,
+    userAgent: request.headers.get('user-agent'),
+    origin: request.headers.get('origin')
   });
   
+  // Validate API_BASE_URL
+  if (!API_BASE_URL || API_BASE_URL === 'http://localhost:8000') {
+    console.error('❌ Invalid API_BASE_URL:', API_BASE_URL);
+    return NextResponse.json(
+      { 
+        error: 'API_BASE_URL not configured properly',
+        currentValue: API_BASE_URL,
+        expected: 'https://your-backend-app.onrender.com'
+      },
+      { status: 500 }
+    );
+  }
+  
+  // Validate API_KEY
+  if (!API_KEY) {
+    console.error('❌ API_KEY not configured');
+    return NextResponse.json(
+      { 
+        error: 'API_KEY not configured',
+        hint: 'Set API_KEY environment variable in Vercel'
+      },
+      { status: 500 }
+    );
+  }
+  
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/${path}?${searchParams}`, {
+    const targetUrl = `${API_BASE_URL}/api/v1/${path}?${searchParams}`;
+    console.log('🚀 Making request to:', targetUrl);
+    
+    const response = await fetch(targetUrl, {
       headers: {
         'X-API-Key': API_KEY,
         'Content-Type': 'application/json',
+        'User-Agent': 'MusicalInstrumentsPlatform/1.0',
       },
+      // Add timeout
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
-    console.log('Backend response:', {
+    console.log('📡 Backend response:', {
       status: response.status,
       statusText: response.statusText,
-      ok: response.ok
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Backend error response:', errorText);
+      console.error('❌ Backend error response:', errorText);
       return NextResponse.json(
         { 
           error: 'Backend request failed',
           details: errorText,
-          status: response.status
+          status: response.status,
+          url: targetUrl
         },
         { status: response.status }
       );
     }
 
     const data = await response.json();
+    console.log('✅ Successfully received data from backend');
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error('💥 Proxy error:', error);
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return NextResponse.json(
+          { 
+            error: 'Request timeout',
+            details: 'Backend request took too long to respond',
+            apiBaseUrl: API_BASE_URL
+          },
+          { status: 504 }
+        );
+      }
+      
+      if (error.message.includes('fetch')) {
+        return NextResponse.json(
+          { 
+            error: 'Network error',
+            details: error.message,
+            apiBaseUrl: API_BASE_URL,
+            hint: 'Check if backend is accessible'
+          },
+          { status: 502 }
+        );
+      }
+    }
+    
     return NextResponse.json(
       { 
         error: 'Internal server error',
