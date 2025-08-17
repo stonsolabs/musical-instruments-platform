@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Product } from '@/types';
+import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
-import ControlledSearchAutocomplete from '@/components/ControlledSearchAutocomplete';
+import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
 
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';
@@ -33,8 +33,7 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
 }
 
 export default function HomePage() {
-  const [searchItems, setSearchItems] = useState(['', '']);
-  const [showThirdField, setShowThirdField] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [topRatedProducts, setTopRatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,43 +58,40 @@ export default function HomePage() {
   }, []);
 
   const addSearchField = () => {
-    if (searchItems.length < 5) {
-      setSearchItems([...searchItems, '']);
-      if (searchItems.length === 2) {
-        setShowThirdField(true);
-      }
+    if (selectedProducts.length < 5) {
+      // Add an empty slot for a new product
+      setSelectedProducts([...selectedProducts, null as any]);
     }
   };
 
   const removeSearchField = (index: number) => {
-    if (searchItems.length > 2) {
-      const newItems = searchItems.filter((_, i) => i !== index);
-      setSearchItems(newItems);
-      if (newItems.length === 2) {
-        setShowThirdField(false);
-      }
+    if (selectedProducts.length > 1) {
+      const newProducts = selectedProducts.filter((_, i) => i !== index);
+      setSelectedProducts(newProducts);
     }
   };
 
-  const updateSearchItem = (index: number, value: string) => {
-    const newItems = [...searchItems];
-    newItems[index] = value;
-    setSearchItems(newItems);
+  const handleProductSelect = (index: number, product: SearchAutocompleteProduct) => {
+    const newProducts = [...selectedProducts];
+    newProducts[index] = product;
+    setSelectedProducts(newProducts);
   };
 
   const handleCompare = () => {
-    const validItems = searchItems.filter(item => item.trim() !== '');
-    if (validItems.length >= 1) {
-      const queryString = validItems.join(',');
-      window.location.href = `/compare?ids=${queryString}`;
+    const validProducts = selectedProducts.filter(product => product !== null);
+    if (validProducts.length >= 1) {
+      // Create URL with product slugs for SEO (user only sees slugs)
+      const productSlugs = validProducts.map(product => product.slug);
+      const slugsString = productSlugs.join(',');
+      window.location.href = `/compare?products=${slugsString}`;
     }
   };
 
-  // Pre-created popular comparisons
+  // Pre-created popular comparisons (these would be populated with real data)
   const popularComparisons = [
-    { title: 'Fender Stratocaster vs Gibson Les Paul', ids: '1,2', image: '/images/comparison-1.jpg' },
-    { title: 'Yamaha vs Roland Keyboards', ids: '3,4', image: '/images/comparison-2.jpg' },
-    { title: 'Pearl vs Tama Drums', ids: '5,6', image: '/images/comparison-3.jpg' },
+    { title: 'Fender Stratocaster vs Gibson Les Paul', products: 'fender-stratocaster,gibson-les-paul', image: '/images/comparison-1.jpg' },
+    { title: 'Yamaha vs Roland Keyboards', products: 'yamaha-keyboard,roland-keyboard', image: '/images/comparison-2.jpg' },
+    { title: 'Pearl vs Tama Drums', products: 'pearl-drums,tama-drums', image: '/images/comparison-3.jpg' },
   ];
 
   return (
@@ -122,21 +118,17 @@ export default function HomePage() {
               <h3 className="text-2xl font-bold mb-6 text-center">Compare Instruments</h3>
               
               <div className="space-y-4">
-                {searchItems.map((item, index) => (
+                {selectedProducts.map((product, index) => (
                   <div key={index} className="relative">
                     <div className="flex items-center gap-3">
                       <div className="flex-1">
-                        <ControlledSearchAutocomplete
+                        <ProductSearchAutocomplete
                           placeholder={`Search instrument ${index + 1}`}
                           className="w-full"
-                          value={item}
-                          onChange={(query) => updateSearchItem(index, query)}
-                          onSearch={(query) => {
-                            updateSearchItem(index, query);
-                          }}
+                          onProductSelect={(selectedProduct) => handleProductSelect(index, selectedProduct)}
                         />
                       </div>
-                      {searchItems.length > 2 && (
+                      {selectedProducts.length > 1 && (
                         <button
                           onClick={() => removeSearchField(index)}
                           className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
@@ -145,13 +137,13 @@ export default function HomePage() {
                         </button>
                       )}
                     </div>
-                    {index < searchItems.length - 1 && (
+                    {index < selectedProducts.length - 1 && (
                       <div className="text-center text-white/80 text-sm font-medium mt-2">vs</div>
                     )}
                   </div>
                 ))}
                 
-                {searchItems.length < 5 && (
+                {selectedProducts.length < 5 && (
                   <button
                     onClick={addSearchField}
                     className="w-full py-3 px-4 border-2 border-dashed border-white/40 rounded-lg text-white/80 hover:border-white/60 hover:text-white transition-colors"
@@ -165,7 +157,7 @@ export default function HomePage() {
                 onClick={handleCompare}
                 className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
               >
-                Compare {searchItems.filter(item => item.trim() !== '').length} Instrument{searchItems.filter(item => item.trim() !== '').length !== 1 ? 's' : ''}
+                Compare {selectedProducts.filter(product => product !== null).length} Instrument{selectedProducts.filter(product => product !== null).length !== 1 ? 's' : ''}
               </button>
             </div>
           </div>
@@ -284,7 +276,7 @@ export default function HomePage() {
             {popularComparisons.map((comparison, index) => (
               <Link
                 key={index}
-                href={`/compare?ids=${comparison.ids}`}
+                href={`/compare?products=${comparison.products}`}
                 className="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
               >
                 <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -357,19 +349,35 @@ export default function HomePage() {
                       <span className="text-yellow-500">★</span>
                       <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
                     </div>
-                    <span className="text-lg font-bold text-green-600">
-                      €{product.best_price?.price?.toFixed(2) || product.msrp_price?.toFixed(2) || '299'}
-                    </span>
+                    {product.best_price && (
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-green-600">
+                          €{product.best_price.price.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2">
+                    {product.best_price ? (
+                      <a 
+                        href={product.best_price.affiliate_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                      >
+                        Buy at {product.best_price.store.name}
+                      </a>
+                    ) : (
+                      <Link 
+                        href={`/products/${product.slug}-${product.id}`}
+                        className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
+                    )}
                     <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                    <Link 
-                      href={`/compare?ids=${product.id}`}
+                      href={`/compare?products=${product.slug}`}
                       className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       Compare
@@ -404,17 +412,35 @@ export default function HomePage() {
                   {product.description || "Excellent quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-green-600">
-                    €{product.best_price?.price?.toFixed(2) || product.msrp_price?.toFixed(2) || '399'}
-                  </span>
+                  {product.best_price ? (
+                    <div>
+                      <span className="text-lg font-bold text-green-600">
+                        €{product.best_price.price.toFixed(2)}
+                      </span>
+                      <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
+                    </div>
+                  ) : (
+                    <span className="text-lg font-bold text-gray-400">Price not available</span>
+                  )}
                   <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
                 </div>
-                <Link 
-                  href={`/products/${product.slug}-${product.id}`}
-                  className="block mt-4 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Read Reviews
-                </Link>
+                {product.best_price ? (
+                  <a 
+                    href={product.best_price.affiliate_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block mt-4 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                  >
+                    Buy at {product.best_price.store.name}
+                  </a>
+                ) : (
+                  <Link 
+                    href={`/products/${product.slug}-${product.id}`}
+                    className="block mt-4 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    View Details
+                  </Link>
+                )}
               </div>
             ))}
           </div>

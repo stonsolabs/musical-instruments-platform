@@ -10,13 +10,32 @@ import { API_BASE_URL, apiClient } from '@/lib/api';
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
 
+async function fetchProductIdsFromSlugs(productSlugs: string[]): Promise<number[]> {
+  if (productSlugs.length === 0) return [];
+  
+  try {
+    // Fetch product IDs from slugs using the products API
+    const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
+    if (!response.ok) {
+      console.error(`Products API Error: ${response.status} ${response.statusText}`);
+      return [];
+    }
+    
+    const data = await response.json();
+    return data.products.map((product: any) => product.id);
+  } catch (error) {
+    console.error('Error fetching product IDs:', error);
+    return [];
+  }
+}
+
 async function fetchComparison(productIds: number[]): Promise<ComparisonResponse | null> {
-  if (productIds.length < 2) {
+  if (productIds.length < 1) {
     return null;
   }
 
   try {
-    // Use proxy route instead of direct backend call
+    // Use the IDs directly to fetch comparison data
     const response = await fetch(`/api/proxy/compare`, {
       method: 'POST',
       headers: { 
@@ -42,10 +61,20 @@ async function fetchComparison(productIds: number[]): Promise<ComparisonResponse
 export async function generateMetadata({ searchParams }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }): Promise<Metadata> {
-  const idsParam = searchParams.ids as string;
-  const ids = idsParam ? idsParam.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+  const productsParam = searchParams.products as string;
+  const productSlugs = productsParam ? productsParam.split(',').filter(slug => slug.trim()) : [];
   
-  if (ids.length < 2) {
+  if (productSlugs.length < 1) {
+    return {
+      title: 'Compare Musical Instruments',
+      description: 'Compare musical instruments side by side. Find the best deals and features across different brands and models.',
+      keywords: 'compare musical instruments, instrument comparison, music gear comparison',
+    };
+  }
+
+  // Fetch product IDs from slugs internally
+  const productIds = await fetchProductIdsFromSlugs(productSlugs);
+  if (productIds.length < 1) {
     return {
       title: 'Compare Musical Instruments',
       description: 'Compare musical instruments side by side. Find the best deals and features across different brands and models.',
@@ -54,7 +83,7 @@ export async function generateMetadata({ searchParams }: {
   }
 
   // Try to fetch product data for better metadata
-  const comparisonData = await fetchComparison(ids);
+  const comparisonData = await fetchComparison(productIds);
   
   if (comparisonData && comparisonData.products.length > 0) {
     const productNames = comparisonData.products.map(p => p.name).join(' vs ');
@@ -90,11 +119,14 @@ interface ComparePageProps {
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
-  const idsParam = searchParams.ids as string;
-  const ids = idsParam ? idsParam.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+  const productsParam = searchParams.products as string;
+  const productSlugs = productsParam ? productsParam.split(',').filter(slug => slug.trim()) : [];
+  
+  // Fetch product IDs from slugs internally
+  const productIds = await fetchProductIdsFromSlugs(productSlugs);
   
   // Fetch comparison data on the server
-  const comparisonData = await fetchComparison(ids);
+  const comparisonData = await fetchComparison(productIds);
 
   // Generate structured data for SEO
   const structuredData = comparisonData ? {
@@ -131,8 +163,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     },
   } : null;
 
-  // Handle case where no valid IDs are provided
-  if (ids.length < 1) {
+  // Handle case where no valid product IDs are provided
+  if (productIds.length < 1) {
     return (
       <>
         {/* Basic structured data for empty state */}
@@ -300,7 +332,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             </div>
           }>
             <CompareClient
-              productIds={ids}
+              productSlugs={productSlugs}
+              productIds={productIds}
               initialData={comparisonData}
             />
           </Suspense>

@@ -20,22 +20,40 @@ const formatRating = (rating: number): string => {
 };
 
 interface CompareClientProps {
+  productSlugs: string[];
   productIds: number[];
   initialData: ComparisonResponse | null;
 }
 
-export default function CompareClient({ productIds, initialData }: CompareClientProps) {
+export default function CompareClient({ productSlugs, productIds, initialData }: CompareClientProps) {
   const [data, setData] = useState<ComparisonResponse | null>(initialData);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(!initialData && productIds.length >= 2);
+  const [loading, setLoading] = useState<boolean>(!initialData && productIds.length >= 1);
   const [activeTab, setActiveTab] = useState('specs');
 
   // Load data if not provided by server
   useEffect(() => {
-    if (!initialData && productIds.length >= 1) {
+    if (!initialData && productSlugs.length >= 1) {
       const loadData = async () => {
         try {
-          const result = await apiClient.post('/compare', productIds);
+          // If we don't have product IDs, fetch them from slugs first
+          let idsToUse = productIds;
+          if (productIds.length === 0) {
+            const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
+            if (!response.ok) {
+              throw new Error('Failed to fetch product IDs');
+            }
+            
+            const productsData = await response.json();
+            idsToUse = productsData.products.map((product: any) => product.id);
+            
+            if (idsToUse.length === 0) {
+              throw new Error('No product IDs found for the provided slugs');
+            }
+          }
+
+          // Use the IDs to fetch comparison data
+          const result = await apiClient.post('/compare', idsToUse);
           setData(result);
           
           // Track comparison analytics
@@ -52,7 +70,7 @@ export default function CompareClient({ productIds, initialData }: CompareClient
       };
       loadData();
     }
-  }, [productIds, initialData]);
+  }, [productSlugs, productIds, initialData]);
 
   const bestPrice = (p: Product) => p.best_price ? formatPrice(p.best_price.price, p.best_price.currency) : (p.msrp_price ? formatPrice(p.msrp_price) : '—');
 
@@ -138,35 +156,36 @@ export default function CompareClient({ productIds, initialData }: CompareClient
                     </>
                   )}
                 </div>
-                <span className="text-lg font-bold text-green-600">{bestPrice(product)}</span>
+                {product.best_price && (
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">{bestPrice(product)}</div>
+                    <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2">
-                <Link 
-                  href={`/products/${product.slug}-${product.id}`}
-                  className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                >
-                  View Details
-                </Link>
-                <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                  Remove
-                </button>
-              </div>
-
-              {/* Store buttons */}
-              {product.best_price && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Best price:</p>
+                {product.best_price ? (
                   <a 
                     href={product.best_price.affiliate_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full bg-orange-500 text-white text-center py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+                    className="flex-1 text-center bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-semibold"
                   >
-                    {product.best_price.store.name} - {bestPrice(product)}
+                    Buy at {product.best_price.store.name}
                   </a>
-                </div>
-              )}
+                ) : (
+                  <Link 
+                    href={`/products/${product.slug}-${product.id}`}
+                    className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    View Details
+                  </Link>
+                )}
+                <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
         ))}

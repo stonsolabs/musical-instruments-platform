@@ -19,8 +19,8 @@ router = APIRouter(prefix="/compare", tags=["compare"])
 async def compare_products(
     product_ids: List[int] = Body(..., embed=False), db: AsyncSession = Depends(get_db)
 ):
-    if not product_ids or len(product_ids) < 2:
-        raise HTTPException(status_code=400, detail="Provide at least two product IDs")
+    if not product_ids or len(product_ids) < 1:
+        raise HTTPException(status_code=400, detail="Provide at least one product ID")
 
     stmt = (
         select(Product)
@@ -29,7 +29,7 @@ async def compare_products(
     )
     result = await db.execute(stmt)
     products = result.scalars().unique().all()
-    if len(products) < 2:
+    if len(products) < 1:
         raise HTTPException(status_code=404, detail="Some products not found")
 
     # Build comparison data

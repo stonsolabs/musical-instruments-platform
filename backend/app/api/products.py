@@ -20,6 +20,7 @@ async def search_products(
     q: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     brand: Optional[str] = Query(None),
+    slugs: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
     max_price: Optional[float] = Query(None),
     sort_by: str = Query("name"),
@@ -47,6 +48,11 @@ async def search_products(
         from ..models import Brand
 
         base_stmt = base_stmt.join(Product.brand).where(Brand.slug == brand)
+    if slugs:
+        # Filter by specific product slugs (comma-separated)
+        slug_list = [slug.strip() for slug in slugs.split(',') if slug.strip()]
+        if slug_list:
+            base_stmt = base_stmt.where(Product.slug.in_(slug_list))
 
     # Sorting
     if sort_by == "price":
