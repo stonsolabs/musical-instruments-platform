@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { Product } from '@/types';
 import { trackProductView, trackEvent } from '@/components/Analytics';
 import { getApiBaseUrl } from '@/lib/api';
+import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -232,72 +233,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Content - All AI-Generated Sections */}
-        <div className="space-y-8">
-          {/* Basic Info Section */}
-          {product.ai_generated_content?.basic_info && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6">📋 Basic Information</h3>
-              
-              {/* Overview */}
-              {product.ai_generated_content.basic_info.overview && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Overview</h4>
-                  <p className="text-gray-700 leading-relaxed">{product.ai_generated_content.basic_info.overview}</p>
-                </div>
-              )}
-
-              {/* Key Features */}
-              {product.ai_generated_content.basic_info.key_features && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Key Features</h4>
-                  <div className="grid md:grid-cols-2 gap-2">
-                    {product.ai_generated_content.basic_info.key_features.map((feature: string, index: number) => (
-                      <div key={index} className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span className="text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Additional Basic Info */}
-              <div className="grid md:grid-cols-3 gap-6">
-                {product.ai_generated_content.basic_info.target_skill_level && (
-                  <div>
-                    <h5 className="font-medium text-gray-900 mb-2">Target Skill Level</h5>
-                    <p className="text-gray-700">{product.ai_generated_content.basic_info.target_skill_level}</p>
-                  </div>
-                )}
-                {product.ai_generated_content.basic_info.country_of_origin && (
-                  <div>
-                    <h5 className="font-medium text-gray-900 mb-2">Country of Origin</h5>
-                    <p className="text-gray-700">{product.ai_generated_content.basic_info.country_of_origin}</p>
-                  </div>
-                )}
-                {product.ai_generated_content.basic_info.release_year && (
-                  <div>
-                    <h5 className="font-medium text-gray-900 mb-2">Release Year</h5>
-                    <p className="text-gray-700">{product.ai_generated_content.basic_info.release_year}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Technical Analysis Section */}
-          {product.ai_generated_content?.technical_analysis && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6">🔧 Technical Analysis</h3>
-              
-              {/* Sound Characteristics */}
-              {product.ai_generated_content.technical_analysis.sound_characteristics && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Sound Characteristics</h4>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      {product.ai_generated_content.technical_analysis.sound_characteristics.tonal_profile && (
+        {/* Comprehensive Product Details */}
+        <ComprehensiveProductDetails product={product} />
                         <div className="mb-4">
                           <h5 className="font-medium text-gray-900 mb-2">Tonal Profile</h5>
                           <p className="text-gray-700">{product.ai_generated_content.technical_analysis.sound_characteristics.tonal_profile}</p>

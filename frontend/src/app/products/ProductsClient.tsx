@@ -425,10 +425,25 @@ export default function ProductsClient({
                           </p>
                         )}
 
-                        {/* Key Specifications Preview */}
-                        {product.specifications && Object.keys(product.specifications).length > 0 && (
+                        {/* AI Content Preview */}
+                        {product.ai_content && (
                           <div className="mb-2">
                             <div className="text-xs text-gray-500 mb-1">Key Features:</div>
+                            <div className="text-xs text-gray-600">
+                              {product.ai_content.basic_info.key_features.slice(0, 2).map((feature, index) => (
+                                <span key={index} className="inline-block mr-2">
+                                  {feature}
+                                </span>
+                              ))}
+                              {product.ai_content.basic_info.key_features.length > 2 && "..."}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Specifications Preview */}
+                        {product.specifications && Object.keys(product.specifications).length > 0 && (
+                          <div className="mb-2">
+                            <div className="text-xs text-gray-500 mb-1">Specifications:</div>
                             <div className="text-xs text-gray-600">
                               {Object.entries(product.specifications)
                                 .slice(0, 2)

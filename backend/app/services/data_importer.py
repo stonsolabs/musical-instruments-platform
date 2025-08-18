@@ -38,14 +38,17 @@ class DataImporter:
 
     async def _create_sample_categories(self) -> None:
         categories_data = [
-            {"name": "Electric Guitars", "slug": "electric-guitars", "description": "Electric guitars and basses"},
+            {"name": "Electric Guitars", "slug": "electric-guitars", "description": "Electric guitars for all styles and genres"},
             {"name": "Acoustic Guitars", "slug": "acoustic-guitars", "description": "Acoustic and classical guitars"},
-            {"name": "Digital Keyboards", "slug": "digital-keyboards", "description": "Digital pianos and keyboards"},
-            {"name": "Synthesizers", "slug": "synthesizers", "description": "Analog and digital synthesizers"},
-            {"name": "Amplifiers", "slug": "amplifiers", "description": "Guitar and bass amplifiers"},
-            {"name": "Studio and Recording Equipment", "slug": "studio-and-recording-equipment", "description": "Recording interfaces and equipment"},
-            {"name": "Microphones", "slug": "microphones", "description": "Studio and live microphones"},
-            {"name": "Headphones", "slug": "headphones", "description": "Studio and consumer headphones"},
+            {"name": "Bass Guitars", "slug": "bass-guitars", "description": "Electric and acoustic bass guitars"},
+            {"name": "Drums & Percussion", "slug": "drums-percussion", "description": "Drum kits, percussion instruments and accessories"},
+            {"name": "Pianos & Keyboards", "slug": "pianos-keyboards", "description": "Digital pianos, keyboards and synthesizers"},
+            {"name": "Orchestral", "slug": "orchestral", "description": "String, brass, woodwind and orchestral instruments"},
+            {"name": "Live Sound & Lighting", "slug": "live-sound-lighting", "description": "PA systems, mixers, and stage lighting equipment"},
+            {"name": "Studio & Production", "slug": "studio-production", "description": "Recording interfaces, monitors and studio equipment"},
+            {"name": "Music Software", "slug": "music-software", "description": "DAWs, plugins and music production software"},
+            {"name": "DJ Equipment", "slug": "dj-equipment", "description": "DJ controllers, turntables and mixing equipment"},
+            {"name": "Home Audio", "slug": "home-audio", "description": "Home stereo systems, speakers and audio equipment"},
         ]
         for cat_data in categories_data:
             result = await self.db.execute(select(Category).where(Category.slug == cat_data["slug"]))

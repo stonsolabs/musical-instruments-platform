@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
+import ComprehensiveComparison from '@/components/ComprehensiveComparison';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -714,6 +715,9 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       </div>
 
 
+
+      {/* Comprehensive AI-Generated Comparison */}
+      <ComprehensiveComparison products={data.products} />
 
       {/* Add more to comparison */}
       <div className="mt-8">
