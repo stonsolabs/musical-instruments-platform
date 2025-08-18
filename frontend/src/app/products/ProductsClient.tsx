@@ -29,11 +29,20 @@ const apiClient = {
   async searchProducts(params: any): Promise<SearchResponse> {
     const sp = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') sp.append(k, String(v));
+      if (v !== undefined && v !== null && v !== '') {
+        sp.append(k, String(v));
+      }
     });
     
-    const response = await fetch(`/api/proxy/products?${sp.toString()}`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const url = `/api/proxy/products?${sp.toString()}`;
+    console.log('🔍 API Request URL:', url);
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ API Error:', response.status, errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
     return await response.json();
   },
 };
@@ -77,79 +86,6 @@ export default function ProductsClient({
     setSearchQuery(currentFilters.query);
   }, [currentFilters.query]);
 
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log('🔍 Loading products with filters:', currentFilters);
-      const data = await apiClient.searchProducts({
-        ...currentFilters,
-        limit: 20,
-      });
-      console.log('✅ Products loaded:', data.products.length, 'products');
-      setProducts(data.products);
-      setPagination(data.pagination);
-    } catch (e) {
-      setError('Failed to load products.');
-      console.error('Load products error:', e);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentFilters]);
-
-  // Load products when filters change
-  useEffect(() => {
-    // Skip initial load since we have server-side data
-    if (products.length === 0 && !loading) {
-      return;
-    }
-    
-    // Check if filters have actually changed from the initial state
-    const hasActiveFilters = Object.values(currentFilters).some(value => 
-      value !== '' && value !== 'name' && value !== 1
-    );
-    
-    console.log('🔍 Filter check - hasActiveFilters:', hasActiveFilters, 'currentFilters:', currentFilters);
-    
-    if (hasActiveFilters) {
-      console.log('🔍 Filters active, loading products...');
-      
-      const loadProductsWithFilters = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          console.log('🔍 Loading products with filters:', currentFilters);
-          const data = await apiClient.searchProducts({
-            ...currentFilters,
-            limit: 20,
-          });
-          console.log('✅ Products loaded:', data.products.length, 'products');
-          setProducts(data.products);
-          setPagination(data.pagination);
-        } catch (e) {
-          setError('Failed to load products.');
-          console.error('Load products error:', e);
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      loadProductsWithFilters();
-    }
-  }, [currentFilters, products.length, loading]);
-
-  // Debounced search
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchQuery !== currentFilters.query) {
-        console.log('🔍 Search query changed:', searchQuery);
-        updateFilters({ query: searchQuery });
-      }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, currentFilters.query]);
-
   const updateFilters = (newFilters: Partial<typeof currentFilters>) => {
     const params = new URLSearchParams(searchParams.toString());
     
@@ -173,6 +109,80 @@ export default function ProductsClient({
     console.log('🔍 Updating filters:', newFilters, 'New URL:', newUrl);
     router.push(newUrl);
   };
+
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log('🔍 Loading products with filters:', currentFilters);
+      
+      // Prepare API parameters
+      const apiParams: any = {
+        limit: 20,
+        page: currentFilters.page,
+        sort_by: currentFilters.sort_by,
+      };
+      
+      // Add optional parameters only if they have values
+      if (currentFilters.query) apiParams.query = currentFilters.query;
+      if (currentFilters.category) apiParams.category = currentFilters.category;
+      if (currentFilters.brand) apiParams.brand = currentFilters.brand;
+      if (currentFilters.price_min) apiParams.price_min = currentFilters.price_min;
+      if (currentFilters.price_max) apiParams.price_max = currentFilters.price_max;
+      
+      console.log('🔍 API Parameters:', apiParams);
+      
+      const data = await apiClient.searchProducts(apiParams);
+      console.log('✅ Products loaded:', data.products.length, 'products');
+      console.log('✅ Pagination:', data.pagination);
+      console.log('✅ Sample product:', data.products[0]);
+      
+      setProducts(data.products);
+      setPagination(data.pagination);
+    } catch (e) {
+      console.error('❌ Load products error:', e);
+      setError(`Failed to load products: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentFilters]);
+
+  // Load products when filters change
+  useEffect(() => {
+    // Check if we have any active filters
+    const hasActiveFilters = currentFilters.query || 
+                            currentFilters.category || 
+                            currentFilters.brand || 
+                            currentFilters.price_min || 
+                            currentFilters.price_max ||
+                            currentFilters.sort_by !== 'name' ||
+                            currentFilters.page > 1;
+    
+    console.log('🔍 Filter check - hasActiveFilters:', hasActiveFilters, 'currentFilters:', currentFilters);
+    
+    // Always load products when filters change, but be smart about it
+    if (hasActiveFilters) {
+      console.log('🔍 Active filters detected, loading products...');
+      loadProducts();
+    } else if (products.length === 0) {
+      // If no products loaded and no filters, load initial products
+      console.log('🔍 No products loaded, loading initial products...');
+      setProducts(initialProducts);
+      setPagination(initialPagination);
+    }
+  }, [currentFilters, loadProducts, products.length, initialProducts, initialPagination]);
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery !== currentFilters.query) {
+        console.log('🔍 Search query changed:', searchQuery);
+        updateFilters({ query: searchQuery });
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, currentFilters.query, updateFilters]);
 
   const toggleProductSelection = (productId: number) => {
     console.log('🔍 Toggling product selection for ID:', productId);
@@ -453,18 +463,38 @@ export default function ProductsClient({
                   </span>
                 )}
               </p>
+              {error && (
+                <p className="text-red-600 text-sm mt-1">
+                  Error: {error}
+                </p>
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Button */}
-              <button
-                onClick={() => setShowMobileFilters(!showMobileFilters)}
-                className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-                </svg>
-                Filters
-              </button>
+                          <div className="flex items-center gap-2">
+                {/* Debug Button */}
+                {process.env.NODE_ENV !== 'production' && (
+                  <button
+                    onClick={() => {
+                      console.log('🔍 Debug: Current filters:', currentFilters);
+                      console.log('🔍 Debug: Products count:', products.length);
+                      console.log('🔍 Debug: Loading state:', loading);
+                      loadProducts();
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Debug API
+                  </button>
+                )}
+                
+                {/* Mobile Filter Button */}
+                <button
+                  onClick={() => setShowMobileFilters(!showMobileFilters)}
+                  className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                  </svg>
+                  Filters
+                </button>
               
               <span className="text-sm text-gray-500">Selected: {selectedProducts.length}</span>
               {selectedProducts.length > 0 && (
