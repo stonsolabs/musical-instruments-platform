@@ -28,12 +28,13 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Electric Guitars</Link>
             <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Acoustic Guitars</Link>
-            <Link href="/products?category=digital-keyboards" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Keyboards</Link>
-            <Link href="/products?category=synthesizers" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Synthesizers</Link>
+            <Link href="/products?category=digital-keyboards" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Digital Keyboards</Link>
             <Link href="/products?category=amplifiers" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Amplifiers</Link>
-            <Link href="/deals" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Deals</Link>
-            <Link href="/blog" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Blog</Link>
-            <Link href="/about" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">About</Link>
+            <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Bass Guitars</Link>
+            <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Drums & Percussion</Link>
+            <Link href="/products?category=effects-pedals" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Effects Pedals</Link>
+            <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">DJ Equipment</Link>
+            <Link href="/products?category=studio-and-recording-equipment" className="text-gray-900 hover:text-gray-700 transition-colors text-base font-medium">Studio & Recording</Link>
           </nav>
 
           {/* Right side */}
@@ -57,12 +58,13 @@ export function Header() {
           <div className="px-4 pt-4 pb-3 space-y-3">
             <Link href="/products?category=electric-guitars" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Electric Guitars</Link>
             <Link href="/products?category=acoustic-guitars" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Acoustic Guitars</Link>
-            <Link href="/products?category=digital-keyboards" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Keyboards</Link>
-            <Link href="/products?category=synthesizers" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Synthesizers</Link>
+            <Link href="/products?category=digital-keyboards" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Digital Keyboards</Link>
             <Link href="/products?category=amplifiers" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Amplifiers</Link>
-            <Link href="/deals" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Deals</Link>
-            <Link href="/blog" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Blog</Link>
-            <Link href="/about" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">About</Link>
+            <Link href="/products?category=bass-guitars" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Bass Guitars</Link>
+            <Link href="/products?category=drums-percussion" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Drums & Percussion</Link>
+            <Link href="/products?category=effects-pedals" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Effects Pedals</Link>
+            <Link href="/products?category=dj-equipment" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">DJ Equipment</Link>
+            <Link href="/products?category=studio-and-recording-equipment" className="block px-3 py-2 text-gray-900 hover:text-gray-700 transition-colors text-base">Studio & Recording</Link>
           </div>
         </div>
       )}

@@ -1,7 +1,6 @@
 'use client'
 
 import Script from 'next/script'
-import { Analytics } from '@vercel/analytics/react'
 
 // Google Tag Manager Component
 export function GoogleTagManager() {
@@ -28,10 +27,7 @@ export function GoogleTagManager() {
   )
 }
 
-// Vercel Analytics Component
-export function VercelAnalytics() {
-  return <Analytics />
-}
+// Vercel Analytics Component - Removed, using GTM and Google Analytics instead
 
 // Helper functions for custom event tracking via GTM
 export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {

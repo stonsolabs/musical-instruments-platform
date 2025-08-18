@@ -620,7 +620,7 @@ export default function HomePage() {
       <section className="py-4 bg-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg p-6 text-white text-center">
-            <h3 className="text-xl font-bold mb-2">🎵 Gear4Music Sale</h3>
+            <h3 className="text-xl font-bold mb-2">🎵 Sale</h3>
             <p className="mb-4">Up to 40% off on selected instruments</p>
             <button className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
               Shop Sale
