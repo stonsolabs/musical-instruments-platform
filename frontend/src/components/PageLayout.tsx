@@ -37,7 +37,7 @@ export default function PageLayout({
   // Default layout with sidebar
   return (
     <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {children}
@@ -45,7 +45,7 @@ export default function PageLayout({
 
         {/* Sidebar with Ads */}
         {showSidebar && (
-          <div className="lg:flex-shrink-0">
+          <div className="lg:flex-shrink-0 lg:w-80 xl:w-96">
             <AdSidebar />
           </div>
         )}

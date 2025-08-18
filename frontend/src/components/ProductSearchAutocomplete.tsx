@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SearchAutocompleteProduct } from '@/types';
 import { trackSearch, trackEvent } from '@/components/Analytics';
 import { getApiBaseUrl } from '@/lib/api';
+import AffiliateButton from './AffiliateButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -90,10 +92,8 @@ export default function ProductSearchAutocomplete({
         if (onProductSelect) {
           onProductSelect(singleResult);
         } else {
-          // Navigate to product page after a short delay to show the result briefly
-          setTimeout(() => {
-            window.location.href = `/products/${singleResult.slug}-${singleResult.id}`;
-          }, 500);
+          // Navigate directly to product page for single results
+          window.location.href = `/products/${singleResult.slug}-${singleResult.id}`;
         }
       }
     } catch (error) {
@@ -308,23 +308,54 @@ export default function ProductSearchAutocomplete({
                   {suggestion.prices && suggestion.prices.length > 0 && (
                     <div className="mt-2">
                       <div className="flex flex-wrap gap-1">
-                        {suggestion.prices.slice(0, 3).map((price) => (
-                          <a
-                            key={price.id}
-                            href={price.affiliate_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                                                         className={`flex items-center justify-center px-2 py-1 rounded text-xs font-medium transition-colors ${
-                               price.is_available
-                                 ? 'bg-gray-800 text-white hover:bg-gray-700'
-                                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                             }`}
-                            title={`Buy at ${price.store.name}`}
-                          >
-                            {price.store.name}
-                          </a>
-                        ))}
+                        {suggestion.prices.slice(0, 3).map((price) => {
+                          const isThomann = price.store.name.toLowerCase().includes('thomann');
+                          const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
+                          
+                          if (isThomann) {
+                            return (
+                              <AffiliateButton
+                                key={price.id}
+                                store="thomann"
+                                href={price.affiliate_url}
+                                className={`px-2 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {price.store.name}
+                              </AffiliateButton>
+                            );
+                          } else if (isGear4Music) {
+                            return (
+                              <AffiliateButton
+                                key={price.id}
+                                store="gear4music"
+                                href={price.affiliate_url}
+                                className={`px-2 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {price.store.name}
+                              </AffiliateButton>
+                            );
+                          } else {
+                            return (
+                              <a
+                                key={price.id}
+                                href={price.affiliate_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className={`flex items-center justify-center px-2 py-1 rounded text-xs font-medium transition-colors ${
+                                  price.is_available
+                                    ? 'bg-gray-800 text-white hover:bg-gray-700'
+                                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                }`}
+                                title={`Buy at ${price.store.name}`}
+                              >
+                                {price.store.name}
+                              </a>
+                            );
+                          }
+                        })}
                         {suggestion.prices.length > 3 && (
                           <Link
                             href={`/products/${suggestion.slug}-${suggestion.id}`}

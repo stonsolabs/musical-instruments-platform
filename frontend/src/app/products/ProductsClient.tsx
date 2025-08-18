@@ -8,6 +8,7 @@ import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
 import PageLayout from '@/components/PageLayout';
 import AdSidebar from '@/components/AdSidebar';
+import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -212,8 +213,8 @@ export default function ProductsClient({
   const hasDifferentCategories = new Set(selectedProductCategories).size > 1;
 
   return (
-    <PageLayout layout="preserve-grid">
-      <div className="grid lg:grid-cols-5 gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid lg:grid-cols-6 gap-6 xl:gap-8">
         {/* Sidebar Filters */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
@@ -319,8 +320,7 @@ export default function ProductsClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600">
               {pagination.total} products found
               {Object.keys(currentFilters).some(key => currentFilters[key as keyof typeof currentFilters]) && (
                 <span className="ml-2 text-sm text-blue-600">
@@ -355,16 +355,9 @@ export default function ProductsClient({
           </div>
         )}
 
-        {/* Ad Space - Middle */}
-        <section className="mb-6">
-          <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-4 text-white text-center">
-            <p className="text-sm">🎵 Free shipping on orders over €199</p>
-          </div>
-        </section>
-
         {/* Products Grid */}
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
                 <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
@@ -386,10 +379,10 @@ export default function ProductsClient({
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {products.map((product) => (
-                <div key={product.id} className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300">
-                  <Link href={`/products/${product.slug}-${product.id}`}>
+                <div key={product.id} className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300 flex flex-col h-full">
+                  <Link href={`/products/${product.slug}-${product.id}`} className="flex-1">
                     <div className="relative">
                       <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden">
                         {product.images && product.images.length > 0 ? (
@@ -422,54 +415,14 @@ export default function ProductsClient({
                       </button>
                     </div>
                     
-                    <div className="p-6">
-                      <div className="space-y-3">
+                    <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                      <div className="space-y-3 flex-1">
                         <div>
                           <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
                           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                         </div>
 
-                        {/* Product Description */}
-                        {product.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        )}
-
-                        {/* AI Content Preview */}
-                        {product.ai_content && (
-                          <div className="mb-2">
-                            <div className="text-xs text-gray-500 mb-1">Key Features:</div>
-                            <div className="text-xs text-gray-600">
-                              {product.ai_content.basic_info.key_features.slice(0, 2).map((feature, index) => (
-                                <span key={index} className="inline-block mr-2">
-                                  {feature}
-                                </span>
-                              ))}
-                              {product.ai_content.basic_info.key_features.length > 2 && "..."}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Specifications Preview */}
-                        {product.specifications && Object.keys(product.specifications).length > 0 && (
-                          <div className="mb-2">
-                            <div className="text-xs text-gray-500 mb-1">Specifications:</div>
-                            <div className="text-xs text-gray-600">
-                              {Object.entries(product.specifications)
-                                .slice(0, 2)
-                                .map(([key, value]) => (
-                                  <span key={key} className="inline-block mr-2">
-                                    {key.replace(/_/g, ' ')}: {String(value)}
-                                  </span>
-                                ))
-                              }
-                              {Object.keys(product.specifications).length > 2 && "..."}
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-auto">
                           <div className="flex items-center gap-2">
                             {product.avg_rating > 0 && (
                               <>
@@ -481,25 +434,12 @@ export default function ProductsClient({
                           </div>
                           <span className="text-sm text-gray-600">{product.category.name}</span>
                         </div>
-
-                        {/* Best Price Display */}
-                        {product.best_price && (
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-2">
-                            <div className="text-xs text-green-700 mb-1">Best Price:</div>
-                            <div className="text-lg font-bold text-green-800">
-                              {formatPrice(product.best_price.price, product.best_price.currency)}
-                            </div>
-                            {product.best_price.store?.name && (
-                              <div className="text-xs text-green-600">at {product.best_price.store.name}</div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </Link>
                   
                   {/* Store Buttons Section */}
-                  <div className="px-6 pb-6">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
                     <div className="space-y-2">
                       {product.prices && product.prices.length > 0 ? (
                         <>
@@ -536,33 +476,15 @@ export default function ProductsClient({
                         <>
                           {/* Default affiliate store links when no prices available */}
                           <div className="space-y-2 mb-2">
-                            <a 
-                              href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
-                            >
-                              Check on Amazon
-                            </a>
-                            <a 
+                            <AffiliateButton
+                              store="thomann"
                               href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                              Check on Thomann
-                            </a>
-                            <a 
+                              className="mb-2"
+                            />
+                            <AffiliateButton
+                              store="gear4music"
                               href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                            >
-                              Check on Gear4Music
-                            </a>
+                            />
                           </div>
 
                         </>
@@ -630,7 +552,7 @@ export default function ProductsClient({
 
       {/* Ad Sidebar */}
       <div className="lg:col-span-1">
-        <AdSidebar />
+        <AdSidebar compact />
       </div>
       
       {/* Floating Compare Button */}
@@ -640,6 +562,6 @@ export default function ProductsClient({
         isVisible={selectedProducts.length >= 1}
       />
       </div>
-    </PageLayout>
+    </div>
   );
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import PageLayout from '@/components/PageLayout';
+import AffiliateButton from '@/components/AffiliateButton';
 
 export const metadata: Metadata = {
   title: 'Special Deals - Musical Instruments',
@@ -173,14 +175,28 @@ export default function DealsPage() {
                       <span className="text-sm text-gray-500">Valid until {deal.validUntil}</span>
                     </div>
                     
-                    <a
-                      href={deal.affiliateUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full text-center bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
-                    >
-                      Shop Now at {deal.store}
-                    </a>
+                    {deal.store === "Thomann" ? (
+                      <AffiliateButton
+                        store="thomann"
+                        href={deal.affiliateUrl}
+                        className="w-full"
+                      />
+                    ) : deal.store === "Gear4Music" ? (
+                      <AffiliateButton
+                        store="gear4music"
+                        href={deal.affiliateUrl}
+                        className="w-full"
+                      />
+                    ) : (
+                      <a
+                        href={deal.affiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                      >
+                        Shop Now at {deal.store}
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -223,14 +239,28 @@ export default function DealsPage() {
                     <span className="text-xs text-gray-600">{deal.store}</span>
                   </div>
                   
-                  <a
-                    href={deal.affiliateUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
-                  >
-                    Shop Now
-                  </a>
+                  {deal.store === "Thomann" ? (
+                    <AffiliateButton
+                      store="thomann"
+                      href={deal.affiliateUrl}
+                      className="w-full"
+                    />
+                  ) : deal.store === "Gear4Music" ? (
+                    <AffiliateButton
+                      store="gear4music"
+                      href={deal.affiliateUrl}
+                      className="w-full"
+                    />
+                  ) : (
+                    <a
+                      href={deal.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
+                    >
+                      Shop Now
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

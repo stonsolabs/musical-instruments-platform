@@ -3,10 +3,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Product } from '@/types';
 import { trackProductView, trackEvent } from '@/components/Analytics';
 import { getApiBaseUrl } from '@/lib/api';
 import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
+import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -186,22 +188,53 @@ export default function ProductDetailPage() {
                   <p className="text-sm text-gray-700 font-medium mb-3">Available at {product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
                   {product.prices && product.prices.length > 0 ? (
                     <div className="space-y-2">
-                      {product.prices.slice(0, 3).map((price) => (
-                        <a
-                          key={price.id}
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                            price.is_available
-                              ? 'bg-gray-800 text-white hover:bg-gray-700'
-                              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                          }`}
-                        >
-                          {price.store.name}
-                          {!price.is_available && ' (Out of Stock)'}
-                        </a>
-                      ))}
+                      {product.prices.slice(0, 3).map((price) => {
+                        const isThomann = price.store.name.toLowerCase().includes('thomann');
+                        const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
+                        
+                        if (isThomann) {
+                          return (
+                            <AffiliateButton
+                              key={price.id}
+                              store="thomann"
+                              href={price.affiliate_url}
+                              className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                            >
+                              {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </AffiliateButton>
+                          );
+                        } else if (isGear4Music) {
+                          return (
+                            <AffiliateButton
+                              key={price.id}
+                              store="gear4music"
+                              href={price.affiliate_url}
+                              className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                            >
+                              {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </AffiliateButton>
+                          );
+                        } else {
+                          return (
+                            <a
+                              key={price.id}
+                              href={price.affiliate_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                price.is_available
+                                  ? 'bg-gray-800 text-white hover:bg-gray-700'
+                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                              }`}
+                            >
+                              {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </a>
+                          );
+                        }
+                      })}
                       {product.prices.length > 3 && (
                         <p className="text-xs text-gray-500 text-center">
                           +{product.prices.length - 3} more stores available

@@ -93,21 +93,21 @@ export async function generateMetadata({ searchParams }: {
   const category = searchParams.category as string || '';
   const brand = searchParams.brand as string || '';
 
-  let title = 'Musical Instruments';
-  let description = 'Browse our extensive collection of musical instruments. Find guitars, pianos, drums, and more from top brands.';
+  let title = 'Products';
+  let description = 'Browse our extensive collection of products. Find guitars, pianos, drums, and more from top brands.';
 
   if (query) {
-    title = `${query} - Musical Instruments`;
-    description = `Find ${query} and other musical instruments. Compare prices and features from multiple retailers.`;
+    title = `${query}`;
+    description = `Find ${query} and other products. Compare prices and features from multiple retailers.`;
   } else if (category && brand) {
-    title = `${brand} ${category} - Musical Instruments`;
-    description = `Browse ${brand} ${category} instruments. Compare prices and find the best deals.`;
+    title = `${brand} ${category}`;
+    description = `Browse ${brand} ${category} products. Compare prices and find the best deals.`;
   } else if (category) {
-    title = `${category} - Musical Instruments`;
-    description = `Explore our ${category} collection. Find the perfect instrument with detailed comparisons and reviews.`;
+    title = `${category}`;
+    description = `Explore our ${category} collection. Find the perfect product with detailed comparisons and reviews.`;
   } else if (brand) {
-    title = `${brand} Instruments - Musical Instruments`;
-    description = `Browse ${brand} musical instruments. Compare models and find the best prices.`;
+    title = `${brand} Products`;
+    description = `Browse ${brand} products. Compare models and find the best prices.`;
   }
 
   return {
@@ -144,8 +144,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Musical Instruments',
-    description: 'Browse our extensive collection of musical instruments from top brands.',
+    name: 'Products',
+    description: 'Browse our extensive collection of products from top brands.',
     url: 'https://getyourmusicgear.com/products',
     mainEntity: {
       '@type': 'ItemList',
@@ -184,15 +184,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       />
 
       <div className="min-h-screen bg-gray-50">
-        {/* Ad Space - Top */}
-        <section className="py-4 bg-white border-b">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-4 text-white text-center">
-              <p className="text-sm">🎵 Find the best deals on musical instruments</p>
-            </div>
-          </div>
-        </section>
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
           <nav className="mb-6" aria-label="Breadcrumb">
@@ -206,11 +197,22 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Musical Instruments
+              {searchParams.category ? 
+                (searchParams.category as string).split('-').map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ') : 
+                'Products'
+              }
             </h1>
             <p className="text-lg text-gray-600">
-              Discover {productsData.pagination.total} musical instruments from top brands. 
-              Compare prices, read reviews, and find your perfect instrument.
+              {productsData.pagination.total} products found
+              {searchParams.category && (
+                <span className="ml-2">
+                  in {(searchParams.category as string).split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                  ).join(' ')}
+                </span>
+              )}
             </p>
           </div>
 

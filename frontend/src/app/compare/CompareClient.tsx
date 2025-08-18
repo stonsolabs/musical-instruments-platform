@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api';
 import ComprehensiveComparison from '@/components/ComprehensiveComparison';
 import PageLayout from '@/components/PageLayout';
 import AdSidebar from '@/components/AdSidebar';
+import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -121,10 +122,6 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
     }
   }, [productSlugs, productIds, initialData]);
 
-  const bestPrice = (p: Product) => p.best_price ? formatPrice(p.best_price.price, p.best_price.currency) : (p.msrp_price ? formatPrice(p.msrp_price) : '—');
-
-
-
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -169,7 +166,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
   const hasDifferentCategories = new Set(data.products.map(p => p.category.name)).size > 1;
 
   return (
-    <PageLayout layout="preserve-grid">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
           {/* Product Header Cards - Aligned with specs table */}
@@ -234,30 +231,15 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       <>
                         {/* Default affiliate store links when no prices available */}
                         <div className="space-y-2 mb-2">
-                          <a 
-                            href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
-                          >
-                            Check on Amazon
-                          </a>
-                          <a 
+                          <AffiliateButton
+                            store="thomann"
                             href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-                          >
-                            Check on Thomann
-                          </a>
-                          <a 
+                            className="mb-2"
+                          />
+                          <AffiliateButton
+                            store="gear4music"
                             href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                          >
-                            Check on Gear4Music
-                          </a>
+                          />
                         </div>
                         <Link 
                           href={`/products/${product.slug}-${product.id}`}
@@ -443,7 +425,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       </div>
 
       {/* AI-Generated Content Comparison */}
-      {data.products.some(product => product.ai_generated_content) && (
+      {data.products.some(product => product.ai_content) && (
         <>
           {/* Professional Assessment Comparison */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -470,15 +452,15 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                         </td>
                         {data.products.map((product) => (
                           <td key={product.id} className="py-4 px-6">
-                            {product.ai_generated_content?.professional_assessment?.expert_rating?.[rating] ? (
-                              <div className="flex items-center gap-2">
-                                <div className="w-16 bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className="bg-blue-600 h-2 rounded-full" 
-                                    style={{ width: `${(Number(product.ai_generated_content.professional_assessment.expert_rating[rating]) / 10) * 100}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-sm font-medium">{product.ai_generated_content.professional_assessment.expert_rating[rating]}/10</span>
+                                                       {product.ai_content?.professional_assessment?.expert_rating?.[rating] ? (
+                             <div className="flex items-center gap-2">
+                               <div className="w-16 bg-gray-200 rounded-full h-2">
+                                 <div 
+                                   className="bg-blue-600 h-2 rounded-full" 
+                                   style={{ width: `${(Number(product.ai_content.professional_assessment.expert_rating[rating]) / 10) * 100}%` }}
+                                 ></div>
+                               </div>
+                               <span className="text-sm font-medium">{product.ai_content.professional_assessment.expert_rating[rating]}/10</span>
                               </div>
                             ) : (
                               <span className="text-gray-500">N/A</span>
@@ -751,9 +733,9 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
         {/* Desktop Ad Sidebar */}
         <div className="hidden lg:block lg:w-80">
-          <AdSidebar />
+          <AdSidebar compact />
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 }

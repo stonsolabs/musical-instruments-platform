@@ -6,6 +6,7 @@ import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
 import PageLayout from '@/components/PageLayout';
+import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -174,10 +175,8 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* Ad Space - Top Banner */}
-      <section className="py-4 bg-gray-100">
+      <section className="py-6 bg-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Special Offer!</h3>
@@ -223,10 +222,8 @@ export default function HomePage() {
         </PageLayout>
       </section>
 
-
-
       {/* Ad Space - Middle Banner */}
-      <section className="py-4 bg-white">
+      <section className="py-6 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
@@ -274,25 +271,56 @@ export default function HomePage() {
                   <div className="space-y-2">
                     {product.prices && product.prices.length > 0 ? (
                       <>
-                        {/* All Store Buttons */}
+                        {/* Show only stores that are actually associated with this product */}
                         {product.prices
                           .slice(0, 3) // Show max 3 stores to avoid clutter
-                          .map((price) => (
-                            <a 
-                              key={price.id}
-                              href={price.affiliate_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                                price.is_available 
-                                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
-                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                              }`}
-                            >
-                              {formatPrice(price.price, price.currency)} at {price.store.name}
-                              {!price.is_available && ' (Out of Stock)'}
-                            </a>
-                          ))
+                          .map((price) => {
+                            const isThomann = price.store.name.toLowerCase().includes('thomann');
+                            const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
+                            
+                            if (isThomann) {
+                              return (
+                                <AffiliateButton
+                                  key={price.id}
+                                  store="thomann"
+                                  href={price.affiliate_url}
+                                  className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                                >
+                                  {formatPrice(price.price, price.currency)} at {price.store.name}
+                                  {!price.is_available && ' (Out of Stock)'}
+                                </AffiliateButton>
+                              );
+                            } else if (isGear4Music) {
+                              return (
+                                <AffiliateButton
+                                  key={price.id}
+                                  store="gear4music"
+                                  href={price.affiliate_url}
+                                  className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                                >
+                                  {formatPrice(price.price, price.currency)} at {price.store.name}
+                                  {!price.is_available && ' (Out of Stock)'}
+                                </AffiliateButton>
+                              );
+                            } else {
+                              return (
+                                <a 
+                                  key={price.id}
+                                  href={price.affiliate_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                    price.is_available 
+                                      ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                                      : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                  }`}
+                                >
+                                  {formatPrice(price.price, price.currency)} at {price.store.name}
+                                  {!price.is_available && ' (Out of Stock)'}
+                                </a>
+                              );
+                            }
+                          })
                         }
                         
                         {/* Show more stores link if there are more than 3 */}
@@ -305,43 +333,14 @@ export default function HomePage() {
                           </Link>
                         )}
                       </>
-                                      ) : (
-                    <>
-                      {/* Default affiliate store links when no prices available */}
-                      <div className="space-y-2 mb-2">
-                        <a 
-                          href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
-                        >
-                          Check on Amazon
-                        </a>
-                        <a 
-                          href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-                        >
-                          Check on Thomann
-                        </a>
-                        <a 
-                          href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                        >
-                          Check on Gear4Music
-                        </a>
-                      </div>
+                    ) : (
                       <Link 
                         href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                        className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
                       >
                         View Details
                       </Link>
-                    </>
-                  )}
+                    )}
                   </div>
                 </div>
               ))}
@@ -377,51 +376,82 @@ export default function HomePage() {
                 <div className="space-y-2 mt-4">
                   {product.prices && product.prices.length > 0 ? (
                     <>
-                      {/* All Store Buttons */}
+                      {/* Show only stores that are actually associated with this product */}
                       {product.prices
                         .slice(0, 3) // Show max 3 stores to avoid clutter
-                        .map((price) => (
-                          <a 
-                            key={price.id}
-                            href={price.affiliate_url}
-                            target="_blank"
-                              rel="noopener noreferrer"
-                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                                price.is_available 
-                                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                              }`}
-                            >
-                              {formatPrice(price.price, price.currency)} at {price.store.name}
-                              {!price.is_available && ' (Out of Stock)'}
-                            </a>
-                          ))
-                        }
-                        
-                        {/* Show more stores link if there are more than 3 */}
-                        {product.prices.length > 3 && (
-                          <Link 
-                            href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                          >
-                            View All {product.prices.length} Stores
-                          </Link>
-                        )}
-                      </>
-                    ) : (
-                      <Link 
-                        href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        View Details
-                      </Link>
-                    )}
-                  </div>
+                        .map((price) => {
+                          const isThomann = price.store.name.toLowerCase().includes('thomann');
+                          const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
+                          
+                          if (isThomann) {
+                            return (
+                              <AffiliateButton
+                                key={price.id}
+                                store="thomann"
+                                href={price.affiliate_url}
+                                className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                              >
+                                {formatPrice(price.price, price.currency)} at {price.store.name}
+                                {!price.is_available && ' (Out of Stock)'}
+                              </AffiliateButton>
+                            );
+                          } else if (isGear4Music) {
+                            return (
+                              <AffiliateButton
+                                key={price.id}
+                                store="gear4music"
+                                href={price.affiliate_url}
+                                className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                              >
+                                {formatPrice(price.price, price.currency)} at {price.store.name}
+                                {!price.is_available && ' (Out of Stock)'}
+                              </AffiliateButton>
+                            );
+                          } else {
+                            return (
+                              <a 
+                                key={price.id}
+                                href={price.affiliate_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                  price.is_available 
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                }`}
+                              >
+                                {formatPrice(price.price, price.currency)} at {price.store.name}
+                                {!price.is_available && ' (Out of Stock)'}
+                              </a>
+                            );
+                          }
+                        })
+                      }
+                      
+                      {/* Show more stores link if there are more than 3 */}
+                      {product.prices.length > 3 && (
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                        >
+                          View All {product.prices.length} Stores
+                        </Link>
+                      )}
+                    </>
+                  ) : (
+                    <Link 
+                      href={`/products/${product.slug}-${product.id}`}
+                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      View Details
+                    </Link>
+                  )}
                 </div>
-              ))}
-            </div>
-          </PageLayout>
-        </section>
+              </div>
+            ))}
+          </div>
+        </PageLayout>
+      </section>
 
       {/* Blog Section */}
       <section className="py-16 bg-white">
@@ -529,7 +559,7 @@ export default function HomePage() {
       </section>
 
       {/* Ad Space - Bottom Banner */}
-      <section className="py-4 bg-gray-100">
+      <section className="py-6 bg-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Sale</h3>
