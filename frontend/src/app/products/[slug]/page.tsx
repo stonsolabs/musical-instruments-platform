@@ -232,91 +232,426 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Content - All Sections */}
+        {/* Product Content - All AI-Generated Sections */}
         <div className="space-y-8">
-          {/* Overview Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Overview</h3>
-            
-            {/* AI Summary */}
-            {product.ai_content?.summary && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">Summary</h4>
-                <p className="text-gray-800">{product.ai_content.summary}</p>
-              </div>
-            )}
-
-            {/* Key Specifications */}
-            {product.specifications && Object.keys(product.specifications).length > 0 && (
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-4">Key Specifications</h4>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {Object.entries(product.specifications).slice(0, 8).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
-                      <span className="text-gray-900">{String(value)}</span>
-                    </div>
-                  ))}
+          {/* Basic Info Section */}
+          {product.ai_generated_content?.basic_info && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">📋 Basic Information</h3>
+              
+              {/* Overview */}
+              {product.ai_generated_content.basic_info.overview && (
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-3">Overview</h4>
+                  <p className="text-gray-700 leading-relaxed">{product.ai_generated_content.basic_info.overview}</p>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Product Details */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Product Details</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Brand:</span>
-                    <span className="font-medium">{product.brand.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Category:</span>
-                    <span className="font-medium">{product.category.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">SKU:</span>
-                    <span className="font-medium">{product.sku}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Added:</span>
-                    <span className="font-medium">{new Date(product.created_at).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Last Updated:</span>
-                    <span className="font-medium">{new Date(product.updated_at).toLocaleDateString()}</span>
+              {/* Key Features */}
+              {product.ai_generated_content.basic_info.key_features && (
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-3">Key Features</h4>
+                  <div className="grid md:grid-cols-2 gap-2">
+                    {product.ai_generated_content.basic_info.key_features.map((feature: string, index: number) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-1">•</span>
+                        <span className="text-gray-700">{feature}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Rating & Reviews</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Average Rating:</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="font-medium">{formatRating(product.avg_rating)}</span>
-                    </div>
+              {/* Additional Basic Info */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {product.ai_generated_content.basic_info.target_skill_level && (
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-2">Target Skill Level</h5>
+                    <p className="text-gray-700">{product.ai_generated_content.basic_info.target_skill_level}</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Review Count:</span>
-                    <span className="font-medium">{product.review_count}</span>
+                )}
+                {product.ai_generated_content.basic_info.country_of_origin && (
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-2">Country of Origin</h5>
+                    <p className="text-gray-700">{product.ai_generated_content.basic_info.country_of_origin}</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">MSRP:</span>
-                    <span className="font-medium">{product.msrp_price ? formatPrice(product.msrp_price) : '—'}</span>
+                )}
+                {product.ai_generated_content.basic_info.release_year && (
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-2">Release Year</h5>
+                    <p className="text-gray-700">{product.ai_generated_content.basic_info.release_year}</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Status:</span>
-                    <span className={`font-medium ${product.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                      {product.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Technical Analysis Section */}
+          {product.ai_generated_content?.technical_analysis && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🔧 Technical Analysis</h3>
+              
+              {/* Sound Characteristics */}
+              {product.ai_generated_content.technical_analysis.sound_characteristics && (
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-4">Sound Characteristics</h4>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      {product.ai_generated_content.technical_analysis.sound_characteristics.tonal_profile && (
+                        <div className="mb-4">
+                          <h5 className="font-medium text-gray-900 mb-2">Tonal Profile</h5>
+                          <p className="text-gray-700">{product.ai_generated_content.technical_analysis.sound_characteristics.tonal_profile}</p>
+                        </div>
+                      )}
+                      {product.ai_generated_content.technical_analysis.sound_characteristics.output_level && (
+                        <div className="mb-4">
+                          <h5 className="font-medium text-gray-900 mb-2">Output Level</h5>
+                          <p className="text-gray-700">{product.ai_generated_content.technical_analysis.sound_characteristics.output_level}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {product.ai_generated_content.technical_analysis.sound_characteristics.best_genres && (
+                        <div>
+                          <h5 className="font-medium text-gray-900 mb-2">Best Genres</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {product.ai_generated_content.technical_analysis.sound_characteristics.best_genres.map((genre: string, index: number) => (
+                              <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{genre}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pickup Positions */}
+                  {product.ai_generated_content.technical_analysis.sound_characteristics.pickup_positions && (
+                    <div className="mt-4">
+                      <h5 className="font-medium text-gray-900 mb-3">Pickup Positions</h5>
+                      <div className="space-y-2">
+                        {Object.entries(product.ai_generated_content.technical_analysis.sound_characteristics.pickup_positions).map(([position, description]) => (
+                          <div key={position} className="bg-gray-50 p-3 rounded-lg">
+                            <span className="font-medium text-gray-900 capitalize">{position.replace(/_/g, ' ')}: </span>
+                            <span className="text-gray-700">{String(description)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Build Quality & Playability */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {product.ai_generated_content.technical_analysis.build_quality && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Build Quality</h4>
+                    <div className="space-y-3">
+                      {Object.entries(product.ai_generated_content.technical_analysis.build_quality).map(([key, value]) => (
+                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
+                          <span className="text-gray-900">{String(value)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {product.ai_generated_content.technical_analysis.playability && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Playability</h4>
+                    <div className="space-y-3">
+                      {Object.entries(product.ai_generated_content.technical_analysis.playability).map(([key, value]) => (
+                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
+                          <span className="text-gray-900">{String(value)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Purchase Decision Section */}
+          {product.ai_generated_content?.purchase_decision && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🛒 Purchase Decision</h3>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Why Buy */}
+                {product.ai_generated_content.purchase_decision.why_buy && (
+                  <div>
+                    <h4 className="font-semibold text-green-700 mb-4">✅ Why You Should Buy</h4>
+                    <div className="space-y-4">
+                      {product.ai_generated_content.purchase_decision.why_buy.map((item: any, index: number) => (
+                        <div key={index} className="bg-green-50 border-l-4 border-green-500 p-4">
+                          <h5 className="font-medium text-green-900 mb-2">{item.title}</h5>
+                          <p className="text-green-700 text-sm">{item.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Why Not Buy */}
+                {product.ai_generated_content.purchase_decision.why_not_buy && (
+                  <div>
+                    <h4 className="font-semibold text-red-700 mb-4">❌ Potential Drawbacks</h4>
+                    <div className="space-y-4">
+                      {product.ai_generated_content.purchase_decision.why_not_buy.map((item: any, index: number) => (
+                        <div key={index} className="bg-red-50 border-l-4 border-red-500 p-4">
+                          <h5 className="font-medium text-red-900 mb-2">{item.title}</h5>
+                          <p className="text-red-700 text-sm">{item.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8 mt-8">
+                {/* Best For */}
+                {product.ai_generated_content.purchase_decision.best_for && (
+                  <div>
+                    <h4 className="font-semibold text-blue-700 mb-4">🎯 Best For</h4>
+                    <div className="space-y-3">
+                      {product.ai_generated_content.purchase_decision.best_for.map((item: any, index: number) => (
+                        <div key={index} className="bg-blue-50 p-3 rounded-lg">
+                          <h5 className="font-medium text-blue-900">{item.user_type}</h5>
+                          <p className="text-blue-700 text-sm mt-1">{item.reason}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Not Ideal For */}
+                {product.ai_generated_content.purchase_decision.not_ideal_for && (
+                  <div>
+                    <h4 className="font-semibold text-orange-700 mb-4">⚠️ Not Ideal For</h4>
+                    <div className="space-y-3">
+                      {product.ai_generated_content.purchase_decision.not_ideal_for.map((item: any, index: number) => (
+                        <div key={index} className="bg-orange-50 p-3 rounded-lg">
+                          <h5 className="font-medium text-orange-900">{item.user_type}</h5>
+                          <p className="text-orange-700 text-sm mt-1">{item.reason}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Usage Guidance Section */}
+          {product.ai_generated_content?.usage_guidance && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🎵 Usage Guidance</h3>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Recommended Amplifiers */}
+                {product.ai_generated_content.usage_guidance.recommended_amplifiers && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Recommended Amplifiers</h4>
+                    <div className="space-y-2">
+                      {product.ai_generated_content.usage_guidance.recommended_amplifiers.map((amp: string, index: number) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <span className="text-blue-600 mt-1">•</span>
+                          <span className="text-gray-700">{amp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Skill Development */}
+                {product.ai_generated_content.usage_guidance.skill_development && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Skill Development</h4>
+                    <div className="space-y-3">
+                      {Object.entries(product.ai_generated_content.usage_guidance.skill_development).map(([key, value]) => (
+                        <div key={key}>
+                          <h5 className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</h5>
+                          <p className="text-gray-600 text-sm">{String(value)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Music Styles */}
+              {product.ai_generated_content.usage_guidance.suitable_music_styles && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-900 mb-4">Suitable Music Styles</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {Object.entries(product.ai_generated_content.usage_guidance.suitable_music_styles).map(([level, genres]) => (
+                      <div key={level}>
+                        <h5 className={`font-medium mb-2 capitalize ${
+                          level === 'excellent' ? 'text-green-700' : 
+                          level === 'good' ? 'text-blue-700' : 'text-orange-700'
+                        }`}>{level}</h5>
+                        <div className="space-y-1">
+                          {Array.isArray(genres) && genres.map((genre: string, index: number) => (
+                            <span key={index} className={`inline-block px-2 py-1 rounded text-xs mr-1 mb-1 ${
+                              level === 'excellent' ? 'bg-green-100 text-green-800' : 
+                              level === 'good' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                            }`}>{genre}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Maintenance & Care Section */}
+          {product.ai_generated_content?.maintenance_care && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🔧 Maintenance & Care</h3>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  {product.ai_generated_content.maintenance_care.maintenance_level && (
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-2">Maintenance Level</h4>
+                      <p className="text-gray-700">{product.ai_generated_content.maintenance_care.maintenance_level}</p>
+                    </div>
+                  )}
+
+                  {product.ai_generated_content.maintenance_care.common_issues && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Common Issues</h4>
+                      <div className="space-y-2">
+                        {product.ai_generated_content.maintenance_care.common_issues.map((issue: string, index: number) => (
+                          <div key={index} className="flex items-start gap-2">
+                            <span className="text-orange-600 mt-1">⚠️</span>
+                            <span className="text-gray-700">{issue}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  {product.ai_generated_content.maintenance_care.upgrade_potential && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Upgrade Potential</h4>
+                      {product.ai_generated_content.maintenance_care.upgrade_potential.easy_upgrades && (
+                        <div className="mb-4">
+                          <h5 className="font-medium text-gray-700 mb-2">Easy Upgrades</h5>
+                          <div className="space-y-1">
+                            {product.ai_generated_content.maintenance_care.upgrade_potential.easy_upgrades.map((upgrade: string, index: number) => (
+                              <div key={index} className="flex items-start gap-2">
+                                <span className="text-green-600 mt-1">✓</span>
+                                <span className="text-gray-700 text-sm">{upgrade}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {product.ai_generated_content.maintenance_care.upgrade_potential.recommended_budget && (
+                        <div>
+                          <h5 className="font-medium text-gray-700 mb-2">Recommended Budget</h5>
+                          <p className="text-gray-600 text-sm">{product.ai_generated_content.maintenance_care.upgrade_potential.recommended_budget}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Care Instructions */}
+              {product.ai_generated_content.maintenance_care.care_instructions && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-900 mb-4">Care Instructions</h4>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {Object.entries(product.ai_generated_content.maintenance_care.care_instructions).map(([frequency, instruction]) => (
+                      <div key={frequency} className="bg-gray-50 p-4 rounded-lg">
+                        <h5 className="font-medium text-gray-900 mb-2 capitalize">{frequency}</h5>
+                        <p className="text-gray-700 text-sm">{String(instruction)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Professional Assessment Section */}
+          {product.ai_generated_content?.professional_assessment && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">⭐ Professional Assessment</h3>
+              
+              {/* Expert Ratings */}
+              {product.ai_generated_content.professional_assessment.expert_rating && (
+                <div className="mb-8">
+                  <h4 className="font-semibold text-gray-900 mb-4">Expert Ratings</h4>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {Object.entries(product.ai_generated_content.professional_assessment.expert_rating).map(([aspect, rating]) => (
+                      <div key={aspect} className="flex justify-between items-center py-3 border-b border-gray-100">
+                        <span className="font-medium text-gray-700 capitalize">{aspect.replace(/_/g, ' ')}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full" 
+                              style={{ width: `${(Number(rating) / 10) * 100}%` }}
+                            ></div>
+                          </div>
+                          <span className="font-semibold text-gray-900">{rating}/10</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Standout Features */}
+                {product.ai_generated_content.professional_assessment.standout_features && (
+                  <div>
+                    <h4 className="font-semibold text-green-700 mb-3">🌟 Standout Features</h4>
+                    <div className="space-y-2">
+                      {product.ai_generated_content.professional_assessment.standout_features.map((feature: string, index: number) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <span className="text-green-600 mt-1">✓</span>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Notable Limitations */}
+                {product.ai_generated_content.professional_assessment.notable_limitations && (
+                  <div>
+                    <h4 className="font-semibold text-orange-700 mb-3">⚠️ Notable Limitations</h4>
+                    <div className="space-y-2">
+                      {product.ai_generated_content.professional_assessment.notable_limitations.map((limitation: string, index: number) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <span className="text-orange-600 mt-1">⚠️</span>
+                          <span className="text-gray-700">{limitation}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Competitive Position */}
+              {product.ai_generated_content.professional_assessment.competitive_position && (
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">Market Position</h4>
+                  <p className="text-blue-800">{product.ai_generated_content.professional_assessment.competitive_position}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Full Specifications Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

@@ -436,10 +436,228 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       </div>
 
+      {/* AI-Generated Content Comparison */}
+      {data.products.some(product => product.ai_generated_content) && (
+        <>
+          {/* Professional Assessment Comparison */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">⭐ Professional Assessment</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 bg-gray-50">
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 w-1/4">Assessment</th>
+                      {data.products.map((product) => (
+                        <th key={product.id} className="text-left py-4 px-6 font-semibold text-gray-900">
+                          {product.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Expert Ratings */}
+                    {['build_quality', 'sound_quality', 'value_for_money', 'versatility'].map((rating, index) => (
+                      <tr key={rating} className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                        <td className="py-4 px-6 font-medium text-gray-700 capitalize">
+                          {rating.replace(/_/g, ' ')}
+                        </td>
+                        {data.products.map((product) => (
+                          <td key={product.id} className="py-4 px-6">
+                            {product.ai_generated_content?.professional_assessment?.expert_rating?.[rating] ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-600 h-2 rounded-full" 
+                                    style={{ width: `${(Number(product.ai_generated_content.professional_assessment.expert_rating[rating]) / 10) * 100}%` }}
+                                  ></div>
+                                </div>
+                                <span className="text-sm font-medium">{product.ai_generated_content.professional_assessment.expert_rating[rating]}/10</span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-500">N/A</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Purchase Decision Comparison */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🛒 Purchase Decision Analysis</h3>
+              
+              <div className="grid gap-8">
+                {data.products.map((product) => (
+                  <div key={product.id} className="border border-gray-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">{product.brand.name} {product.name}</h4>
+                    
+                    {product.ai_generated_content?.purchase_decision && (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {/* Why Buy */}
+                        {product.ai_generated_content.purchase_decision.why_buy && (
+                          <div>
+                            <h5 className="font-medium text-green-700 mb-3">✅ Reasons to Buy</h5>
+                            <div className="space-y-2">
+                              {product.ai_generated_content.purchase_decision.why_buy.slice(0, 2).map((item: any, index: number) => (
+                                <div key={index} className="bg-green-50 border-l-4 border-green-500 p-3">
+                                  <h6 className="font-medium text-green-900 text-sm">{item.title}</h6>
+                                  <p className="text-green-700 text-xs mt-1">{item.description}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Why Not Buy */}
+                        {product.ai_generated_content.purchase_decision.why_not_buy && (
+                          <div>
+                            <h5 className="font-medium text-red-700 mb-3">❌ Potential Drawbacks</h5>
+                            <div className="space-y-2">
+                              {product.ai_generated_content.purchase_decision.why_not_buy.slice(0, 2).map((item: any, index: number) => (
+                                <div key={index} className="bg-red-50 border-l-4 border-red-500 p-3">
+                                  <h6 className="font-medium text-red-900 text-sm">{item.title}</h6>
+                                  <p className="text-red-700 text-xs mt-1">{item.description}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Sound Characteristics Comparison */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🔊 Sound Characteristics</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 bg-gray-50">
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 w-1/4">Characteristic</th>
+                      {data.products.map((product) => (
+                        <th key={product.id} className="text-left py-4 px-6 font-semibold text-gray-900">
+                          {product.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Tonal Profile */}
+                    <tr className="border-b border-gray-100 bg-gray-50">
+                      <td className="py-4 px-6 font-medium text-gray-700">Tonal Profile</td>
+                      {data.products.map((product) => (
+                        <td key={product.id} className="py-4 px-6 text-gray-900">
+                          <div className="text-sm line-clamp-3">
+                            {product.ai_generated_content?.technical_analysis?.sound_characteristics?.tonal_profile || 'N/A'}
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Output Level */}
+                    <tr className="border-b border-gray-100">
+                      <td className="py-4 px-6 font-medium text-gray-700">Output Level</td>
+                      {data.products.map((product) => (
+                        <td key={product.id} className="py-4 px-6 text-gray-900">
+                          {product.ai_generated_content?.technical_analysis?.sound_characteristics?.output_level || 'N/A'}
+                        </td>
+                      ))}
+                    </tr>
+
+                    {/* Best Genres */}
+                    <tr className="border-b border-gray-100 bg-gray-50">
+                      <td className="py-4 px-6 font-medium text-gray-700">Best Genres</td>
+                      {data.products.map((product) => (
+                        <td key={product.id} className="py-4 px-6 text-gray-900">
+                          {product.ai_generated_content?.technical_analysis?.sound_characteristics?.best_genres ? (
+                            <div className="flex flex-wrap gap-1">
+                              {product.ai_generated_content.technical_analysis.sound_characteristics.best_genres.slice(0, 3).map((genre: string, index: number) => (
+                                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                  {genre}
+                                </span>
+                              ))}
+                              {product.ai_generated_content.technical_analysis.sound_characteristics.best_genres.length > 3 && (
+                                <span className="text-xs text-gray-500">
+                                  +{product.ai_generated_content.technical_analysis.sound_characteristics.best_genres.length - 3} more
+                                </span>
+                              )}
+                            </div>
+                          ) : 'N/A'}
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Target Users Comparison */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">🎯 Target Users</h3>
+              
+              <div className="grid gap-6">
+                {data.products.map((product) => (
+                  <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-4">{product.brand.name} {product.name}</h4>
+                    
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {/* Skill Level */}
+                      <div>
+                        <h5 className="font-medium text-gray-700 mb-2">Target Skill Level</h5>
+                        <p className="text-sm text-gray-600">
+                          {product.ai_generated_content?.basic_info?.target_skill_level || 'N/A'}
+                        </p>
+                      </div>
+
+                      {/* Best For */}
+                      <div>
+                        <h5 className="font-medium text-green-700 mb-2">Best For</h5>
+                        <div className="space-y-1">
+                          {product.ai_generated_content?.purchase_decision?.best_for?.slice(0, 2).map((item: any, index: number) => (
+                            <div key={index} className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded">
+                              {item.user_type}
+                            </div>
+                          )) || <span className="text-sm text-gray-500">N/A</span>}
+                        </div>
+                      </div>
+
+                      {/* Not Ideal For */}
+                      <div>
+                        <h5 className="font-medium text-orange-700 mb-2">Not Ideal For</h5>
+                        <div className="space-y-1">
+                          {product.ai_generated_content?.purchase_decision?.not_ideal_for?.slice(0, 2).map((item: any, index: number) => (
+                            <div key={index} className="text-xs text-orange-700 bg-orange-50 px-2 py-1 rounded">
+                              {item.user_type}
+                            </div>
+                          )) || <span className="text-sm text-gray-500">N/A</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Stores Comparison */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">Available Stores</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">🏪 Available Stores</h3>
           <div className="space-y-6">
             {data.products.map((product) => (
               <div key={product.id} className="border border-gray-200 rounded-lg p-6">
