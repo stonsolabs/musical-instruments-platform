@@ -174,103 +174,105 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         <div className="flex-1">
           {/* Product Header Cards - Aligned with specs table */}
           <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
-        {data.products.map((product, index) => (
-          <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            {/* VS indicator between cards */}
-            {index === 0 && data.products.length > 1 && (
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-md">
-                <span className="text-gray-600 font-semibold text-sm">VS</span>
-              </div>
-            )}
-            <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center">
-              <span className="text-gray-400 text-4xl">🎸</span>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
-                <h3 className="font-semibold text-gray-900 line-clamp-2">{product.name}</h3>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {product.avg_rating > 0 && (
-                    <>
-                      <span className="text-yellow-500">★</span>
-                      <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
-                      <span className="text-sm text-gray-500">({product.review_count})</span>
-                    </>
-                  )}
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-blue-600">{product.prices?.length || 0}</div>
-                  <div className="text-xs text-gray-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
-                </div>
-              </div>
-
-              {/* Store Buttons - Show all available stores */}
-              <div className="space-y-2">
-                {product.prices && product.prices.length > 0 ? (
-                  <>
-                    {/* All Store Buttons */}
-                    {product.prices.map((price) => (
-                        <a 
-                          key={price.id}
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                            price.is_available 
-                              ? 'bg-gray-800 text-white hover:bg-gray-700' 
-                              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                          }`}
-                        >
-                          Buy at {price.store.name}
-                          {!price.is_available && ' (Out of Stock)'}
-                        </a>
-                      ))}
-                  </>
-                ) : (
-                  <>
-                    {/* Default affiliate store links when no prices available */}
-                    <div className="space-y-2 mb-2">
-                      <a 
-                        href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
-                      >
-                        Check on Amazon
-                      </a>
-                      <a 
-                        href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-                      >
-                        Check on Thomann
-                      </a>
-                      <a 
-                        href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                      >
-                        Check on Gear4Music
-                      </a>
-                    </div>
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-                    >
-                      View Details
-                    </Link>
-                  </>
+            {data.products.map((product, index) => (
+              <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                {/* VS indicator between cards */}
+                {index === 0 && data.products.length > 1 && (
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-md">
+                    <span className="text-gray-600 font-semibold text-sm">VS</span>
+                  </div>
                 )}
+                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                  <span className="text-gray-400 text-4xl">🎸</span>
+                </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">{product.brand.name}</p>
+                    <h3 className="font-semibold text-gray-900 line-clamp-2">{product.name}</h3>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {product.avg_rating > 0 && (
+                        <>
+                          <span className="text-yellow-500">★</span>
+                          <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
+                          <span className="text-sm text-gray-500">({product.review_count})</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-600">{product.prices?.length || 0}</div>
+                      <div className="text-xs text-gray-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
+                    </div>
+                  </div>
+
+                  {/* Store Buttons - Show all available stores */}
+                  <div className="space-y-2">
+                    {product.prices && product.prices.length > 0 ? (
+                      <>
+                        {/* All Store Buttons */}
+                        {product.prices.map((price) => (
+                            <a 
+                              key={price.id}
+                              href={price.affiliate_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                price.is_available 
+                                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                              }`}
+                            >
+                              Buy at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </a>
+                          ))}
+                      </>
+                    ) : (
+                      <>
+                        {/* Default affiliate store links when no prices available */}
+                        <div className="space-y-2 mb-2">
+                          <a 
+                            href={`https://amazon.com/s?k=${encodeURIComponent(product.name)}&aff=123`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
+                          >
+                            Check on Amazon
+                          </a>
+                          <a 
+                            href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                          >
+                            Check on Thomann
+                          </a>
+                          <a 
+                            href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                          >
+                            Check on Gear4Music
+                          </a>
+                        </div>
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                        >
+                          View Details
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Category Warning */}
