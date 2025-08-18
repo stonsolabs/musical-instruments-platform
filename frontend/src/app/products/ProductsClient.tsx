@@ -96,7 +96,7 @@ export default function ProductsClient({
   // Load products when filters change (except initial load)
   useEffect(() => {
     // Don't reload on initial mount since we have server-side data
-    if (JSON.stringify(currentFilters) !== JSON.stringify({
+    const defaultFilters = {
       query: '',
       category: '',
       brand: '',
@@ -104,10 +104,38 @@ export default function ProductsClient({
       price_max: '',
       sort_by: 'name',
       page: 1,
-    })) {
-      loadProducts();
+    };
+    
+    const hasFiltersChanged = JSON.stringify(currentFilters) !== JSON.stringify(defaultFilters);
+    console.log('🔍 Filter check - hasChanged:', hasFiltersChanged, 'currentFilters:', currentFilters);
+    
+    if (hasFiltersChanged) {
+      console.log('🔍 Filters changed, loading products...');
+      
+      // Load products directly without using the callback to avoid dependency issues
+      const loadProductsWithFilters = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          console.log('🔍 Loading products with filters:', currentFilters);
+          const data = await apiClient.searchProducts({
+            ...currentFilters,
+            limit: 20,
+          });
+          console.log('✅ Products loaded:', data.products.length, 'products');
+          setProducts(data.products);
+          setPagination(data.pagination);
+        } catch (e) {
+          setError('Failed to load products.');
+          console.error('Load products error:', e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadProductsWithFilters();
     }
-  }, [loadProducts]);
+  }, [currentFilters]);
 
   // Debounced search
   useEffect(() => {
@@ -156,10 +184,22 @@ export default function ProductsClient({
       console.log('🔍 Selected product objects:', selectedProductObjects);
       console.log('🔍 Selected product slugs:', selectedProductSlugs);
       
+      if (selectedProductSlugs.length === 0) {
+        console.error('❌ No valid product slugs found for selected products');
+        return;
+      }
+      
       // URL encode the slugs to handle special characters
       const encodedSlugs = encodeURIComponent(selectedProductSlugs);
       console.log('🔍 Encoded slugs:', encodedSlugs);
-      router.push(`/compare?products=${encodedSlugs}`);
+      
+      const compareUrl = `/compare?products=${encodedSlugs}`;
+      console.log('🔍 Navigating to compare URL:', compareUrl);
+      
+      // Use router.push to navigate
+      router.push(compareUrl);
+    } else {
+      console.warn('⚠️ No products selected for comparison');
     }
   };
 
@@ -378,6 +418,31 @@ export default function ProductsClient({
                           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                         </div>
 
+                        {/* Product Description */}
+                        {product.description && (
+                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                            {product.description}
+                          </p>
+                        )}
+
+                        {/* Key Specifications Preview */}
+                        {product.specifications && Object.keys(product.specifications).length > 0 && (
+                          <div className="mb-2">
+                            <div className="text-xs text-gray-500 mb-1">Key Features:</div>
+                            <div className="text-xs text-gray-600">
+                              {Object.entries(product.specifications)
+                                .slice(0, 2)
+                                .map(([key, value]) => (
+                                  <span key={key} className="inline-block mr-2">
+                                    {key.replace(/_/g, ' ')}: {String(value)}
+                                  </span>
+                                ))
+                              }
+                              {Object.keys(product.specifications).length > 2 && "..."}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {product.avg_rating > 0 && (
@@ -390,6 +455,19 @@ export default function ProductsClient({
                           </div>
                           <span className="text-sm text-gray-600">{product.category.name}</span>
                         </div>
+
+                        {/* Best Price Display */}
+                        {product.best_price && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-2">
+                            <div className="text-xs text-green-700 mb-1">Best Price:</div>
+                            <div className="text-lg font-bold text-green-800">
+                              {formatPrice(product.best_price.price, product.best_price.currency)}
+                            </div>
+                            {product.best_price.store?.name && (
+                              <div className="text-xs text-green-600">at {product.best_price.store.name}</div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Link>

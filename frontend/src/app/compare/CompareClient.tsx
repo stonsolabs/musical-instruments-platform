@@ -18,6 +18,47 @@ const formatRating = (rating: number): string => {
   return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
 };
 
+// Helper function to generate common specifications across products
+const generateCommonSpecs = (products: Product[]): string[] => {
+  if (products.length === 0) return [];
+  
+  // Get all specification keys from all products
+  const allSpecs = new Set<string>();
+  products.forEach(product => {
+    if (product.specifications) {
+      Object.keys(product.specifications).forEach(key => allSpecs.add(key));
+    }
+  });
+  
+  // Filter to only specs that appear in at least one product
+  const commonSpecs = Array.from(allSpecs).filter(spec => {
+    return products.some(product => 
+      product.specifications && 
+      product.specifications[spec] !== undefined && 
+      product.specifications[spec] !== null &&
+      product.specifications[spec] !== ''
+    );
+  });
+  
+  return commonSpecs.sort();
+};
+
+// Helper function to generate comparison matrix
+const generateComparisonMatrix = (products: Product[]): {[spec: string]: {[productId: string]: any}} => {
+  const matrix: {[spec: string]: {[productId: string]: any}} = {};
+  const commonSpecs = generateCommonSpecs(products);
+  
+  commonSpecs.forEach(spec => {
+    matrix[spec] = {};
+    products.forEach(product => {
+      const value = product.specifications && product.specifications[spec];
+      matrix[spec][String(product.id)] = value || 'N/A';
+    });
+  });
+  
+  return matrix;
+};
+
 interface CompareClientProps {
   productSlugs: string[];
   productIds: number[];
@@ -55,8 +96,8 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           // Create comparison data structure
           const comparisonData: ComparisonResponse = {
             products: productsData.products,
-            common_specs: [], // This would be populated by the backend in a real implementation
-            comparison_matrix: {}, // This would be populated by the backend in a real implementation
+            common_specs: generateCommonSpecs(productsData.products),
+            comparison_matrix: generateComparisonMatrix(productsData.products),
             generated_at: new Date().toISOString()
           };
           
@@ -331,6 +372,47 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   {data.products.map((product) => (
                     <td key={product.id} className="py-4 px-6 text-gray-900">
                       {product.prices?.length || 0} store{product.prices?.length !== 1 ? 's' : ''}
+                    </td>
+                  ))}
+                </tr>
+                
+                {/* Description */}
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <td className="py-4 px-6 font-medium text-gray-700">Description</td>
+                  {data.products.map((product) => (
+                    <td key={product.id} className="py-4 px-6 text-gray-900">
+                      <div className="text-sm line-clamp-3">
+                        {product.description || 'No description available'}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+
+                {/* MSRP Price */}
+                <tr className="border-b border-gray-100">
+                  <td className="py-4 px-6 font-medium text-gray-700">MSRP Price</td>
+                  {data.products.map((product) => (
+                    <td key={product.id} className="py-4 px-6 text-gray-900">
+                      {product.msrp_price ? formatPrice(product.msrp_price) : 'N/A'}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* Best Price */}
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <td className="py-4 px-6 font-medium text-gray-700">Best Available Price</td>
+                  {data.products.map((product) => (
+                    <td key={product.id} className="py-4 px-6 text-gray-900">
+                      {product.best_price ? (
+                        <div>
+                          <div className="font-semibold text-green-600">
+                            {formatPrice(product.best_price.price, product.best_price.currency)}
+                          </div>
+                          {product.best_price.store?.name && (
+                            <div className="text-xs text-gray-500">at {product.best_price.store.name}</div>
+                          )}
+                        </div>
+                      ) : 'N/A'}
                     </td>
                   ))}
                 </tr>
