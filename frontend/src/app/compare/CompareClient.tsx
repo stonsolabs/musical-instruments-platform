@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
 import ComprehensiveComparison from '@/components/ComprehensiveComparison';
+import PageLayout from '@/components/PageLayout';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -167,7 +168,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
   const hasDifferentCategories = new Set(data.products.map(p => p.category.name)).size > 1;
 
   return (
-    <>
+    <PageLayout>
       {/* Product Header Cards - Aligned with specs table */}
       <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
         {data.products.map((product, index) => (
@@ -739,6 +740,6 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           </div>
         </div>
       </div>
-    </>
+    </PageLayout>
   );
 }

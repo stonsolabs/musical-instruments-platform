@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
+import PageLayout from '@/components/PageLayout';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -190,7 +191,7 @@ export default function HomePage() {
 
       {/* Popular Comparisons */}
       <section className="py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PageLayout>
           <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {popularComparisons.map((comparison, index) => (
@@ -219,7 +220,7 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-        </div>
+        </PageLayout>
       </section>
 
 
@@ -239,7 +240,7 @@ export default function HomePage() {
 
       {/* Popular Products */}
       <section className="py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PageLayout>
           <h2 className="text-3xl font-bold text-center mb-12">Popular Instruments Right Now</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -346,12 +347,12 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </div>
+        </PageLayout>
       </section>
 
       {/* Top Rated Products with Reviews */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PageLayout>
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
@@ -384,47 +385,47 @@ export default function HomePage() {
                             key={price.id}
                             href={price.affiliate_url}
                             target="_blank"
-                            rel="noopener noreferrer"
-                            className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                              price.is_available 
-                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                            }`}
+                              rel="noopener noreferrer"
+                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                price.is_available 
+                                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                              }`}
+                            >
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </a>
+                          ))
+                        }
+                        
+                        {/* Show more stores link if there are more than 3 */}
+                        {product.prices.length > 3 && (
+                          <Link 
+                            href={`/products/${product.slug}-${product.id}`}
+                            className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
                           >
-                            {formatPrice(price.price, price.currency)} at {price.store.name}
-                            {!price.is_available && ' (Out of Stock)'}
-                          </a>
-                        ))
-                      }
-                      
-                      {/* Show more stores link if there are more than 3 */}
-                      {product.prices.length > 3 && (
-                        <Link 
-                          href={`/products/${product.slug}-${product.id}`}
-                          className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          View All {product.prices.length} Stores
-                        </Link>
-                      )}
-                    </>
-                  ) : (
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                  )}
+                            View All {product.prices.length} Stores
+                          </Link>
+                        )}
+                      </>
+                    ) : (
+                      <Link 
+                        href={`/products/${product.slug}-${product.id}`}
+                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              ))}
+            </div>
+          </PageLayout>
+        </section>
 
       {/* Blog Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PageLayout>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest from Our Blog</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -504,7 +505,7 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-        </div>
+        </PageLayout>
       </section>
 
       {/* Newsletter Section */}

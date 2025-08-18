@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
+import PageLayout from '@/components/PageLayout';
+import AdSidebar from '@/components/AdSidebar';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -210,7 +212,7 @@ export default function ProductsClient({
   const hasDifferentCategories = new Set(selectedProductCategories).size > 1;
 
   return (
-    <div className="grid lg:grid-cols-4 gap-8">
+    <div className="grid lg:grid-cols-5 gap-8">
       {/* Sidebar Filters */}
       <div className="lg:col-span-1">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
@@ -615,6 +617,11 @@ export default function ProductsClient({
             </button>
           </div>
         )}
+      </div>
+
+      {/* Ad Sidebar */}
+      <div className="lg:col-span-1">
+        <AdSidebar />
       </div>
       
       {/* Floating Compare Button */}

@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { GoogleTagManager } from '@/components/Analytics'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Compare Musical Instruments',
@@ -15,6 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <GoogleTagManager />
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="bg-gray-50">
         {/* GTM noscript fallback */}
