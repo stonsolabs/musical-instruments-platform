@@ -59,6 +59,7 @@ export default function ProductsClient({
   const [error, setError] = useState<string | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Get current filters from URL
   const currentFilters = useMemo(() => ({
@@ -96,26 +97,23 @@ export default function ProductsClient({
     }
   }, [currentFilters]);
 
-  // Load products when filters change (except initial load)
+  // Load products when filters change
   useEffect(() => {
-    // Don't reload on initial mount since we have server-side data
-    const defaultFilters = {
-      query: '',
-      category: '',
-      brand: '',
-      price_min: '',
-      price_max: '',
-      sort_by: 'name',
-      page: 1,
-    };
+    // Skip initial load since we have server-side data
+    if (products.length === 0 && !loading) {
+      return;
+    }
     
-    const hasFiltersChanged = JSON.stringify(currentFilters) !== JSON.stringify(defaultFilters);
-    console.log('🔍 Filter check - hasChanged:', hasFiltersChanged, 'currentFilters:', currentFilters);
+    // Check if filters have actually changed from the initial state
+    const hasActiveFilters = Object.values(currentFilters).some(value => 
+      value !== '' && value !== 'name' && value !== 1
+    );
     
-    if (hasFiltersChanged) {
-      console.log('🔍 Filters changed, loading products...');
+    console.log('🔍 Filter check - hasActiveFilters:', hasActiveFilters, 'currentFilters:', currentFilters);
+    
+    if (hasActiveFilters) {
+      console.log('🔍 Filters active, loading products...');
       
-      // Load products directly without using the callback to avoid dependency issues
       const loadProductsWithFilters = async () => {
         setLoading(true);
         setError(null);
@@ -138,12 +136,13 @@ export default function ProductsClient({
       
       loadProductsWithFilters();
     }
-  }, [currentFilters]);
+  }, [currentFilters, products.length, loading]);
 
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery !== currentFilters.query) {
+        console.log('🔍 Search query changed:', searchQuery);
         updateFilters({ query: searchQuery });
       }
     }, 500);
@@ -153,6 +152,8 @@ export default function ProductsClient({
 
   const updateFilters = (newFilters: Partial<typeof currentFilters>) => {
     const params = new URLSearchParams(searchParams.toString());
+    
+    // Update each filter
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         params.set(key, value.toString());
@@ -160,9 +161,17 @@ export default function ProductsClient({
         params.delete(key);
       }
     });
-    params.set('page', '1'); // Reset to first page
-    console.log('🔍 Updating filters:', newFilters, 'New URL:', `/products?${params.toString()}`);
-    router.push(`/products?${params.toString()}`);
+    
+    // Reset to first page when filters change
+    params.set('page', '1');
+    
+    // Ensure we have proper defaults
+    if (!params.has('limit')) params.set('limit', '20');
+    if (!params.has('sort_by')) params.set('sort_by', 'name');
+    
+    const newUrl = `/products?${params.toString()}`;
+    console.log('🔍 Updating filters:', newFilters, 'New URL:', newUrl);
+    router.push(newUrl);
   };
 
   const toggleProductSelection = (productId: number) => {
@@ -214,31 +223,31 @@ export default function ProductsClient({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid lg:grid-cols-6 gap-6 xl:gap-8">
+      <div className="grid lg:grid-cols-5 gap-6 xl:gap-8">
         {/* Sidebar Filters */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Filters</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto hidden lg:block">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 lg:mb-6">Filters</h2>
             
             {/* Search */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <input
                 type="text"
                 placeholder="Search instruments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
 
             {/* Categories */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <select
                 value={currentFilters.category}
                 onChange={(e) => updateFilters({ category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -250,12 +259,12 @@ export default function ProductsClient({
             </div>
 
             {/* Brands */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
               <select
                 value={currentFilters.brand}
                 onChange={(e) => updateFilters({ brand: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All Brands</option>
                 {brands.map((brand) => (
@@ -267,7 +276,7 @@ export default function ProductsClient({
             </div>
 
             {/* Price Range */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Price Range (€)</label>
               <div className="grid grid-cols-2 gap-2">
                 <input
@@ -275,25 +284,25 @@ export default function ProductsClient({
                   placeholder="Min"
                   value={currentFilters.price_min}
                   onChange={(e) => updateFilters({ price_min: e.target.value || undefined })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={currentFilters.price_max}
                   onChange={(e) => updateFilters({ price_max: e.target.value || undefined })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
               </div>
             </div>
 
             {/* Sort */}
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
               <select
                 value={currentFilters.sort_by}
                 onChange={(e) => updateFilters({ sort_by: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="name">Name</option>
                 <option value="price">Price</option>
@@ -308,15 +317,131 @@ export default function ProductsClient({
                 setSearchQuery('');
                 router.push('/products');
               }}
-              className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
             >
               Clear All Filters
             </button>
           </div>
         </div>
 
+        {/* Mobile Filters Panel */}
+        {showMobileFilters && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
+            <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl p-6 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Mobile Filter Content - Same as desktop but with mobile styling */}
+              <div className="space-y-6">
+                {/* Search */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                  <input
+                    type="text"
+                    placeholder="Search instruments..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                </div>
+
+                {/* Categories */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <select
+                    value={currentFilters.category}
+                    onChange={(e) => updateFilters({ category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Brands */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                  <select
+                    value={currentFilters.brand}
+                    onChange={(e) => updateFilters({ brand: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  >
+                    <option value="">All Brands</option>
+                    {brands.map((brand) => (
+                      <option key={brand.id} value={brand.slug}>
+                        {brand.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price Range (€)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={currentFilters.price_min}
+                      onChange={(e) => updateFilters({ price_min: e.target.value || undefined })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={currentFilters.price_max}
+                      onChange={(e) => updateFilters({ price_max: e.target.value || undefined })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Sort */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                  <select
+                    value={currentFilters.sort_by}
+                    onChange={(e) => updateFilters({ sort_by: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  >
+                    <option value="name">Name</option>
+                    <option value="price">Price</option>
+                    <option value="rating">Rating</option>
+                    <option value="popularity">Popularity</option>
+                  </select>
+                </div>
+
+                {/* Clear Filters */}
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    router.push('/products');
+                    setShowMobileFilters(false);
+                  }}
+                  className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Content */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-3">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -330,6 +455,17 @@ export default function ProductsClient({
               </p>
             </div>
             <div className="flex items-center gap-2">
+              {/* Mobile Filter Button */}
+              <button
+                onClick={() => setShowMobileFilters(!showMobileFilters)}
+                className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                </svg>
+                Filters
+              </button>
+              
               <span className="text-sm text-gray-500">Selected: {selectedProducts.length}</span>
               {selectedProducts.length > 0 && (
                 <button
@@ -345,7 +481,7 @@ export default function ProductsClient({
           {/* Products Grid */}
           {!loading && products.length > 0 ? (
             <>
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                 {products.map((product) => (
                   <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                     <div className="relative">
@@ -520,12 +656,12 @@ export default function ProductsClient({
           )}
         </div>
 
-        {/* Ad Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24">
-            <AdSidebar />
-          </div>
+              {/* Ad Sidebar */}
+      <div className="lg:col-span-1">
+        <div className="sticky top-24">
+          <AdSidebar compact={true} />
         </div>
+      </div>
       </div>
       
       {/* Floating Compare Button */}
