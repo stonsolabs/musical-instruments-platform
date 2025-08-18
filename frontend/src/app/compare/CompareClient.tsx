@@ -173,7 +173,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
           {/* Product Header Cards - Aligned with specs table */}
-      <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+          <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
         {data.products.map((product, index) => (
           <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             {/* VS indicator between cards */}
