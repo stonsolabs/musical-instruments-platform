@@ -74,10 +74,15 @@ export function AdPlaceholder({
   style?: React.CSSProperties;
 }) {
   return (
-    <div className={`bg-gray-100 border border-gray-200 rounded-lg p-4 text-center ${className}`} style={style}>
+    <div className={`bg-gray-50 border border-gray-200 rounded-lg p-4 text-center ${className}`} style={style}>
       <div className="text-gray-500 text-sm">
-        <div className="mb-2">📢 {title}</div>
-        <div className="text-xs">Ad space for Google AdSense</div>
+        <div className="mb-2 flex items-center justify-center">
+          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+          {title}
+        </div>
+        <div className="text-xs text-gray-400">Ad space for Google AdSense</div>
       </div>
     </div>
   );

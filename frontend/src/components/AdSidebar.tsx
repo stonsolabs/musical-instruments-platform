@@ -54,57 +54,39 @@ export default function AdSidebar({ className = '', compact = false }: AdSidebar
   }
 
   return (
-    <div className={`w-full lg:w-80 space-y-6 ${className}`}>
-      {/* Top Advertisement */}
+    <div className={`w-full space-y-8 ${className}`}>
+      {/* Top Advertisement - Larger */}
       <div className="sticky top-24">
         {hasAdSenseClient ? (
           <AdSense 
             adSlot="1234567890" // Replace with your actual ad slot ID
             adFormat="rectangle"
             className="w-full"
-            style={{ minHeight: '240px' }}
+            style={{ minHeight: '500px' }}
           />
         ) : (
           <AdPlaceholder 
             title="Advertisement" 
-            className="w-full h-60"
-            style={{ minHeight: '240px' }}
+            className="w-full h-[500px]"
+            style={{ minHeight: '500px' }}
           />
         )}
       </div>
 
-      {/* Middle Advertisement */}
+      {/* Bottom Advertisement - Larger */}
       <div>
         {hasAdSenseClient ? (
           <AdSense 
             adSlot="0987654321" // Replace with your actual ad slot ID
             adFormat="rectangle"
             className="w-full"
-            style={{ minHeight: '280px' }}
+            style={{ minHeight: '400px' }}
           />
         ) : (
           <AdPlaceholder 
             title="Advertisement" 
-            className="w-full h-70"
-            style={{ minHeight: '280px' }}
-          />
-        )}
-      </div>
-
-      {/* Bottom Advertisement */}
-      <div>
-        {hasAdSenseClient ? (
-          <AdSense 
-            adSlot="1122334455" // Replace with your actual ad slot ID
-            adFormat="rectangle"
-            className="w-full"
-            style={{ minHeight: '240px' }}
-          />
-        ) : (
-          <AdPlaceholder 
-            title="Advertisement" 
-            className="w-full h-60"
-            style={{ minHeight: '240px' }}
+            className="w-full h-96"
+            style={{ minHeight: '400px' }}
           />
         )}
       </div>

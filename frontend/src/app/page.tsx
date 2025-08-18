@@ -188,54 +188,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Popular Comparisons */}
-      <section className="py-16">
-        <PageLayout>
-          <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {popularComparisons.map((comparison, index) => (
-              <Link
-                key={index}
-                href={`/compare?products=${comparison.products}`}
-                className="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
-              >
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <div className="text-white text-4xl font-bold">VS</div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    {comparison.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    See detailed comparison of these popular instruments
-                  </p>
-                  <div className="flex items-center text-blue-600 font-medium">
-                    Compare Now
-                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </PageLayout>
-      </section>
-
-      {/* Ad Space - Middle Banner */}
-      <section className="py-6 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
-            <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
-            <p className="mb-4">Free shipping on orders over €199</p>
-            <button className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Products */}
+      {/* Popular Instruments Right Now */}
       <section className="py-16">
         <PageLayout>
           <h2 className="text-3xl font-bold text-center mb-12">Popular Instruments Right Now</h2>
@@ -349,8 +302,55 @@ export default function HomePage() {
         </PageLayout>
       </section>
 
-      {/* Top Rated Products with Reviews */}
+      {/* Popular Comparisons */}
       <section className="py-16 bg-gray-50">
+        <PageLayout>
+          <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {popularComparisons.map((comparison, index) => (
+              <Link
+                key={index}
+                href={`/compare?products=${comparison.products}`}
+                className="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+              >
+                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="text-white text-4xl font-bold">VS</div>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {comparison.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4">
+                    See detailed comparison of these popular instruments
+                  </p>
+                  <div className="flex items-center text-blue-600 font-medium">
+                    Compare Now
+                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </PageLayout>
+      </section>
+
+      {/* Ad Space - Middle Banner */}
+      <section className="py-6 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
+            <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
+            <p className="mb-4">Free shipping on orders over €199</p>
+            <button className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Top Rated Instruments */}
+      <section className="py-16">
         <PageLayout>
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

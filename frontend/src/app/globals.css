@@ -28,4 +28,49 @@ body { background: #f9fafb; color: #111827; }
   .subtle { @apply text-gray-600; }
 }
 
+/* Custom animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Improve image loading */
+img {
+  transition: opacity 0.3s ease;
+}
+
+img[loading] {
+  opacity: 0.7;
+}
+
+img.loaded {
+  opacity: 1;
+}
+
+/* Better responsive behavior */
+@media (max-width: 1280px) {
+  .xl\:flex {
+    display: none !important;
+  }
+}
+
+/* Ensure proper z-index stacking */
+.sticky {
+  z-index: 40;
+}
+
+.fixed {
+  z-index: 50;
+}
+
 

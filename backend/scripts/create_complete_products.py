@@ -1601,6 +1601,1317 @@ COMPLETE_PRODUCTS_DATA = {
                     "word_count": "600"
                 }
             }
+        },
+        {
+            "product_input": {
+                "sku": "BOSS-DS1-DISTORTION",
+                "name": "Boss DS-1 Distortion",
+                "slug": "boss-ds-1-distortion",
+                "brand": "Boss",
+                "category": "effects-pedals",
+                "description": "The Boss DS-1 Distortion is one of the most iconic and widely-used distortion pedals in music history, trusted by countless guitarists for its reliable, versatile tone.",
+                "specifications": {
+                    "effect_type": "Distortion",
+                    "controls": "Tone, Distortion, Level",
+                    "power_supply": "9V DC (Boss PSA adapter) or 9V battery",
+                    "current_draw": "4mA",
+                    "input_impedance": "1M ohm",
+                    "output_impedance": "1k ohm",
+                    "bypass": "Buffered",
+                    "enclosure": "Boss compact",
+                    "dimensions": "73 x 129 x 59 mm",
+                    "weight": "360g"
+                },
+                "msrp_price": 59,
+                "images": ["boss_ds1_1.jpg", "boss_ds1_2.jpg", "boss_ds1_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Boss DS-1 Distortion is a legendary pedal that has shaped the sound of rock music for decades. Its distinctive midrange-focused distortion has been featured on countless recordings and continues to be a favorite among both beginners and professional musicians.",
+                    "key_features": ["Classic distortion tone", "Simple three-knob design", "Rugged construction", "Affordable price"],
+                    "target_skill_level": "All levels",
+                    "country_of_origin": "Taiwan",
+                    "release_year": "1978"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Midrange-focused distortion with good sustain and harmonics",
+                        "output_level": "Medium to High",
+                        "best_genres": ["Rock", "Punk", "Metal", "Alternative"],
+                        "control_characteristics": {
+                            "tone": "Smooth tone control from dark to bright",
+                            "distortion": "Wide range from subtle overdrive to full distortion",
+                            "level": "Good output level control for various amplifiers"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Solid State",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Durable Boss construction with excellent reliability",
+                        "expected_durability": "Very High"
+                    },
+                    "playability": {
+                        "ease_of_use": "Very simple three-knob interface",
+                        "versatility": "Excellent for various distortion needs",
+                        "comfort_rating": "10/10 - Simple and intuitive operation",
+                        "weight_category": "Light - compact and portable"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Iconic Distortion Sound",
+                            "description": "Delivers the classic distortion tone that has defined rock music for generations."
+                        },
+                        {
+                            "title": "Bulletproof Reliability",
+                            "description": "Boss construction ensures it can withstand the rigors of live performance and touring."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Tonal Variety",
+                            "description": "Single distortion type may not provide the variety some players require."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Rock and punk guitarists",
+                            "reason": "Provides classic distortion tone at an affordable price"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Players requiring extensive tonal variety",
+                            "reason": "Single distortion type limits tonal options"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["Clean amplifiers", "Tube amplifiers", "Solid state amplifiers"],
+                    "suitable_music_styles": {
+                        "excellent": ["Rock", "Punk", "Metal", "Alternative"],
+                        "good": ["Blues", "Hard Rock"],
+                        "limited": ["Jazz", "Clean acoustic-style playing"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low",
+                        "growth_potential": "Excellent for learning distortion techniques and tone shaping"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Battery replacement", "Connection cleaning"],
+                    "care_instructions": {
+                        "daily": "Check battery level, clean connections",
+                        "weekly": "Clean pedal surface",
+                        "monthly": "Deep clean if needed",
+                        "annual": "Professional inspection if needed"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Power supply upgrade", "Modification kits"],
+                        "recommended_budget": "€20-50 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "9",
+                        "sound_quality": "8", 
+                        "value_for_money": "10",
+                        "versatility": "7"
+                    },
+                    "standout_features": ["Iconic distortion tone", "Bulletproof reliability", "Excellent value"],
+                    "notable_limitations": ["Limited tonal variety", "Basic feature set"],
+                    "competitive_position": "Outstanding value leader in the €50-70 range, offering iconic tone that has stood the test of time"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Boss DS-1", "distortion pedal", "rock distortion", "guitar effects", "Boss pedal"],
+                    "readability_score": "Medium",
+                    "word_count": "500"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "ELECTRO-HARMONIX-BIGMUFF",
+                "name": "Electro-Harmonix Big Muff Pi",
+                "slug": "electro-harmonix-big-muff-pi",
+                "brand": "Electro-Harmonix",
+                "category": "effects-pedals",
+                "description": "The Electro-Harmonix Big Muff Pi is the legendary fuzz pedal that has shaped the sound of rock music for over 50 years.",
+                "specifications": {
+                    "effect_type": "Fuzz",
+                    "controls": "Sustain, Tone, Volume",
+                    "power_supply": "9V DC or 9V battery",
+                    "current_draw": "2.5mA",
+                    "input_impedance": "500k ohm",
+                    "output_impedance": "10k ohm",
+                    "bypass": "True bypass",
+                    "enclosure": "Standard size",
+                    "dimensions": "119 x 93 x 32 mm",
+                    "weight": "200g"
+                },
+                "msrp_price": 89,
+                "images": ["ehx_bigmuff_1.jpg", "ehx_bigmuff_2.jpg", "ehx_bigmuff_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Electro-Harmonix Big Muff Pi delivers massive, sustaining fuzz tones that have been used by guitarists from David Gilmour to Jack White. This iconic pedal creates harmonically rich distortion with excellent sustain.",
+                    "key_features": ["Massive fuzz tone", "Excellent sustain", "Three-knob design", "True bypass"],
+                    "target_skill_level": "Intermediate to Advanced",
+                    "country_of_origin": "United States",
+                    "release_year": "1969"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Thick, creamy fuzz with harmonically rich distortion and excellent sustain",
+                        "output_level": "High",
+                        "best_genres": ["Rock", "Psychedelic Rock", "Stoner Rock", "Alternative"],
+                        "control_characteristics": {
+                            "sustain": "Controls the amount of fuzz and sustain",
+                            "tone": "Shapes the overall tonal character",
+                            "volume": "Controls output level"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Solid State",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Classic EHX styling with good durability",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "ease_of_use": "Simple three-knob interface",
+                        "versatility": "Excellent for creating walls of sound",
+                        "comfort_rating": "9/10 - Simple and effective operation",
+                        "weight_category": "Light - compact design"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Iconic Fuzz Tone",
+                            "description": "Delivers the legendary Big Muff fuzz sound that has defined generations of rock music."
+                        },
+                        {
+                            "title": "Excellent Sustain",
+                            "description": "Creates massive, sustaining fuzz tones perfect for lead work and power chords."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Clean Headroom",
+                            "description": "High-gain fuzz may not suit players requiring clean tones."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Rock and psychedelic guitarists",
+                            "reason": "Provides iconic fuzz tone with excellent sustain for lead work"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Players requiring clean tones",
+                            "reason": "High-gain fuzz design limits clean headroom"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["Clean amplifiers", "Tube amplifiers", "High-headroom amplifiers"],
+                    "suitable_music_styles": {
+                        "excellent": ["Rock", "Psychedelic Rock", "Stoner Rock", "Alternative"],
+                        "good": ["Blues", "Hard Rock"],
+                        "limited": ["Jazz", "Country", "Clean playing"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Moderate",
+                        "growth_potential": "Excellent for developing fuzz techniques and sustain control"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Battery replacement", "Connection cleaning"],
+                    "care_instructions": {
+                        "daily": "Check battery level, clean connections",
+                        "weekly": "Clean pedal surface",
+                        "monthly": "Deep clean if needed",
+                        "annual": "Professional inspection if needed"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Power supply upgrade", "Modification kits"],
+                        "recommended_budget": "€30-80 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "8",
+                        "sound_quality": "9", 
+                        "value_for_money": "9",
+                        "versatility": "8"
+                    },
+                    "standout_features": ["Iconic fuzz tone", "Excellent sustain", "Classic design"],
+                    "notable_limitations": ["Limited clean headroom", "High-gain nature"],
+                    "competitive_position": "Strong value offering in the €80-100 range, delivering iconic fuzz tone that has shaped music history"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Electro-Harmonix Big Muff", "fuzz pedal", "Big Muff Pi", "guitar fuzz", "EHX pedal"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "PIONEER-DDJ-400",
+                "name": "Pioneer DDJ-400 Controller",
+                "slug": "pioneer-ddj-400-controller",
+                "brand": "Pioneer",
+                "category": "dj-equipment",
+                "description": "The Pioneer DDJ-400 is a professional-grade DJ controller designed specifically for Rekordbox software, offering an intuitive interface that mirrors the layout of Pioneer's flagship CDJ and DJM equipment.",
+                "specifications": {
+                    "channels": 2,
+                    "jog_wheels": "Full-size with touch display",
+                    "software_compatibility": "Rekordbox DJ",
+                    "sound_card": "Built-in 24-bit/48kHz",
+                    "hot_cues": "8 per deck",
+                    "effects": "Beat FX",
+                    "connectivity": "USB Type-B",
+                    "power_supply": "USB bus powered",
+                    "dimensions": "320 x 107 x 25 mm",
+                    "weight": "1.2 kg"
+                },
+                "msrp_price": 299,
+                "images": ["pioneer_ddj400_1.jpg", "pioneer_ddj400_2.jpg", "pioneer_ddj400_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Pioneer DDJ-400 provides professional DJ functionality in a compact, portable design. Perfect for beginners learning the fundamentals of DJing as well as experienced DJs seeking a reliable controller for mobile gigs.",
+                    "key_features": ["Full-size jog wheels with touch display", "Rekordbox DJ integration", "Built-in sound card", "8 hot cues per deck"],
+                    "target_skill_level": "Beginner to Intermediate",
+                    "country_of_origin": "China",
+                    "release_year": "2018"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "audio_quality": "24-bit/48kHz sound card provides clear, professional audio",
+                        "output_level": "High",
+                        "best_genres": ["All electronic music styles", "Hip-hop", "Pop", "House"],
+                        "controller_features": {
+                            "jog_wheels": "Full-size with touch display for visual feedback",
+                            "hot_cues": "8 per deck for quick track access",
+                            "effects": "Beat FX for creative mixing",
+                            "crossfader": "Smooth crossfader for seamless transitions"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "DJ Controller",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Professional Pioneer styling with good durability",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "interface_design": "Mirrors Pioneer CDJ/DJM layout for familiar operation",
+                        "ease_of_use": "Intuitive design perfect for learning",
+                        "comfort_rating": "9/10 - Excellent ergonomics and familiar Pioneer layout",
+                        "weight_category": "Light - highly portable"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Professional Pioneer Quality",
+                            "description": "Delivers Pioneer's renowned DJ equipment quality and reliability at an accessible price."
+                        },
+                        {
+                            "title": "Perfect for Learning",
+                            "description": "Mirrors professional CDJ layout, making it ideal for learning industry-standard equipment."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Advanced Features",
+                            "description": "Basic feature set may not satisfy advanced DJs requiring extensive functionality."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Beginner and intermediate DJs",
+                            "reason": "Provides professional Pioneer quality with excellent learning features"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Advanced DJs requiring extensive features",
+                            "reason": "Basic feature set compared to professional CDJ setups"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_software": ["Rekordbox DJ", "Rekordbox"],
+                    "suitable_music_styles": {
+                        "excellent": ["Electronic", "Hip-hop", "Pop", "House"],
+                        "good": ["Rock", "Jazz", "All styles"],
+                        "limited": ["None - suitable for all styles"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low",
+                        "growth_potential": "Excellent for developing fundamental DJ skills and techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Software updates", "Connection cleaning", "Firmware updates"],
+                    "care_instructions": {
+                        "daily": "Clean controller surface after use",
+                        "weekly": "Update software and firmware",
+                        "monthly": "Deep clean, check connections",
+                        "annual": "Professional inspection if needed"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Software upgrades", "Additional accessories"],
+                        "recommended_budget": "€50-150 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "8",
+                        "sound_quality": "8", 
+                        "value_for_money": "9",
+                        "versatility": "8"
+                    },
+                    "standout_features": ["Professional Pioneer quality", "Excellent learning tool", "Portable design"],
+                    "notable_limitations": ["Limited advanced features", "Basic sound card"],
+                    "competitive_position": "Strong value offering in the €250-350 range, providing professional Pioneer quality for learning and mobile use"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Pioneer DDJ-400", "DJ controller", "Rekordbox", "Pioneer DJ", "beginner DJ"],
+                    "readability_score": "Medium",
+                    "word_count": "600"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "NUMARK-MIXTRACK-PRO-3",
+                "name": "Numark Mixtrack Pro 3",
+                "slug": "numark-mixtrack-pro-3",
+                "brand": "Numark",
+                "category": "dj-equipment",
+                "description": "The Numark Mixtrack Pro 3 is a feature-rich DJ controller that provides professional performance capabilities at an accessible price point.",
+                "specifications": {
+                    "channels": 2,
+                    "jog_wheels": "Large with LED rings",
+                    "software_compatibility": "Serato DJ Intro",
+                    "sound_card": "Built-in 24-bit/48kHz",
+                    "performance_pads": "8 per deck",
+                    "effects": "Built-in filters and effects",
+                    "connectivity": "USB Type-B",
+                    "power_supply": "USB bus powered",
+                    "dimensions": "330 x 110 x 25 mm",
+                    "weight": "1.1 kg"
+                },
+                "msrp_price": 199,
+                "images": ["numark_mixtrack_pro3_1.jpg", "numark_mixtrack_pro3_2.jpg", "numark_mixtrack_pro3_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Numark Mixtrack Pro 3 delivers professional DJ performance features in a compact, affordable package. The built-in audio interface eliminates the need for external sound cards, while the included Serato DJ Intro software provides a complete DJ solution.",
+                    "key_features": ["Large jog wheels with LED rings", "Built-in audio interface", "8 performance pads per deck", "Serato DJ Intro included"],
+                    "target_skill_level": "Beginner to Intermediate",
+                    "country_of_origin": "China",
+                    "release_year": "2016"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "audio_quality": "24-bit/48kHz sound card provides clear, professional audio",
+                        "output_level": "High",
+                        "best_genres": ["All electronic music styles", "Hip-hop", "Pop", "House"],
+                        "controller_features": {
+                            "jog_wheels": "Large with LED rings for visual feedback",
+                            "performance_pads": "8 per deck for hot cues, loops, and samples",
+                            "effects": "Built-in filters and effects for creative mixing",
+                            "crossfader": "Smooth crossfader for seamless transitions"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "DJ Controller",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Professional Numark styling with good durability",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "interface_design": "Intuitive layout with large, responsive controls",
+                        "ease_of_use": "User-friendly design perfect for learning",
+                        "comfort_rating": "8/10 - Good ergonomics with responsive controls",
+                        "weight_category": "Light - highly portable"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Excellent Value for Features",
+                            "description": "Offers professional DJ features at an accessible price point with included software."
+                        },
+                        {
+                            "title": "Complete DJ Solution",
+                            "description": "Built-in audio interface and included software provide everything needed to start DJing."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Advanced Features",
+                            "description": "Basic feature set may not satisfy advanced DJs requiring extensive functionality."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Beginner and mobile DJs",
+                            "reason": "Provides excellent value and features for learning and mobile use"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Advanced DJs requiring extensive features",
+                            "reason": "Basic feature set compared to professional setups"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_software": ["Serato DJ Intro", "Serato DJ"],
+                    "suitable_music_styles": {
+                        "excellent": ["Electronic", "Hip-hop", "Pop", "House"],
+                        "good": ["Rock", "Jazz", "All styles"],
+                        "limited": ["None - suitable for all styles"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low",
+                        "growth_potential": "Excellent for developing fundamental DJ skills and techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Software updates", "Connection cleaning", "Firmware updates"],
+                    "care_instructions": {
+                        "daily": "Clean controller surface after use",
+                        "weekly": "Update software and firmware",
+                        "monthly": "Deep clean, check connections",
+                        "annual": "Professional inspection if needed"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Software upgrades", "Additional accessories"],
+                        "recommended_budget": "€30-100 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "7",
+                        "sound_quality": "7", 
+                        "value_for_money": "9",
+                        "versatility": "7"
+                    },
+                    "standout_features": ["Excellent value", "Complete DJ solution", "Portable design"],
+                    "notable_limitations": ["Limited advanced features", "Basic sound card"],
+                    "competitive_position": "Outstanding value leader in the €180-220 range, offering features that typically cost much more"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Numark Mixtrack Pro 3", "DJ controller", "Serato DJ", "beginner DJ", "mobile DJ"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "FOCUSRITE-SCARLETT-2I2",
+                "name": "Focusrite Scarlett 2i2 Audio Interface",
+                "slug": "focusrite-scarlett-2i2-audio-interface",
+                "brand": "Focusrite",
+                "category": "studio-and-recording-equipment",
+                "description": "The Focusrite Scarlett 2i2 is a professional 2-in, 2-out USB audio interface that delivers exceptional sound quality and reliability for home recording and music production.",
+                "specifications": {
+                    "inputs": "2 x XLR/TRS combo",
+                    "outputs": "2 x TRS",
+                    "preamps": "Focusrite preamps with 56dB gain",
+                    "conversion": "24-bit/192kHz",
+                    "connectivity": "USB 2.0",
+                    "phantom_power": "48V",
+                    "direct_monitoring": "Yes",
+                    "software_bundle": "Included",
+                    "power_supply": "USB bus powered",
+                    "dimensions": "170 x 120 x 35 mm",
+                    "weight": "0.5 kg"
+                },
+                "msrp_price": 169,
+                "images": ["focusrite_scarlett_2i2_1.jpg", "focusrite_scarlett_2i2_2.jpg", "focusrite_scarlett_2i2_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Focusrite Scarlett 2i2 provides professional-quality audio recording capabilities in a compact, affordable package. Perfect for solo artists, podcasters, and home studio enthusiasts seeking professional sound quality.",
+                    "key_features": ["High-quality Focusrite preamps", "24-bit/192kHz conversion", "Direct monitoring", "Included software bundle"],
+                    "target_skill_level": "Beginner to Intermediate",
+                    "country_of_origin": "United Kingdom",
+                    "release_year": "2019"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "audio_quality": "24-bit/192kHz conversion ensures pristine audio fidelity",
+                        "preamps": "Focusrite preamps provide clean, transparent gain with up to 56dB headroom",
+                        "best_applications": ["Vocal recording", "Guitar recording", "Podcasting", "Home studio"],
+                        "interface_features": {
+                            "direct_monitoring": "Zero-latency monitoring during recording",
+                            "phantom_power": "48V phantom power for condenser microphones",
+                            "software_bundle": "Included software provides essential tools for music production"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Audio Interface",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Professional red finish with good durability",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "ease_of_use": "Simple plug-and-play operation",
+                        "software_compatibility": "Compatible with all major DAWs",
+                        "comfort_rating": "9/10 - Simple operation with excellent software compatibility",
+                        "weight_category": "Light - highly portable"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Professional Sound Quality",
+                            "description": "Delivers exceptional sound quality and reliability for home recording and music production."
+                        },
+                        {
+                            "title": "Excellent Value",
+                            "description": "Professional-quality audio interface at an accessible price point with included software."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Input/Output",
+                            "description": "2-in, 2-out configuration may not suit complex recording setups."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Solo artists and home studio enthusiasts",
+                            "reason": "Provides professional-quality recording capabilities at an accessible price"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Complex recording setups",
+                            "reason": "Limited I/O may not accommodate multiple simultaneous recordings"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_software": ["All major DAWs", "Included software bundle"],
+                    "suitable_applications": {
+                        "excellent": ["Vocal recording", "Guitar recording", "Podcasting", "Home studio"],
+                        "good": ["Small band recording", "Live streaming"],
+                        "limited": ["Complex multi-track recording", "Large studio setups"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low",
+                        "growth_potential": "Excellent for developing recording and production skills"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Driver updates", "Connection cleaning", "Software updates"],
+                    "care_instructions": {
+                        "daily": "Check connections, update drivers if needed",
+                        "weekly": "Clean interface surface",
+                        "monthly": "Update software and firmware",
+                        "annual": "Professional inspection if needed"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Software upgrades", "Additional accessories"],
+                        "recommended_budget": "€50-150 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "8",
+                        "sound_quality": "8", 
+                        "value_for_money": "9",
+                        "versatility": "7"
+                    },
+                    "standout_features": ["Professional sound quality", "Excellent value", "Included software"],
+                    "notable_limitations": ["Limited I/O", "Basic feature set"],
+                    "competitive_position": "Strong value leader in the €150-180 range, offering professional sound quality that exceeds expectations at this price point"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Focusrite Scarlett 2i2", "audio interface", "recording interface", "home studio", "USB interface"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "SHURE-SM7B-MICROPHONE",
+                "name": "Shure SM7B Dynamic Microphone",
+                "slug": "shure-sm7b-dynamic-microphone",
+                "brand": "Shure",
+                "category": "studio-and-recording-equipment",
+                "description": "The Shure SM7B is a legendary dynamic microphone that has been the choice of professional broadcasters, podcasters, and recording engineers for decades.",
+                "specifications": {
+                    "microphone_type": "Dynamic",
+                    "polar_pattern": "Cardioid",
+                    "frequency_response": "50Hz - 20kHz",
+                    "sensitivity": "-59 dBV/Pa",
+                    "impedance": "300 ohms",
+                    "connector": "XLR-3M",
+                    "shock_mount": "Internal",
+                    "windscreen": "Included",
+                    "weight": "765g",
+                    "dimensions": "162 x 51 mm"
+                },
+                "msrp_price": 399,
+                "images": ["shure_sm7b_1.jpg", "shure_sm7b_2.jpg", "shure_sm7b_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Shure SM7B delivers exceptional sound quality for vocals, instruments, and speech, with a smooth, flat, wide-range frequency response that captures natural sound with excellent detail.",
+                    "key_features": ["Cardioid polar pattern", "Wide frequency response", "Internal shock mount", "Included windscreen"],
+                    "target_skill_level": "Professional",
+                    "country_of_origin": "United States",
+                    "release_year": "1973"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "audio_quality": "Smooth, flat frequency response with excellent detail and natural sound",
+                        "polar_pattern": "Cardioid pattern provides excellent rejection of unwanted background noise",
+                        "best_applications": ["Vocal recording", "Broadcasting", "Podcasting", "Instrument recording"],
+                        "microphone_features": {
+                            "shock_mount": "Internal shock mount reduces handling noise and mechanical vibration",
+                            "windscreen": "Included windscreen provides protection against wind and breath noise",
+                            "frequency_response": "50Hz - 20kHz provides excellent coverage of vocal and instrument frequencies"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Dynamic Microphone",
+                        "hardware_quality": "Premium",
+                        "finish_quality": "Professional finish with excellent durability",
+                        "expected_durability": "Very High"
+                    },
+                    "playability": {
+                        "ease_of_use": "Simple plug-and-play operation",
+                        "versatility": "Excellent for various recording applications",
+                        "comfort_rating": "9/10 - Excellent performance with minimal setup required",
+                        "weight_category": "Medium - substantial professional microphone weight"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Legendary Sound Quality",
+                            "description": "Delivers the exceptional sound quality that has made it an industry standard for decades."
+                        },
+                        {
+                            "title": "Versatile Applications",
+                            "description": "Excellent for vocals, broadcasting, podcasting, and instrument recording."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Requires Good Preamp",
+                            "description": "Low sensitivity requires a high-quality preamp for optimal performance."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Professional broadcasters and recording engineers",
+                            "reason": "Delivers the ultimate in professional microphone sound quality and reliability"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Beginners without good preamps",
+                            "reason": "Low sensitivity requires quality preamp for optimal performance"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_preamps": ["High-quality preamps", "Cloudlifter", "Professional audio interfaces"],
+                    "suitable_applications": {
+                        "excellent": ["Vocal recording", "Broadcasting", "Podcasting", "Studio recording"],
+                        "good": ["Live performance", "Instrument recording"],
+                        "limited": ["Distant recording", "Field recording"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Moderate",
+                        "growth_potential": "Excellent for developing professional recording skills and techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Low",
+                    "common_issues": ["Dust accumulation", "Connection cleaning", "Windscreen care"],
+                    "care_instructions": {
+                        "daily": "Wipe down after use, check connections",
+                        "weekly": "Clean windscreen and body",
+                        "monthly": "Deep clean, inspect for damage",
+                        "annual": "Professional inspection and cleaning"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Shock mount upgrade", "Windscreen replacement", "Cable upgrade"],
+                        "recommended_budget": "€50-200 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "10",
+                        "sound_quality": "10", 
+                        "value_for_money": "9",
+                        "versatility": "9"
+                    },
+                    "standout_features": ["Legendary sound quality", "Industry standard", "Exceptional reliability"],
+                    "notable_limitations": ["Requires good preamp", "Low sensitivity"],
+                    "competitive_position": "Premium offering in the €380-420 range, representing the gold standard for professional dynamic microphones"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Shure SM7B", "dynamic microphone", "broadcast microphone", "podcast microphone", "professional microphone"],
+                    "readability_score": "Medium",
+                    "word_count": "600"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "IBANEZ-RG450DX",
+                "name": "Ibanez RG450DX Electric Guitar",
+                "slug": "ibanez-rg450dx-electric-guitar",
+                "brand": "Ibanez",
+                "category": "electric-guitars",
+                "description": "The Ibanez RG450DX is a versatile electric guitar designed for high-performance playing with excellent playability and modern features.",
+                "specifications": {
+                    "body_material": "Poplar",
+                    "neck_material": "Maple",
+                    "fingerboard": "Jatoba",
+                    "pickups": "2x Infinity R (H) Humbuckers, 1x Infinity RS (S) Single-coil",
+                    "scale_length": "25.5 inches",
+                    "frets": 24,
+                    "bridge": "T106 Tremolo Bridge",
+                    "tuners": "Die-cast",
+                    "nut_width": "1.69 inches",
+                    "finish": "Polyester"
+                },
+                "msrp_price": 299,
+                "images": ["ibanez_rg450dx_1.jpg", "ibanez_rg450dx_2.jpg", "ibanez_rg450dx_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Ibanez RG450DX delivers high-performance playing capabilities at an accessible price point. The thin, fast neck and versatile pickup configuration make it perfect for rock, metal, and fusion styles.",
+                    "key_features": ["Thin Wizard III neck", "24 jumbo frets", "H-S-H pickup configuration", "T106 tremolo bridge"],
+                    "target_skill_level": "Intermediate",
+                    "country_of_origin": "Indonesia",
+                    "release_year": "Current Production"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Bright, cutting tones with excellent clarity and high-output capability",
+                        "output_level": "High",
+                        "best_genres": ["Rock", "Metal", "Fusion", "Progressive"],
+                        "pickup_positions": {
+                            "bridge_humbucker": "High-output tone perfect for lead work and heavy rhythm",
+                            "middle_single": "Clear, articulate tone for clean and overdriven sounds",
+                            "neck_humbucker": "Warm, smooth tone for leads and jazz applications"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Solid Body",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Professional polyester finish with good attention to detail",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "neck_profile": "Thin Wizard III neck offers fast, comfortable playing",
+                        "action_setup": "Low action potential with excellent setup from factory",
+                        "comfort_rating": "9/10 - Excellent for fast playing and technical passages",
+                        "weight_category": "Light to Medium"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Excellent Value for Performance",
+                            "description": "Delivers high-performance features at an accessible price point."
+                        },
+                        {
+                            "title": "Versatile Pickup Configuration",
+                            "description": "H-S-H setup provides excellent tonal variety for various playing styles."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Traditional Tones",
+                            "description": "Modern design may not suit players seeking classic vintage tones."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Rock and metal guitarists",
+                            "reason": "Provides excellent performance features for high-gain and technical playing"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Players seeking vintage tones",
+                            "reason": "Modern design and high-output pickups may not provide classic vintage character"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["High-gain amplifiers", "Modeling amplifiers", "Clean amplifiers with pedals"],
+                    "suitable_music_styles": {
+                        "excellent": ["Rock", "Metal", "Fusion", "Progressive"],
+                        "good": ["Jazz", "Blues", "Alternative"],
+                        "limited": ["Traditional country", "Vintage blues"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Moderate",
+                        "growth_potential": "Excellent for developing technical playing skills and high-gain techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Medium",
+                    "common_issues": ["Tremolo bridge setup", "Neck adjustment", "Pickup height adjustment"],
+                    "care_instructions": {
+                        "daily": "Wipe down strings and body after playing",
+                        "weekly": "Clean fingerboard, check tuning stability",
+                        "monthly": "Deep clean, check intonation",
+                        "annual": "Professional setup and inspection"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Pickup replacement", "Bridge upgrade", "Tuner improvement"],
+                        "recommended_budget": "€100-300 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "7",
+                        "sound_quality": "7", 
+                        "value_for_money": "9",
+                        "versatility": "8"
+                    },
+                    "standout_features": ["Excellent playability", "Good value", "Versatile pickups"],
+                    "notable_limitations": ["Basic hardware", "Limited vintage tones"],
+                    "competitive_position": "Strong value offering in the €250-350 range, providing performance features that exceed expectations at this price point"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Ibanez RG450DX", "electric guitar", "metal guitar", "rock guitar", "Ibanez RG"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "EPIPHONE-LES-PAUL-STANDARD",
+                "name": "Epiphone Les Paul Standard",
+                "slug": "epiphone-les-paul-standard",
+                "brand": "Epiphone",
+                "category": "electric-guitars",
+                "description": "The Epiphone Les Paul Standard delivers classic Les Paul tone and feel with modern playability improvements at an accessible price point.",
+                "specifications": {
+                    "body_material": "Mahogany with Maple Top",
+                    "neck_material": "Mahogany",
+                    "fingerboard": "Rosewood",
+                    "pickups": "2x Alnico Classic Humbuckers",
+                    "scale_length": "24.75 inches",
+                    "frets": 22,
+                    "bridge": "LockTone Tune-o-matic with Stop Bar",
+                    "tuners": "Grover Rotomatic",
+                    "nut_width": "1.68 inches",
+                    "finish": "Polyester"
+                },
+                "msrp_price": 599,
+                "images": ["epiphone_les_paul_standard_1.jpg", "epiphone_les_paul_standard_2.jpg", "epiphone_les_paul_standard_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Epiphone Les Paul Standard offers authentic Les Paul tone and feel with modern improvements. The mahogany body with maple top delivers the classic Les Paul sound that has defined rock music.",
+                    "key_features": ["Mahogany body with maple top", "Alnico Classic humbuckers", "LockTone bridge system", "Grover Rotomatic tuners"],
+                    "target_skill_level": "Intermediate",
+                    "country_of_origin": "China",
+                    "release_year": "Current Production"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Warm, rich, and sustaining with classic Les Paul midrange focus",
+                        "output_level": "Medium to High",
+                        "best_genres": ["Rock", "Blues", "Hard Rock", "Jazz"],
+                        "pickup_positions": {
+                            "bridge": "High-output tone perfect for lead work and heavy rhythm",
+                            "neck": "Warm, smooth tone for leads and jazz applications",
+                            "both": "Balanced tone with enhanced midrange presence"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Solid Body",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Professional polyester finish with good attention to detail",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "neck_profile": "Comfortable rounded profile with good playability",
+                        "action_setup": "Medium action potential with good setup from factory",
+                        "comfort_rating": "8/10 - Good ergonomics with substantial feel",
+                        "weight_category": "Medium to Heavy"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Authentic Les Paul Tone",
+                            "description": "Delivers the classic Les Paul sound and feel at an accessible price point."
+                        },
+                        {
+                            "title": "Excellent Value",
+                            "description": "Genuine Epiphone quality with modern improvements at a fraction of Gibson cost."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Substantial Weight",
+                            "description": "Traditional Les Paul weight may be uncomfortable for some players."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Rock and blues players seeking Les Paul tone",
+                            "reason": "Provides authentic Les Paul experience at an accessible price"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Players requiring lightweight instruments",
+                            "reason": "Substantial weight may not suit players who prefer lighter instruments"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["Tube amplifiers", "High-gain amplifiers", "Clean amplifiers with pedals"],
+                    "suitable_music_styles": {
+                        "excellent": ["Rock", "Blues", "Hard Rock", "Jazz"],
+                        "good": ["Country", "Alternative Rock"],
+                        "limited": ["Funk", "Light acoustic-style playing"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Moderate",
+                        "growth_potential": "Excellent for developing understanding of Les Paul characteristics and rock techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Medium",
+                    "common_issues": ["Neck relief adjustment", "Bridge height adjustment", "Nut slot maintenance"],
+                    "care_instructions": {
+                        "daily": "Wipe down strings and body after playing",
+                        "weekly": "Clean fingerboard, check tuning stability",
+                        "monthly": "Deep clean, check intonation",
+                        "annual": "Professional setup and inspection"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["Pickup replacement", "Bridge upgrade", "Tuner improvement"],
+                        "recommended_budget": "€150-400 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "8",
+                        "sound_quality": "8", 
+                        "value_for_money": "9",
+                        "versatility": "8"
+                    },
+                    "standout_features": ["Authentic Les Paul tone", "Excellent value", "Good build quality"],
+                    "notable_limitations": ["Substantial weight", "Basic hardware"],
+                    "competitive_position": "Strong value offering in the €550-650 range, providing authentic Les Paul experience at an accessible price"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Epiphone Les Paul Standard", "Les Paul guitar", "Epiphone guitar", "rock guitar", "Les Paul tone"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "YAMAHA-FG800",
+                "name": "Yamaha FG800 Acoustic Guitar",
+                "slug": "yamaha-fg800-acoustic-guitar",
+                "brand": "Yamaha",
+                "category": "acoustic-guitars",
+                "description": "The Yamaha FG800 is a classic dreadnought acoustic guitar that delivers exceptional value and quality for beginners and developing players.",
+                "specifications": {
+                    "body_material": "Solid Spruce Top, Nato Back/Sides",
+                    "neck_material": "Nato",
+                    "fingerboard": "Rosewood",
+                    "scale_length": "25.6 inches",
+                    "frets": 20,
+                    "bridge": "Rosewood",
+                    "tuners": "Die-cast Chrome",
+                    "body_shape": "Dreadnought",
+                    "finish": "Natural"
+                },
+                "msrp_price": 199,
+                "images": ["yamaha_fg800_1.jpg", "yamaha_fg800_2.jpg", "yamaha_fg800_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Yamaha FG800 represents exceptional value in acoustic guitars, delivering solid spruce top tone and reliable construction at an accessible price point. Perfect for beginners and developing players.",
+                    "key_features": ["Solid spruce top", "Classic dreadnought body", "Reliable construction", "Excellent value"],
+                    "target_skill_level": "Beginner to Intermediate",
+                    "country_of_origin": "China",
+                    "release_year": "Current Production"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Bright, clear tones with good projection and balanced frequency response",
+                        "output_level": "Medium",
+                        "best_genres": ["Folk", "Country", "Pop", "Practice", "Learning"],
+                        "playing_styles": {
+                            "strumming": "Good projection and balanced sound for strumming",
+                            "fingerpicking": "Clear note separation with good articulation",
+                            "flatpicking": "Bright, cutting tone suitable for flatpicking styles"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Acoustic",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Natural finish with good attention to detail",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "neck_profile": "Comfortable neck profile suitable for beginners",
+                        "action_setup": "Medium action with good setup from factory",
+                        "comfort_rating": "8/10 - Good ergonomics for learning and practice",
+                        "weight_category": "Medium - typical dreadnought weight"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Exceptional Value",
+                            "description": "Delivers solid spruce top tone and reliable construction at an accessible price point."
+                        },
+                        {
+                            "title": "Perfect for Learning",
+                            "description": "Reliable construction and good playability make it ideal for beginners and developing players."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Basic Features",
+                            "description": "Simple design may not satisfy advanced players requiring premium features."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Beginners and developing players",
+                            "reason": "Provides excellent value and reliability for learning acoustic guitar"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Advanced players requiring premium features",
+                            "reason": "Basic design and features may not satisfy experienced players"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["Acoustic amplifiers", "PA systems"],
+                    "suitable_music_styles": {
+                        "excellent": ["Folk", "Country", "Pop", "Practice"],
+                        "good": ["Jazz", "Blues", "Learning"],
+                        "limited": ["Large venue performance", "Professional recording"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low",
+                        "growth_potential": "Excellent for developing fundamental acoustic guitar skills"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Medium",
+                    "common_issues": ["Humidity control", "String changes", "Neck adjustment"],
+                    "care_instructions": {
+                        "daily": "Wipe down after playing, store in case",
+                        "weekly": "Clean body and strings, check humidity",
+                        "monthly": "Deep clean, condition fingerboard if needed",
+                        "annual": "Professional setup and inspection"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["String upgrades", "Tuner improvement", "Case upgrade"],
+                        "recommended_budget": "€50-150 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "7",
+                        "sound_quality": "7", 
+                        "value_for_money": "10",
+                        "versatility": "7"
+                    },
+                    "standout_features": ["Excellent value", "Reliable construction", "Good for learning"],
+                    "notable_limitations": ["Basic features", "Limited premium tone"],
+                    "competitive_position": "Outstanding value leader in the €180-220 range, offering features that typically cost much more"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Yamaha FG800", "acoustic guitar", "beginner guitar", "dreadnought guitar", "Yamaha acoustic"],
+                    "readability_score": "Medium",
+                    "word_count": "500"
+                }
+            }
+        },
+        {
+            "product_input": {
+                "sku": "SEAGULL-S6-ORIGINAL",
+                "name": "Seagull S6 Original Acoustic Guitar",
+                "slug": "seagull-s6-original-acoustic-guitar",
+                "brand": "Seagull",
+                "category": "acoustic-guitars",
+                "description": "The Seagull S6 Original is a handcrafted acoustic guitar that delivers exceptional tone and playability with Canadian craftsmanship and attention to detail.",
+                "specifications": {
+                    "body_material": "Solid Cedar Top, Wild Cherry Back/Sides",
+                    "neck_material": "Silver Leaf Maple",
+                    "fingerboard": "Rosewood",
+                    "scale_length": "24.84 inches",
+                    "frets": 21,
+                    "bridge": "Rosewood",
+                    "tuners": "Seagull Chrome",
+                    "body_shape": "Folk",
+                    "finish": "Natural"
+                },
+                "msrp_price": 399,
+                "images": ["seagull_s6_original_1.jpg", "seagull_s6_original_2.jpg", "seagull_s6_original_3.jpg"]
+            },
+            "ai_generated_content": {
+                "basic_info": {
+                    "overview": "The Seagull S6 Original represents exceptional value in handcrafted acoustic guitars, delivering solid cedar top tone and Canadian craftsmanship at an accessible price point.",
+                    "key_features": ["Solid cedar top", "Handcrafted in Canada", "Wild cherry back and sides", "Silver leaf maple neck"],
+                    "target_skill_level": "Intermediate",
+                    "country_of_origin": "Canada",
+                    "release_year": "Current Production"
+                },
+                "technical_analysis": {
+                    "sound_characteristics": {
+                        "tonal_profile": "Warm, rich tones with excellent clarity and balanced frequency response",
+                        "output_level": "Medium to High",
+                        "best_genres": ["Folk", "Singer-Songwriter", "Jazz", "Fingerpicking"],
+                        "playing_styles": {
+                            "fingerpicking": "Excellent clarity and separation between strings",
+                            "strumming": "Rich, full-bodied sound with good projection",
+                            "flatpicking": "Clear, articulate tone with good note definition"
+                        }
+                    },
+                    "build_quality": {
+                        "construction_type": "Acoustic",
+                        "hardware_quality": "Standard",
+                        "finish_quality": "Natural finish with excellent attention to detail",
+                        "expected_durability": "Good"
+                    },
+                    "playability": {
+                        "neck_profile": "Comfortable neck profile with good playability",
+                        "action_setup": "Low action potential with excellent setup from factory",
+                        "comfort_rating": "9/10 - Excellent ergonomics and comfortable playing feel",
+                        "weight_category": "Light to Medium"
+                    }
+                },
+                "purchase_decision": {
+                    "why_buy": [
+                        {
+                            "title": "Handcrafted Canadian Quality",
+                            "description": "Delivers exceptional craftsmanship and attention to detail from Canadian luthiers."
+                        },
+                        {
+                            "title": "Excellent Tone and Playability",
+                            "description": "Solid cedar top and comfortable neck provide excellent tone and playability."
+                        }
+                    ],
+                    "why_not_buy": [
+                        {
+                            "title": "Limited Body Size Options",
+                            "description": "Folk body size may not suit players requiring larger dreadnought projection."
+                        }
+                    ],
+                    "best_for": [
+                        {
+                            "user_type": "Fingerpickers and singer-songwriters",
+                            "reason": "Provides excellent tone and playability for intimate playing styles"
+                        }
+                    ],
+                    "not_ideal_for": [
+                        {
+                            "user_type": "Players requiring large dreadnought projection",
+                            "reason": "Folk body size may not provide the same projection as larger dreadnought guitars"
+                        }
+                    ]
+                },
+                "usage_guidance": {
+                    "recommended_amplifiers": ["Acoustic amplifiers", "PA systems", "Direct recording"],
+                    "suitable_music_styles": {
+                        "excellent": ["Folk", "Singer-Songwriter", "Jazz", "Fingerpicking"],
+                        "good": ["Country", "Blues", "Pop"],
+                        "limited": ["Heavy strumming", "Large venue performance"]
+                    },
+                    "skill_development": {
+                        "learning_curve": "Low to Moderate",
+                        "growth_potential": "Excellent for developing fingerpicking and acoustic techniques"
+                    }
+                },
+                "maintenance_care": {
+                    "maintenance_level": "Medium",
+                    "common_issues": ["Humidity control", "String changes", "Neck adjustment"],
+                    "care_instructions": {
+                        "daily": "Wipe down after playing, store in case",
+                        "weekly": "Clean body and strings, check humidity",
+                        "monthly": "Deep clean, condition fingerboard if needed",
+                        "annual": "Professional setup and inspection"
+                    },
+                    "upgrade_potential": {
+                        "easy_upgrades": ["String upgrades", "Tuner improvement", "Case upgrade"],
+                        "recommended_budget": "€100-250 for meaningful improvements"
+                    }
+                },
+                "professional_assessment": {
+                    "expert_rating": {
+                        "build_quality": "8",
+                        "sound_quality": "8", 
+                        "value_for_money": "9",
+                        "versatility": "8"
+                    },
+                    "standout_features": ["Handcrafted quality", "Excellent tone", "Good playability"],
+                    "notable_limitations": ["Folk body size", "Limited projection"],
+                    "competitive_position": "Strong value offering in the €350-450 range, providing handcrafted quality that exceeds expectations at this price point"
+                },
+                "content_metadata": {
+                    "generated_date": "2024-01-15T10:30:00Z",
+                    "content_version": "1.0",
+                    "seo_keywords": ["Seagull S6 Original", "acoustic guitar", "Canadian guitar", "folk guitar", "cedar top guitar"],
+                    "readability_score": "Medium",
+                    "word_count": "550"
+                }
+            }
         }
     ]
 }
