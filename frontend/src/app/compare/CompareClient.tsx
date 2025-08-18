@@ -227,7 +227,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           Buy at {price.store.name}
                           {!price.is_available && ' (Out of Stock)'}
                         </a>
-                      ))
+                      ))}
                     }
                   </>
                 ) : (
