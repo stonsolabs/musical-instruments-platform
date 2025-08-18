@@ -52,6 +52,9 @@ export function Header() {
               </svg>
             </button>
           </div>
+          
+          {/* Spacer for better spacing */}
+          <div className="hidden xl:block w-8"></div>
         </div>
       </div>
 

@@ -7,6 +7,16 @@ interface ComprehensiveComparisonProps {
   products: Product[];
 }
 
+// Helper function to generate dynamic grid classes based on product count
+const getGridClasses = (productCount: number): string => {
+  if (productCount === 1) return 'grid-cols-1 max-w-2xl mx-auto';
+  if (productCount === 2) return 'grid-cols-1 md:grid-cols-2';
+  if (productCount === 3) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+  if (productCount === 4) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
+  if (productCount >= 5) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+  return 'grid-cols-1';
+};
+
 export default function ComprehensiveComparison({ products }: ComprehensiveComparisonProps) {
   if (products.length === 0) {
     return (
@@ -31,7 +41,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
       {/* Basic Information Comparison */}
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information Comparison</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
           {products.map((product) => (
             <div key={product.id} className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-3">{product.name}</h3>
@@ -81,7 +91,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
             <span className="text-2xl">🎵</span>
             Sound Characteristics
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
             {products.map((product) => (
               <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
@@ -138,7 +148,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
             <span className="text-2xl">🔧</span>
             Build Quality & Construction
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
             {products.map((product) => (
               <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
@@ -180,7 +190,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
             <span className="text-2xl">🎯</span>
             Playability & Ergonomics
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
             {products.map((product) => (
               <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
@@ -222,7 +232,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
             <span className="text-2xl">⚙️</span>
             Technical Specifications
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
             {products.map((product) => (
               <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
@@ -252,7 +262,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Purchase Decision Guide</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
           {products.map((product) => (
             <div key={product.id} className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-4">{product.name}</h3>
@@ -309,7 +319,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Expert Ratings Comparison</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
           {products.map((product) => (
             <div key={product.id} className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-4">{product.name}</h3>
@@ -357,7 +367,7 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
       <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Usage Guidance Comparison</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${getGridClasses(products.length)}`}>
           {products.map((product) => (
             <div key={product.id} className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-4">{product.name}</h3>

@@ -180,8 +180,16 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     <span className="text-gray-600 font-semibold text-sm">VS</span>
                   </div>
                 )}
-                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-gray-400 text-4xl">🎸</span>
+                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                  {product.images && product.images.length > 0 ? (
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-4xl">🎸</span>
+                  )}
                 </div>
                 
                 <div className="space-y-3">
