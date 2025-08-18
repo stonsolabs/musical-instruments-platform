@@ -74,6 +74,24 @@ export default function SearchAutocomplete({
       const response = await apiClient.searchAutocomplete(searchQuery, 8);
       setSuggestions(response.results);
       setShowDropdown(response.results.length > 0);
+      
+      // Auto-redirect if there's exactly one result
+      if (response.results.length === 1) {
+        const singleResult = response.results[0];
+        
+        // Track autocomplete auto-redirect
+        trackEvent('search_auto_redirect', {
+          search_term: searchQuery,
+          selected_item: singleResult.name,
+          item_id: singleResult.id,
+          item_category: singleResult.category?.name || 'unknown'
+        });
+        
+        // Navigate to product page after a short delay to show the result briefly
+        setTimeout(() => {
+          window.location.href = `/products/${singleResult.slug}-${singleResult.id}`;
+        }, 500);
+      }
     } catch (error) {
       console.error('Search error:', error);
       setSuggestions([]);
@@ -252,28 +270,45 @@ export default function SearchAutocomplete({
                   }`}
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      {/* Product name with highlighting */}
-                      <div 
-                        className="font-medium text-gray-900 mb-1"
-                        dangerouslySetInnerHTML={{ __html: suggestion.search_highlight }}
-                      />
-                      
-                      {/* Brand and category */}
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                        <span className="font-medium">{suggestion.brand.name}</span>
-                        <span>•</span>
-                        <span>{suggestion.category.name}</span>
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      {/* Product Image */}
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                        {suggestion.images && suggestion.images.length > 0 ? (
+                          <img 
+                            src={suggestion.images[0]} 
+                            alt={suggestion.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-gray-400 text-lg">🎸</span>
+                          </div>
+                        )}
                       </div>
-
-                      {/* Rating */}
-                      {suggestion.avg_rating > 0 && (
-                        <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
-                          <span className="text-yellow-500">★</span>
-                          <span>{formatRating(suggestion.avg_rating)}</span>
-                          <span>({suggestion.review_count})</span>
+                      
+                      <div className="flex-1 min-w-0">
+                        {/* Product name with highlighting */}
+                        <div 
+                          className="font-medium text-gray-900 mb-1"
+                          dangerouslySetInnerHTML={{ __html: suggestion.search_highlight }}
+                        />
+                        
+                        {/* Brand and category */}
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                          <span className="font-medium">{suggestion.brand.name}</span>
+                          <span>•</span>
+                          <span>{suggestion.category.name}</span>
                         </div>
-                      )}
+
+                        {/* Rating */}
+                        {suggestion.avg_rating > 0 && (
+                          <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+                            <span className="text-yellow-500">★</span>
+                            <span>{formatRating(suggestion.avg_rating)}</span>
+                            <span>({suggestion.review_count})</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Price */}

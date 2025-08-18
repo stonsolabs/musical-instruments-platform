@@ -126,6 +126,7 @@ class SearchService:
                 },
                 "avg_rating": float(product.avg_rating) if product.avg_rating else 0.0,
                 "review_count": product.review_count,
+                "images": product.images or [],
                 "best_price": best_price,
                 "prices": product_prices,
                 "rank": float(rank),

@@ -77,33 +77,52 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
         
         {/* Sound Characteristics */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Sound Characteristics</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🎵</span>
+            Sound Characteristics
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div key={product.id} className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-3">{product.name}</h4>
+              <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
                 {product.ai_content ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Tonal Profile</span>
-                      <p className="text-sm text-gray-700 mt-1">
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Tonal Profile</span>
+                      <p className="text-sm text-gray-700 mt-2 leading-relaxed">
                         {product.ai_content.technical_analysis.sound_characteristics.tonal_profile}
                       </p>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Output Level</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.sound_characteristics.output_level}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Output Level</span>
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {product.ai_content.technical_analysis.sound_characteristics.output_level}
+                        </span>
+                      </div>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Best Genres</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {product.ai_content.technical_analysis.sound_characteristics.best_genres.slice(0, 3).map((genre, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Best Genres</span>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {product.ai_content.technical_analysis.sound_characteristics.best_genres.slice(0, 4).map((genre, index) => (
+                          <span key={index} className="px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 text-xs rounded-full font-medium">
                             {genre}
                           </span>
                         ))}
                       </div>
                     </div>
+                    {product.ai_content.technical_analysis.sound_characteristics.pickup_positions && (
+                      <div>
+                        <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Pickup Positions</span>
+                        <div className="mt-2 space-y-1">
+                          {Object.entries(product.ai_content.technical_analysis.sound_characteristics.pickup_positions as Record<string, string>).slice(0, 3).map(([position, description]) => (
+                            <div key={position} className="text-xs text-gray-600">
+                              <span className="font-medium">{position}:</span> {description}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">No technical data available</p>
@@ -115,25 +134,37 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
 
         {/* Build Quality */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Build Quality</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🔧</span>
+            Build Quality & Construction
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div key={product.id} className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-3">{product.name}</h4>
+              <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
                 {product.ai_content ? (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Construction</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.build_quality.construction_type}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Construction Type</span>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {product.ai_content.technical_analysis.build_quality.construction_type}
+                      </p>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Hardware</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.build_quality.hardware_quality}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Hardware Quality</span>
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {product.ai_content.technical_analysis.build_quality.hardware_quality}
+                        </span>
+                      </div>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Durability</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.build_quality.expected_durability}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Durability</span>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {product.ai_content.technical_analysis.build_quality.expected_durability}
+                      </p>
                     </div>
+
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">No build quality data available</p>
@@ -143,30 +174,73 @@ export default function ComprehensiveComparison({ products }: ComprehensiveCompa
           </div>
         </div>
 
-        {/* Playability */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Playability</h3>
+        {/* Playability & Ergonomics */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🎯</span>
+            Playability & Ergonomics
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div key={product.id} className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-3">{product.name}</h4>
+              <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
                 {product.ai_content ? (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Neck Profile</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.playability.neck_profile}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Neck Profile</span>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {product.ai_content.technical_analysis.playability.neck_profile}
+                      </p>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Comfort Rating</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.playability.comfort_rating}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Comfort Rating</span>
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          {product.ai_content.technical_analysis.playability.comfort_rating}
+                        </span>
+                      </div>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Weight</span>
-                      <p className="text-sm text-gray-700">{product.ai_content.technical_analysis.playability.weight_category}</p>
+                      <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Weight Category</span>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {product.ai_content.technical_analysis.playability.weight_category}
+                      </p>
                     </div>
+
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">No playability data available</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Technical Specifications */}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">⚙️</span>
+            Technical Specifications
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <h4 className="font-semibold text-gray-900 mb-3 text-lg">{product.name}</h4>
+                {product.specifications ? (
+                  <div className="space-y-3">
+                    {Object.entries(product.specifications).slice(0, 6).map(([key, value]) => (
+                      <div key={key}>
+                        <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                          {key.replace(/_/g, ' ')}
+                        </span>
+                        <p className="text-sm text-gray-700 mt-1">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No specifications available</p>
                 )}
               </div>
             ))}

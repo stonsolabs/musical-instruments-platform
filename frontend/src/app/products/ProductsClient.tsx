@@ -212,10 +212,11 @@ export default function ProductsClient({
   const hasDifferentCategories = new Set(selectedProductCategories).size > 1;
 
   return (
-    <div className="grid lg:grid-cols-5 gap-8">
-      {/* Sidebar Filters */}
-      <div className="lg:col-span-1">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+    <PageLayout layout="preserve-grid">
+      <div className="grid lg:grid-cols-5 gap-8">
+        {/* Sidebar Filters */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Filters</h2>
           
           {/* Search */}
@@ -390,8 +391,16 @@ export default function ProductsClient({
                 <div key={product.id} className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300">
                   <Link href={`/products/${product.slug}-${product.id}`}>
                     <div className="relative">
-                      <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                        <span className="text-gray-400 text-5xl">🎸</span>
+                      <div className="aspect-square bg-gray-200 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                        {product.images && product.images.length > 0 ? (
+                          <img 
+                            src={product.images[0]} 
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-gray-400 text-5xl">🎸</span>
+                        )}
                       </div>
                       <button
                         onClick={(e) => {
@@ -630,6 +639,7 @@ export default function ProductsClient({
         onCompare={compareSelected}
         isVisible={selectedProducts.length >= 1}
       />
-    </div>
+      </div>
+    </PageLayout>
   );
 }

@@ -168,8 +168,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
   const hasDifferentCategories = new Set(data.products.map(p => p.category.name)).size > 1;
 
   return (
-    <PageLayout>
-      {/* Product Header Cards - Aligned with specs table */}
+    <PageLayout layout="preserve-grid">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex-1">
+          {/* Product Header Cards - Aligned with specs table */}
       <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
         {data.products.map((product, index) => (
           <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -720,6 +722,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       {/* Comprehensive AI-Generated Comparison */}
       <ComprehensiveComparison products={data.products} />
 
+      {/* Ad Section */}
+      <div className="mt-8 lg:hidden">
+        <AdSidebar />
+      </div>
+
       {/* Add more to comparison */}
       <div className="mt-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -738,6 +745,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
               </svg>
             </Link>
           </div>
+        </div>
+
+        {/* Desktop Ad Sidebar */}
+        <div className="hidden lg:block lg:w-80">
+          <AdSidebar />
         </div>
       </div>
     </PageLayout>

@@ -127,21 +127,31 @@ export default function ProductDetailPage() {
             {/* Images */}
             <div>
               <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
-                <span className="text-gray-400 text-6xl">🎸</span>
+                {product.images && product.images.length > 0 ? (
+                  <img 
+                    src={product.images[selectedImage]} 
+                    alt={`${product.name} - Image ${selectedImage + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-400 text-6xl">🎸</span>
+                )}
               </div>
-              {product.images?.length > 0 && (
+              {product.images && product.images.length > 0 && (
                 <div className="flex items-center gap-2 overflow-x-auto">
                   {product.images.map((img, idx) => (
                     <button 
                       key={idx} 
                       onClick={() => setSelectedImage(idx)} 
-                      className={`w-16 h-16 rounded border-2 flex-shrink-0 ${
+                      className={`w-16 h-16 rounded border-2 flex-shrink-0 overflow-hidden ${
                         idx === selectedImage ? 'border-blue-600' : 'border-gray-200'
                       }`}
                     >
-                      <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-                        <span className="text-gray-400 text-sm">{idx + 1}</span>
-                      </div>
+                      <img 
+                        src={img} 
+                        alt={`${product.name} thumbnail ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>

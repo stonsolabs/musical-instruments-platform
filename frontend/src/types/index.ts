@@ -205,6 +205,7 @@ export interface SearchAutocompleteProduct {
   category: Category;
   avg_rating: number;
   review_count: number;
+  images: string[];
   best_price?: {
     price: number;
     currency: string;
