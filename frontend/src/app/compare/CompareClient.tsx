@@ -6,6 +6,7 @@ import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
 import ComprehensiveComparison from '@/components/ComprehensiveComparison';
 import PageLayout from '@/components/PageLayout';
+import AdSidebar from '@/components/AdSidebar';
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -228,7 +229,6 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           {!price.is_available && ' (Out of Stock)'}
                         </a>
                       ))}
-                    }
                   </>
                 ) : (
                   <>
