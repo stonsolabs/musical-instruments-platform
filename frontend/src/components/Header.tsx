@@ -9,7 +9,7 @@ export function Header() {
 
   return (
     <header className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0">
@@ -26,8 +26,8 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation - Better distribution */}
-          <nav className="hidden xl:flex items-center justify-center flex-1 mx-8">
-            <div className="flex items-center space-x-4 lg:space-x-5 xl:space-x-6 flex-nowrap">
+          <nav className="hidden xl:flex items-center justify-center flex-1 mx-4">
+            <div className="flex items-center space-x-3 lg:space-x-4 xl:space-x-5 flex-nowrap">
               <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Acoustic Guitars</Link>
               <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Electric Guitars</Link>
               <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Bass Guitars</Link>
