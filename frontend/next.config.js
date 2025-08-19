@@ -92,17 +92,7 @@ const nextConfig = {
         permanent: false,
       },
       {
-        source: '/blog',
-        destination: '/',
-        permanent: false,
-      },
-      {
         source: '/how-to-use',
-        destination: '/',
-        permanent: false,
-      },
-      {
-        source: '/about',
         destination: '/',
         permanent: false,
       },
