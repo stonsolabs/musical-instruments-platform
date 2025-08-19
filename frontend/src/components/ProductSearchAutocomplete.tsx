@@ -287,31 +287,10 @@ export default function ProductSearchAutocomplete({
                       </div>
                     </div>
 
-                    {/* Store availability indicator */}
-                    <div className="ml-4 text-right">
-                      {suggestion.prices && suggestion.prices.length > 0 ? (
-                        <div>
-                          <div className="font-bold text-green-600">
-                            {suggestion.prices.length}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            Store{suggestion.prices.length > 1 ? 's' : ''}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-sm text-gray-500">No stores</div>
-                      )}
-                    </div>
+
                   </div>
                   
-                                    {/* Store availability indicator (simplified) */}
-                  {suggestion.prices && suggestion.prices.length > 0 && (
-                    <div className="mt-2">
-                      <div className="text-xs text-gray-500">
-                        Available at {suggestion.prices.length} store{suggestion.prices.length > 1 ? 's' : ''}
-                      </div>
-                    </div>
-                  )}
+                  
                 </div>
               ))}
             </div>

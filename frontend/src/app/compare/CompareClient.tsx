@@ -24,41 +24,52 @@ const formatRating = (rating: number): string => {
 const generateCommonSpecs = (products: Product[]): string[] => {
   if (products.length === 0) return [];
   
-  // Get all specification keys from all products
-  const allSpecs = new Set<string>();
-  products.forEach(product => {
-    if (product.specifications) {
-      Object.keys(product.specifications).forEach(key => allSpecs.add(key));
-    }
-  });
-  
-  // Filter to only specs that appear in at least one product
-  const commonSpecs = Array.from(allSpecs).filter(spec => {
-    return products.some(product => 
-      product.specifications && 
-      product.specifications[spec] !== undefined && 
-      product.specifications[spec] !== null &&
-      product.specifications[spec] !== ''
-    );
-  });
-  
-  return commonSpecs.sort();
+  try {
+    // Get all specification keys from all products
+    const allSpecs = new Set<string>();
+    products.forEach(product => {
+      if (product.specifications && typeof product.specifications === 'object') {
+        Object.keys(product.specifications).forEach(key => allSpecs.add(key));
+      }
+    });
+    
+    // Filter to only specs that appear in at least one product
+    const commonSpecs = Array.from(allSpecs).filter(spec => {
+      return products.some(product => 
+        product.specifications && 
+        typeof product.specifications === 'object' &&
+        product.specifications[spec] !== undefined && 
+        product.specifications[spec] !== null &&
+        product.specifications[spec] !== ''
+      );
+    });
+    
+    return commonSpecs.sort();
+  } catch (error) {
+    console.error('Error generating common specs:', error);
+    return [];
+  }
 };
 
 // Helper function to generate comparison matrix
 const generateComparisonMatrix = (products: Product[]): {[spec: string]: {[productId: string]: any}} => {
-  const matrix: {[spec: string]: {[productId: string]: any}} = {};
-  const commonSpecs = generateCommonSpecs(products);
-  
-  commonSpecs.forEach(spec => {
-    matrix[spec] = {};
-    products.forEach(product => {
-      const value = product.specifications && product.specifications[spec];
-      matrix[spec][String(product.id)] = value || 'N/A';
+  try {
+    const matrix: {[spec: string]: {[productId: string]: any}} = {};
+    const commonSpecs = generateCommonSpecs(products);
+    
+    commonSpecs.forEach(spec => {
+      matrix[spec] = {};
+      products.forEach(product => {
+        const value = product.specifications && typeof product.specifications === 'object' ? product.specifications[spec] : undefined;
+        matrix[spec][String(product.id)] = value || 'N/A';
+      });
     });
-  });
-  
-  return matrix;
+    
+    return matrix;
+  } catch (error) {
+    console.error('Error generating comparison matrix:', error);
+    return {};
+  }
 };
 
 interface CompareClientProps {
@@ -90,12 +101,19 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           
           const productsData = await response.json();
           console.log('✅ Products data received:', productsData);
+          console.log('🔍 Products data structure:', {
+            hasProducts: !!productsData.products,
+            productsLength: productsData.products?.length,
+            productsType: typeof productsData.products,
+            fullResponse: productsData
+          });
           
           if (!productsData.products || productsData.products.length === 0) {
+            console.error('❌ No products found in response:', productsData);
             throw new Error('No products found for the provided slugs');
           }
 
-          // Create comparison data structure
+          // Create comparison data structure from SearchResponse
           const comparisonData: ComparisonResponse = {
             products: productsData.products,
             common_specs: generateCommonSpecs(productsData.products),
@@ -103,6 +121,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
             generated_at: new Date().toISOString()
           };
           
+          console.log('✅ Comparison data created:', comparisonData);
           setData(comparisonData);
           
           // Track comparison analytics
