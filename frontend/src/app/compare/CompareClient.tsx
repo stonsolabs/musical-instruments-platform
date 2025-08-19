@@ -184,9 +184,32 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-             <div className="grid lg:grid-cols-5 gap-6 xl:gap-8">
+      <div className="grid lg:grid-cols-5 gap-6 xl:gap-8">
         {/* Main Content */}
         <div className="lg:col-span-5">
+          {/* Add More Products Section - Moved to beginning */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Add More Instruments to Compare</h3>
+                  <p className="text-gray-600">
+                    Want to compare more instruments? Search and add them to your comparison.
+                  </p>
+                </div>
+                <Link
+                  href="/products"
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  Browse All Products
+                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* Product Header Cards - Aligned with specs table */}
           <div className={`grid gap-6 mb-8 relative ${isSingleProduct ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
             {data.products.map((product, index) => (
@@ -331,6 +354,208 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       Some specifications might not be directly comparable.
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Purchase Decision Guide - Moved to beginning */}
+          {data.products.some(p => p.ai_content) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                  <span className="text-2xl">🎯</span>
+                  Purchase Decision Guide
+                </h3>
+                <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+                  {data.products.map((product) => (
+                    <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-4">{product.name}</h4>
+                      {product.ai_content ? (
+                        <div className="space-y-4">
+                          {/* Why Buy */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-green-700 mb-2">Why Buy</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.why_buy.slice(0, 2).map((reason, index) => (
+                                <div key={index} className="p-2 bg-green-50 border border-green-200 rounded text-xs">
+                                  <div className="font-medium text-green-800">{reason.title}</div>
+                                  <div className="text-green-700 mt-1">{reason.description}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Why Not Buy */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-red-700 mb-2">Considerations</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.why_not_buy.slice(0, 1).map((reason, index) => (
+                                <div key={index} className="p-2 bg-red-50 border border-red-200 rounded text-xs">
+                                  <div className="font-medium text-red-800">{reason.title}</div>
+                                  <div className="text-red-700 mt-1">{reason.description}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Best For */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-blue-700 mb-2">Best For</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.best_for.slice(0, 1).map((userType, index) => (
+                                <div key={index} className="p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                                  <div className="font-medium text-blue-800">{userType.user_type}</div>
+                                  <div className="text-blue-700 mt-1">{userType.reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No purchase guidance available</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Expert Ratings Comparison - Moved to beginning */}
+          {data.products.some(p => p.ai_content) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                  <span className="text-2xl">⭐</span>
+                  Expert Ratings Comparison
+                </h3>
+                <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+                  {data.products.map((product) => (
+                    <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-4">{product.name}</h4>
+                      {product.ai_content ? (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="text-center p-3 bg-gray-50 rounded">
+                              <div className="text-lg font-bold text-blue-600">{product.ai_content.professional_assessment.expert_rating.build_quality}/10</div>
+                              <div className="text-xs text-gray-600">Build Quality</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded">
+                              <div className="text-lg font-bold text-green-600">{product.ai_content.professional_assessment.expert_rating.sound_quality}/10</div>
+                              <div className="text-xs text-gray-600">Sound Quality</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded">
+                              <div className="text-lg font-bold text-purple-600">{product.ai_content.professional_assessment.expert_rating.value_for_money}/10</div>
+                              <div className="text-xs text-gray-600">Value</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded">
+                              <div className="text-lg font-bold text-orange-600">{product.ai_content.professional_assessment.expert_rating.versatility}/10</div>
+                              <div className="text-xs text-gray-600">Versatility</div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <span className="text-sm font-medium text-gray-500">Standout Features</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {product.ai_content.professional_assessment.standout_features.slice(0, 2).map((feature, index) => (
+                                <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                  {feature}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No expert ratings available</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Usage Guidance Comparison - Moved to beginning with affiliate links */}
+          {data.products.some(p => p.ai_content) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                  <span className="text-2xl">🎵</span>
+                  Usage Guidance Comparison
+                </h3>
+                <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+                  {data.products.map((product) => (
+                    <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-4">{product.name}</h4>
+                      {product.ai_content ? (
+                        <div className="space-y-4">
+                          {/* Music Styles */}
+                          <div>
+                            <span className="text-sm font-medium text-gray-500">Best Genres</span>
+                            <div className="space-y-2 mt-2">
+                              <div>
+                                <span className="text-xs font-medium text-green-600">Excellent:</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {product.ai_content.usage_guidance.suitable_music_styles.excellent.slice(0, 2).map((style, index) => (
+                                    <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                      {style}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <div>
+                                <span className="text-xs font-medium text-blue-600">Good:</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {product.ai_content.usage_guidance.suitable_music_styles.good.slice(0, 2).map((style, index) => (
+                                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                      {style}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Recommended Amplifiers with Affiliate Links */}
+                          <div>
+                            <span className="text-sm font-medium text-gray-500">Recommended Amps</span>
+                            <div className="space-y-2 mt-2">
+                              {product.ai_content.usage_guidance.recommended_amplifiers.slice(0, 3).map((amp, index) => (
+                                <div key={index} className="flex items-center justify-between p-2 bg-purple-50 border border-purple-200 rounded">
+                                  <span className="text-sm text-purple-800 font-medium">{amp}</span>
+                                  <div className="flex gap-1">
+                                    <AffiliateButton
+                                      store="thomann"
+                                      href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(amp)}&aff=123`}
+                                      className="text-xs px-2 py-1"
+                                    >
+                                      Thomann
+                                    </AffiliateButton>
+                                    <AffiliateButton
+                                      store="gear4music"
+                                      href={`https://gear4music.com/search?search=${encodeURIComponent(amp)}&aff=123`}
+                                      className="text-xs px-2 py-1"
+                                    >
+                                      Gear4Music
+                                    </AffiliateButton>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Learning Curve */}
+                          <div>
+                            <span className="text-sm font-medium text-gray-500">Learning Curve</span>
+                            <p className="text-sm text-gray-700 mt-1">{product.ai_content.usage_guidance.skill_development.learning_curve}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No usage guidance available</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -720,66 +945,6 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
             </div>
           </div>
 
-          {/* Purchase Decision Guide */}
-          {data.products.some(p => p.ai_content) && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">Purchase Decision Guide</h3>
-                <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
-                  {data.products.map((product) => (
-                    <div key={product.id} className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-900 mb-4">{product.name}</h4>
-                      {product.ai_content ? (
-                        <div className="space-y-4">
-                          {/* Why Buy */}
-                          <div>
-                            <h5 className="text-sm font-semibold text-green-700 mb-2">Why Buy</h5>
-                            <div className="space-y-2">
-                              {product.ai_content.purchase_decision.why_buy.slice(0, 2).map((reason, index) => (
-                                <div key={index} className="p-2 bg-green-50 border border-green-200 rounded text-xs">
-                                  <div className="font-medium text-green-800">{reason.title}</div>
-                                  <div className="text-green-700 mt-1">{reason.description}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Why Not Buy */}
-                          <div>
-                            <h5 className="text-sm font-semibold text-red-700 mb-2">Considerations</h5>
-                            <div className="space-y-2">
-                              {product.ai_content.purchase_decision.why_not_buy.slice(0, 1).map((reason, index) => (
-                                <div key={index} className="p-2 bg-red-50 border border-red-200 rounded text-xs">
-                                  <div className="font-medium text-red-800">{reason.title}</div>
-                                  <div className="text-red-700 mt-1">{reason.description}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Best For */}
-                          <div>
-                            <h5 className="text-sm font-semibold text-blue-700 mb-2">Best For</h5>
-                            <div className="space-y-2">
-                              {product.ai_content.purchase_decision.best_for.slice(0, 1).map((userType, index) => (
-                                <div key={index} className="p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-                                  <div className="font-medium text-blue-800">{userType.user_type}</div>
-                                  <div className="text-blue-700 mt-1">{userType.reason}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">No purchase guidance available</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Stores Comparison */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
             <div className="p-6">
@@ -839,32 +1004,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
             </div>
           </div>
 
-          {/* Comprehensive AI-Generated Comparison */}
+          {/* Additional Comparison Insights */}
           <ComprehensiveComparison products={data.products} />
 
-          {/* Add more to comparison */}
-          <div className="mt-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Add More Instruments to Compare</h3>
-              <div className="max-w-2xl">
-                <p className="text-gray-600 mb-4">
-                  Want to compare more instruments? Search and add them to your comparison.
-                </p>
-                <Link
-                  href="/products"
-                  className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
-                >
-                  Browse All Products
-                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
         </div>
-
-        
       </div>
     </div>
   );

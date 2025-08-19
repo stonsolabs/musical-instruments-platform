@@ -207,14 +207,18 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                    <span className="text-gray-400 text-2xl">🎸</span>
-                  </div>
+                  <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer">
+                      <span className="text-gray-400 text-2xl">🎸</span>
+                    </div>
+                  </Link>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
                     <span className="text-sm text-gray-500">1000+ watching</span>
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+                  <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer">{product.name}</h3>
+                  </Link>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span className="text-yellow-500">★</span>
@@ -287,12 +291,14 @@ export default function HomePage() {
                         )}
                       </>
                     ) : (
-                      <Link 
-                        href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-                      >
-                        View Details
-                      </Link>
+                      <div className="space-y-2">
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          className="block w-full text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                        >
+                          View Details
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -356,9 +362,11 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-gray-400 text-2xl">🎸</span>
-                </div>
+                <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer">
+                    <span className="text-gray-400 text-2xl">🎸</span>
+                  </div>
+                </Link>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
                   <div className="flex items-center gap-1">
@@ -366,7 +374,9 @@ export default function HomePage() {
                     <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.8'}</span>
                   </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
+                <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                  <h3 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors cursor-pointer">{product.name}</h3>
+                </Link>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                   {product.description || "Exceptional quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
@@ -439,12 +449,14 @@ export default function HomePage() {
                       )}
                     </>
                   ) : (
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
+                    <div className="space-y-2">
+                      <Link 
+                        href={`/products/${product.slug}-${product.id}`}
+                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>

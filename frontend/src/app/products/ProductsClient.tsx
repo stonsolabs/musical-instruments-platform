@@ -507,25 +507,44 @@ export default function ProductsClient({
             <>
               <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                 {products.map((product) => (
-                  <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={product.id} className={`bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-all duration-200 ${
+                    selectedProducts.includes(product.id) 
+                      ? 'border-blue-500 shadow-lg ring-2 ring-blue-200' 
+                      : 'border-gray-200'
+                  }`}>
                     <div className="relative">
-                      <div className="h-48 bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-2xl">🎸</span>
-                      </div>
-                      <button
+                      <div 
+                        className="h-48 bg-gray-200 flex items-center justify-center cursor-pointer relative group"
                         onClick={() => toggleProductSelection(product.id)}
-                        className={`absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      >
+                        <span className="text-gray-400 text-2xl">🎸</span>
+                        {/* Selection overlay */}
+                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
+                          selectedProducts.includes(product.id)
+                            ? 'bg-blue-500 bg-opacity-20'
+                            : 'bg-black bg-opacity-0 group-hover:bg-opacity-10'
+                        }`}>
+                          {selectedProducts.includes(product.id) && (
+                            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-lg">
+                              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        {/* Selection indicator */}
+                        <div className={`absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           selectedProducts.includes(product.id)
                             ? 'bg-blue-600 border-blue-600 text-white'
-                            : 'bg-white border-gray-300 text-gray-400 hover:border-blue-600'
-                        }`}
-                      >
-                        {selectedProducts.includes(product.id) && (
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </button>
+                            : 'bg-white border-gray-300 text-gray-400 group-hover:border-blue-600'
+                        }`}>
+                          {selectedProducts.includes(product.id) && (
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="p-4">
