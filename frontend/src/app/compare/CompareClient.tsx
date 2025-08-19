@@ -351,63 +351,434 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">Specifications Comparison</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="text-left py-4 px-6 font-semibold text-gray-900 w-1/4 text-lg">Specification</th>
-                      {data.products.map((product) => (
-                        <th key={product.id} className="text-left py-4 px-6 font-semibold text-gray-900 text-lg">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">🎸</span>
-                            <div>
-                              <div className="font-bold">{product.brand.name}</div>
-                              <div className="text-sm font-normal text-gray-600">{product.name}</div>
+              
+              {/* Technical Specifications */}
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">⚙️</span>
+                  Technical Specifications
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/3">Specification</th>
+                        {data.products.map((product) => (
+                          <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">🎸</span>
+                              <div>
+                                <div className="font-bold text-sm">{product.brand.name}</div>
+                                <div className="text-xs font-normal text-gray-600">{product.name}</div>
+                              </div>
                             </div>
-                          </div>
-                        </th>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Basic Specifications */}
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 px-4 font-medium text-gray-900">Brand</td>
+                        {data.products.map((product) => (
+                          <td key={product.id} className="py-3 px-4 text-gray-700">{product.brand.name}</td>
+                        ))}
+                      </tr>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 px-4 font-medium text-gray-900">Category</td>
+                        {data.products.map((product) => (
+                          <td key={product.id} className="py-3 px-4 text-gray-700">{product.category.name}</td>
+                        ))}
+                      </tr>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 px-4 font-medium text-gray-900">Average Rating</td>
+                        {data.products.map((product) => (
+                          <td key={product.id} className="py-3 px-4 text-gray-700">
+                            <div className="flex items-center gap-2">
+                              <span className="text-yellow-500">★</span>
+                              <span>{formatRating(product.avg_rating)}</span>
+                              <span className="text-sm text-gray-500">({product.review_count} reviews)</span>
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 px-4 font-medium text-gray-900">Available Stores</td>
+                        {data.products.map((product) => (
+                          <td key={product.id} className="py-3 px-4 text-gray-700">
+                            <span className="font-semibold text-blue-600">{product.prices?.length || 0}</span> stores
+                          </td>
+                        ))}
+                      </tr>
+                      
+                      {/* Product Specifications */}
+                      {data.common_specs && data.common_specs.length > 0 && data.common_specs.map((spec) => (
+                        <tr key={spec} className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900 capitalize">
+                            {spec.replace(/_/g, ' ')}
+                          </td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {data.comparison_matrix[spec]?.[product.id] || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Basic Specifications */}
-                    <tr className="border-b border-gray-100">
-                      <td className="py-4 px-6 font-medium text-gray-900">Brand</td>
-                      {data.products.map((product) => (
-                        <td key={product.id} className="py-4 px-6 text-gray-700">{product.brand.name}</td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-4 px-6 font-medium text-gray-900">Category</td>
-                      {data.products.map((product) => (
-                        <td key={product.id} className="py-4 px-6 text-gray-700">{product.category.name}</td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-4 px-6 font-medium text-gray-900">Average Rating</td>
-                      {data.products.map((product) => (
-                        <td key={product.id} className="py-4 px-6 text-gray-700">
-                          <div className="flex items-center gap-2">
-                            <span className="text-yellow-500">★</span>
-                            <span>{formatRating(product.avg_rating)}</span>
-                            <span className="text-sm text-gray-500">({product.review_count} reviews)</span>
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="py-4 px-6 font-medium text-gray-900">Available Stores</td>
-                      {data.products.map((product) => (
-                        <td key={product.id} className="py-4 px-6 text-gray-700">
-                          <span className="font-semibold text-blue-600">{product.prices?.length || 0}</span> stores
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </div>
               </div>
+
+              {/* Build Quality & Construction */}
+              {data.products.some(p => p.ai_content) && (
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🔧</span>
+                    Build Quality & Construction
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/3">Aspect</th>
+                          {data.products.map((product) => (
+                            <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">🎸</span>
+                                <div>
+                                  <div className="font-bold text-sm">{product.brand.name}</div>
+                                  <div className="text-xs font-normal text-gray-600">{product.name}</div>
+                                </div>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Construction Type</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.build_quality.construction_type || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Hardware Quality</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.build_quality.hardware_quality ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  {product.ai_content.technical_analysis.build_quality.hardware_quality}
+                                </span>
+                              ) : 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Finish Quality</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.build_quality.finish_quality || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Expected Durability</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.build_quality.expected_durability || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Playability & Ergonomics */}
+              {data.products.some(p => p.ai_content) && (
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🎯</span>
+                    Playability & Ergonomics
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/3">Aspect</th>
+                          {data.products.map((product) => (
+                            <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">🎸</span>
+                                <div>
+                                  <div className="font-bold text-sm">{product.brand.name}</div>
+                                  <div className="text-xs font-normal text-gray-600">{product.name}</div>
+                                </div>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Neck Profile</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.playability.neck_profile || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Action Setup</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.playability.action_setup || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Comfort Rating</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.playability.comfort_rating ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                  {product.ai_content.technical_analysis.playability.comfort_rating}
+                                </span>
+                              ) : 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Weight Category</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.playability.weight_category || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Sound Characteristics */}
+              {data.products.some(p => p.ai_content) && (
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🎵</span>
+                    Sound Characteristics
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/3">Aspect</th>
+                          {data.products.map((product) => (
+                            <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">🎸</span>
+                                <div>
+                                  <div className="font-bold text-sm">{product.brand.name}</div>
+                                  <div className="text-xs font-normal text-gray-600">{product.name}</div>
+                                </div>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Tonal Profile</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              <div className="text-sm leading-relaxed">
+                                {product.ai_content?.technical_analysis.sound_characteristics.tonal_profile || 'N/A'}
+                              </div>
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Output Level</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.sound_characteristics.output_level ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  {product.ai_content.technical_analysis.sound_characteristics.output_level}
+                                </span>
+                              ) : 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Best Genres</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.technical_analysis.sound_characteristics.best_genres ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {product.ai_content.technical_analysis.sound_characteristics.best_genres.slice(0, 3).map((genre, index) => (
+                                    <span key={index} className="px-2 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 text-xs rounded-full font-medium">
+                                      {genre}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Basic Information */}
+              {data.products.some(p => p.ai_content) && (
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">ℹ️</span>
+                    Basic Information
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-4 font-semibold text-gray-900 w-1/3">Information</th>
+                          {data.products.map((product) => (
+                            <th key={product.id} className="text-left py-3 px-4 font-semibold text-gray-900">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">🎸</span>
+                                <div>
+                                  <div className="font-bold text-sm">{product.brand.name}</div>
+                                  <div className="text-xs font-normal text-gray-600">{product.name}</div>
+                                </div>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Overview</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              <div className="text-sm leading-relaxed line-clamp-3">
+                                {product.ai_content?.basic_info.overview || 'N/A'}
+                              </div>
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Target Skill Level</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.basic_info.target_skill_level || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Country of Origin</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.basic_info.country_of_origin || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Release Year</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.basic_info.release_year || 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 px-4 font-medium text-gray-900">Key Features</td>
+                          {data.products.map((product) => (
+                            <td key={product.id} className="py-3 px-4 text-gray-700">
+                              {product.ai_content?.basic_info.key_features ? (
+                                <ul className="text-sm space-y-1">
+                                  {product.ai_content.basic_info.key_features.slice(0, 3).map((feature, index) => (
+                                    <li key={index} className="flex items-start gap-1">
+                                      <span className="text-blue-600 mt-1">•</span>
+                                      <span>{feature}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : 'N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Purchase Decision Guide */}
+          {data.products.some(p => p.ai_content) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Purchase Decision Guide</h3>
+                <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+                  {data.products.map((product) => (
+                    <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-4">{product.name}</h4>
+                      {product.ai_content ? (
+                        <div className="space-y-4">
+                          {/* Why Buy */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-green-700 mb-2">Why Buy</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.why_buy.slice(0, 2).map((reason, index) => (
+                                <div key={index} className="p-2 bg-green-50 border border-green-200 rounded text-xs">
+                                  <div className="font-medium text-green-800">{reason.title}</div>
+                                  <div className="text-green-700 mt-1">{reason.description}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Why Not Buy */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-red-700 mb-2">Considerations</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.why_not_buy.slice(0, 1).map((reason, index) => (
+                                <div key={index} className="p-2 bg-red-50 border border-red-200 rounded text-xs">
+                                  <div className="font-medium text-red-800">{reason.title}</div>
+                                  <div className="text-red-700 mt-1">{reason.description}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Best For */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-blue-700 mb-2">Best For</h5>
+                            <div className="space-y-2">
+                              {product.ai_content.purchase_decision.best_for.slice(0, 1).map((userType, index) => (
+                                <div key={index} className="p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                                  <div className="font-medium text-blue-800">{userType.user_type}</div>
+                                  <div className="text-blue-700 mt-1">{userType.reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No purchase guidance available</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Stores Comparison */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">

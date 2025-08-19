@@ -25,9 +25,9 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Better spacing */}
-          <nav className="hidden xl:flex items-center justify-center flex-1">
-            <div className="flex items-center space-x-3 lg:space-x-4 xl:space-x-5 flex-nowrap">
+          {/* Desktop Navigation - Better distribution */}
+          <nav className="hidden xl:flex items-center justify-center flex-1 mx-8">
+            <div className="flex items-center space-x-4 lg:space-x-5 xl:space-x-6 flex-nowrap">
               <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Acoustic Guitars</Link>
               <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Electric Guitars</Link>
               <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-3 py-1 rounded">Bass Guitars</Link>

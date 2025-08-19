@@ -109,18 +109,18 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
             <div className="text-center lg:text-left">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Search, compare, save
+                Find Your Perfect Musical Instrument
               </h1>
               <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-                Find your next instrument today
+                Expert Reviews, Detailed Comparisons, and Trusted Recommendations
               </h2>
               <p className="text-xl text-gray-200 mb-8">
-                At GetYourMusicGear you can compare prices on thousands of instruments from Europe's top music stores
+                Discover the ideal instrument for your musical journey with comprehensive reviews, detailed specifications, and expert guidance from trusted music retailers worldwide
               </p>
             </div>
 
@@ -177,7 +177,7 @@ export default function HomePage() {
 
       {/* Ad Space - Top Banner */}
       <section className="py-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Special Offer!</h3>
             <p className="mb-4">Get 15% off on all Fender guitars this month</p>
@@ -190,8 +190,8 @@ export default function HomePage() {
 
       {/* Popular Instruments Right Now */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Popular Instruments Right Now</h2>
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12">Trending Musical Instruments</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -304,8 +304,8 @@ export default function HomePage() {
 
       {/* Popular Comparisons */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12">Popular Instrument Comparisons</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {popularComparisons.map((comparison, index) => (
               <Link
@@ -321,7 +321,7 @@ export default function HomePage() {
                     {comparison.title}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4">
-                    See detailed comparison of these popular instruments
+                    Explore detailed specifications and features of these popular instruments
                   </p>
                   <div className="flex items-center text-blue-600 font-medium">
                     Compare Now
@@ -338,7 +338,7 @@ export default function HomePage() {
 
       {/* Ad Space - Middle Banner */}
       <section className="py-6 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
             <p className="mb-4">Free shipping on orders over €199</p>
@@ -351,8 +351,8 @@ export default function HomePage() {
 
       {/* Top Rated Instruments */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Top Rated Instruments</h2>
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12">Highest Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -368,7 +368,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {product.description || "Excellent quality instrument with outstanding reviews from musicians worldwide."}
+                  {product.description || "Exceptional quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
@@ -455,11 +455,11 @@ export default function HomePage() {
 
       {/* Blog Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest from Our Blog</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Expert Instrument Guides & Reviews</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Stay updated with the latest instrument reviews, buying guides, and industry insights
+              Discover comprehensive buying guides, detailed instrument reviews, and expert insights to help you make informed decisions
             </p>
           </div>
           
@@ -541,9 +541,9 @@ export default function HomePage() {
       {/* Newsletter Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+          <h2 className="text-3xl font-bold mb-4">Stay Updated with the Latest</h2>
           <p className="text-gray-600 mb-8 text-lg">
-            Get the latest instrument news, deals, and reviews delivered to your inbox
+            Get expert instrument reviews, buying guides, and industry insights delivered to your inbox
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
@@ -560,7 +560,7 @@ export default function HomePage() {
 
       {/* Ad Space - Bottom Banner */}
       <section className="py-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Sale</h3>
             <p className="mb-4">Up to 40% off on selected instruments</p>
