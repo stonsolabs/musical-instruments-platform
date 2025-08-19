@@ -194,202 +194,207 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Product Comparison Grid - Dynamic layout based on product count */}
-      <div className={`grid gap-6 mb-8 ${
-        data.products.length === 1 
-          ? 'grid-cols-1 max-w-2xl mx-auto' 
-          : data.products.length === 2 
-          ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' 
-          : data.products.length === 3 
-          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto' 
-          : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-      }`}>
-        {data.products.map((product, index) => (
-          <div key={product.id} className="bg-white rounded-xl shadow-elegant border border-primary-200 p-6 h-[600px] flex flex-col">
-            {/* Product Image */}
-            <Link href={`/products/${product.slug}-${product.id}`} className="block mb-4">
-              <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow">
-                {product.images && product.images.length > 0 ? (
-                  <img 
-                    src={product.images[0]} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-primary-400 text-4xl">🎸</span>
-                )}
-              </div>
-            </Link>
-            
-            {/* Product Info */}
-            <div className="flex-1 flex flex-col">
-              <div className="mb-4">
-                <p className="text-sm text-primary-600 mb-1">{product.brand.name}</p>
-                <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <h3 className="font-semibold text-primary-900 line-clamp-2 hover:text-accent-600 transition-colors">{product.name}</h3>
-                </Link>
-              </div>
+      {/* Product Comparison Section */}
+      <div className="mb-8">
+        {/* Products Grid - Always aligned properly */}
+        <div className={`grid gap-6 mb-6 ${
+          data.products.length === 1 
+            ? 'grid-cols-1 max-w-2xl mx-auto' 
+            : data.products.length === 2 
+            ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto' 
+            : data.products.length === 3 
+            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto' 
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+        }`}>
+          {data.products.map((product, index) => (
+            <div key={product.id} className="bg-white rounded-xl shadow-elegant border border-primary-200 p-6 h-[600px] flex flex-col">
+              {/* Product Image */}
+              <Link href={`/products/${product.slug}-${product.id}`} className="block mb-4">
+                <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow">
+                  {product.images && product.images.length > 0 ? (
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-primary-400 text-4xl">🎸</span>
+                  )}
+                </div>
+              </Link>
+              
+              {/* Product Info */}
+              <div className="flex-1 flex flex-col">
+                <div className="mb-4">
+                  <p className="text-sm text-primary-600 mb-1">{product.brand.name}</p>
+                  <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                    <h3 className="font-semibold text-primary-900 line-clamp-2 hover:text-accent-600 transition-colors">{product.name}</h3>
+                  </Link>
+                </div>
 
-              {/* Expert Ratings - Below product image */}
-              {product.ai_content && (
-                <div className="mb-4 p-3 bg-primary-50 rounded-lg">
-                  <h4 className="text-sm font-semibold text-primary-700 mb-2">Expert Ratings</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-success-600">{product.ai_content.professional_assessment.expert_rating.build_quality}/10</div>
-                      <div className="text-xs text-primary-600">Build</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-accent-600">{product.ai_content.professional_assessment.expert_rating.sound_quality}/10</div>
-                      <div className="text-xs text-primary-600">Sound</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-warning-600">{product.ai_content.professional_assessment.expert_rating.value_for_money}/10</div>
-                      <div className="text-xs text-primary-600">Value</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-primary-600">{product.ai_content.professional_assessment.expert_rating.versatility}/10</div>
-                      <div className="text-xs text-primary-600">Versatility</div>
+                {/* Expert Ratings - Below product image */}
+                {product.ai_content && (
+                  <div className="mb-4 p-3 bg-primary-50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-primary-700 mb-2">Expert Ratings</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-success-600">{product.ai_content.professional_assessment.expert_rating.build_quality}/10</div>
+                        <div className="text-xs text-primary-600">Build</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-accent-600">{product.ai_content.professional_assessment.expert_rating.sound_quality}/10</div>
+                        <div className="text-xs text-primary-600">Sound</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-warning-600">{product.ai_content.professional_assessment.expert_rating.value_for_money}/10</div>
+                        <div className="text-xs text-primary-600">Value</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-primary-600">{product.ai_content.professional_assessment.expert_rating.versatility}/10</div>
+                        <div className="text-xs text-primary-600">Versatility</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Rating and Store Count */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {product.avg_rating > 0 && (
+                {/* Rating and Store Count */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    {product.avg_rating > 0 && (
+                      <>
+                        <span className="text-warning-500">★</span>
+                        <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
+                        <span className="text-sm text-primary-500">({product.review_count})</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-primary-600">{product.prices?.length || 0}</div>
+                    <div className="text-xs text-primary-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
+                  </div>
+                </div>
+
+                {/* Store Buttons */}
+                <div className="space-y-2 mt-auto">
+                  {product.prices && product.prices.length > 0 ? (
                     <>
-                      <span className="text-warning-500">★</span>
-                      <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
-                      <span className="text-sm text-primary-500">({product.review_count})</span>
+                      {product.prices.slice(0, 2).map((price) => {
+                        const isThomann = price.store.name.toLowerCase().includes('thomann');
+                        const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
+                        
+                        if (isThomann) {
+                          return (
+                            <AffiliateButton
+                              key={price.id}
+                              store="thomann"
+                              href={price.affiliate_url}
+                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </AffiliateButton>
+                          );
+                        } else if (isGear4Music) {
+                          return (
+                            <AffiliateButton
+                              key={price.id}
+                              store="gear4music"
+                              href={price.affiliate_url}
+                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </AffiliateButton>
+                          );
+                        } else {
+                          return (
+                            <a 
+                              key={price.id}
+                              href={price.affiliate_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
+                                price.is_available 
+                                  ? 'bg-primary-800 text-white hover:bg-primary-700' 
+                                  : 'bg-primary-300 text-primary-600 cursor-not-allowed'
+                              }`}
+                            >
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
+                              {!price.is_available && ' (Out of Stock)'}
+                            </a>
+                          );
+                        }
+                      })}
+                      {product.prices.length > 2 && (
+                        <Link 
+                          href={`/products/${product.slug}-${product.id}`}
+                          className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
+                        >
+                          View All {product.prices.length} Stores
+                        </Link>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <AffiliateButton
+                        store="thomann"
+                        href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        className="w-full"
+                      />
+                      <AffiliateButton
+                        store="gear4music"
+                        href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                        className="w-full"
+                      />
+                      <Link 
+                        href={`/products/${product.slug}-${product.id}`}
+                        className="block w-full text-center bg-primary-800 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm"
+                      >
+                        View Details
+                      </Link>
                     </>
                   )}
                 </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-primary-600">{product.prices?.length || 0}</div>
-                  <div className="text-xs text-primary-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add More Product Section - Separate and smaller */}
+        <div className="flex justify-center">
+          <div className="bg-white rounded-lg shadow-md border-2 border-dashed border-primary-300 p-4 max-w-sm w-full hover:border-primary-400 transition-colors cursor-pointer">
+            <div className="text-center">
+              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mb-3 mx-auto">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <h4 className="text-sm font-semibold text-primary-900 mb-2">Add More Instruments</h4>
+              <p className="text-xs text-primary-600 mb-3">Compare with additional products</p>
+              
+              {showAddProduct ? (
+                <div className="w-full">
+                  <ProductSearchAutocomplete
+                    placeholder="Search for instruments..."
+                    className="w-full mb-2"
+                    onProductSelect={handleAddProduct}
+                  />
+                  <button 
+                    onClick={() => setShowAddProduct(false)}
+                    className="text-xs text-primary-600 hover:text-primary-800"
+                  >
+                    Cancel
+                  </button>
                 </div>
-              </div>
-
-              {/* Store Buttons */}
-              <div className="space-y-2 mt-auto">
-                {product.prices && product.prices.length > 0 ? (
-                  <>
-                    {product.prices.slice(0, 2).map((price) => {
-                      const isThomann = price.store.name.toLowerCase().includes('thomann');
-                      const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
-                      
-                      if (isThomann) {
-                        return (
-                          <AffiliateButton
-                            key={price.id}
-                            store="thomann"
-                            href={price.affiliate_url}
-                            className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            {formatPrice(price.price, price.currency)} at {price.store.name}
-                            {!price.is_available && ' (Out of Stock)'}
-                          </AffiliateButton>
-                        );
-                      } else if (isGear4Music) {
-                        return (
-                          <AffiliateButton
-                            key={price.id}
-                            store="gear4music"
-                            href={price.affiliate_url}
-                            className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            {formatPrice(price.price, price.currency)} at {price.store.name}
-                            {!price.is_available && ' (Out of Stock)'}
-                          </AffiliateButton>
-                        );
-                      } else {
-                        return (
-                          <a 
-                            key={price.id}
-                            href={price.affiliate_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                              price.is_available 
-                                ? 'bg-primary-800 text-white hover:bg-primary-700' 
-                                : 'bg-primary-300 text-primary-600 cursor-not-allowed'
-                            }`}
-                          >
-                            {formatPrice(price.price, price.currency)} at {price.store.name}
-                            {!price.is_available && ' (Out of Stock)'}
-                          </a>
-                        );
-                      }
-                    })}
-                    {product.prices.length > 2 && (
-                      <Link 
-                        href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
-                      >
-                        View All {product.prices.length} Stores
-                      </Link>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <AffiliateButton
-                      store="thomann"
-                      href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                      className="w-full"
-                    />
-                    <AffiliateButton
-                      store="gear4music"
-                      href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                      className="w-full"
-                    />
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="block w-full text-center bg-primary-800 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm"
-                    >
-                      View Details
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Add More Product Card - Same height as product cards */}
-        <div className="bg-white rounded-xl shadow-elegant border-2 border-dashed border-primary-300 p-6 h-[600px] flex flex-col items-center justify-center hover:border-primary-400 transition-colors cursor-pointer">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-primary-900 mb-2">Add More Instruments</h3>
-            <p className="text-sm text-primary-600 mb-4">Compare with additional products</p>
-            
-            {showAddProduct ? (
-              <div className="w-full">
-                <ProductSearchAutocomplete
-                  placeholder="Search for instruments..."
-                  className="w-full mb-3"
-                  onProductSelect={handleAddProduct}
-                />
-                <button 
-                  onClick={() => setShowAddProduct(false)}
-                  className="text-sm text-primary-600 hover:text-primary-800"
+              ) : (
+                <button
+                  onClick={() => setShowAddProduct(true)}
+                  className="bg-primary-600 text-white px-3 py-1.5 rounded-md hover:bg-primary-700 transition-colors text-xs font-medium"
                 >
-                  Cancel
+                  Add Product
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowAddProduct(true)}
-                className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-              >
-                Add Product
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -434,7 +439,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
               <span className="text-2xl">🎯</span>
               Purchase Decision Guide
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -497,7 +502,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
               <span className="text-2xl">🎵</span>
               Usage Guidance Comparison
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -582,7 +587,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
               <span className="text-2xl">🔧</span>
               Maintenance & Care
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -652,7 +657,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
               <span className="text-2xl">⭐</span>
               Customer Reviews
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
