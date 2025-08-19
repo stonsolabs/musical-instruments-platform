@@ -650,7 +650,8 @@ export default function ProductsClient({
                 <div className="mt-8">
                   <SpecificationsComparison 
                     products={products.filter(p => selectedProducts.includes(p.id))}
-                    isCollapsible={false}
+                    isCollapsible={true}
+                    defaultCollapsed={true}
                     className=""
                   />
                 </div>
