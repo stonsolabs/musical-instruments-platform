@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
-import PageLayout from '@/components/PageLayout';
-import AdSidebar from '@/components/AdSidebar';
 import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
@@ -233,7 +231,7 @@ export default function ProductsClient({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid lg:grid-cols-5 gap-6 xl:gap-8">
+              <div className="grid lg:grid-cols-4 gap-6 xl:gap-8">
         {/* Sidebar Filters */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto hidden lg:block">
@@ -686,12 +684,7 @@ export default function ProductsClient({
           )}
         </div>
 
-              {/* Ad Sidebar */}
-      <div className="lg:col-span-1">
-        <div className="sticky top-24">
-          <AdSidebar compact={true} />
-        </div>
-      </div>
+              
       </div>
       
       {/* Floating Compare Button */}

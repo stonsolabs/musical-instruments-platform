@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
-import PageLayout from '@/components/PageLayout';
+
 import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
@@ -190,7 +190,7 @@ export default function HomePage() {
 
       {/* Popular Instruments Right Now */}
       <section className="py-16">
-        <PageLayout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Popular Instruments Right Now</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -299,12 +299,12 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </PageLayout>
+        </div>
       </section>
 
       {/* Popular Comparisons */}
       <section className="py-16 bg-gray-50">
-        <PageLayout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {popularComparisons.map((comparison, index) => (
@@ -333,7 +333,7 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-        </PageLayout>
+        </div>
       </section>
 
       {/* Ad Space - Middle Banner */}
@@ -351,7 +351,7 @@ export default function HomePage() {
 
       {/* Top Rated Instruments */}
       <section className="py-16">
-        <PageLayout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
@@ -450,12 +450,12 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </PageLayout>
+        </div>
       </section>
 
       {/* Blog Section */}
       <section className="py-16 bg-white">
-        <PageLayout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest from Our Blog</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -535,7 +535,7 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-        </PageLayout>
+        </div>
       </section>
 
       {/* Newsletter Section */}

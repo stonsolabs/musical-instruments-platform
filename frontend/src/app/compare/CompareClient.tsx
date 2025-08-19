@@ -5,8 +5,6 @@ import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
 import ComprehensiveComparison from '@/components/ComprehensiveComparison';
-import PageLayout from '@/components/PageLayout';
-import AdSidebar from '@/components/AdSidebar';
 import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
@@ -167,7 +165,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid lg:grid-cols-6 gap-6 xl:gap-8">
+             <div className="grid lg:grid-cols-5 gap-6 xl:gap-8">
         {/* Main Content */}
         <div className="lg:col-span-5">
           {/* Product Header Cards - Aligned with specs table */}
@@ -476,12 +474,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           </div>
         </div>
 
-        {/* Ad Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24">
-            <AdSidebar />
-          </div>
-        </div>
+        
       </div>
     </div>
   );

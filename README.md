@@ -237,44 +237,7 @@ The platform uses a comprehensive JSON structure for each product with detailed 
 ## 💰 Revenue Model
 
 - Affiliate commissions from Amazon, Thomann, Gear4Music, Kytary
-- Google AdSense advertisements in sidebar
 - Target: €25K-€75K monthly revenue within 12 months
-
-## 📢 Google AdSense Setup
-
-The platform includes integrated Google AdSense support with sidebar advertisements:
-
-### 1. Environment Configuration
-Add your Google AdSense publisher ID to your environment variables:
-```bash
-# In frontend/.env.local or Vercel environment variables
-NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXX
-```
-
-### 2. Ad Slot Configuration
-Update the ad slot IDs in `frontend/src/components/AdSidebar.tsx`:
-```typescript
-// Replace placeholder ad slot IDs with your actual AdSense ad unit IDs
-adSlot="1234567890" // Top sidebar ad
-adSlot="0987654321" // Middle sidebar ad  
-adSlot="1122334455" // Bottom sidebar ad
-```
-
-### 3. Ad Placement
-- **Desktop**: Right sidebar with 3 advertisement sections
-- **Mobile**: Ads stack below content for better mobile experience
-- **Responsive**: Automatically adjusts to different screen sizes
-
-### 4. Ad Formats Supported
-- Rectangle ads (300x250, 336x280)
-- Responsive ads that adapt to container size
-- Placeholder ads shown during development/testing
-
-### 5. Implementation Features
-- Ad blocker detection with fallback messages
-- Sticky positioning for top ad on desktop
-- Proper spacing and styling integration
-- SEO-friendly implementation
 
 ## 📊 Project Status
 
@@ -288,7 +251,7 @@ adSlot="1122334455" // Bottom sidebar ad
 - ✅ Usage recommendations and skill development insights
 - ✅ Production deployment scripts
 - ✅ Security implementation
-- ✅ Google AdSense integration with sidebar advertisements
+
 - 🔄 Ready for launch
 
 ## 🎸 Supported Categories
