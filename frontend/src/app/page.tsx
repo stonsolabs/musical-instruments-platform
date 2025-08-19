@@ -310,12 +310,6 @@ export default function HomePage() {
                           href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                           className="w-full"
                         />
-                        <Link 
-                          href={`/products/${product.slug}-${product.id}`}
-                          className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
-                        >
-                          View Details
-                        </Link>
                       </div>
                     )}
                   </div>
@@ -486,12 +480,6 @@ export default function HomePage() {
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                         className="w-full"
                       />
-                      <Link 
-                        href={`/products/${product.slug}-${product.id}`}
-                        className="block w-full text-center bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors"
-                      >
-                        View Details
-                      </Link>
                     </div>
                   )}
                 </div>

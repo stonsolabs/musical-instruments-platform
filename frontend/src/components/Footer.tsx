@@ -19,8 +19,8 @@ export function Footer() {
               />
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Your trusted source for comparing musical instruments across Europe's top retailers. 
-              Find the best deals and make informed decisions on your next musical investment.
+              Your trusted source for comparing musical instruments from the world's top retailers. 
+              Find the best deals, expert reviews, and make informed decisions on your next musical investment.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">

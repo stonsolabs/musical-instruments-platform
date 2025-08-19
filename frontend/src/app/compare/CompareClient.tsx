@@ -194,10 +194,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Product Comparison Grid - Side by side layout */}
+      {/* Product Comparison Grid - Side by side layout with consistent heights */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
         {data.products.map((product, index) => (
-          <div key={product.id} className="bg-white rounded-xl shadow-elegant border border-primary-200 p-6 h-full flex flex-col">
+          <div key={product.id} className="bg-white rounded-xl shadow-elegant border border-primary-200 p-6 h-[600px] flex flex-col">
             {/* Product Image */}
             <Link href={`/products/${product.slug}-${product.id}`} className="block mb-4">
               <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow">
@@ -349,8 +349,8 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           </div>
         ))}
 
-        {/* Add More Product Card */}
-        <div className="bg-white rounded-xl shadow-elegant border-2 border-dashed border-primary-300 p-6 h-full flex flex-col items-center justify-center hover:border-primary-400 transition-colors cursor-pointer">
+        {/* Add More Product Card - Same height as product cards */}
+        <div className="bg-white rounded-xl shadow-elegant border-2 border-dashed border-primary-300 p-6 h-[600px] flex flex-col items-center justify-center hover:border-primary-400 transition-colors cursor-pointer">
           <div className="text-center">
             <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
               <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,11 +410,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       )}
 
-      {/* Specifications Comparison */}
+      {/* Specifications Comparison - Collapsed by default */}
       <SpecificationsComparison 
         products={data.products}
         isCollapsible={true}
-        defaultCollapsed={false}
+        defaultCollapsed={true}
         className="mb-8"
       />
 
