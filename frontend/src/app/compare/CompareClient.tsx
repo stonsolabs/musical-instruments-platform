@@ -194,8 +194,16 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Product Comparison Grid - Side by side layout with consistent heights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+      {/* Product Comparison Grid - Dynamic layout based on product count */}
+      <div className={`grid gap-6 mb-8 ${
+        data.products.length === 1 
+          ? 'grid-cols-1 max-w-2xl mx-auto' 
+          : data.products.length === 2 
+          ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' 
+          : data.products.length === 3 
+          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto' 
+          : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+      }`}>
         {data.products.map((product, index) => (
           <div key={product.id} className="bg-white rounded-xl shadow-elegant border border-primary-200 p-6 h-[600px] flex flex-col">
             {/* Product Image */}
