@@ -80,10 +80,10 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading product...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto" />
+          <p className="mt-4 text-primary-600">Loading product...</p>
         </div>
       </div>
     );
@@ -91,21 +91,21 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <Link href="/products" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Browse All Products</Link>
+          <h1 className="text-2xl font-bold text-primary-900 mb-4">Product Not Found</h1>
+          <Link href="/products" className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">Browse All Products</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-primary-50">
       {/* Ad Space - Top */}
       <section className="py-4 bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white text-center">
+          <div className="bg-gradient-to-r from-primary-600 to-accent-600 rounded-lg p-4 text-white text-center">
             <p className="text-sm">🎵 Compare prices across Europe's top music stores</p>
           </div>
         </div>
@@ -113,22 +113,22 @@ export default function ProductDetailPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
+        <nav className="flex items-center space-x-2 text-sm text-primary-600 mb-6">
+          <Link href="/" className="hover:text-primary-800">Home</Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-blue-600">Products</Link>
+          <Link href="/products" className="hover:text-primary-800">Products</Link>
           <span>/</span>
-          <Link href={`/products?category=${product.category.slug}`} className="hover:text-blue-600">{product.category.name}</Link>
+          <Link href={`/products?category=${product.category.slug}`} className="hover:text-primary-800">{product.category.name}</Link>
           <span>/</span>
-          <span className="text-gray-900">{product.name}</span>
+          <span className="text-primary-900">{product.name}</span>
         </nav>
 
         {/* Product Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
           <div className="grid lg:grid-cols-2 gap-8 p-8">
             {/* Images */}
             <div>
-              <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
+              <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
                 {product.images && product.images.length > 0 ? (
                   <img 
                     src={product.images[selectedImage]} 
@@ -136,7 +136,7 @@ export default function ProductDetailPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-gray-400 text-6xl">🎸</span>
+                  <span className="text-primary-400 text-6xl">🎸</span>
                 )}
               </div>
               {product.images && product.images.length > 0 && (
@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
                       key={idx} 
                       onClick={() => setSelectedImage(idx)} 
                       className={`w-16 h-16 rounded border-2 flex-shrink-0 overflow-hidden ${
-                        idx === selectedImage ? 'border-blue-600' : 'border-gray-200'
+                        idx === selectedImage ? 'border-primary-600' : 'border-primary-200'
                       }`}
                     >
                       <img 
@@ -164,28 +164,53 @@ export default function ProductDetailPage() {
             <div className="space-y-6">
               <div>
                 <div className="flex items-center gap-4 mb-3">
-                  <Link href={`/products?brand=${product.brand.slug}`} className="text-blue-600 hover:text-blue-800 font-medium">
+                  <Link href={`/products?brand=${product.brand.slug}`} className="text-primary-600 hover:text-primary-800 font-medium">
                     {product.brand.name}
                   </Link>
-                  <span className="text-sm text-gray-500">SKU: {product.sku}</span>
+                  <span className="text-sm text-primary-500">SKU: {product.sku}</span>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+                <h1 className="text-3xl font-bold text-primary-900 mb-2">{product.name}</h1>
                 <div className="flex items-center gap-4">
                   {product.avg_rating > 0 && (
                     <div className="flex items-center gap-2">
-                      <span className="text-yellow-500">★</span>
+                      <span className="text-warning-500">★</span>
                       <span className="font-medium">{formatRating(product.avg_rating)}</span>
-                      <span className="text-gray-500">({product.review_count} reviews)</span>
+                      <span className="text-primary-500">({product.review_count} reviews)</span>
                     </div>
                   )}
-                  <span className="text-sm text-gray-600">{product.category.name}</span>
+                  <span className="text-sm text-primary-600">{product.category.name}</span>
                 </div>
               </div>
 
+              {/* Expert Ratings - Prominent display */}
+              {product.ai_content && (
+                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-primary-900 mb-3">Expert Ratings</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
+                      <div className="text-xl font-bold text-success-600">{product.ai_content.professional_assessment.expert_rating.build_quality}/10</div>
+                      <div className="text-xs text-primary-600">Build Quality</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
+                      <div className="text-xl font-bold text-accent-600">{product.ai_content.professional_assessment.expert_rating.sound_quality}/10</div>
+                      <div className="text-xs text-primary-600">Sound Quality</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
+                      <div className="text-xl font-bold text-warning-600">{product.ai_content.professional_assessment.expert_rating.value_for_money}/10</div>
+                      <div className="text-xs text-primary-600">Value</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
+                      <div className="text-xl font-bold text-primary-600">{product.ai_content.professional_assessment.expert_rating.versatility}/10</div>
+                      <div className="text-xs text-primary-600">Versatility</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Store Availability */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
                 <div>
-                  <p className="text-sm text-gray-700 font-medium mb-3">Available at {product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
+                  <p className="text-sm text-primary-700 font-medium mb-3">Available at {product.prices?.length || 0} Store{product.prices?.length !== 1 ? 's' : ''}</p>
                   {product.prices && product.prices.length > 0 ? (
                     <div className="space-y-2">
                       {product.prices.slice(0, 3).map((price) => {
@@ -198,9 +223,9 @@ export default function ProductDetailPage() {
                               key={price.id}
                               store="thomann"
                               href={price.affiliate_url}
-                              className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {price.store.name}
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
                             </AffiliateButton>
                           );
@@ -210,9 +235,9 @@ export default function ProductDetailPage() {
                               key={price.id}
                               store="gear4music"
                               href={price.affiliate_url}
-                              className={!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}
+                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {price.store.name}
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
                             </AffiliateButton>
                           );
@@ -225,24 +250,35 @@ export default function ProductDetailPage() {
                               rel="noopener noreferrer"
                               className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
                                 price.is_available
-                                  ? 'bg-gray-800 text-white hover:bg-gray-700'
-                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                  ? 'bg-primary-800 text-white hover:bg-primary-700'
+                                  : 'bg-primary-300 text-primary-600 cursor-not-allowed'
                               }`}
                             >
-                              {price.store.name}
+                              {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
                             </a>
                           );
                         }
                       })}
                       {product.prices.length > 3 && (
-                        <p className="text-xs text-gray-500 text-center">
+                        <p className="text-xs text-primary-500 text-center">
                           +{product.prices.length - 3} more stores available
                         </p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500">No stores available</p>
+                    <div className="space-y-2">
+                      <AffiliateButton
+                        store="thomann"
+                        href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        className="w-full"
+                      />
+                      <AffiliateButton
+                        store="gear4music"
+                        href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                        className="w-full"
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -250,15 +286,15 @@ export default function ProductDetailPage() {
               {/* Quick Actions */}
               <div className="flex gap-3">
                 <Link 
-                  href={`/compare?ids=${product.id}`}
-                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
+                  href={`/compare?products=${product.slug}`}
+                  className="flex-1 bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 transition-colors text-center font-medium"
                 >
                   Compare
                 </Link>
-                <button className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <button className="px-4 py-3 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors">
                   Add to List
                 </button>
-                <button className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <button className="px-4 py-3 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors">
                   ❤
                 </button>
               </div>
@@ -266,8 +302,8 @@ export default function ProductDetailPage() {
               {/* Description */}
               {product.description && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-700 leading-relaxed">{product.description}</p>
+                  <h3 className="font-semibold text-primary-900 mb-2">Description</h3>
+                  <p className="text-primary-700 leading-relaxed">{product.description}</p>
                 </div>
               )}
             </div>
@@ -276,6 +312,91 @@ export default function ProductDetailPage() {
 
         {/* Comprehensive Product Details */}
         <ComprehensiveProductDetails product={product} />
+
+        {/* Reviews Section */}
+        {product.review_count > 0 && (
+          <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
+                <span className="text-2xl">⭐</span>
+                Customer Reviews
+              </h2>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-primary-900">{formatRating(product.avg_rating)}</div>
+                    <div className="flex items-center justify-center gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className={`text-lg ${i < Math.floor(product.avg_rating) ? 'text-warning-500' : 'text-primary-300'}`}>
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-sm text-primary-600 mt-1">{product.review_count} reviews</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm text-primary-600">
+                      {product.avg_rating >= 4.5 && "Excellent customer satisfaction with outstanding quality and performance"}
+                      {product.avg_rating >= 4.0 && product.avg_rating < 4.5 && "Very good customer satisfaction with reliable performance"}
+                      {product.avg_rating >= 3.5 && product.avg_rating < 4.0 && "Good customer satisfaction with solid performance"}
+                      {product.avg_rating < 3.5 && "Mixed customer reviews with some concerns"}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Review Summary */}
+                <div className="bg-primary-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-primary-900 mb-3">What customers say</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600">Build Quality</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 bg-primary-200 rounded-full h-2">
+                          <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.build_quality || 0) * 10}%` }}></div>
+                        </div>
+                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600">Sound Quality</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 bg-primary-200 rounded-full h-2">
+                          <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.sound_quality || 0) * 10}%` }}></div>
+                        </div>
+                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600">Value for Money</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 bg-primary-200 rounded-full h-2">
+                          <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.value_for_money || 0) * 10}%` }}></div>
+                        </div>
+                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Related Products */}
+        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-primary-900 mb-6">Similar Products</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Placeholder for related products */}
+              <div className="border border-primary-200 rounded-lg p-4 text-center">
+                <div className="w-16 h-16 bg-primary-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                  <span className="text-primary-400 text-2xl">🎸</span>
+                </div>
+                <p className="text-sm text-primary-600">More products coming soon</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
