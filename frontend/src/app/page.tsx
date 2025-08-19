@@ -109,7 +109,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-16 md:py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
             <div className="text-center lg:text-left">
@@ -177,7 +177,7 @@ export default function HomePage() {
 
       {/* Ad Space - Top Banner */}
       <section className="py-6 bg-gray-100">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Special Offer!</h3>
             <p className="mb-4">Get 15% off on all Fender guitars this month</p>
@@ -190,7 +190,7 @@ export default function HomePage() {
 
       {/* Popular Instruments Right Now */}
       <section className="py-16">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Popular Instruments Right Now</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -304,7 +304,7 @@ export default function HomePage() {
 
       {/* Popular Comparisons */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Popular Comparisons</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {popularComparisons.map((comparison, index) => (
@@ -338,7 +338,7 @@ export default function HomePage() {
 
       {/* Ad Space - Middle Banner */}
       <section className="py-6 bg-white">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
             <p className="mb-4">Free shipping on orders over €199</p>
@@ -351,7 +351,7 @@ export default function HomePage() {
 
       {/* Top Rated Instruments */}
       <section className="py-16">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
@@ -455,7 +455,7 @@ export default function HomePage() {
 
       {/* Blog Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest from Our Blog</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -540,7 +540,7 @@ export default function HomePage() {
 
       {/* Newsletter Section */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-2 sm:px-4 lg:px-6 text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
           <p className="text-gray-600 mb-8 text-lg">
             Get the latest instrument news, deals, and reviews delivered to your inbox
