@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
+import SpecificationsComparison from '@/components/SpecificationsComparison';
 import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
@@ -643,6 +644,17 @@ export default function ProductsClient({
                   </div>
                 ))}
               </div>
+
+              {/* Specifications Comparison - Show when products are selected */}
+              {selectedProducts.length >= 1 && (
+                <div className="mt-8">
+                  <SpecificationsComparison 
+                    products={products.filter(p => selectedProducts.includes(p.id))}
+                    isCollapsible={false}
+                    className=""
+                  />
+                </div>
+              )}
 
               {/* Pagination */}
               {pagination.pages > 1 && (
