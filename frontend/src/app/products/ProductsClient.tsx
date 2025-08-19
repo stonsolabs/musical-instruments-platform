@@ -195,29 +195,25 @@ export default function ProductsClient({
 
   const compareSelected = () => {
     if (selectedProducts.length >= 1) {
-      // Get the product slugs for the selected products
+      // Get the product slugs for the selected products (similar to main page handleCompare)
       const selectedProductObjects = products.filter(product => selectedProducts.includes(product.id));
-      const selectedProductSlugs = selectedProductObjects.map(product => product.slug).join(',');
+      const validProducts = selectedProductObjects.filter(product => product !== null);
       
-      // Debug logging
-      console.log('🔍 Compare selected products:', selectedProducts);
-      console.log('🔍 Selected product objects:', selectedProductObjects);
-      console.log('🔍 Selected product slugs:', selectedProductSlugs);
-      
-      if (selectedProductSlugs.length === 0) {
-        console.error('❌ No valid product slugs found for selected products');
-        return;
+      if (validProducts.length >= 1) {
+        // Create URL with product slugs for SEO (user only sees slugs)
+        const productSlugs = validProducts.map(product => product.slug);
+        const slugsString = productSlugs.join(',');
+        
+        // Debug logging
+        console.log('🔍 Compare selected products:', selectedProducts);
+        console.log('🔍 Valid product objects:', validProducts);
+        console.log('🔍 Product slugs string:', slugsString);
+        
+        // Navigate to compare page
+        window.location.href = `/compare?products=${slugsString}`;
+      } else {
+        console.warn('⚠️ No valid products selected for comparison');
       }
-      
-      // URL encode the slugs to handle special characters
-      const encodedSlugs = encodeURIComponent(selectedProductSlugs);
-      console.log('🔍 Encoded slugs:', encodedSlugs);
-      
-      const compareUrl = `/compare?products=${encodedSlugs}`;
-      console.log('🔍 Navigating to compare URL:', compareUrl);
-      
-      // Use router.push to navigate
-      router.push(compareUrl);
     } else {
       console.warn('⚠️ No products selected for comparison');
     }

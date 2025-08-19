@@ -304,68 +304,11 @@ export default function ProductSearchAutocomplete({
                     </div>
                   </div>
                   
-                                    {/* Store Buttons */}
+                                    {/* Store availability indicator (simplified) */}
                   {suggestion.prices && suggestion.prices.length > 0 && (
                     <div className="mt-2">
-                      <div className="flex flex-wrap gap-1">
-                        {suggestion.prices.slice(0, 3).map((price) => {
-                          const isThomann = price.store.name.toLowerCase().includes('thomann');
-                          const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
-                          
-                          if (isThomann) {
-                            return (
-                              <AffiliateButton
-                                key={price.id}
-                                store="thomann"
-                                href={price.affiliate_url}
-                                className={`px-2 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {price.store.name}
-                              </AffiliateButton>
-                            );
-                          } else if (isGear4Music) {
-                            return (
-                              <AffiliateButton
-                                key={price.id}
-                                store="gear4music"
-                                href={price.affiliate_url}
-                                className={`px-2 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {price.store.name}
-                              </AffiliateButton>
-                            );
-                          } else {
-                            return (
-                              <a
-                                key={price.id}
-                                href={price.affiliate_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className={`flex items-center justify-center px-2 py-1 rounded text-xs font-medium transition-colors ${
-                                  price.is_available
-                                    ? 'bg-gray-800 text-white hover:bg-gray-700'
-                                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                                }`}
-                                title={`Buy at ${price.store.name}`}
-                              >
-                                {price.store.name}
-                              </a>
-                            );
-                          }
-                        })}
-                        {suggestion.prices.length > 3 && (
-                          <Link
-                            href={`/products/${suggestion.slug}-${suggestion.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center justify-center px-2 py-1 bg-gray-600 text-white rounded text-xs font-medium hover:bg-gray-700 transition-colors"
-                            title={`View all ${suggestion.prices.length} stores`}
-                          >
-                            +{suggestion.prices.length - 3}
-                          </Link>
-                        )}
+                      <div className="text-xs text-gray-500">
+                        Available at {suggestion.prices.length} store{suggestion.prices.length > 1 ? 's' : ''}
                       </div>
                     </div>
                   )}

@@ -25,23 +25,25 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Optimized for better spacing */}
-          <nav className="hidden xl:flex items-center space-x-3 lg:space-x-4 flex-1 justify-center">
-            <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Acoustic Guitars</Link>
-            <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Electric Guitars</Link>
-            <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Bass Guitars</Link>
-            <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Drums & Percussion</Link>
-            <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Pianos & Keyboards</Link>
-            <Link href="/products?category=orchestral" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Orchestral</Link>
-            <Link href="/products?category=live-sound-lighting" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Live Sound & Lighting</Link>
-            <Link href="/products?category=studio-production" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Studio & Production</Link>
-            <Link href="/products?category=music-software" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Music Software</Link>
-            <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">DJ Equipment</Link>
-            <Link href="/products?category=home-audio" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Home Audio</Link>
+          {/* Desktop Navigation - Fixed layout */}
+          <nav className="hidden xl:flex items-center justify-center flex-1 overflow-hidden">
+            <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-4 flex-wrap justify-center">
+              <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Acoustic Guitars</Link>
+              <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Electric Guitars</Link>
+              <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Bass Guitars</Link>
+              <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Drums & Percussion</Link>
+              <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Pianos & Keyboards</Link>
+              <Link href="/products?category=orchestral" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Orchestral</Link>
+              <Link href="/products?category=live-sound-lighting" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Live Sound & Lighting</Link>
+              <Link href="/products?category=studio-production" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Studio & Production</Link>
+              <Link href="/products?category=music-software" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Music Software</Link>
+              <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">DJ Equipment</Link>
+              <Link href="/products?category=home-audio" className="text-gray-900 hover:text-blue-600 transition-colors text-xs lg:text-sm font-medium whitespace-nowrap px-2 py-1 rounded">Home Audio</Link>
+            </div>
           </nav>
 
           {/* Right side - Mobile menu button */}
-          <div className="flex items-center">
+          <div className="flex items-center flex-shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="xl:hidden text-gray-900 hover:text-blue-600 p-2 rounded-md transition-colors"
@@ -52,9 +54,6 @@ export function Header() {
               </svg>
             </button>
           </div>
-          
-          {/* Spacer for better spacing */}
-          <div className="hidden xl:block w-8"></div>
         </div>
       </div>
 

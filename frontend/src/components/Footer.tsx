@@ -51,7 +51,7 @@ export function Footer() {
               <li><Link href="/products" className="text-gray-400 hover:text-white transition-colors">All Products</Link></li>
               <li><Link href="/products?category=electric-guitars" className="text-gray-400 hover:text-white transition-colors">Electric Guitars</Link></li>
               <li><Link href="/products?category=acoustic-guitars" className="text-gray-400 hover:text-white transition-colors">Acoustic Guitars</Link></li>
-              <li><Link href="/products?category=digital-keyboards" className="text-gray-400 hover:text-white transition-colors">Digital Keyboards</Link></li>
+              <li><Link href="/products?category=pianos-keyboards" className="text-gray-400 hover:text-white transition-colors">Pianos & Keyboards</Link></li>
               <li><Link href="/compare" className="text-gray-400 hover:text-white transition-colors">Compare Instruments</Link></li>
               <li><Link href="/deals" className="text-gray-400 hover:text-white transition-colors">Special Deals</Link></li>
             </ul>
@@ -64,9 +64,9 @@ export function Footer() {
               <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
               <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
               <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/affiliate" className="text-gray-400 hover:text-white transition-colors">Affiliate Disclosure</Link></li>
+              <li><Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/affiliate-disclosure" className="text-gray-400 hover:text-white transition-colors">Affiliate Disclosure</Link></li>
             </ul>
           </div>
         </div>
