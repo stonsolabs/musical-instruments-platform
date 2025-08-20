@@ -258,10 +258,13 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                           href={price.affiliate_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-medium rounded transition-colors"
+                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
                         >
-                          <img src="/thoman-favicon.png" alt="T" className="w-3 h-3" />
-                          <span>View Price</span>
+                          <span className="text-accent-700">View Price at</span>
+                          <div className="flex items-center gap-1">
+                            <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
+                            <span className="text-accent-700 font-medium">th•mann</span>
+                          </div>
                         </a>
                       </div>
                     );
@@ -272,10 +275,13 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                           href={price.affiliate_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded transition-colors"
+                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
                         >
-                          <img src="/gear-100.png" alt="G" className="w-3 h-3" />
-                          <span>View Price</span>
+                          <span className="text-accent-700">View Price at</span>
+                          <div className="flex items-center gap-1">
+                            <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
+                            <span className="text-accent-700 font-medium">Gear4music</span>
+                          </div>
                         </a>
                       </div>
                     );
@@ -286,9 +292,10 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                           href={price.affiliate_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded transition-colors"
+                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
                         >
-                          <span>View Price</span>
+                          <span className="text-accent-700">View Price at</span>
+                          <span className="text-accent-700 font-medium">{price.store.name}</span>
                         </a>
                       </div>
                     );
@@ -312,10 +319,13 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-medium rounded transition-colors"
+                    className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
                   >
-                    <img src="/thoman-favicon.png" alt="T" className="w-3 h-3" />
-                    <span>View Price</span>
+                    <span className="text-accent-700">View Price at</span>
+                    <div className="flex items-center gap-1">
+                      <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
+                      <span className="text-accent-700 font-medium">th•mann</span>
+                    </div>
                   </a>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
@@ -323,10 +333,13 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded transition-colors"
+                    className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
                   >
-                    <img src="/gear-100.png" alt="G" className="w-3 h-3" />
-                    <span>View Price</span>
+                    <span className="text-accent-700">View Price at</span>
+                    <div className="flex items-center gap-1">
+                      <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
+                      <span className="text-accent-700 font-medium">Gear4music</span>
+                    </div>
                   </a>
                 </div>
               </>

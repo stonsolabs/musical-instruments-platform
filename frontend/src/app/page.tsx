@@ -68,13 +68,17 @@ export default function HomePage() {
   useEffect(() => {
     const loadProducts = async () => {
       try {
+        console.log('🔍 Loading popular and top-rated products...');
         const [popular, topRated] = await Promise.all([
           searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
           searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
         ]);
+        console.log('📊 Popular products loaded:', popular.products?.length || 0);
+        console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
         setPopularProducts(popular.products || []);
         setTopRatedProducts(topRated.products || []);
       } catch (error) {
+        console.error('❌ Error loading products:', error);
         // Silent fail with empty arrays - better UX than console errors
         setPopularProducts([]);
         setTopRatedProducts([]);
@@ -225,6 +229,7 @@ export default function HomePage() {
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Trending Musical Instruments</h2>
+          {console.log('🎯 Rendering Trending section - loading:', loading, 'products:', popularProducts.length)}
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
