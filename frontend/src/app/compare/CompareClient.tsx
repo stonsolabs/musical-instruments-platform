@@ -6,21 +6,10 @@ import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
 import AffiliateButton from '@/components/AffiliateButton';
 import SpecificationsComparison from '@/components/SpecificationsComparison';
-import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
+import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
 import ProductComparisonGrid from '@/components/ProductComparisonGrid';
 
-// Inline utility functions
-const formatPrice = (price: number, currency: string = 'EUR'): string => {
-  try {
-    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-};
-
-const formatRating = (rating: number): string => {
-  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
+import { formatPrice, formatRating } from '@/lib/utils';
 
 // Helper function to generate common specifications across products
 const generateCommonSpecs = (products: Product[]): string[] => {

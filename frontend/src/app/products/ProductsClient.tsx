@@ -9,42 +9,11 @@ import FloatingCompareButton from '@/components/FloatingCompareButton';
 import SpecificationsComparison from '@/components/SpecificationsComparison';
 import AffiliateButton from '@/components/AffiliateButton';
 
-// Inline utility functions
-const formatPrice = (price: number, currency: string = 'EUR'): string => {
-  try {
-    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-};
-
-const formatRating = (rating: number): string => {
-  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
+import { formatPrice, formatRating } from '@/lib/utils';
 
 const API_BASE_URL = getApiBaseUrl();
 
-const apiClient = {
-  async searchProducts(params: any): Promise<SearchResponse> {
-    const sp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== '') {
-        sp.append(k, String(v));
-      }
-    });
-    
-    const url = `/api/proxy/products?${sp.toString()}`;
-    console.log('🔍 API Request URL:', url);
-    
-    const response = await fetch(url);
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ API Error:', response.status, errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    return await response.json();
-  },
-};
+import { apiClient } from '@/lib/api';
 
 interface ProductsClientProps {
   initialProducts: Product[];

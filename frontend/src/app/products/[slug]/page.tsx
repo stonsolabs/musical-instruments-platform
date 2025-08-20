@@ -12,32 +12,11 @@ import TechnicalSpecifications from '@/components/TechnicalSpecifications';
 import ProductOverview from '@/components/ProductOverview';
 import AffiliateButton from '@/components/AffiliateButton';
 
-// Inline utility functions
-const formatPrice = (price: number, currency: string = 'EUR'): string => {
-  try {
-    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-};
-
-const formatRating = (rating: number): string => {
-  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
+import { formatPrice, formatRating } from '@/lib/utils';
 
 const API_BASE_URL = getApiBaseUrl();
 
-const apiClient = {
-  async getProduct(productId: number): Promise<Product> {
-    if (typeof window === 'undefined') {
-      throw new Error('API calls are not available during build time');
-    }
-    
-    const response = await fetch(`/api/proxy/products/${productId}`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  }
-};
+import { apiClient } from '@/lib/api';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -61,7 +40,7 @@ export default function ProductDetailPage() {
         return;
       }
       try {
-        const data = await apiClient.getProduct(productId);
+        const data = await apiClient.getProduct(productId.toString());
         setProduct(data);
         
         // Track product view

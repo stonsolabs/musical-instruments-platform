@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import CompareClient from './CompareClient';
-import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
+import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
 
 export default function ComparePage() {
   // Get search params from URL on client side
@@ -44,7 +44,8 @@ export default function ComparePage() {
                   <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                     <div className="flex-1 w-full">
                       <label className="block text-sm font-medium text-primary-700 mb-2">Instrument 1</label>
-                      <ProductSearchAutocomplete 
+                      <UnifiedSearchAutocomplete 
+                        variant="product-select"
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
                         onProductSelect={(product) => {
@@ -59,7 +60,8 @@ export default function ComparePage() {
                     
                     <div className="flex-1 w-full">
                       <label className="block text-sm font-medium text-primary-700 mb-2">Instrument 2</label>
-                      <ProductSearchAutocomplete 
+                      <UnifiedSearchAutocomplete 
+                        variant="product-select"
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
                         onProductSelect={(product) => {

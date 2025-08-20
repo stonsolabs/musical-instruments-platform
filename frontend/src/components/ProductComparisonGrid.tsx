@@ -4,20 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { Product } from '@/types';
 import AffiliateButton from '@/components/AffiliateButton';
-import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
-
-// Inline utility functions
-const formatPrice = (price: number, currency: string = 'EUR'): string => {
-  try {
-    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-};
-
-const formatRating = (rating: number): string => {
-  return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
-};
+import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
+import { formatPrice, formatRating } from '@/lib/utils';
 
 interface ProductComparisonGridProps {
   products: Product[];
@@ -337,7 +325,8 @@ function AddProductCard({ onAddProduct, showSearch, onToggleSearch, isAdding, is
         
         {showSearch ? (
           <div className="w-full">
-            <ProductSearchAutocomplete
+            <UnifiedSearchAutocomplete
+              variant="product-select"
               placeholder="Search for instruments..."
               className="w-full mb-3"
               onProductSelect={onAddProduct}
