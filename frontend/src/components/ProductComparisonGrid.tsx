@@ -244,7 +244,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
           </div>
 
           {/* Store Buttons */}
-          <div className="space-y-2 h-24 flex flex-col">
+          <div className="space-y-2 flex flex-col">
             {product.prices && product.prices.length > 0 ? (
               <>
                 {product.prices.slice(0, 2).map((price) => {

@@ -13,9 +13,9 @@ export function Footer() {
               <Image 
                 src="/logo-white.png" 
                 alt="GetYourMusicGear Logo" 
-                width={120} 
-                height={40}
-                className="h-8 w-auto"
+                width={90} 
+                height={30}
+                className="h-6 w-auto"
               />
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">

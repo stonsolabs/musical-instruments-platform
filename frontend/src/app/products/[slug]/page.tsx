@@ -23,6 +23,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showSimilarProducts, setShowSimilarProducts] = useState(true);
 
   const productId = useMemo(() => {
     const slug = (params?.slug as string) || '';
@@ -376,17 +377,31 @@ export default function ProductDetailPage() {
 
         {/* Related Products */}
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-primary-900 mb-4">Similar Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Placeholder for related products */}
-              <div className="border border-primary-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
-                <div className="w-20 h-20 bg-primary-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-primary-400 text-3xl">🎸</span>
+          <div className="p-8">
+            <button
+              onClick={() => setShowSimilarProducts(!showSimilarProducts)}
+              className="w-full flex items-center justify-between text-left mb-6 group"
+            >
+              <h2 className="text-2xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors flex items-center gap-2">
+                <span className="text-2xl">🎸</span>
+                Similar Products
+              </h2>
+              <span className="text-primary-600 text-2xl transition-transform duration-200 group-hover:text-primary-700">
+                {showSimilarProducts ? '−' : '+'}
+              </span>
+            </button>
+            
+            {showSimilarProducts && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Placeholder for related products */}
+                <div className="border border-primary-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
+                  <div className="w-20 h-20 bg-primary-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-primary-400 text-3xl">🎸</span>
+                  </div>
+                  <p className="text-sm text-primary-600">More products coming soon</p>
                 </div>
-                <p className="text-sm text-primary-600">More products coming soon</p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
