@@ -533,7 +533,10 @@ export default function ProductsClient({
                           <span className="text-sm font-medium">{formatRating(product.avg_rating || 0)}</span>
                         </div>
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+                      {/* <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3> */}
+                      <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
+                      </Link>
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                         {product.description || "High-quality musical instrument with excellent craftsmanship and sound."}
                       </p>
