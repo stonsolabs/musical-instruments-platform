@@ -27,6 +27,18 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
   }
 };
 
+// Helper function to get the first valid image URL or fallback
+const getProductImage = (product: Product): string | null => {
+  if (product.images && product.images.length > 0) {
+    // Try to find a local image first
+    const firstImage = product.images[0];
+    if (firstImage && (firstImage.startsWith('/') || firstImage.startsWith('http'))) {
+      return firstImage;
+    }
+  }
+  return null;
+};
+
 const API_BASE_URL = getApiBaseUrl();
 
 async function searchProducts(params: any): Promise<{ products: Product[] }> {
@@ -118,11 +130,26 @@ export default function HomePage() {
     }
   };
 
-  // Pre-created popular comparisons (these would be populated with real data)
+  // Popular comparisons using real products from database
   const popularComparisons = [
-    { title: 'Fender Stratocaster vs Gibson Les Paul', products: 'fender-stratocaster,gibson-les-paul', image: '/images/comparison-1.jpg' },
-    { title: 'Yamaha vs Roland Keyboards', products: 'yamaha-keyboard,roland-keyboard', image: '/images/comparison-2.jpg' },
-    { title: 'Pearl vs Tama Drums', products: 'pearl-drums,tama-drums', image: '/images/comparison-3.jpg' },
+    { 
+      title: 'Fender Player Stratocaster vs Gibson Les Paul Studio', 
+      products: 'fender-player-stratocaster-mim,gibson-les-paul-studio-ebony', 
+      category: 'Electric Guitars',
+      description: 'Compare two iconic electric guitars perfect for beginners and intermediate players'
+    },
+    { 
+      title: 'Roland FP-30X vs Yamaha P-125a Digital Piano', 
+      products: 'roland-fp-30x-digital-piano,yamaha-p-125a-digital-piano', 
+      category: 'Pianos & Keyboards',
+      description: 'Find the perfect digital piano for your home studio or practice space'
+    },
+    { 
+      title: 'Taylor 214ce vs Martin D-28 Standard', 
+      products: 'taylor-214ce-deluxe-grand-auditorium,martin-d-28-standard', 
+      category: 'Acoustic Guitars',
+      description: 'Discover the differences between these premium acoustic guitars'
+    },
   ];
 
   return (
@@ -228,20 +255,26 @@ export default function HomePage() {
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer relative overflow-hidden">
-                      {product.images && product.images.length > 0 ? (
-                        <Image 
-                          src={product.images[0]} 
-                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
-                          fill
-                          className="object-cover rounded-lg"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority={index < 3}
-                          loading={index < 3 ? 'eager' : 'lazy'}
-                        />
-                      ) : (
-                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
-                      )}
+                    <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer overflow-hidden">
+                      {(() => {
+                        const imageUrl = getProductImage(product);
+                        return imageUrl ? (
+                          <Image 
+                            src={imageUrl} 
+                            alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                            width={400}
+                            height={192}
+                            className="w-full h-full object-cover rounded-lg"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority={index < 3}
+                            loading={index < 3 ? 'eager' : 'lazy'}
+                            unoptimized={imageUrl.startsWith('http')}
+                            onError={() => console.log('Image failed to load:', imageUrl)}
+                          />
+                        ) : (
+                          <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                        );
+                      })()}
                     </div>
                   </Link>
                   <div className="flex items-center justify-between mb-2">
@@ -355,19 +388,23 @@ export default function HomePage() {
                 href={`/compare?products=${comparison.products}`}
                 className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg transition-all"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center">
-                  <div className="text-white text-4xl font-bold">VS</div>
+                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                  <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
                 </div>
                 <div className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-semibold text-accent-600 uppercase tracking-wide">{comparison.category}</span>
+                  </div>
                   <h3 className="font-semibold text-primary-900 mb-2 group-hover:text-accent-600 transition-colors">
                     {comparison.title}
                   </h3>
                   <p className="text-primary-600 text-sm mb-4">
-                    Explore detailed specifications and features of these popular instruments
+                    {comparison.description}
                   </p>
-                  <div className="flex items-center text-accent-600 font-medium">
+                  <div className="flex items-center text-accent-600 font-medium group-hover:text-accent-700">
                     Compare Now
-                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -399,19 +436,25 @@ export default function HomePage() {
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer relative overflow-hidden">
-                    {product.images && product.images.length > 0 ? (
-                      <Image 
-                        src={product.images[0]} 
-                        alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
-                        fill
-                        className="object-cover rounded-lg"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
-                    )}
+                  <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer overflow-hidden">
+                    {(() => {
+                      const imageUrl = getProductImage(product);
+                      return imageUrl ? (
+                        <Image 
+                          src={imageUrl} 
+                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                          width={400}
+                          height={192}
+                          className="w-full h-full object-cover rounded-lg"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="lazy"
+                          unoptimized={imageUrl.startsWith('http')}
+                          onError={() => console.log('Image failed to load:', imageUrl)}
+                        />
+                      ) : (
+                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                      );
+                    })()}
                   </div>
                 </Link>
                 <div className="flex items-center justify-between mb-2">

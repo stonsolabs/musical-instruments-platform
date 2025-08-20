@@ -59,6 +59,55 @@ body {
 /* Improve image loading and performance */
 img {
   transition: opacity 0.3s ease;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Next.js Image component fixes */
+img[data-nimg] {
+  color: transparent;
+}
+
+/* Force images to display properly */
+img[data-nimg="1"] {
+  object-fit: cover;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure images fit properly in containers */
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fix for Next.js Image components in flex containers */
+div[style*="position: absolute"] {
+  display: block !important;
+}
+
+/* Ensure product images are always visible */
+.product-image-container {
+  min-height: 192px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 /* Critical CSS for above-the-fold content */

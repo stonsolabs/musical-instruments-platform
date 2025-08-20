@@ -534,64 +534,71 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       )}
 
-      {/* Reviews Section */}
-      {data.products.some(p => p.review_count > 0) && (
-        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <button
-            onClick={() => setShowReviews(!showReviews)}
-            className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+      {/* Reviews Section - Always show */}
+      <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+        <button
+          onClick={() => setShowReviews(!showReviews)}
+          className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+        >
+          <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
+            <span className="text-2xl">⭐</span>
+            Customer Reviews
+          </h3>
+          <svg 
+            className={`w-6 h-6 text-primary-600 transition-transform ${showReviews ? 'rotate-180' : ''}`} 
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
           >
-            <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
-              <span className="text-2xl">⭐</span>
-              Customer Reviews
-            </h3>
-            <svg 
-              className={`w-6 h-6 text-primary-600 transition-transform ${showReviews ? 'rotate-180' : ''}`} 
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          {showReviews && (
-            <div className="px-6 pb-6">
-              <div className={`grid gap-6 ${
-                data.products.length === 1 
-                  ? 'grid-cols-1 max-w-2xl mx-auto' 
-                  : data.products.length === 2
-                  ? 'grid-cols-1 sm:grid-cols-2'
-                  : data.products.length === 3
-                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              }`}>
-              {data.products.map((product) => (
-                <div key={product.id} className="border border-primary-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-warning-500">★</span>
-                      <span className="font-medium">{formatRating(product.avg_rating)}</span>
-                      <span className="text-sm text-primary-500">({product.review_count} reviews)</span>
-                    </div>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {showReviews && (
+          <div className="px-6 pb-6">
+            <div className={`grid gap-6 ${
+              data.products.length === 1 
+                ? 'grid-cols-1 max-w-2xl mx-auto' 
+                : data.products.length === 2
+                ? 'grid-cols-1 sm:grid-cols-2'
+                : data.products.length === 3
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}>
+            {data.products.map((product) => (
+              <div key={product.id} className="border border-primary-200 rounded-lg p-4">
+                <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
+                <div className="space-y-3">
+                  {product.avg_rating > 0 ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-warning-500">★</span>
+                        <span className="font-medium">{formatRating(product.avg_rating)}</span>
+                        <span className="text-sm text-primary-500">({product.review_count} reviews)</span>
+                      </div>
+                      <div className="text-sm text-primary-600">
+                        {product.avg_rating >= 4.5 && "Excellent customer satisfaction"}
+                        {product.avg_rating >= 4.0 && product.avg_rating < 4.5 && "Very good customer satisfaction"}
+                        {product.avg_rating >= 3.5 && product.avg_rating < 4.0 && "Good customer satisfaction"}
+                        {product.avg_rating < 3.5 && "Mixed customer reviews"}
+                      </div>
+                    </>
+                  ) : (
                     <div className="text-sm text-primary-600">
-                      {product.avg_rating >= 4.5 && "Excellent customer satisfaction"}
-                      {product.avg_rating >= 4.0 && product.avg_rating < 4.5 && "Very good customer satisfaction"}
-                      {product.avg_rating >= 3.5 && product.avg_rating < 4.0 && "Good customer satisfaction"}
-                      {product.avg_rating < 3.5 && "Mixed customer reviews"}
+                      <p>No customer reviews available yet.</p>
+                      <p className="text-xs text-primary-500 mt-1">Be the first to review this product!</p>
                     </div>
-                    <Link 
-                      href={`/products/${product.slug}-${product.id}`}
-                      className="text-sm text-primary-600 hover:text-primary-800 font-medium"
-                    >
-                      Read all reviews →
-                    </Link>
-                  </div>
+                  )}
+                  <Link 
+                    href={`/products/${product.slug}-${product.id}`}
+                    className="text-sm text-primary-600 hover:text-primary-800 font-medium"
+                  >
+                    {product.avg_rating > 0 ? 'Read all reviews →' : 'View product details →'}
+                  </Link>
                 </div>
-              ))}
               </div>
+            ))}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

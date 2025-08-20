@@ -218,7 +218,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                   <span className="text-sm text-primary-500">({product.review_count})</span>
                 </>
               ) : (
-                <span className="text-sm text-gray-400">No reviews</span>
+                <span className="text-sm text-gray-400">No ratings yet</span>
               )}
             </div>
             <div className="text-right">
@@ -243,7 +243,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                           href={price.affiliate_url}
                           className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                          {formatPrice(price.price, price.currency)}
                           {!price.is_available && ' (Out of Stock)'}
                         </AffiliateButton>
                       </div>
@@ -256,7 +255,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                           href={price.affiliate_url}
                           className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                          {formatPrice(price.price, price.currency)}
                           {!price.is_available && ' (Out of Stock)'}
                         </AffiliateButton>
                       </div>
@@ -274,7 +272,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                               : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                           }`}
                         >
-                          {formatPrice(price.price, price.currency)}
                           {!price.is_available && ' (Out of Stock)'}
                         </a>
                       </div>
@@ -295,7 +292,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
             ) : (
               <>
                 <div className="flex gap-2">
-                  <div className="flex-1 text-sm font-medium text-gray-500">Search online:</div>
                   <AffiliateButton
                     store="thomann"
                     href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
@@ -303,7 +299,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                   />
                 </div>
                 <div className="flex gap-2">
-                  <div className="flex-1"></div>
                   <AffiliateButton
                     store="gear4music"
                     href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
