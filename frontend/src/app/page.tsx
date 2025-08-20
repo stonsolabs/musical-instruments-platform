@@ -293,13 +293,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                  <span className="text-accent-700">View Price at</span>
-                                  <div className="flex items-center gap-1">
-                                    <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                                    <span className="text-accent-700 font-medium">th•mann</span>
-                                  </div>
+                                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                                 </a>
                               );
                             } else if (isGear4Music) {
@@ -309,13 +305,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                  <span className="text-accent-700">View Price at</span>
-                                  <div className="flex items-center gap-1">
-                                    <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                                    <span className="text-accent-700 font-medium">Gear4music</span>
-                                  </div>
+                                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                                 </a>
                               );
                             } else {
@@ -325,10 +317,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                  <span className="text-accent-700">View Price at</span>
-                                  <span className="text-accent-700 font-medium">{price.store.name}</span>
+                                  <span className="font-medium">{price.store.name}</span>
                                 </a>
                               );
                             }
@@ -351,25 +342,17 @@ export default function HomePage() {
                           href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                          className="fp-table__button thirstylink w-full"
                         >
-                          <span className="text-accent-700">View Price at</span>
-                          <div className="flex items-center gap-1">
-                            <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                            <span className="text-accent-700 font-medium">th•mann</span>
-                          </div>
+                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                         </a>
                         <a
                           href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                          className="fp-table__button thirstylink w-full"
                         >
-                          <span className="text-accent-700">View Price at</span>
-                          <div className="flex items-center gap-1">
-                            <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                            <span className="text-accent-700 font-medium">Gear4music</span>
-                          </div>
+                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                         </a>
                       </div>
                     )}
@@ -491,13 +474,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
-                                <span className="text-accent-700">View Price at</span>
-                                <div className="flex items-center gap-1">
-                                  <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                                  <span className="text-accent-700 font-medium">th•mann</span>
-                                </div>
+                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                               </a>
                             );
                           } else if (isGear4Music) {
@@ -507,13 +486,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
-                                <span className="text-accent-700">View Price at</span>
-                                <div className="flex items-center gap-1">
-                                  <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                                  <span className="text-accent-700 font-medium">Gear4music</span>
-                                </div>
+                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                               </a>
                             );
                           } else {
@@ -523,10 +498,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
-                                <span className="text-accent-700">View Price at</span>
-                                <span className="text-accent-700 font-medium">{price.store.name}</span>
+                                <span className="font-medium">{price.store.name}</span>
                               </a>
                             );
                           }
@@ -549,25 +523,17 @@ export default function HomePage() {
                         href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                        className="fp-table__button thirstylink w-full"
                       >
-                        <span className="text-accent-700">View Price at</span>
-                        <div className="flex items-center gap-1">
-                          <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                          <span className="text-accent-700 font-medium">th•mann</span>
-                        </div>
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                       </a>
                       <a
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                        className="fp-table__button thirstylink w-full"
                       >
-                        <span className="text-accent-700">View Price at</span>
-                        <div className="flex items-center gap-1">
-                          <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                          <span className="text-accent-700 font-medium">Gear4music</span>
-                        </div>
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                       </a>
                     </div>
                   )}

@@ -254,49 +254,40 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                   if (isThomann) {
                     return (
                       <div key={price.id} className="flex gap-1 flex-shrink-0">
-                        <a
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
-                        >
-                          <span className="text-accent-700">View Price at</span>
-                          <div className="flex items-center gap-1">
-                            <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                            <span className="text-accent-700 font-medium">th•mann</span>
-                          </div>
-                        </a>
+                                                            <a
+                                      href={price.affiliate_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="fp-table__button thirstylink w-full"
+                                    >
+                                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                    </a>
                       </div>
                     );
                   } else if (isGear4Music) {
                     return (
                       <div key={price.id} className="flex gap-1 flex-shrink-0">
-                        <a
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
-                        >
-                          <span className="text-accent-700">View Price at</span>
-                          <div className="flex items-center gap-1">
-                            <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                            <span className="text-accent-700 font-medium">Gear4music</span>
-                          </div>
-                        </a>
+                                                            <a
+                                      href={price.affiliate_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="fp-table__button thirstylink w-full"
+                                    >
+                                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                    </a>
                       </div>
                     );
                   } else {
                     return (
                       <div key={price.id} className="flex gap-1 flex-shrink-0">
-                        <a 
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
-                        >
-                          <span className="text-accent-700">View Price at</span>
-                          <span className="text-accent-700 font-medium">{price.store.name}</span>
-                        </a>
+                                                            <a 
+                                      href={price.affiliate_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="fp-table__button thirstylink w-full"
+                                    >
+                                      <span className="font-medium">{price.store.name}</span>
+                                    </a>
                       </div>
                     );
                   }
@@ -319,13 +310,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                    className="fp-table__button thirstylink w-full"
                   >
-                    <span className="text-accent-700">View Price at</span>
-                    <div className="flex items-center gap-1">
-                      <img src="/thoman-favicon.png" alt="th•mann" className="w-4 h-4" />
-                      <span className="text-accent-700 font-medium">th•mann</span>
-                    </div>
+                    <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                   </a>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
@@ -333,13 +320,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs hover:bg-accent-100 transition-colors w-full"
+                    className="fp-table__button thirstylink w-full"
                   >
-                    <span className="text-accent-700">View Price at</span>
-                    <div className="flex items-center gap-1">
-                      <img src="/gear-100.png" alt="Gear4music" className="w-4 h-4" />
-                      <span className="text-accent-700 font-medium">Gear4music</span>
-                    </div>
+                    <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                   </a>
                 </div>
               </>
