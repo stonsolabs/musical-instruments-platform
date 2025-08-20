@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import BlogProductCard from '@/components/BlogProductCard';
+import ProductComparisonTable from '@/components/ProductComparisonTable';
 
 interface BlogPostPageProps {
   params: {
@@ -43,6 +45,153 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   };
 }
 
+// Sample product data for blog posts
+const sampleProducts = {
+  electricGuitars: [
+    {
+      id: 'fender-player-strat',
+      name: 'Fender Player Stratocaster',
+      slug: 'fender-player-stratocaster',
+      brand: 'Fender',
+      category: 'Electric Guitar',
+      price: 699,
+      originalPrice: 799,
+      image: '/product-images/fender_player_strat_sss_1.jpg',
+      rating: 4.8,
+      reviewCount: 1247,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        'Three single-coil pickups',
+        'Comfortable C-shaped neck',
+        'Reliable tuning stability',
+        'Classic Stratocaster design'
+      ],
+      description: 'The Fender Player Stratocaster is an excellent choice for beginners who want a classic electric guitar sound with modern playability.'
+    },
+    {
+      id: 'epiphone-les-paul',
+      name: 'Epiphone Les Paul Standard',
+      slug: 'epiphone-les-paul-standard',
+      brand: 'Epiphone',
+      category: 'Electric Guitar',
+      price: 599,
+      originalPrice: 699,
+      image: '/product-images/gibson_les_paul_studio_eb_1.jpg',
+      rating: 4.6,
+      reviewCount: 892,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        'Humbucker pickups',
+        'Mahogany body with maple top',
+        'Set neck for excellent sustain',
+        'Versatile tone controls'
+      ],
+      description: 'The Epiphone Les Paul Standard offers the iconic Les Paul sound at an affordable price point.'
+    },
+    {
+      id: 'yamaha-pacifica',
+      name: 'Yamaha Pacifica 112V',
+      slug: 'yamaha-pacifica-112v',
+      brand: 'Yamaha',
+      category: 'Electric Guitar',
+      price: 299,
+      image: '/product-images/fender_player_strat_sss_2.jpg',
+      rating: 4.7,
+      reviewCount: 1563,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        'HSS pickup configuration',
+        'Comfortable neck profile',
+        'Excellent value for money',
+        'Reliable hardware'
+      ],
+      description: 'The Yamaha Pacifica 112V is known for its exceptional build quality and playability at an affordable price.'
+    }
+  ],
+  digitalPianos: [
+    {
+      id: 'yamaha-p45',
+      name: 'Yamaha P-45 Digital Piano',
+      slug: 'yamaha-p45',
+      brand: 'Yamaha',
+      category: 'Digital Piano',
+      price: 449,
+      originalPrice: 499,
+      image: '/product-images/yamaha_p125_bk_1.jpg',
+      rating: 4.5,
+      reviewCount: 2341,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        '88 weighted keys',
+        '10 different voices',
+        'Built-in metronome',
+        'Headphone output'
+      ],
+      description: 'The Yamaha P-45 is an affordable and reliable digital piano perfect for beginners.'
+    },
+    {
+      id: 'casio-px-s1000',
+      name: 'Casio PX-S1000',
+      slug: 'casio-px-s1000',
+      brand: 'Casio',
+      category: 'Digital Piano',
+      price: 599,
+      image: '/product-images/casio_px560_bk_1.jpg',
+      rating: 4.4,
+      reviewCount: 987,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        'Ultra-slim design',
+        'Smart Scaled Hammer Action',
+        'Bluetooth connectivity',
+        '18 different tones'
+      ],
+      description: 'The Casio PX-S1000 features a slim design with great features for modern musicians.'
+    }
+  ],
+  studioMonitors: [
+    {
+      id: 'krk-rokit-5',
+      name: 'KRK Rokit 5 G4',
+      slug: 'krk-rokit-5-g4',
+      brand: 'KRK',
+      category: 'Studio Monitors',
+      price: 299,
+      originalPrice: 349,
+      image: '/product-images/focusrite_scarlett_2i2_3rd_1.jpg',
+      rating: 4.6,
+      reviewCount: 1876,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        '5-inch woofer',
+        'DSP room tuning',
+        'Multiple input options',
+        'Professional sound'
+      ],
+      description: 'Excellent entry-level monitors with DSP room tuning for accurate sound reproduction.'
+    },
+    {
+      id: 'yamaha-hs5',
+      name: 'Yamaha HS5',
+      slug: 'yamaha-hs5',
+      brand: 'Yamaha',
+      category: 'Studio Monitors',
+      price: 399,
+      image: '/product-images/focusrite_scarlett_2i2_3rd_2.jpg',
+      rating: 4.7,
+      reviewCount: 2156,
+      affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      features: [
+        '5-inch woofer',
+        '1-inch dome tweeter',
+        'Flat frequency response',
+        'Professional build quality'
+      ],
+      description: 'Classic monitors known for their flat, honest sound reproduction.'
+    }
+  ]
+};
+
 // Sample blog post data - in a real app, this would come from a CMS or API
 function getBlogPostBySlug(slug: string) {
   const blogPosts = {
@@ -50,10 +199,10 @@ function getBlogPostBySlug(slug: string) {
       title: "Best Electric Guitars for Beginners in 2025",
       excerpt: "Choosing your first electric guitar can be overwhelming with so many options available. We've compiled a comprehensive guide to help you find the perfect instrument to start your musical journey.",
       content: `
-        <h2>Introduction</h2>
+        <h2 id="introduction">Introduction</h2>
         <p>When it comes to choosing your first electric guitar, there are several factors to consider including budget, playing style, and personal preferences. In this guide, we'll explore the top options for beginners in 2025.</p>
         
-        <h2>What to Look for in Your First Electric Guitar</h2>
+        <h2 id="what-to-look-for">What to Look for in Your First Electric Guitar</h2>
         <p>Before diving into specific recommendations, let's discuss the key factors that make a guitar suitable for beginners:</p>
         <ul>
           <li><strong>Playability:</strong> The guitar should be comfortable to hold and play</li>
@@ -62,7 +211,7 @@ function getBlogPostBySlug(slug: string) {
           <li><strong>Value:</strong> Get the best quality for your budget</li>
         </ul>
         
-        <h2>Top Electric Guitars for Beginners</h2>
+        <h2 id="top-guitars">Top Electric Guitars for Beginners</h2>
         
         <h3>1. Fender Player Stratocaster</h3>
         <p>The Fender Player Stratocaster is an excellent choice for beginners who want a classic electric guitar sound. It features:</p>
@@ -91,7 +240,7 @@ function getBlogPostBySlug(slug: string) {
           <li>Reliable hardware</li>
         </ul>
         
-        <h2>Essential Accessories</h2>
+        <h2 id="accessories">Essential Accessories</h2>
         <p>Don't forget these essential accessories for your new electric guitar:</p>
         <ul>
           <li><strong>Amplifier:</strong> A good practice amp is essential</li>
@@ -101,7 +250,7 @@ function getBlogPostBySlug(slug: string) {
           <li><strong>Case:</strong> To protect your investment</li>
         </ul>
         
-        <h2>Conclusion</h2>
+        <h2 id="conclusion">Conclusion</h2>
         <p>Choosing your first electric guitar is an exciting journey. Take your time to research and try different options. Remember, the best guitar is the one that inspires you to play and practice regularly.</p>
       `,
       author: "Music Gear Team",
@@ -118,16 +267,17 @@ function getBlogPostBySlug(slug: string) {
         { title: "Top Electric Guitars for Beginners", id: "top-guitars" },
         { title: "Essential Accessories", id: "accessories" },
         { title: "Conclusion", id: "conclusion" }
-      ]
+      ],
+      products: sampleProducts.electricGuitars
     },
     'how-choose-right-digital-piano': {
       title: "How to Choose the Right Digital Piano",
       excerpt: "Digital pianos offer incredible versatility and features, but selecting the right one requires understanding your needs and the available options.",
       content: `
-        <h2>Understanding Digital Pianos</h2>
+        <h2 id="understanding">Understanding Digital Pianos</h2>
         <p>Digital pianos have come a long way in recent years, offering features that traditional acoustic pianos simply can't match. From built-in metronomes to recording capabilities, modern digital pianos are incredibly versatile.</p>
         
-        <h2>Key Factors to Consider</h2>
+        <h2 id="key-factors">Key Factors to Consider</h2>
         
         <h3>1. Key Action</h3>
         <p>The key action determines how the keys feel when you play them. Look for:</p>
@@ -155,7 +305,7 @@ function getBlogPostBySlug(slug: string) {
           <li>Learning features and apps</li>
         </ul>
         
-        <h2>Top Recommendations</h2>
+        <h2 id="recommendations">Top Recommendations</h2>
         
         <h3>Beginner Level</h3>
         <p>For beginners, consider these excellent options:</p>
@@ -173,7 +323,7 @@ function getBlogPostBySlug(slug: string) {
           <li><strong>Roland FP-30X:</strong> Bluetooth connectivity</li>
         </ul>
         
-        <h2>Conclusion</h2>
+        <h2 id="conclusion">Conclusion</h2>
         <p>Choosing the right digital piano depends on your skill level, budget, and specific needs. Take the time to research and try different models to find the perfect match for your musical journey.</p>
       `,
       author: "Piano Expert",
@@ -189,16 +339,17 @@ function getBlogPostBySlug(slug: string) {
         { title: "Key Factors to Consider", id: "key-factors" },
         { title: "Top Recommendations", id: "recommendations" },
         { title: "Conclusion", id: "conclusion" }
-      ]
+      ],
+      products: sampleProducts.digitalPianos
     },
     'top-10-studio-monitors-under-500': {
       title: "Top 10 Studio Monitors Under €500",
       excerpt: "Professional-quality studio monitors that won't break the bank for home recording setups and music production.",
       content: `
-        <h2>Why Studio Monitors Matter</h2>
+        <h2 id="why-monitors">Why Studio Monitors Matter</h2>
         <p>Studio monitors are essential for accurate mixing and mastering. While professional-grade monitors can cost thousands, there are excellent options available for under €500 that deliver impressive performance.</p>
         
-        <h2>What to Look for in Studio Monitors</h2>
+        <h2 id="what-to-look-for">What to Look for in Studio Monitors</h2>
         <ul>
           <li><strong>Frequency Response:</strong> Flat, accurate reproduction</li>
           <li><strong>Driver Size:</strong> Larger drivers for better bass response</li>
@@ -206,7 +357,7 @@ function getBlogPostBySlug(slug: string) {
           <li><strong>Room Size:</strong> Choose monitors appropriate for your space</li>
         </ul>
         
-        <h2>Top 10 Studio Monitors Under €500</h2>
+        <h2 id="top-monitors">Top 10 Studio Monitors Under €500</h2>
         
         <h3>1. KRK Rokit 5 G4</h3>
         <p>Excellent entry-level monitors with DSP room tuning.</p>
@@ -229,16 +380,16 @@ function getBlogPostBySlug(slug: string) {
         <h3>7. Focal Alpha 50</h3>
         <p>French engineering with excellent clarity.</p>
         
-        <h3>8. JBL 305P MkII</p>
+        <h3>8. JBL 305P MkII</h3>
         <p>Popular choice with great bass response.</p>
         
-        <h3>9. IK Multimedia iLoud Micro Monitor</p>
+        <h3>9. IK Multimedia iLoud Micro Monitor</h3>
         <p>Ultra-compact monitors with surprising performance.</p>
         
-        <h3>10. M-Audio BX5 D3</p>
+        <h3>10. M-Audio BX5 D3</h3>
         <p>Reliable monitors with good value for money.</p>
         
-        <h2>Setting Up Your Studio Monitors</h2>
+        <h2 id="setup">Setting Up Your Studio Monitors</h2>
         <p>Proper placement is crucial for getting the best sound from your monitors:</p>
         <ul>
           <li>Position monitors at ear level</li>
@@ -247,7 +398,7 @@ function getBlogPostBySlug(slug: string) {
           <li>Use monitor stands or isolation pads</li>
         </ul>
         
-        <h2>Conclusion</h2>
+        <h2 id="conclusion">Conclusion</h2>
         <p>You don't need to spend thousands to get professional-quality monitoring. These options under €500 will serve you well for years to come.</p>
       `,
       author: "Audio Engineer",
@@ -264,7 +415,8 @@ function getBlogPostBySlug(slug: string) {
         { title: "Top 10 Studio Monitors Under €500", id: "top-monitors" },
         { title: "Setting Up Your Studio Monitors", id: "setup" },
         { title: "Conclusion", id: "conclusion" }
-      ]
+      ],
+      products: sampleProducts.studioMonitors
     }
   };
 
@@ -294,6 +446,63 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
     );
   }
+
+  // Product comparison features for different categories
+  const comparisonFeatures = {
+    electricGuitars: [
+      { key: 'pickups', label: 'Pickup Type', type: 'text' as const },
+      { key: 'neck', label: 'Neck Profile', type: 'text' as const },
+      { key: 'body', label: 'Body Material', type: 'text' as const },
+      { key: 'price', label: 'Price Range', type: 'text' as const },
+      { key: 'versatility', label: 'Genre Versatility', type: 'rating' as const }
+    ],
+    digitalPianos: [
+      { key: 'keys', label: 'Number of Keys', type: 'number' as const },
+      { key: 'weighted', label: 'Weighted Keys', type: 'boolean' as const },
+      { key: 'polyphony', label: 'Polyphony', type: 'number' as const },
+      { key: 'bluetooth', label: 'Bluetooth', type: 'boolean' as const },
+      { key: 'price', label: 'Price Range', type: 'text' as const }
+    ],
+    studioMonitors: [
+      { key: 'woofer', label: 'Woofer Size', type: 'text' as const },
+      { key: 'power', label: 'Power Output', type: 'text' as const },
+      { key: 'frequency', label: 'Frequency Response', type: 'text' as const },
+      { key: 'inputs', label: 'Input Options', type: 'text' as const },
+      { key: 'price', label: 'Price Range', type: 'text' as const }
+    ]
+  };
+
+  // Enhanced product data with comparison features
+  const enhancedProducts = post.products?.map(product => ({
+    ...product,
+    features: {
+      pickups: product.name.includes('Strat') ? 'Single-coil' : 'Humbucker',
+      neck: 'C-shaped',
+      body: 'Alder',
+      price: `€${product.price}`,
+      versatility: 4,
+      keys: 88,
+      weighted: true,
+      polyphony: 64,
+      bluetooth: false,
+      woofer: '5-inch',
+      power: '50W',
+      frequency: '43Hz-20kHz',
+      inputs: 'XLR, TRS, RCA'
+    },
+    pros: [
+      'Excellent build quality',
+      'Great value for money',
+      'Versatile sound',
+      'Reliable performance'
+    ],
+    cons: [
+      'Basic features',
+      'Limited connectivity',
+      'Entry-level components'
+    ],
+    bestFor: 'Beginners and intermediate players looking for quality instruments'
+  })) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -372,6 +581,37 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 className="prose prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
+
+              {/* Featured Product Showcase */}
+              {post.products && post.products.length > 0 && (
+                <div className="mt-12">
+                  <BlogProductCard 
+                    product={post.products[0]} 
+                    variant="detailed"
+                  />
+                </div>
+              )}
+
+              {/* Product Comparison Table */}
+              {post.products && post.products.length > 1 && (
+                <ProductComparisonTable
+                  products={enhancedProducts}
+                  features={comparisonFeatures[post.category.toLowerCase().replace(' ', '') as keyof typeof comparisonFeatures] || comparisonFeatures.electricGuitars}
+                  title={`${post.category} Comparison`}
+                  description={`Compare the top ${post.category.toLowerCase()} options to find the perfect match for your needs`}
+                />
+              )}
+
+              {/* Additional Product Cards */}
+              {post.products && post.products.slice(1).map((product, index) => (
+                <div key={product.id} className="mt-8">
+                  <BlogProductCard 
+                    product={product} 
+                    variant="compact"
+                    position={index % 2 === 0 ? 'left' : 'right'}
+                  />
+                </div>
+              ))}
             </article>
 
             {/* Related Posts */}

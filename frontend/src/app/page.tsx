@@ -1,12 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import dynamicImport from 'next/dynamic';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
-import ProductSearchAutocomplete from '@/components/ProductSearchAutocomplete';
 
-import AffiliateButton from '@/components/AffiliateButton';
+// Force dynamic rendering since this is a client component
+export const dynamic = 'force-dynamic';
+
+// Lazy load heavy components
+const ProductSearchAutocomplete = dynamicImport(() => import('@/components/ProductSearchAutocomplete'), {
+  loading: () => <div className="animate-pulse h-12 bg-gray-200 rounded-lg"></div>
+});
+const AffiliateButton = dynamicImport(() => import('@/components/AffiliateButton'), {
+  loading: () => <div className="animate-pulse h-10 bg-gray-200 rounded-lg"></div>
+});
 
 // Inline utility functions
 const formatPrice = (price: number, currency: string = 'EUR'): string => {
@@ -16,9 +26,6 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
     return `${currency} ${price.toFixed(2)}`;
   }
 };
-
-// Force dynamic rendering since this is a client component
-export const dynamic = 'force-dynamic';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -34,11 +41,22 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
       if (v !== undefined && v !== '') sp.append(k, String(v));
     });
     
-    const response = await fetch(`/api/proxy/products?${sp.toString()}`);
-    if (!response.ok) throw new Error('Failed to fetch');
-    return await response.json();
+    const response = await fetch(`/api/proxy/products?${sp.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return {
+      products: Array.isArray(data.products) ? data.products : []
+    };
   } catch (error) {
-    console.error('API call failed:', error);
+    // Return empty array instead of logging errors
     return { products: [] };
   }
 }
@@ -57,10 +75,12 @@ export default function HomePage() {
           searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
           searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
         ]);
-        setPopularProducts(popular.products);
-        setTopRatedProducts(topRated.products);
+        setPopularProducts(popular.products || []);
+        setTopRatedProducts(topRated.products || []);
       } catch (error) {
-        console.error('Failed to load products:', error);
+        // Silent fail with empty arrays - better UX than console errors
+        setPopularProducts([]);
+        setTopRatedProducts([]);
       } finally {
         setLoading(false);
       }
@@ -108,25 +128,25 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white">
+      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white hero-content" aria-labelledby="hero-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
             <div className="text-center lg:text-left">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                 Find Your Perfect Musical Instrument
               </h1>
-              <h2 className="text-2xl md:text-3xl font-semibold mb-4">
+              <p className="text-2xl md:text-3xl font-semibold mb-4">
                 Expert Reviews, Detailed Comparisons, and Trusted Recommendations
-              </h2>
+              </p>
               <p className="text-xl text-primary-200 mb-8">
                 Discover the ideal instrument for your musical journey with comprehensive reviews, detailed specifications, and expert guidance from trusted music retailers worldwide
               </p>
             </div>
 
             {/* Right side - Dynamic search interface */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-2xl font-bold mb-6 text-center">Compare Instruments</h3>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20" role="search" aria-labelledby="compare-heading">
+              <h2 id="compare-heading" className="text-2xl font-bold mb-6 text-center">Compare Instruments</h2>
               
               <div className="space-y-4">
                 {selectedProducts.map((product, index) => (
@@ -208,15 +228,19 @@ export default function HomePage() {
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer">
+                    <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer relative overflow-hidden">
                       {product.images && product.images.length > 0 ? (
-                        <img 
+                        <Image 
                           src={product.images[0]} 
-                          alt={product.name}
-                          className="w-full h-full object-cover rounded-lg"
+                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                          fill
+                          className="object-cover rounded-lg"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={index < 3}
+                          loading={index < 3 ? 'eager' : 'lazy'}
                         />
                       ) : (
-                        <span className="text-primary-400 text-2xl">🎸</span>
+                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                       )}
                     </div>
                   </Link>
@@ -375,15 +399,18 @@ export default function HomePage() {
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer">
+                  <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer relative overflow-hidden">
                     {product.images && product.images.length > 0 ? (
-                      <img 
+                      <Image 
                         src={product.images[0]} 
-                        alt={product.name}
-                        className="w-full h-full object-cover rounded-lg"
+                        alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                        fill
+                        className="object-cover rounded-lg"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
                       />
                     ) : (
-                      <span className="text-primary-400 text-2xl">🎸</span>
+                      <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                     )}
                   </div>
                 </Link>

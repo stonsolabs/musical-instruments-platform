@@ -80,7 +80,6 @@ export default function SpecificationsComparison({
   const content = (
     <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ${className}`}>
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Specifications Comparison</h3>
         
         {/* Technical Specifications */}
         <div className="mb-8">

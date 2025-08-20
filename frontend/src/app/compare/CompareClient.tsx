@@ -215,11 +215,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       {/* Product Comparison Section */}
       <div className="mb-8">
         {/* Desktop Layout: Flex with products grid + add more on right */}
-        <div className="hidden lg:flex gap-6 items-start">
+        <div className="hidden lg:flex gap-4 items-start">
           {/* Products Grid - Fixed alignment and spacing */}
-          <div className={`grid gap-6 flex-1 ${
+          <div className={`grid gap-4 flex-1 ${
             data.products.length === 1 
-              ? 'grid-cols-1 max-w-md' 
+              ? 'grid-cols-1 max-w-sm' 
               : data.products.length === 2 
               ? 'grid-cols-1 sm:grid-cols-2' 
               : data.products.length === 3 
@@ -413,16 +413,16 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           </div>
 
           {/* Add More Product - On the right side (Desktop) */}
-          <div className="w-64 flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-elegant border-2 border-dashed border-primary-300 p-6 hover:border-primary-400 transition-colors cursor-pointer h-fit sticky top-6">
+          <div className="w-56 flex-shrink-0">
+            <div className="bg-white rounded-xl shadow-elegant border-2 border-dashed border-primary-300 p-4 hover:border-primary-400 transition-colors cursor-pointer h-fit sticky top-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mb-3 mx-auto">
+                  <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-primary-900 mb-2">Add More Instruments</h4>
-                <p className="text-sm text-primary-600 mb-4">Compare with additional products</p>
+                <h4 className="font-semibold text-primary-900 mb-2 text-sm">Add More Instruments</h4>
+                <p className="text-xs text-primary-600 mb-3">Compare with additional products</p>
                 
                 {showAddProduct ? (
                   <div className="w-full">
@@ -433,7 +433,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     />
                     <button 
                       onClick={() => setShowAddProduct(false)}
-                      className="text-sm text-primary-600 hover:text-primary-800"
+                      className="text-xs text-primary-600 hover:text-primary-800"
                     >
                       Cancel
                     </button>
@@ -441,7 +441,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                 ) : (
                   <button
                     onClick={() => setShowAddProduct(true)}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium w-full"
+                    className="bg-primary-600 text-white px-3 py-2 rounded-lg hover:bg-primary-700 transition-colors text-xs font-medium w-full"
                   >
                     Add Product
                   </button>
@@ -835,22 +835,22 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       {/* Recommended Amplifiers */}
                       <div>
                         <span className="text-sm font-medium text-primary-500">Recommended Amps</span>
-                        <div className="space-y-2 mt-2">
-                          {product.ai_content.usage_guidance.recommended_amplifiers.slice(0, 2).map((amp, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded">
-                              <span className="text-sm text-accent-800 font-medium truncate">{amp}</span>
-                              <div className="flex gap-1 ml-2">
+                        <div className="space-y-1 mt-2">
+                          {product.ai_content.usage_guidance.recommended_amplifiers.slice(0, 3).map((amp, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs">
+                              <span className="text-accent-800 font-medium truncate flex-1 mr-2">{amp}</span>
+                              <div className="flex gap-1 flex-shrink-0">
                                 <AffiliateButton
                                   store="thomann"
                                   href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(amp)}&aff=123`}
-                                  className="text-xs px-2 py-1"
+                                  className="text-xs px-2 py-1 min-w-[24px]"
                                 >
                                   T
                                 </AffiliateButton>
                                 <AffiliateButton
                                   store="gear4music"
                                   href={`https://gear4music.com/search?search=${encodeURIComponent(amp)}&aff=123`}
-                                  className="text-xs px-2 py-1"
+                                  className="text-xs px-2 py-1 min-w-[24px]"
                                 >
                                   G
                                 </AffiliateButton>

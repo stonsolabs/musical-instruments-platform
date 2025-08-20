@@ -53,6 +53,12 @@ const nextConfig = {
     } : false,
   },
 
+  // Enable gzip compression
+  compress: true,
+
+  // Performance optimizations
+  swcMinify: true,
+
   // Build performance optimizations
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
@@ -69,7 +75,11 @@ const nextConfig = {
       'kytary.de',
       'getyourmusicgear.com'
     ],
-    unoptimized: process.env.NODE_ENV === 'production'
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 86400,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
   },
 
   // Generate source maps for better debugging
@@ -79,7 +89,11 @@ const nextConfig = {
     return [
       {
         source: '/sitemap.xml',
-        destination: '/api/sitemap',
+        destination: '/sitemap.xml',
+      },
+      {
+        source: '/robots.txt',
+        destination: '/robots.txt',
       },
     ];
   },
@@ -121,6 +135,40 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=3600'
+          }
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=300'
+          }
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
         ],
       },
     ];
