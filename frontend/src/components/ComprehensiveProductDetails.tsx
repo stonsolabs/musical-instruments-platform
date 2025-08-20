@@ -9,7 +9,6 @@ interface ComprehensiveProductDetailsProps {
 
 export default function ComprehensiveProductDetails({ product }: ComprehensiveProductDetailsProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    overview: true,
     technicalAnalysis: true,
     purchaseDecision: true,
     usageGuidance: true,
@@ -52,43 +51,6 @@ export default function ComprehensiveProductDetails({ product }: ComprehensivePr
 
   return (
     <div className="space-y-8">
-      {/* Basic Information */}
-      <section className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden">
-        <div className="p-8">
-          <SectionHeader sectionKey="overview" title="Overview" />
-          
-          {openSections.overview && (
-            <div className="space-y-4">
-              <p className="text-primary-700 leading-relaxed">{aiContent.basic_info.overview}</p>
-              
-              <div>
-                <h3 className="text-lg font-semibold text-primary-900 mb-2">Key Features</h3>
-                <ul className="list-disc list-inside space-y-1 text-primary-700">
-                  {aiContent.basic_info.key_features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-sm font-medium text-primary-500">Skill Level</span>
-                  <p className="text-primary-900">{aiContent.basic_info.target_skill_level}</p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-primary-500">Origin</span>
-                  <p className="text-primary-900">{aiContent.basic_info.country_of_origin}</p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-primary-500">Release Year</span>
-                  <p className="text-primary-900">{aiContent.basic_info.release_year}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Technical Analysis */}
       <section className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden">
         <div className="p-8">

@@ -9,6 +9,7 @@ import { trackProductView, trackEvent } from '@/components/Analytics';
 import { getApiBaseUrl } from '@/lib/api';
 import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
 import TechnicalSpecifications from '@/components/TechnicalSpecifications';
+import ProductOverview from '@/components/ProductOverview';
 import AffiliateButton from '@/components/AffiliateButton';
 
 // Inline utility functions
@@ -311,6 +312,9 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
+        {/* Overview */}
+        <ProductOverview product={product} />
+
         {/* Technical Specifications */}
         <TechnicalSpecifications product={product} />
 
@@ -320,7 +324,7 @@ export default function ProductDetailPage() {
         {/* Reviews Section */}
         {product.review_count > 0 && (
           <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-            <div className="p-6">
+            <div className="p-8">
               <h2 className="text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
                 <span className="text-2xl">⭐</span>
                 Customer Reviews
@@ -388,7 +392,7 @@ export default function ProductDetailPage() {
 
         {/* Related Products */}
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
+          <div className="p-8">
             <h2 className="text-2xl font-bold text-primary-900 mb-6">Similar Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Placeholder for related products */}
