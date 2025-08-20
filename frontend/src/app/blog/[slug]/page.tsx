@@ -100,6 +100,12 @@ const sampleProducts = {
       rating: 4.6,
       reviewCount: 892,
       affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      storeLinks: {
+        amazon: 'https://amazon.com/dp/B07C7V3V8L',
+        thomann: 'https://www.thomann.de/gb/epiphone_les_paul_standard_plus_top_pro_ebony.htm',
+        sweetwater: 'https://www.sweetwater.com/store/detail/LPSTDPCH--epiphone-les-paul-standard-plus-top-pro-heritage-cherry-sunburst',
+        guitarCenter: 'https://www.guitarcenter.com/Epiphone/Les-Paul-Standard-Electric-Guitar-1500000251185.gc'
+      },
       features: [
         'Humbucker pickups',
         'Mahogany body with maple top',
@@ -130,6 +136,12 @@ const sampleProducts = {
       rating: 4.7,
       reviewCount: 1563,
       affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      storeLinks: {
+        amazon: 'https://amazon.com/dp/B07C7V3V8L',
+        thomann: 'https://www.thomann.de/gb/yamaha_pacifica_112v_black.htm',
+        sweetwater: 'https://www.sweetwater.com/store/detail/PAC112VBLK--yamaha-pacifica-112v-electric-guitar-black',
+        guitarCenter: 'https://www.guitarcenter.com/Yamaha/Pacifica-112V-Electric-Guitar-1500000251186.gc'
+      },
       features: [
         'HSS pickup configuration',
         'Comfortable neck profile',
@@ -664,6 +676,12 @@ function getBlogPostBySlug(slug: string) {
           rating: 4.8,
           reviewCount: 2156,
           affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+          storeLinks: {
+            amazon: 'https://amazon.com/dp/B07C7V3V8L',
+            thomann: 'https://www.thomann.de/gb/yamaha_fg830_natural.htm',
+            sweetwater: 'https://www.sweetwater.com/store/detail/FG830--yamaha-fg830-acoustic-guitar-natural',
+            guitarCenter: 'https://www.guitarcenter.com/Yamaha/FG830-Acoustic-Guitar-1500000251187.gc'
+          },
           features: [
             'Solid spruce top',
             'Rosewood back and sides',
@@ -697,6 +715,12 @@ function getBlogPostBySlug(slug: string) {
           rating: 4.8,
           reviewCount: 1247,
           affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+          storeLinks: {
+            amazon: 'https://amazon.com/dp/B07C7V3V8L',
+            thomann: 'https://www.thomann.de/gb/fender_player_stratocaster_sss_pf_3tsb.htm',
+            sweetwater: 'https://www.sweetwater.com/store/detail/PlayerStratSSS3TSB--fender-player-stratocaster-3-tone-sunburst-maple-fingerboard',
+            guitarCenter: 'https://www.guitarcenter.com/Fender/Player-Stratocaster-Electric-Guitar-1500000251184.gc'
+          },
           features: [
             'Three single-coil pickups',
             'Comfortable C-shaped neck',
@@ -815,6 +839,12 @@ function getBlogPostBySlug(slug: string) {
           rating: 4.8,
           reviewCount: 3247,
           affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+          storeLinks: {
+            amazon: 'https://amazon.com/dp/B07C7V3V8L',
+            thomann: 'https://www.thomann.de/gb/focusrite_scarlett_2i2_3rd_gen.htm',
+            sweetwater: 'https://www.sweetwater.com/store/detail/Scarlett2i2G3--focusrite-scarlett-2i2-3rd-gen-usb-audio-interface',
+            musiciansFriend: 'https://www.musiciansfriend.com/pro-audio/focusrite-scarlett-2i2-3rd-gen-usb-audio-interface'
+          },
           features: [
             '2 inputs, 2 outputs',
             'USB-C connectivity',
@@ -848,6 +878,12 @@ function getBlogPostBySlug(slug: string) {
           rating: 4.6,
           reviewCount: 1876,
           affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+          storeLinks: {
+            amazon: 'https://amazon.com/dp/B07C7V3V8L',
+            thomann: 'https://www.thomann.de/gb/krk_rokit_5_g4_black.htm',
+            sweetwater: 'https://www.sweetwater.com/store/detail/Rokit5G4--krk-rokit-5-g4-powered-studio-monitor-black',
+            musiciansFriend: 'https://www.musiciansfriend.com/pro-audio/krk-rokit-5-g4-powered-studio-monitor-black'
+          },
           features: [
             '5-inch woofer',
             'DSP room tuning',
