@@ -109,7 +109,16 @@ function getBlogPostBySlug(slug: string) {
       date: "Jan 15, 2025",
       readTime: "8 min read",
       image: "/images/blog-electric-guitars.jpg",
-      tags: ["Electric Guitar", "Beginner", "Buying Guide", "2025"]
+      tags: ["Electric Guitar", "Beginner", "Buying Guide", "2025"],
+      expertTested: true,
+      rating: 4.8,
+      tableOfContents: [
+        { title: "Introduction", id: "introduction" },
+        { title: "What to Look for in Your First Electric Guitar", id: "what-to-look-for" },
+        { title: "Top Electric Guitars for Beginners", id: "top-guitars" },
+        { title: "Essential Accessories", id: "accessories" },
+        { title: "Conclusion", id: "conclusion" }
+      ]
     },
     'how-choose-right-digital-piano': {
       title: "How to Choose the Right Digital Piano",
@@ -172,7 +181,15 @@ function getBlogPostBySlug(slug: string) {
       date: "Jan 12, 2025",
       readTime: "12 min read",
       image: "/images/blog-digital-piano.jpg",
-      tags: ["Digital Piano", "Buying Guide", "Piano"]
+      tags: ["Digital Piano", "Buying Guide", "Piano"],
+      expertTested: true,
+      rating: 4.6,
+      tableOfContents: [
+        { title: "Understanding Digital Pianos", id: "understanding" },
+        { title: "Key Factors to Consider", id: "key-factors" },
+        { title: "Top Recommendations", id: "recommendations" },
+        { title: "Conclusion", id: "conclusion" }
+      ]
     },
     'top-10-studio-monitors-under-500': {
       title: "Top 10 Studio Monitors Under €500",
@@ -238,7 +255,16 @@ function getBlogPostBySlug(slug: string) {
       date: "Jan 10, 2025",
       readTime: "10 min read",
       image: "/images/blog-studio-monitors.jpg",
-      tags: ["Studio Monitors", "Audio", "Reviews", "Budget"]
+      tags: ["Studio Monitors", "Audio", "Reviews", "Budget"],
+      expertTested: true,
+      rating: 4.4,
+      tableOfContents: [
+        { title: "Why Studio Monitors Matter", id: "why-monitors" },
+        { title: "What to Look for in Studio Monitors", id: "what-to-look-for" },
+        { title: "Top 10 Studio Monitors Under €500", id: "top-monitors" },
+        { title: "Setting Up Your Studio Monitors", id: "setup" },
+        { title: "Conclusion", id: "conclusion" }
+      ]
     }
   };
 
@@ -284,14 +310,30 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{post.title}</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">{post.excerpt}</p>
-            <div className="mt-6">
+            <div className="mt-6 flex items-center justify-center gap-4">
               <span className="text-blue-200">By {post.author}</span>
+              {post.expertTested && (
+                <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Expert Tested
+                </span>
+              )}
+              {post.rating && (
+                <div className="bg-white bg-opacity-90 px-3 py-1 rounded-full">
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">★</span>
+                    <span className="text-sm font-bold text-gray-900">{post.rating}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
         <nav className="mb-8" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2 text-sm text-gray-600">
@@ -303,84 +345,176 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </ol>
         </nav>
 
-        {/* Article Content */}
-        <article className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          {/* Featured Image */}
-          <div className="h-64 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-8 flex items-center justify-center">
-            <span className="text-white text-6xl">📝</span>
-          </div>
+        <div className="grid lg:grid-cols-4 gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {/* Article Content */}
+            <article className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+              {/* Featured Image */}
+              <div className="h-64 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-8 flex items-center justify-center">
+                <span className="text-white text-6xl">📝</span>
+              </div>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {post.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mb-8">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
 
-          {/* Article Body */}
-          <div 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </article>
-
-        {/* Related Posts */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              {
-                title: "Essential Home Recording Equipment for Musicians",
-                excerpt: "Build a professional-quality home studio without breaking the bank with our essential equipment guide.",
-                href: "/blog/essential-home-recording-equipment",
-                category: "Tutorial"
-              },
-              {
-                title: "Understanding Guitar Amp Tones and Settings",
-                excerpt: "Master your amplifier's controls and learn how to dial in the perfect tone for any musical style.",
-                href: "/blog/understanding-guitar-amp-tones-settings",
-                category: "Tutorial"
-              }
-            ].map((relatedPost) => (
-              <Link
-                key={relatedPost.href}
-                href={relatedPost.href}
-                className="block bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">{relatedPost.category}</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{relatedPost.title}</h3>
-                <p className="text-gray-600 line-clamp-3">{relatedPost.excerpt}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Newsletter Signup */}
-        <section className="mt-16 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Stay Updated</h3>
-            <p className="text-gray-600 mb-6">
-              Get the latest articles, reviews, and buying guides delivered to your inbox
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {/* Article Body */}
+              <div 
+                className="prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: post.content }}
               />
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Subscribe
-              </button>
+            </article>
+
+            {/* Related Posts */}
+            <section className="mt-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  {
+                    title: "Essential Home Recording Equipment for Musicians",
+                    excerpt: "Build a professional-quality home studio without breaking the bank with our essential equipment guide.",
+                    href: "/blog/essential-home-recording-equipment",
+                    category: "Tutorial"
+                  },
+                  {
+                    title: "Understanding Guitar Amp Tones and Settings",
+                    excerpt: "Master your amplifier's controls and learn how to dial in the perfect tone for any musical style.",
+                    href: "/blog/understanding-guitar-amp-tones-settings",
+                    category: "Tutorial"
+                  }
+                ].map((relatedPost) => (
+                  <Link
+                    key={relatedPost.href}
+                    href={relatedPost.href}
+                    className="block bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">{relatedPost.category}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{relatedPost.title}</h3>
+                    <p className="text-gray-600 line-clamp-3">{relatedPost.excerpt}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* Newsletter Signup */}
+            <section className="mt-16 bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
+                <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+                  Get the latest articles, reviews, and buying guides delivered to your inbox. Join thousands of musicians who trust our expert advice.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-3 border border-transparent rounded-lg focus:ring-2 focus:ring-white focus:border-transparent text-gray-900"
+                  />
+                  <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    Subscribe
+                  </button>
+                </div>
+                <p className="text-xs text-blue-200 mt-3">
+                  No spam, unsubscribe at any time. We respect your privacy.
+                </p>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-8">
+              {/* Table of Contents */}
+              {post.tableOfContents && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Table of Contents</h3>
+                  <nav className="space-y-2">
+                    {post.tableOfContents.map((item) => (
+                      <a
+                        key={item.id}
+                        href={`#${item.id}`}
+                        className="block text-sm text-gray-600 hover:text-blue-600 hover:font-medium transition-colors"
+                      >
+                        {item.title}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              )}
+
+              {/* Author Info */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">About the Author</h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">
+                      {post.author.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">{post.author}</h4>
+                    <p className="text-sm text-gray-600">Music Professional</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">
+                  {post.author} is a certified music professional with years of experience in the industry. 
+                  They specialize in {post.category.toLowerCase()} and are passionate about helping musicians find the right equipment.
+                </p>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Article Stats</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Read Time</span>
+                    <span className="text-sm font-medium text-gray-900">{post.readTime}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Category</span>
+                    <span className="text-sm font-medium text-gray-900">{post.category}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Published</span>
+                    <span className="text-sm font-medium text-gray-900">{post.date}</span>
+                  </div>
+                  {post.rating && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Rating</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500 text-sm">★</span>
+                        <span className="text-sm font-medium text-gray-900">{post.rating}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Share Buttons */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Share This Article</h3>
+                <div className="flex gap-2">
+                  <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Facebook
+                  </button>
+                  <button className="flex-1 bg-blue-400 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors">
+                    Twitter
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

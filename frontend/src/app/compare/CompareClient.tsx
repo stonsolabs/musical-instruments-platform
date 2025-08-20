@@ -84,6 +84,12 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(!initialData && productSlugs.length >= 1);
   const [showAddProduct, setShowAddProduct] = useState(false);
+  
+  // Collapsible section states
+  const [showPurchaseGuide, setShowPurchaseGuide] = useState(true);
+  const [showUsageGuidance, setShowUsageGuidance] = useState(true);
+  const [showMaintenanceCare, setShowMaintenanceCare] = useState(true);
+  const [showReviews, setShowReviews] = useState(true);
 
   // Load data if not provided by server
   useEffect(() => {
@@ -310,83 +316,93 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     </div>
 
                     {/* Store Buttons - Fixed height container */}
-                    <div className="space-y-2 h-32 flex flex-col">
+                    <div className="space-y-2 h-24 flex flex-col">
                       {product.prices && product.prices.length > 0 ? (
                         <>
-                          {product.prices.slice(0, 2).map((price) => {
+                          {product.prices.slice(0, 2).map((price, index) => {
                             const isThomann = price.store.name.toLowerCase().includes('thomann');
                             const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
                             
                             if (isThomann) {
                               return (
-                                <AffiliateButton
-                                  key={price.id}
-                                  store="thomann"
-                                  href={price.affiliate_url}
-                                  className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                  {!price.is_available && ' (Out of Stock)'}
-                                </AffiliateButton>
+                                <div key={price.id} className="flex gap-2">
+                                  <div className="flex-1 text-sm font-medium text-primary-900">
+                                    {formatPrice(price.price, price.currency)}
+                                    {!price.is_available && ' (Out of Stock)'}
+                                  </div>
+                                  <AffiliateButton
+                                    store="thomann"
+                                    href={price.affiliate_url}
+                                    className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  />
+                                </div>
                               );
                             } else if (isGear4Music) {
                               return (
-                                <AffiliateButton
-                                  key={price.id}
-                                  store="gear4music"
-                                  href={price.affiliate_url}
-                                  className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                  {!price.is_available && ' (Out of Stock)'}
-                                </AffiliateButton>
+                                <div key={price.id} className="flex gap-2">
+                                  <div className="flex-1 text-sm font-medium text-primary-900">
+                                    {formatPrice(price.price, price.currency)}
+                                    {!price.is_available && ' (Out of Stock)'}
+                                  </div>
+                                  <AffiliateButton
+                                    store="gear4music"
+                                    href={price.affiliate_url}
+                                    className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  />
+                                </div>
                               );
                             } else {
                               return (
-                                <a 
-                                  key={price.id}
-                                  href={price.affiliate_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                                    price.is_available 
-                                      ? 'bg-primary-800 text-white hover:bg-primary-700' 
-                                      : 'bg-primary-300 text-primary-600 cursor-not-allowed'
-                                  }`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                  {!price.is_available && ' (Out of Stock)'}
-                                </a>
+                                <div key={price.id} className="flex gap-2">
+                                  <div className="flex-1 text-sm font-medium text-primary-900">
+                                    {formatPrice(price.price, price.currency)}
+                                    {!price.is_available && ' (Out of Stock)'}
+                                  </div>
+                                  <a 
+                                    href={price.affiliate_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`px-4 py-1 rounded text-xs font-medium transition-colors ${
+                                      price.is_available 
+                                        ? 'bg-primary-600 text-white hover:bg-primary-700' 
+                                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    }`}
+                                  >
+                                    {price.store.name}
+                                  </a>
+                                </div>
                               );
                             }
                           })}
                           {product.prices.length > 2 && (
-                            <Link 
-                              href={`/products/${product.slug}-${product.id}`}
-                              className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm mt-auto"
-                            >
-                              View All {product.prices.length} Stores
-                            </Link>
+                            <div className="text-center pt-1">
+                              <Link 
+                                href={`/products/${product.slug}-${product.id}`}
+                                className="text-xs text-primary-600 hover:text-primary-800 font-medium"
+                              >
+                                +{product.prices.length - 2} more stores
+                              </Link>
+                            </div>
                           )}
                         </>
                       ) : (
                         <>
-                          <AffiliateButton
-                            store="thomann"
-                            href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                            className="w-full"
-                          />
-                          <AffiliateButton
-                            store="gear4music"
-                            href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                            className="w-full"
-                          />
-                          <Link 
-                            href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center bg-primary-800 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm mt-auto"
-                          >
-                            View Details
-                          </Link>
+                          <div className="flex gap-2">
+                            <div className="flex-1 text-sm font-medium text-gray-500">Search online:</div>
+                            <AffiliateButton
+                              store="thomann"
+                              href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                              className="px-4 py-1 text-xs"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="flex-1"></div>
+                            <AffiliateButton
+                              store="gear4music"
+                              href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                              className="px-4 py-1 text-xs"
+                            />
+                          </div>
                         </>
                       )}
                     </div>
@@ -526,7 +542,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       </div>
                     </div>
 
-                    {/* Store Buttons - Compact */}
+                    {/* Store Buttons - Compact Mobile */}
                     <div className="space-y-1">
                       {product.prices && product.prices.length > 0 ? (
                         <>
@@ -534,67 +550,61 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                             const isThomann = price.store.name.toLowerCase().includes('thomann');
                             const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
                             
-                            if (isThomann) {
-                              return (
-                                <AffiliateButton
-                                  key={price.id}
-                                  store="thomann"
-                                  href={price.affiliate_url}
-                                  className={`w-full text-xs py-2 ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                </AffiliateButton>
-                              );
-                            } else if (isGear4Music) {
-                              return (
-                                <AffiliateButton
-                                  key={price.id}
-                                  store="gear4music"
-                                  href={price.affiliate_url}
-                                  className={`w-full text-xs py-2 ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                </AffiliateButton>
-                              );
-                            } else {
-                              return (
-                                <a 
-                                  key={price.id}
-                                  href={price.affiliate_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`block w-full text-center py-2 rounded-lg transition-colors text-xs font-medium ${
-                                    price.is_available 
-                                      ? 'bg-primary-800 text-white hover:bg-primary-700' 
-                                      : 'bg-primary-300 text-primary-600 cursor-not-allowed'
-                                  }`}
-                                >
-                                  {formatPrice(price.price, price.currency)} at {price.store.name}
-                                </a>
-                              );
-                            }
+                            return (
+                              <div key={price.id} className="flex gap-2 items-center">
+                                <div className="flex-1 text-xs font-medium text-primary-900">
+                                  {formatPrice(price.price, price.currency)}
+                                  {!price.is_available && ' (Out of Stock)'}
+                                </div>
+                                {isThomann ? (
+                                  <AffiliateButton
+                                    store="thomann"
+                                    href={price.affiliate_url}
+                                    className={`px-3 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  />
+                                ) : isGear4Music ? (
+                                  <AffiliateButton
+                                    store="gear4music"
+                                    href={price.affiliate_url}
+                                    className={`px-3 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  />
+                                ) : (
+                                  <a 
+                                    href={price.affiliate_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                                      price.is_available 
+                                        ? 'bg-primary-600 text-white hover:bg-primary-700' 
+                                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    }`}
+                                  >
+                                    {price.store.name}
+                                  </a>
+                                )}
+                              </div>
+                            );
                           })}
-                          <Link 
-                            href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-xs"
-                          >
-                            {product.prices.length > 1 ? `View All ${product.prices.length} Stores` : 'View Details'}
-                          </Link>
+                          {product.prices.length > 1 && (
+                            <div className="text-center pt-1">
+                              <Link 
+                                href={`/products/${product.slug}-${product.id}`}
+                                className="text-xs text-primary-600 hover:text-primary-800 font-medium"
+                              >
+                                +{product.prices.length - 1} more stores
+                              </Link>
+                            </div>
+                          )}
                         </>
                       ) : (
-                        <>
+                        <div className="flex gap-2 items-center">
+                          <div className="flex-1 text-xs font-medium text-gray-500">Search online:</div>
                           <AffiliateButton
                             store="thomann"
                             href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                            className="w-full text-xs py-2"
+                            className="px-3 py-1 text-xs"
                           />
-                          <Link 
-                            href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center bg-primary-800 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-xs"
-                          >
-                            View Details
-                          </Link>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -668,22 +678,44 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
       )}
 
       {/* Specifications Comparison - Collapsed by default */}
-      <SpecificationsComparison 
-        products={data.products}
-        isCollapsible={true}
-        defaultCollapsed={true}
-        className="mb-8"
-      />
+      {(data.products.length === 1 || data.products.some(p => Object.keys(p.specifications || {}).length > 0)) && (
+        <SpecificationsComparison 
+          products={data.products}
+          isCollapsible={true}
+          defaultCollapsed={true}
+          className="mb-8"
+        />
+      )}
 
-      {/* Purchase Decision Guide */}
-      {data.products.some(p => p.ai_content) && (
+      {/* Purchase Decision Guide - Only show for multiple products or if no expert ratings shown in product cards */}
+      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-primary-900 mb-6 flex items-center gap-2">
+          <button
+            onClick={() => setShowPurchaseGuide(!showPurchaseGuide)}
+            className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+          >
+            <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
               <span className="text-2xl">🎯</span>
               Purchase Decision Guide
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <svg 
+              className={`w-6 h-6 text-primary-600 transition-transform ${showPurchaseGuide ? 'rotate-180' : ''}`} 
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showPurchaseGuide && (
+            <div className="px-6 pb-6">
+              <div className={`grid gap-6 ${
+                data.products.length === 1 
+                  ? 'grid-cols-1 max-w-2xl mx-auto' 
+                  : data.products.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : data.products.length === 3
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              }`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -733,20 +765,41 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   )}
                 </div>
               ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Usage Guidance Comparison */}
-      {data.products.some(p => p.ai_content) && (
+      {/* Usage Guidance Comparison - Only show for multiple products */}
+      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-primary-900 mb-6 flex items-center gap-2">
+          <button
+            onClick={() => setShowUsageGuidance(!showUsageGuidance)}
+            className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+          >
+            <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
               <span className="text-2xl">🎵</span>
               Usage Guidance Comparison
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <svg 
+              className={`w-6 h-6 text-primary-600 transition-transform ${showUsageGuidance ? 'rotate-180' : ''}`} 
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showUsageGuidance && (
+            <div className="px-6 pb-6">
+              <div className={`grid gap-6 ${
+                data.products.length === 1 
+                  ? 'grid-cols-1 max-w-2xl mx-auto' 
+                  : data.products.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : data.products.length === 3
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              }`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -818,20 +871,41 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   )}
                 </div>
               ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Maintenance & Care */}
-      {data.products.some(p => p.ai_content) && (
+      {/* Maintenance & Care - Only show for multiple products */}
+      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-primary-900 mb-6 flex items-center gap-2">
+          <button
+            onClick={() => setShowMaintenanceCare(!showMaintenanceCare)}
+            className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+          >
+            <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
               <span className="text-2xl">🔧</span>
               Maintenance & Care
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <svg 
+              className={`w-6 h-6 text-primary-600 transition-transform ${showMaintenanceCare ? 'rotate-180' : ''}`} 
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showMaintenanceCare && (
+            <div className="px-6 pb-6">
+              <div className={`grid gap-6 ${
+                data.products.length === 1 
+                  ? 'grid-cols-1 max-w-2xl mx-auto' 
+                  : data.products.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : data.products.length === 3
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              }`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -888,20 +962,41 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   )}
                 </div>
               ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
       {/* Reviews Section */}
       {data.products.some(p => p.review_count > 0) && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-primary-900 mb-6 flex items-center gap-2">
+          <button
+            onClick={() => setShowReviews(!showReviews)}
+            className="w-full p-6 flex items-center justify-between hover:bg-primary-50 transition-colors"
+          >
+            <h3 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
               <span className="text-2xl">⭐</span>
               Customer Reviews
             </h3>
-            <div className={`grid gap-6 ${data.products.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+            <svg 
+              className={`w-6 h-6 text-primary-600 transition-transform ${showReviews ? 'rotate-180' : ''}`} 
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showReviews && (
+            <div className="px-6 pb-6">
+              <div className={`grid gap-6 ${
+                data.products.length === 1 
+                  ? 'grid-cols-1 max-w-2xl mx-auto' 
+                  : data.products.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : data.products.length === 3
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              }`}>
               {data.products.map((product) => (
                 <div key={product.id} className="border border-primary-200 rounded-lg p-4">
                   <h4 className="font-semibold text-primary-900 mb-4">{product.name}</h4>
@@ -926,8 +1021,9 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                   </div>
                 </div>
               ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

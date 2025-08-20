@@ -34,7 +34,9 @@ export default function BlogPage() {
       image: "/images/blog-electric-guitars.jpg",
       slug: "best-electric-guitars-beginners-2025",
       featured: true,
-      tags: ["Electric Guitar", "Beginner", "Buying Guide", "2025"]
+      tags: ["Electric Guitar", "Beginner", "Buying Guide", "2025"],
+      expertTested: true,
+      rating: 4.8
     },
     {
       id: 2,
@@ -48,7 +50,9 @@ export default function BlogPage() {
       image: "/images/blog-digital-piano.jpg",
       slug: "how-choose-right-digital-piano",
       featured: true,
-      tags: ["Digital Piano", "Buying Guide", "Piano"]
+      tags: ["Digital Piano", "Buying Guide", "Piano"],
+      expertTested: true,
+      rating: 4.6
     },
     {
       id: 3,
@@ -62,7 +66,9 @@ export default function BlogPage() {
       image: "/images/blog-studio-monitors.jpg",
       slug: "top-10-studio-monitors-under-500",
       featured: true,
-      tags: ["Studio Monitors", "Audio", "Reviews", "Budget"]
+      tags: ["Studio Monitors", "Audio", "Reviews", "Budget"],
+      expertTested: true,
+      rating: 4.4
     },
     {
       id: 4,
@@ -76,7 +82,9 @@ export default function BlogPage() {
       image: "/images/blog-effects-pedals.jpg",
       slug: "evolution-guitar-effects-pedals",
       featured: false,
-      tags: ["Effects Pedals", "Guitar", "History", "Technology"]
+      tags: ["Effects Pedals", "Guitar", "History", "Technology"],
+      expertTested: false,
+      rating: 4.2
     },
     {
       id: 5,
@@ -90,7 +98,9 @@ export default function BlogPage() {
       image: "/images/blog-home-recording.jpg",
       slug: "essential-home-recording-equipment",
       featured: false,
-      tags: ["Home Recording", "Studio", "Equipment", "Tutorial"]
+      tags: ["Home Recording", "Studio", "Equipment", "Tutorial"],
+      expertTested: true,
+      rating: 4.5
     },
     {
       id: 6,
@@ -104,7 +114,9 @@ export default function BlogPage() {
       image: "/images/blog-amp-tones.jpg",
       slug: "understanding-guitar-amp-tones-settings",
       featured: false,
-      tags: ["Guitar Amp", "Tone", "Tutorial", "Settings"]
+      tags: ["Guitar Amp", "Tone", "Tutorial", "Settings"],
+      expertTested: true,
+      rating: 4.3
     }
   ];
 
@@ -141,13 +153,29 @@ export default function BlogPage() {
           </ol>
         </nav>
 
+        {/* Expert Testing Badge */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-blue-900">Expert Tested</h3>
+              <p className="text-sm text-blue-700">Our team of music professionals personally tests and reviews every product featured in our articles to ensure quality and performance you can trust.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Categories Filter */}
         <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
           <div className="flex flex-wrap gap-4">
             {categories.map((category) => (
               <button
                 key={category.name}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors font-medium"
               >
                 {category.name} ({category.count})
               </button>
@@ -158,7 +186,12 @@ export default function BlogPage() {
         {/* Featured Posts */}
         {featuredPosts.length > 0 && (
           <section className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Articles</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">Featured Articles</h2>
+              <Link href="/blog" className="text-blue-600 hover:text-blue-700 font-medium">
+                View All Articles →
+              </Link>
+            </div>
             <div className="grid lg:grid-cols-2 gap-8">
               {featuredPosts.map((post) => (
                 <article key={post.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -166,11 +199,27 @@ export default function BlogPage() {
                     <div className="h-64 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                       <span className="text-white text-6xl">📝</span>
                     </div>
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 flex gap-2">
                       <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         Featured
                       </span>
+                      {post.expertTested && (
+                        <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Expert Tested
+                        </span>
+                      )}
                     </div>
+                    {post.rating && (
+                      <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-3 py-1 rounded-full">
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-500">★</span>
+                          <span className="text-sm font-bold text-gray-900">{post.rating}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="p-8">
@@ -206,7 +255,16 @@ export default function BlogPage() {
 
         {/* All Posts */}
         <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Latest Articles</h2>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Latest Articles</h2>
+            <div className="flex items-center gap-4">
+              <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Sort by Date</option>
+                <option>Sort by Rating</option>
+                <option>Sort by Read Time</option>
+              </select>
+            </div>
+          </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {regularPosts.map((post) => (
               <article key={post.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
@@ -214,6 +272,24 @@ export default function BlogPage() {
                   <div className="h-48 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center">
                     <span className="text-white text-4xl">📝</span>
                   </div>
+                  {post.expertTested && (
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <svg className="w-2 h-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Expert
+                      </span>
+                    </div>
+                  )}
+                  {post.rating && (
+                    <div className="absolute top-3 right-3 bg-white bg-opacity-90 px-2 py-1 rounded-full">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500 text-xs">★</span>
+                        <span className="text-xs font-bold text-gray-900">{post.rating}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="p-6">
@@ -247,22 +323,25 @@ export default function BlogPage() {
         </section>
 
         {/* Newsletter Signup */}
-        <section className="mt-16 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <section className="mt-16 bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Stay Updated</h3>
-            <p className="text-gray-600 mb-6">
-              Subscribe to our newsletter and get the latest articles, reviews, and buying guides delivered to your inbox
+            <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
+            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+              Subscribe to our newsletter and get the latest articles, reviews, and buying guides delivered to your inbox. Join thousands of musicians who trust our expert advice.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 border border-transparent rounded-lg focus:ring-2 focus:ring-white focus:border-transparent text-gray-900"
               />
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 Subscribe
               </button>
             </div>
+            <p className="text-xs text-blue-200 mt-3">
+              No spam, unsubscribe at any time. We respect your privacy.
+            </p>
           </div>
         </section>
       </div>
