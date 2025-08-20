@@ -242,8 +242,8 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         />
       )}
 
-      {/* Purchase Decision Guide - Only show for multiple products or if no expert ratings shown in product cards */}
-      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
+      {/* Purchase Decision Guide - Always show */}
+      {data.products.length > 0 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
           <button
             onClick={() => setShowPurchaseGuide(!showPurchaseGuide)}
@@ -326,8 +326,8 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       )}
 
-      {/* Usage Guidance Comparison - Only show for multiple products */}
-      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
+      {/* Usage Guidance Comparison - Always show */}
+      {data.products.length > 0 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
           <button
             onClick={() => setShowUsageGuidance(!showUsageGuidance)}
@@ -388,7 +388,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       </div>
 
                       {/* Recommended Amplifiers */}
-                      <div>
+                      {/* <div>
                         <span className="text-sm font-medium text-primary-500">Recommended Amps</span>
                         <div className="space-y-1 mt-2">
                           {product.ai_content.usage_guidance.recommended_amplifiers.slice(0, 3).map((amp, index) => (
@@ -413,7 +413,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Learning Curve */}
                       <div>
@@ -432,8 +432,8 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         </div>
       )}
 
-      {/* Maintenance & Care - Only show for multiple products */}
-      {data.products.some(p => p.ai_content) && data.products.length > 1 && (
+      {/* Maintenance & Care - Always show */}
+      {data.products.length > 0 && (
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
           <button
             onClick={() => setShowMaintenanceCare(!showMaintenanceCare)}
