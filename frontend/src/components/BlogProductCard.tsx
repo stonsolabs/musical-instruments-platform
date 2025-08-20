@@ -17,6 +17,13 @@ interface BlogProductCardProps {
     affiliateUrl: string;
     features: string[];
     description: string;
+    storeLinks?: {
+      amazon?: string;
+      thomann?: string;
+      sweetwater?: string;
+      guitarCenter?: string;
+      musiciansFriend?: string;
+    };
   };
   position?: 'left' | 'right' | 'center';
   variant?: 'compact' | 'detailed';
@@ -91,14 +98,48 @@ export default function BlogProductCard({
             </div>
 
             {/* CTA Button */}
-            <Link
-              href={product.affiliateUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              Check Price & Reviews
-            </Link>
+            <div className="grid grid-cols-2 gap-2">
+              {product.storeLinks?.amazon && (
+                <Link
+                  href={product.storeLinks.amazon}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                >
+                  🛒 Amazon
+                </Link>
+              )}
+              {product.storeLinks?.thomann && (
+                <Link
+                  href={product.storeLinks.thomann}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                >
+                  🎵 Thomann
+                </Link>
+              )}
+              {product.storeLinks?.sweetwater && (
+                <Link
+                  href={product.storeLinks.sweetwater}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-xs"
+                >
+                  🎸 Sweetwater
+                </Link>
+              )}
+              {!product.storeLinks && (
+                <Link
+                  href={product.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-xs"
+                >
+                  Check Price
+                </Link>
+              )}
+            </div>
             
             <p className="text-xs text-gray-500 text-center mt-2">
               Affiliate link - We may earn a commission
@@ -181,18 +222,55 @@ export default function BlogProductCard({
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Link
-              href={product.affiliateUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 bg-blue-600 text-white text-center py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              Check Latest Price
-            </Link>
+          <div className="space-y-3 pt-4">
+            {/* Store Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              {product.storeLinks?.amazon && (
+                <Link
+                  href={product.storeLinks.amazon}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-sm"
+                >
+                  🛒 Amazon
+                </Link>
+              )}
+              {product.storeLinks?.thomann && (
+                <Link
+                  href={product.storeLinks.thomann}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-sm"
+                >
+                  🎵 Thomann
+                </Link>
+              )}
+              {product.storeLinks?.sweetwater && (
+                <Link
+                  href={product.storeLinks.sweetwater}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-sm"
+                >
+                  🎸 Sweetwater
+                </Link>
+              )}
+              {!product.storeLinks && (
+                <Link
+                  href={product.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm"
+                >
+                  Check Latest Price
+                </Link>
+              )}
+            </div>
+            
+            {/* Review Link */}
             <Link
               href={`/products/${product.slug}`}
-              className="flex-1 bg-gray-100 text-gray-900 text-center py-4 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+              className="block w-full bg-gray-100 text-gray-900 text-center py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
             >
               Read Full Review
             </Link>

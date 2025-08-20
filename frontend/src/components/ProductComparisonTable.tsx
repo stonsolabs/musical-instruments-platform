@@ -19,6 +19,13 @@ interface Product {
   pros: string[];
   cons: string[];
   bestFor: string;
+  storeLinks?: {
+    amazon?: string;
+    thomann?: string;
+    sweetwater?: string;
+    guitarCenter?: string;
+    musiciansFriend?: string;
+  };
 }
 
 interface ProductComparisonTableProps {
@@ -148,14 +155,50 @@ export default function ProductComparisonTable({
                 <p className="text-sm text-gray-600">{product.bestFor}</p>
               </div>
 
-              <Link
-                href={product.affiliateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                Check Price & Reviews
-              </Link>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {product.storeLinks?.amazon && (
+                    <Link
+                      href={product.storeLinks.amazon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                    >
+                      🛒 Amazon
+                    </Link>
+                  )}
+                  {product.storeLinks?.thomann && (
+                    <Link
+                      href={product.storeLinks.thomann}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                    >
+                      🎵 Thomann
+                    </Link>
+                  )}
+                  {product.storeLinks?.sweetwater && (
+                    <Link
+                      href={product.storeLinks.sweetwater}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-xs"
+                    >
+                      🎸 Sweetwater
+                    </Link>
+                  )}
+                  {!product.storeLinks && (
+                    <Link
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-xs"
+                    >
+                      Check Price
+                    </Link>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -61,6 +61,12 @@ const sampleProducts = {
       rating: 4.8,
       reviewCount: 1247,
       affiliateUrl: 'https://amazon.com/dp/B07C7V3V8L',
+      storeLinks: {
+        amazon: 'https://amazon.com/dp/B07C7V3V8L',
+        thomann: 'https://www.thomann.de/gb/fender_player_stratocaster_sss_pf_3tsb.htm',
+        sweetwater: 'https://www.sweetwater.com/store/detail/PlayerStratSSS3TSB--fender-player-stratocaster-3-tone-sunburst-maple-fingerboard',
+        guitarCenter: 'https://www.guitarcenter.com/Fender/Player-Stratocaster-Electric-Guitar-1500000251184.gc'
+      },
       features: [
         'Three single-coil pickups',
         'Comfortable C-shaped neck',

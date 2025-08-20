@@ -21,6 +21,13 @@ interface Product {
   bestFor?: string;
   isRecommended?: boolean;
   badge?: string;
+  storeLinks?: {
+    amazon?: string;
+    thomann?: string;
+    sweetwater?: string;
+    guitarCenter?: string;
+    musiciansFriend?: string;
+  };
 }
 
 interface BlogProductShowcaseProps {
@@ -142,18 +149,75 @@ export default function BlogProductShowcase({
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <Link
-                  href={recommended.affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg"
-                >
-                  Check Latest Price
-                </Link>
+              <div className="space-y-3 pt-4">
+                {/* Store Buttons */}
+                <div className="grid grid-cols-2 gap-2">
+                  {recommended.storeLinks?.amazon && (
+                    <Link
+                      href={recommended.storeLinks.amazon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-sm"
+                    >
+                      🛒 Amazon
+                    </Link>
+                  )}
+                  {recommended.storeLinks?.thomann && (
+                    <Link
+                      href={recommended.storeLinks.thomann}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-sm"
+                    >
+                      🎵 Thomann
+                    </Link>
+                  )}
+                  {recommended.storeLinks?.sweetwater && (
+                    <Link
+                      href={recommended.storeLinks.sweetwater}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-sm"
+                    >
+                      🎸 Sweetwater
+                    </Link>
+                  )}
+                  {recommended.storeLinks?.guitarCenter && (
+                    <Link
+                      href={recommended.storeLinks.guitarCenter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-red-600 to-red-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg text-sm"
+                    >
+                      🎼 Guitar Center
+                    </Link>
+                  )}
+                  {recommended.storeLinks?.musiciansFriend && (
+                    <Link
+                      href={recommended.storeLinks.musiciansFriend}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg text-sm"
+                    >
+                      🎵 Musician's Friend
+                    </Link>
+                  )}
+                  {!recommended.storeLinks && (
+                    <Link
+                      href={recommended.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm"
+                    >
+                      Check Best Price
+                    </Link>
+                  )}
+                </div>
+                
+                {/* Review Link */}
                 <Link
                   href={`/products/${recommended.slug}`}
-                  className="flex-1 bg-gray-100 text-gray-900 text-center py-4 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                  className="block w-full bg-gray-100 text-gray-900 text-center py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
                   Read Full Review
                 </Link>
@@ -206,14 +270,38 @@ export default function BlogProductShowcase({
                   )}
                 </div>
 
-                <Link
-                  href={product.affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Check Price
-                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  {product.storeLinks?.amazon && (
+                    <Link
+                      href={product.storeLinks.amazon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                    >
+                      🛒 Amazon
+                    </Link>
+                  )}
+                  {product.storeLinks?.thomann && (
+                    <Link
+                      href={product.storeLinks.thomann}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                    >
+                      🎵 Thomann
+                    </Link>
+                  )}
+                  {!product.storeLinks && (
+                    <Link
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-xs"
+                    >
+                      Check Price
+                    </Link>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -293,14 +381,48 @@ export default function BlogProductShowcase({
                   </ul>
                 </div>
 
-                <Link
-                  href={product.affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Check Price & Reviews
-                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  {product.storeLinks?.amazon && (
+                    <Link
+                      href={product.storeLinks.amazon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                    >
+                      🛒 Amazon
+                    </Link>
+                  )}
+                  {product.storeLinks?.thomann && (
+                    <Link
+                      href={product.storeLinks.thomann}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                    >
+                      🎵 Thomann
+                    </Link>
+                  )}
+                  {product.storeLinks?.sweetwater && (
+                    <Link
+                      href={product.storeLinks.sweetwater}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-xs"
+                    >
+                      🎸 Sweetwater
+                    </Link>
+                  )}
+                  {!product.storeLinks && (
+                    <Link
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-xs"
+                    >
+                      Check Price
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -369,14 +491,38 @@ export default function BlogProductShowcase({
                   )}
                 </div>
 
-                <Link
-                  href={product.affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Check Price & Reviews
-                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  {product.storeLinks?.amazon && (
+                    <Link
+                      href={product.storeLinks.amazon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                    >
+                      🛒 Amazon
+                    </Link>
+                  )}
+                  {product.storeLinks?.thomann && (
+                    <Link
+                      href={product.storeLinks.thomann}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                    >
+                      🎵 Thomann
+                    </Link>
+                  )}
+                  {!product.storeLinks && (
+                    <Link
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-xs"
+                    >
+                      Check Price
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -456,14 +602,48 @@ export default function BlogProductShowcase({
                 </div>
               )}
 
-              <Link
-                href={recommended.affiliateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full bg-gradient-to-r from-green-600 to-blue-600 text-white text-center py-4 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all shadow-lg"
-              >
-                Get Best Price
-              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                {recommended.storeLinks?.amazon && (
+                  <Link
+                    href={recommended.storeLinks.amazon}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-sm"
+                  >
+                    🛒 Amazon
+                  </Link>
+                )}
+                {recommended.storeLinks?.thomann && (
+                  <Link
+                    href={recommended.storeLinks.thomann}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-sm"
+                  >
+                    🎵 Thomann
+                  </Link>
+                )}
+                {recommended.storeLinks?.sweetwater && (
+                  <Link
+                    href={recommended.storeLinks.sweetwater}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg text-sm"
+                  >
+                    🎸 Sweetwater
+                  </Link>
+                )}
+                {!recommended.storeLinks && (
+                  <Link
+                    href={recommended.affiliateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-green-600 to-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all shadow-lg text-sm"
+                  >
+                    Get Best Price
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -496,14 +676,38 @@ export default function BlogProductShowcase({
                     </div>
                   </div>
 
-                  <Link
-                    href={product.affiliateUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full bg-gray-100 text-gray-900 text-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                  >
-                    View Alternative
-                  </Link>
+                  <div className="grid grid-cols-2 gap-2">
+                    {product.storeLinks?.amazon && (
+                      <Link
+                        href={product.storeLinks.amazon}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg text-xs"
+                      >
+                        🛒 Amazon
+                      </Link>
+                    )}
+                    {product.storeLinks?.thomann && (
+                      <Link
+                        href={product.storeLinks.thomann}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 px-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg text-xs"
+                      >
+                        🎵 Thomann
+                      </Link>
+                    )}
+                    {!product.storeLinks && (
+                      <Link
+                        href={product.affiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gray-100 text-gray-900 text-center py-2 px-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-xs"
+                      >
+                        View Alternative
+                      </Link>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
