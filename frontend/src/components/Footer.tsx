@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="md:col-span-2">
-            <div className="flex items-center mb-6">
+            <div className="flex items-center w-[100px] mb-6">
               <Image 
                 src="/logo-white.png" 
                 alt="GetYourMusicGear Logo" 
