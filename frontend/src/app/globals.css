@@ -70,7 +70,7 @@ img[data-nimg] {
 
 /* Force images to display properly */
 img[data-nimg="1"] {
-  object-fit: cover;
+  /* object-fit: cover; */
   width: 100% !important;
   height: 100% !important;
 }
