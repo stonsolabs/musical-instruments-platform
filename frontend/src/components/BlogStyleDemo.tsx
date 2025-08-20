@@ -135,25 +135,37 @@ export default function BlogStyleDemo() {
             href="/blog/best-electric-guitars-beginners-2025"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Buying Guide Style
+            Buying Guide
           </Link>
           <Link
             href="/blog/how-choose-right-digital-piano"
             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            Comparison Style
+            Comparison
           </Link>
           <Link
             href="/blog/top-10-studio-monitors-under-500"
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Review Style
+            Review
           </Link>
           <Link
             href="/blog/essential-home-recording-equipment"
             className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
-            Tutorial Style
+            Tutorial
+          </Link>
+          <Link
+            href="/blog/complete-guitar-buying-guide-2025"
+            className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Buyer's Guide
+          </Link>
+          <Link
+            href="/blog/how-to-setup-home-recording-studio"
+            className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Step-by-Step
           </Link>
         </div>
 
@@ -207,7 +219,7 @@ export default function BlogStyleDemo() {
         {/* Blog Post Examples */}
         <div className="mt-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Blog Post Examples</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 title: "Best Electric Guitars for Beginners",
@@ -236,6 +248,20 @@ export default function BlogStyleDemo() {
                 href: "/blog/essential-home-recording-equipment",
                 style: "tutorial",
                 color: "orange"
+              },
+              {
+                title: "Complete Guitar Buying Guide",
+                excerpt: "Everything you need to know about buying guitars",
+                href: "/blog/complete-guitar-buying-guide-2025",
+                style: "buyers-guide",
+                color: "teal"
+              },
+              {
+                title: "Home Studio Setup Guide",
+                excerpt: "Step-by-step guide to building your home studio",
+                href: "/blog/how-to-setup-home-recording-studio",
+                style: "step-by-step",
+                color: "emerald"
               }
             ].map((post) => (
               <Link
@@ -245,9 +271,12 @@ export default function BlogStyleDemo() {
               >
                 <div className={`w-12 h-12 bg-${post.color}-600 rounded-lg mb-4 flex items-center justify-center`}>
                   <span className="text-white font-bold text-lg">
-                    {post.style === 'buying-guide' ? '🛒' : 
-                     post.style === 'comparison' ? '⚖️' : 
-                     post.style === 'review' ? '⭐' : '📚'}
+                                         {post.style === 'buying-guide' ? '🛒' : 
+                      post.style === 'comparison' ? '⚖️' : 
+                      post.style === 'review' ? '⭐' : 
+                      post.style === 'tutorial' ? '📚' :
+                      post.style === 'buyers-guide' ? '📋' :
+                      post.style === 'step-by-step' ? '🔧' : '📝'}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h3>
