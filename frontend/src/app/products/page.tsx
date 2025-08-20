@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import ProductsClient from './ProductsClient';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, getServerBaseUrl } from '@/lib/api';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
@@ -24,8 +24,11 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
     if (!params.has('page')) params.set('page', '1');
     if (!params.has('sort_by')) params.set('sort_by', 'name');
 
+    // Get the base URL for server-side requests
+    const baseUrl = getServerBaseUrl();
+
     // Use proxy route instead of direct backend call
-    const response = await fetch(`/api/proxy/products?${params.toString()}`, {
+    const response = await fetch(`${baseUrl}/api/proxy/products?${params.toString()}`, {
       next: { revalidate: 300 }, // Revalidate every 5 minutes
     });
 
@@ -51,7 +54,10 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
 async function fetchCategories(): Promise<Category[]> {
   try {
-    const response = await fetch(`/api/proxy/categories`, {
+    // Get the base URL for server-side requests
+    const baseUrl = getServerBaseUrl();
+
+    const response = await fetch(`${baseUrl}/api/proxy/categories`, {
       next: { revalidate: 3600 }, // Revalidate every hour
     });
 
@@ -69,7 +75,10 @@ async function fetchCategories(): Promise<Category[]> {
 
 async function fetchBrands(): Promise<Brand[]> {
   try {
-    const response = await fetch(`/api/proxy/brands`, {
+    // Get the base URL for server-side requests
+    const baseUrl = getServerBaseUrl();
+
+    const response = await fetch(`${baseUrl}/api/proxy/brands`, {
       next: { revalidate: 3600 }, // Revalidate every hour
     });
 

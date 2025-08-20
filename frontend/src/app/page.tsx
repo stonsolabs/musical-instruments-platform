@@ -5,27 +5,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import dynamicImport from 'next/dynamic';
 import { Product, SearchAutocompleteProduct } from '@/types';
-import { getApiBaseUrl } from '@/lib/api';
+import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
 
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';
 
 // Lazy load heavy components
-const ProductSearchAutocomplete = dynamicImport(() => import('@/components/ProductSearchAutocomplete'), {
+const UnifiedSearchAutocomplete = dynamicImport(() => import('@/components/UnifiedSearchAutocomplete'), {
   loading: () => <div className="animate-pulse h-12 bg-gray-200 rounded-lg"></div>
 });
 const AffiliateButton = dynamicImport(() => import('@/components/AffiliateButton'), {
   loading: () => <div className="animate-pulse h-10 bg-gray-200 rounded-lg"></div>
 });
 
-// Inline utility functions
-const formatPrice = (price: number, currency: string = 'EUR'): string => {
-  try {
-    return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-};
+import { formatPrice } from '@/lib/utils';
 
 
 const API_BASE_URL = getApiBaseUrl();
@@ -42,7 +35,10 @@ async function searchProducts(params: any): Promise<{ products: Product[] }> {
       if (v !== undefined && v !== '') sp.append(k, String(v));
     });
     
-    const response = await fetch(`/api/proxy/products?${sp.toString()}`, {
+    // Get the base URL for server-side requests
+    const baseUrl = getServerBaseUrl();
+
+    const response = await fetch(`${baseUrl}/api/proxy/products?${sp.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -169,7 +165,8 @@ export default function HomePage() {
                   <div key={index} className="relative">
                     <div className="flex items-center gap-3">
                       <div className="flex-1">
-                        <ProductSearchAutocomplete
+                        <UnifiedSearchAutocomplete
+                          variant="product-select"
                           placeholder={`Search instrument ${index + 1}`}
                           className="w-full"
                           onProductSelect={(selectedProduct) => handleProductSelect(index, selectedProduct)}
