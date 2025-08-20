@@ -12,14 +12,14 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0">
+          <div className="flex items-center flex-shrink-0 mt-8">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               <Image 
                 src="/logo.png" 
                 alt="GetYourMusicGear Logo" 
                 width={120} 
                 height={40}
-                className="h-8 lg:h-10 w-auto"
+                className="h-6 lg:h-8 w-auto"
                 priority
               />
             </Link>

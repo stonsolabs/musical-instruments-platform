@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import type { Product } from '@/types';
-import AffiliateButton from '@/components/AffiliateButton';
+import type { Product, SearchAutocompleteProduct } from '@/types';
 import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
 import { formatPrice, formatRating } from '@/lib/utils';
 
@@ -25,12 +24,60 @@ export default function ProductComparisonGrid({
 
   const canAddMore = products.length < maxProducts;
 
-  const handleAddProduct = async (product: Product) => {
+  const handleAddProduct = async (product: SearchAutocompleteProduct) => {
     if (!canAddMore) return;
     
     setIsAddingProduct(true);
     try {
-      onAddProduct(product);
+      // Convert SearchAutocompleteProduct to Product type
+      const convertedProduct: Product = {
+        id: product.id,
+        sku: product.slug, // Use slug as SKU since SearchAutocompleteProduct doesn't have sku
+        name: product.name,
+        slug: product.slug,
+        brand: product.brand,
+        category: product.category,
+        description: '', // SearchAutocompleteProduct doesn't have description
+        specifications: {}, // SearchAutocompleteProduct doesn't have specifications
+        images: product.images,
+        msrp_price: undefined,
+        best_price: product.best_price ? {
+          id: 0, // Generate a temporary ID
+          price: product.best_price.price,
+          currency: product.best_price.currency,
+          affiliate_url: product.best_price.affiliate_url,
+          last_checked: new Date().toISOString(),
+          is_available: true,
+          store: {
+            id: product.best_price.store.id,
+            name: product.best_price.store.name,
+            logo_url: undefined,
+            website_url: '' // Add required field
+          }
+        } : undefined,
+        prices: product.prices?.map(price => ({
+          id: price.id,
+          price: price.price,
+          currency: price.currency,
+          affiliate_url: price.affiliate_url,
+          last_checked: price.last_checked || new Date().toISOString(),
+          is_available: price.is_available,
+          store: {
+            id: price.store.id,
+            name: price.store.name,
+            logo_url: undefined,
+            website_url: '' // Add required field
+          }
+        })),
+        avg_rating: product.avg_rating,
+        review_count: product.review_count,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ai_content: undefined
+      };
+      
+      onAddProduct(convertedProduct);
       setShowAddProduct(false);
     } catch (error) {
       console.error('Error adding product:', error);
@@ -196,25 +243,6 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
             )}
           </div>
 
-          {/* Rating and Store Count */}
-          <div className="flex items-center justify-between h-8">
-            <div className="flex items-center gap-2">
-              {product.avg_rating > 0 ? (
-                <>
-                  <span className="text-warning-500">★</span>
-                  <span className="text-sm font-medium">{formatRating(product.avg_rating)}</span>
-                  <span className="text-sm text-primary-500">({product.review_count})</span>
-                </>
-              ) : (
-                <span className="text-sm text-gray-400">No ratings yet</span>
-              )}
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-bold text-primary-600">{product.prices?.length || 0}</div>
-              <div className="text-xs text-primary-500">Store{product.prices?.length !== 1 ? 's' : ''}</div>
-            </div>
-          </div>
-
           {/* Store Buttons */}
           <div className="space-y-2 h-24 flex flex-col">
             {product.prices && product.prices.length > 0 ? (
@@ -225,42 +253,42 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                   
                   if (isThomann) {
                     return (
-                      <div key={price.id} className="flex gap-2">
-                        <AffiliateButton
-                          store="thomann"
+                      <div key={price.id} className="flex gap-1 flex-shrink-0">
+                        <a
                           href={price.affiliate_url}
-                          className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-medium rounded transition-colors"
                         >
-                          {!price.is_available && ' (Out of Stock)'}
-                        </AffiliateButton>
+                          <img src="/thoman-favicon.png" alt="T" className="w-3 h-3" />
+                          <span>View Price</span>
+                        </a>
                       </div>
                     );
                   } else if (isGear4Music) {
                     return (
-                      <div key={price.id} className="flex gap-2">
-                        <AffiliateButton
-                          store="gear4music"
+                      <div key={price.id} className="flex gap-1 flex-shrink-0">
+                        <a
                           href={price.affiliate_url}
-                          className={`px-4 py-1 text-xs ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded transition-colors"
                         >
-                          {!price.is_available && ' (Out of Stock)'}
-                        </AffiliateButton>
+                          <img src="/gear-100.png" alt="G" className="w-3 h-3" />
+                          <span>View Price</span>
+                        </a>
                       </div>
                     );
                   } else {
                     return (
-                      <div key={price.id} className="flex gap-2">
+                      <div key={price.id} className="flex gap-1 flex-shrink-0">
                         <a 
                           href={price.affiliate_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`px-4 py-1 rounded text-xs font-medium transition-colors ${
-                            price.is_available 
-                              ? 'bg-primary-600 text-white hover:bg-primary-700' 
-                              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                          }`}
+                          className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded transition-colors"
                         >
-                          {!price.is_available && ' (Out of Stock)'}
+                          <span>View Price</span>
                         </a>
                       </div>
                     );
@@ -279,19 +307,27 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
               </>
             ) : (
               <>
-                <div className="flex gap-2">
-                  <AffiliateButton
-                    store="thomann"
+                <div className="flex gap-1 flex-shrink-0">
+                  <a
                     href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                    className="px-4 py-1 text-xs"
-                  />
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-medium rounded transition-colors"
+                  >
+                    <img src="/thoman-favicon.png" alt="T" className="w-3 h-3" />
+                    <span>View Price</span>
+                  </a>
                 </div>
-                <div className="flex gap-2">
-                  <AffiliateButton
-                    store="gear4music"
+                <div className="flex gap-1 flex-shrink-0">
+                  <a
                     href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                    className="px-4 py-1 text-xs"
-                  />
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fp-table__column-button inline-flex items-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded transition-colors"
+                  >
+                    <img src="/gear-100.png" alt="G" className="w-3 h-3" />
+                    <span>View Price</span>
+                  </a>
                 </div>
               </>
             )}
@@ -304,7 +340,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
 
 // Add Product Card Component
 interface AddProductCardProps {
-  onAddProduct: (product: Product) => void;
+  onAddProduct: (product: SearchAutocompleteProduct) => void;
   showSearch: boolean;
   onToggleSearch: () => void;
   isAdding: boolean;
