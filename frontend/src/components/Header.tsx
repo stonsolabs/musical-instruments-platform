@@ -12,15 +12,16 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0">
-            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <div className="flex items-center flex-shrink-0 w-[140px]">
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity w-full">
               <Image 
                 src="/logo.svg" 
                 alt="GetYourMusicGear Logo" 
                 width={140} 
                 height={32}
-                className="h-7 lg:h-9 w-auto"
+                className="h-7 lg:h-9 w-full object-contain"
                 priority
+                style={{ maxWidth: '100%', height: 'auto' }}
               />
             </Link>
           </div>

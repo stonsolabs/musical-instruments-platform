@@ -555,8 +555,9 @@ export default function ProductsClient({
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                      className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
+                                      <span>View Price at</span>
                                       <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                                     </a>
                                   );
@@ -567,8 +568,9 @@ export default function ProductsClient({
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                      className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
+                                      <span>View Price at</span>
                                       <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                                     </a>
                                   );
@@ -579,8 +581,9 @@ export default function ProductsClient({
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                      className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
+                                      <span>View Price at</span>
                                       <span className="font-medium">{price.store.name}</span>
                                     </a>
                                   );
@@ -603,16 +606,18 @@ export default function ProductsClient({
                                 href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="fp-table__button thirstylink w-full"
+                                className="fp-table__button fp-table__button--thomann"
                               >
+                                <span>View Price at</span>
                                 <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                               </a>
                               <a
                                 href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="fp-table__button thirstylink w-full"
+                                className="fp-table__button fp-table__button--gear4music"
                               >
+                                <span>View Price at</span>
                                 <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                               </a>
                             </div>

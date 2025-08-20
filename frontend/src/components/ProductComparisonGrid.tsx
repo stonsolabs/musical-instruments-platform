@@ -258,8 +258,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="fp-table__button thirstylink w-full"
+                                      className="fp-table__button fp-table__button--thomann"
                                     >
+                                      <span>View Price at</span>
                                       <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                                     </a>
                       </div>
@@ -271,8 +272,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="fp-table__button thirstylink w-full"
+                                      className="fp-table__button fp-table__button--gear4music"
                                     >
+                                      <span>View Price at</span>
                                       <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                                     </a>
                       </div>
@@ -284,8 +286,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                                       href={price.affiliate_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="fp-table__button thirstylink w-full"
+                                      className="fp-table__button"
                                     >
+                                      <span>View Price at</span>
                                       <span className="font-medium">{price.store.name}</span>
                                     </a>
                       </div>
@@ -310,8 +313,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="fp-table__button thirstylink w-full"
+                    className="fp-table__button fp-table__button--thomann"
                   >
+                    <span>View Price at</span>
                     <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                   </a>
                 </div>
@@ -320,8 +324,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="fp-table__button thirstylink w-full"
+                    className="fp-table__button fp-table__button--gear4music"
                   >
+                    <span>View Price at</span>
                     <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                   </a>
                 </div>

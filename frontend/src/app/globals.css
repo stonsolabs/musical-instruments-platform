@@ -223,8 +223,7 @@ img.loaded {
 .fp-table__button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+  justify-content: space-between;
   padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -232,20 +231,37 @@ img.loaded {
   text-decoration: none;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  background-color: #3b82f6;
   color: white;
   border: none;
   cursor: pointer;
+  width: 100%;
 }
 
 .fp-table__button:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  background-color: #2563eb;
 }
 
 .fp-table__button:active {
   transform: translateY(0);
+}
+
+/* Thomann button - teal/cyan background */
+.fp-table__button--thomann {
+  background-color: #06b6d4;
+}
+
+.fp-table__button--thomann:hover {
+  background-color: #0891b2;
+}
+
+/* Gear4music button - orange background */
+.fp-table__button--gear4music {
+  background-color: #f97316;
+}
+
+.fp-table__button--gear4music:hover {
+  background-color: #ea580c;
 }
 
 .thirstylink {

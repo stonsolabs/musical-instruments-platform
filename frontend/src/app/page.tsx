@@ -19,44 +19,7 @@ const AffiliateButton = dynamicImport(() => import('@/components/AffiliateButton
 });
 
 import { formatPrice } from '@/lib/utils';
-
-
-const API_BASE_URL = getApiBaseUrl();
-
-async function searchProducts(params: any): Promise<{ products: Product[] }> {
-  if (typeof window === 'undefined') {
-    // Return empty results during build
-    return { products: [] };
-  }
-  
-  try {
-    const sp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') sp.append(k, String(v));
-    });
-    
-    // Get the base URL for server-side requests
-    const baseUrl = getServerBaseUrl();
-
-    const response = await fetch(`${baseUrl}/api/proxy/products?${sp.toString()}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    return {
-      products: Array.isArray(data.products) ? data.products : []
-    };
-  } catch (error) {
-    // Return empty array instead of logging errors
-    return { products: [] };
-  }
-}
+import { apiClient } from '@/lib/api';
 
 export default function HomePage() {
   const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
@@ -70,8 +33,8 @@ export default function HomePage() {
       try {
         console.log('🔍 Loading popular and top-rated products...');
         const [popular, topRated] = await Promise.all([
-          searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
-          searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
+          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
+          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
         ]);
         console.log('📊 Popular products loaded:', popular.products?.length || 0);
         console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
@@ -293,8 +256,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
+                                  <span>View Price at</span>
                                   <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                                 </a>
                               );
@@ -305,8 +269,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
+                                  <span>View Price at</span>
                                   <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                                 </a>
                               );
@@ -317,8 +282,9 @@ export default function HomePage() {
                                   href={price.affiliate_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
+                                  <span>View Price at</span>
                                   <span className="font-medium">{price.store.name}</span>
                                 </a>
                               );
@@ -342,16 +308,18 @@ export default function HomePage() {
                           href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fp-table__button thirstylink w-full"
+                          className="fp-table__button fp-table__button--thomann"
                         >
+                          <span>View Price at</span>
                           <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                         </a>
                         <a
                           href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fp-table__button thirstylink w-full"
+                          className="fp-table__button fp-table__button--gear4music"
                         >
+                          <span>View Price at</span>
                           <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                         </a>
                       </div>
@@ -474,8 +442,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
+                                <span>View Price at</span>
                                 <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                               </a>
                             );
@@ -486,8 +455,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
+                                <span>View Price at</span>
                                 <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                               </a>
                             );
@@ -498,8 +468,9 @@ export default function HomePage() {
                                 href={price.affiliate_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`fp-table__button thirstylink w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
+                                <span>View Price at</span>
                                 <span className="font-medium">{price.store.name}</span>
                               </a>
                             );
@@ -523,16 +494,18 @@ export default function HomePage() {
                         href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="fp-table__button thirstylink w-full"
+                        className="fp-table__button fp-table__button--thomann"
                       >
+                        <span>View Price at</span>
                         <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                       </a>
                       <a
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="fp-table__button thirstylink w-full"
+                        className="fp-table__button fp-table__button--gear4music"
                       >
+                        <span>View Price at</span>
                         <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                       </a>
                     </div>
