@@ -10,7 +10,6 @@ import { getApiBaseUrl } from '@/lib/api';
 import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
 import TechnicalSpecifications from '@/components/TechnicalSpecifications';
 import ProductOverview from '@/components/ProductOverview';
-import AffiliateButton from '@/components/AffiliateButton';
 
 import { formatPrice, formatRating } from '@/lib/utils';
 
@@ -200,27 +199,29 @@ export default function ProductDetailPage() {
                         
                         if (isThomann) {
                           return (
-                            <AffiliateButton
+                            <a
                               key={price.id}
-                              store="thomann"
                               href={price.affiliate_url}
-                              className={`w-full py-2 px-3 text-sm ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {formatPrice(price.price, price.currency)} at {price.store.name}
-                              {!price.is_available && ' (Out of Stock)'}
-                            </AffiliateButton>
+                              <span>View Price at</span>
+                              <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                            </a>
                           );
                         } else if (isGear4Music) {
                           return (
-                            <AffiliateButton
+                            <a
                               key={price.id}
-                              store="gear4music"
                               href={price.affiliate_url}
-                              className={`w-full py-2 px-3 text-sm ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {formatPrice(price.price, price.currency)} at {price.store.name}
-                              {!price.is_available && ' (Out of Stock)'}
-                            </AffiliateButton>
+                              <span>View Price at</span>
+                              <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                            </a>
                           );
                         } else {
                           return (
@@ -229,14 +230,10 @@ export default function ProductDetailPage() {
                               href={price.affiliate_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`block w-full text-center py-2 rounded-lg transition-colors text-sm font-medium ${
-                                price.is_available
-                                  ? 'bg-primary-800 text-white hover:bg-primary-700'
-                                  : 'bg-primary-300 text-primary-600 cursor-not-allowed'
-                              }`}
+                              className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              {formatPrice(price.price, price.currency)} at {price.store.name}
-                              {!price.is_available && ' (Out of Stock)'}
+                              <span>View Price at</span>
+                              <span className="font-medium">{price.store.name}</span>
                             </a>
                           );
                         }
@@ -249,16 +246,24 @@ export default function ProductDetailPage() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <AffiliateButton
-                        store="thomann"
+                      <a
                         href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                        className="w-full py-2 px-3 text-sm"
-                      />
-                      <AffiliateButton
-                        store="gear4music"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fp-table__button fp-table__button--thomann"
+                      >
+                        <span>View Price at</span>
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                      </a>
+                      <a
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                        className="w-full py-2 px-3 text-sm"
-                      />
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fp-table__button fp-table__button--gear4music"
+                      >
+                        <span>View Price at</span>
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                      </a>
                     </div>
                   )}
                 </div>
