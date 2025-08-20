@@ -17,9 +17,9 @@ export function Header() {
               <Image 
                 src="/logo.png" 
                 alt="GetYourMusicGear Logo" 
-                width={180} 
-                height={50}
-                className="h-10 lg:h-12 w-auto"
+                width={120} 
+                height={40}
+                className="h-8 lg:h-10 w-auto"
                 priority
               />
             </Link>

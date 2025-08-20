@@ -27,17 +27,6 @@ const formatPrice = (price: number, currency: string = 'EUR'): string => {
   }
 };
 
-// Helper function to get the first valid image URL or fallback
-const getProductImage = (product: Product): string | null => {
-  if (product.images && product.images.length > 0) {
-    // Try to find a local image first
-    const firstImage = product.images[0];
-    if (firstImage && (firstImage.startsWith('/') || firstImage.startsWith('http'))) {
-      return firstImage;
-    }
-  }
-  return null;
-};
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -255,26 +244,22 @@ export default function HomePage() {
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer overflow-hidden">
-                      {(() => {
-                        const imageUrl = getProductImage(product);
-                        return imageUrl ? (
-                          <Image 
-                            src={imageUrl} 
-                            alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
-                            width={400}
-                            height={192}
-                            className="w-full h-full object-cover rounded-lg"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            priority={index < 3}
-                            loading={index < 3 ? 'eager' : 'lazy'}
-                            unoptimized={imageUrl.startsWith('http')}
-                            onError={() => console.log('Image failed to load:', imageUrl)}
-                          />
-                        ) : (
+                    <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                      {product.images && product.images.length > 0 ? (
+                        <Image 
+                          src={product.images[0]} 
+                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                          width={400}
+                          height={192}
+                          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={index < 3}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
                           <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
-                        );
-                      })()}
+                        </div>
+                      )}
                     </div>
                   </Link>
                   <div className="flex items-center justify-between mb-2">
@@ -436,25 +421,22 @@ export default function HomePage() {
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4 flex items-center justify-center hover:bg-primary-100 transition-colors cursor-pointer overflow-hidden">
-                    {(() => {
-                      const imageUrl = getProductImage(product);
-                      return imageUrl ? (
-                        <Image 
-                          src={imageUrl} 
-                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
-                          width={400}
-                          height={192}
-                          className="w-full h-full object-cover rounded-lg"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          loading="lazy"
-                          unoptimized={imageUrl.startsWith('http')}
-                          onError={() => console.log('Image failed to load:', imageUrl)}
-                        />
-                      ) : (
+                  <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                    {product.images && product.images.length > 0 ? (
+                      <Image 
+                        src={product.images[0]} 
+                        alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                        width={400}
+                        height={192}
+                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
                         <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
-                      );
-                    })()}
+                      </div>
+                    )}
                   </div>
                 </Link>
                 <div className="flex items-center justify-between mb-2">

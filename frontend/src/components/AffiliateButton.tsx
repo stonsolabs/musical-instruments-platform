@@ -29,23 +29,33 @@ export default function AffiliateButton({ store, href, className = '', children,
 
   const config = storeConfig[store];
 
+  // Determine if this is a compact button (based on custom children or className)
+  const isCompact = children && children !== config.text;
+  const hasCustomClass = className.includes('px-') || className.includes('py-');
+
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
-      className={`block w-full text-center py-3 px-4 rounded-xl transition-colors text-sm font-medium text-white ${config.bgColor} ${config.hoverColor} ${className}`}
+      className={`block text-center transition-colors font-medium text-white ${config.bgColor} ${config.hoverColor} ${
+        hasCustomClass 
+          ? className 
+          : `w-full py-2 px-3 rounded-lg text-sm ${className}`
+      }`}
     >
-      <div className="flex items-center justify-center gap-2">
-        <Image
-          src={config.logo}
-          alt={config.altText}
-          width={20}
-          height={20}
-          className="w-5 h-5"
-        />
-        <span>{children || config.text}</span>
+      <div className={`flex items-center justify-center ${isCompact && !hasCustomClass ? 'gap-1' : 'gap-2'}`}>
+        {!isCompact && (
+          <Image
+            src={config.logo}
+            alt={config.altText}
+            width={16}
+            height={16}
+            className="w-4 h-4"
+          />
+        )}
+        <span className={isCompact && hasCustomClass ? 'text-xs' : ''}>{children || config.text}</span>
       </div>
     </a>
   );

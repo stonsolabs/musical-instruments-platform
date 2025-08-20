@@ -515,10 +515,18 @@ export default function ProductsClient({
                   }`}>
                     <div className="relative">
                       <div 
-                        className="h-48 bg-gray-200 flex items-center justify-center cursor-pointer relative group"
+                        className="h-48 bg-gray-200 flex items-center justify-center cursor-pointer relative group overflow-hidden"
                         onClick={() => toggleProductSelection(product.id)}
                       >
-                        <span className="text-gray-400 text-2xl">🎸</span>
+                        {product.images && product.images.length > 0 ? (
+                          <img 
+                            src={product.images[0]} 
+                            alt={product.name}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-gray-400 text-2xl">🎸</span>
+                        )}
                         {/* Selection overlay */}
                         <div className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
                           selectedProducts.includes(product.id)

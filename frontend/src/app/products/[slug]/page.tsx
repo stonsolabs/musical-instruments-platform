@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
                               key={price.id}
                               store="thomann"
                               href={price.affiliate_url}
-                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              className={`w-full py-2 px-3 text-sm ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
@@ -237,7 +237,7 @@ export default function ProductDetailPage() {
                               key={price.id}
                               store="gear4music"
                               href={price.affiliate_url}
-                              className={`w-full ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              className={`w-full py-2 px-3 text-sm ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               {formatPrice(price.price, price.currency)} at {price.store.name}
                               {!price.is_available && ' (Out of Stock)'}
@@ -273,12 +273,12 @@ export default function ProductDetailPage() {
                       <AffiliateButton
                         store="thomann"
                         href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
-                        className="w-full"
+                        className="w-full py-2 px-3 text-sm"
                       />
                       <AffiliateButton
                         store="gear4music"
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
-                        className="w-full"
+                        className="w-full py-2 px-3 text-sm"
                       />
                     </div>
                   )}
@@ -392,13 +392,13 @@ export default function ProductDetailPage() {
 
         {/* Related Products */}
         <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-          <div className="p-8">
-            <h2 className="text-2xl font-bold text-primary-900 mb-6">Similar Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-primary-900 mb-4">Similar Products</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Placeholder for related products */}
-              <div className="border border-primary-200 rounded-lg p-4 text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                  <span className="text-primary-400 text-2xl">🎸</span>
+              <div className="border border-primary-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
+                <div className="w-20 h-20 bg-primary-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-primary-400 text-3xl">🎸</span>
                 </div>
                 <p className="text-sm text-primary-600">More products coming soon</p>
               </div>

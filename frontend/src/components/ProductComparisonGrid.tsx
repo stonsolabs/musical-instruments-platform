@@ -149,7 +149,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
               <img 
                 src={product.images[0]} 
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <span className={`text-primary-400 ${isMobile ? 'text-3xl' : 'text-4xl'}`}>🎸</span>
