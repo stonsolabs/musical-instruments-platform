@@ -205,9 +205,9 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
           </div>
 
           {/* Expert Ratings */}
-          <div className={isMobile ? "h-auto" : "h-24"}>
+          <div className="h-auto mb-4">
             {product.ai_content ? (
-              <div className={`p-3 bg-primary-50 rounded-lg ${isMobile ? 'h-auto' : 'h-full'}`}>
+              <div className="p-3 bg-primary-50 rounded-lg">
                 <h4 className="text-sm font-semibold text-primary-700 mb-2">Expert Ratings</h4>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="text-center">
@@ -237,7 +237,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                 </div>
               </div>
             ) : (
-              <div className={`p-3 bg-gray-50 rounded-lg ${isMobile ? 'h-auto' : 'h-full'} flex items-center justify-center`}>
+              <div className="p-3 bg-gray-50 rounded-lg flex items-center justify-center">
                 <p className="text-sm text-gray-500">No ratings available</p>
               </div>
             )}
