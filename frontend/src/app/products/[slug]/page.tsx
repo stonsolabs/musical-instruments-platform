@@ -307,7 +307,7 @@ export default function ProductDetailPage() {
         <ComprehensiveProductDetails product={product} />
 
         {/* Reviews Section */}
-        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mt-8 mb-8">
           <div className="p-8">
             <h2 className="text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
               <span className="text-2xl">⭐</span>
