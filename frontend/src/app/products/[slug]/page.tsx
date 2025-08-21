@@ -307,76 +307,74 @@ export default function ProductDetailPage() {
         <ComprehensiveProductDetails product={product} />
 
         {/* Reviews Section */}
-        {product.review_count > 0 && (
-          <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
-            <div className="p-8">
-              <h2 className="text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
-                <span className="text-2xl">⭐</span>
-                Customer Reviews
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-primary-900">{formatRating(product.avg_rating)}</div>
-                    <div className="flex items-center justify-center gap-1 mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-lg ${i < Math.floor(product.avg_rating) ? 'text-warning-500' : 'text-primary-300'}`}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <div className="text-sm text-primary-600 mt-1">{product.review_count} reviews</div>
+        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
+              <span className="text-2xl">⭐</span>
+              Customer Reviews
+            </h2>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary-900">{formatRating(product.avg_rating)}</div>
+                  <div className="flex items-center justify-center gap-1 mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={`text-lg ${i < Math.floor(product.avg_rating) ? 'text-warning-500' : 'text-primary-300'}`}>
+                        ★
+                      </span>
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm text-primary-600">
-                      {product.avg_rating >= 4.5 && "Excellent customer satisfaction with outstanding quality and performance"}
-                      {product.avg_rating >= 4.0 && product.avg_rating < 4.5 && "Very good customer satisfaction with reliable performance"}
-                      {product.avg_rating >= 3.5 && product.avg_rating < 4.0 && "Good customer satisfaction with solid performance"}
-                      {product.avg_rating < 3.5 && "Mixed customer reviews with some concerns"}
-                    </div>
+                  <div className="text-sm text-primary-600 mt-1">{product.review_count} reviews</div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm text-primary-600">
+                    {product.avg_rating >= 4.5 && "Excellent customer satisfaction with outstanding quality and performance"}
+                    {product.avg_rating >= 4.0 && product.avg_rating < 4.5 && "Very good customer satisfaction with reliable performance"}
+                    {product.avg_rating >= 3.5 && product.avg_rating < 4.0 && "Good customer satisfaction with solid performance"}
+                    {product.avg_rating < 3.5 && "Mixed customer reviews with some concerns"}
                   </div>
                 </div>
-                
-                {/* Review Summary */}
-                <div className="bg-primary-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-primary-900 mb-3">What customers say</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-600">Build Quality</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 bg-primary-200 rounded-full h-2">
-                          <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.build_quality || '0') || 0) * 10}%` }}></div>
-                        </div>
-                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
+              </div>
+              
+              {/* Review Summary */}
+              <div className="bg-primary-50 rounded-lg p-4">
+                <h3 className="font-semibold text-primary-900 mb-3">What customers say</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-primary-600">Build Quality</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-primary-200 rounded-full h-2">
+                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.build_quality || '0') || 0) * 10}%` }}></div>
                       </div>
+                      <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-600">Sound Quality</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 bg-primary-200 rounded-full h-2">
-                          <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.sound_quality || '0') || 0) * 10}%` }}></div>
-                        </div>
-                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-primary-600">Sound Quality</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-primary-200 rounded-full h-2">
+                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.sound_quality || '0') || 0) * 10}%` }}></div>
                       </div>
+                      <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-600">Value for Money</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 bg-primary-200 rounded-full h-2">
-                          <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.value_for_money || '0') || 0) * 10}%` }}></div>
-                        </div>
-                        <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-primary-600">Value for Money</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-primary-200 rounded-full h-2">
+                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.value_for_money || '0') || 0) * 10}%` }}></div>
                       </div>
+                      <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Related Products */}
-        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mb-8">
+        <div className="bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden mt-8 mb-8">
           <div className="p-8">
             <button
               onClick={() => setShowSimilarProducts(!showSimilarProducts)}
