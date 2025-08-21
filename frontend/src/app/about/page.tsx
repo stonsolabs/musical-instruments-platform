@@ -115,8 +115,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="mb-16">
+        {/* Stats Section - Commented Out */}
+        {/* <section className="mb-16">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Impact</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -128,10 +128,10 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
-        {/* Story Section */}
-        <section className="mb-16">
+        {/* Story Section - Commented Out */}
+        {/* <section className="mb-16">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Story</h2>
             <div className="prose prose-lg max-w-none text-gray-600">
@@ -156,10 +156,10 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
-        {/* Team Section */}
-        <section className="mb-16">
+        {/* Team Section - Commented Out */}
+        {/* <section className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Meet Our Team</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
@@ -175,7 +175,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Values Section */}
         <section className="mb-16">

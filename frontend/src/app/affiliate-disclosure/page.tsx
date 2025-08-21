@@ -153,53 +153,9 @@ export default function AffiliateDisclosurePage() {
             </div>
           </div>
 
-          {/* Partner Retailers */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Our Partner Retailers</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {partnerRetailers.map((retailer, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">{retailer.name}</h3>
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                      {retailer.commission} commission
-                    </span>
-                  </div>
-                  <p className="text-gray-600 mb-4">{retailer.description}</p>
-                  <div className="space-y-2">
-                    {retailer.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center text-sm text-gray-600">
-                        <span className="text-green-500 mr-2">✓</span>
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Commission Structure */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl p-8 text-white">
-            <h2 className="text-2xl font-bold mb-6">Commission Structure</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">3-8%</div>
-                <div className="text-blue-100">Average Commission Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">25+</div>
-                <div className="text-blue-100">Partner Retailers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">0%</div>
-                <div className="text-blue-100">Additional Cost to You</div>
-              </div>
-            </div>
-            <p className="text-center text-blue-100 mt-6">
-              Commission rates vary by retailer and product category. Higher-value items typically have lower percentage rates but higher absolute commission amounts.
-            </p>
-          </div>
+
+
 
           {/* FAQ Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
