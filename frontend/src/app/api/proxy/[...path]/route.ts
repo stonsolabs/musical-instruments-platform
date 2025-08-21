@@ -1,0 +1,240 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const API_KEY = process.env.API_KEY || 'de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  const path = params.path.join('/');
+  const url = new URL(request.url);
+  const searchParams = url.searchParams.toString();
+  
+  // Enhanced debug logging
+  console.log('🔍 Proxy GET request:', {
+    path,
+    searchParams,
+    apiBaseUrl: API_BASE_URL,
+    hasApiKey: !!API_KEY,
+    apiKeyLength: API_KEY ? API_KEY.length : 0,
+    fullUrl: `${API_BASE_URL}/api/v1/${path}?${searchParams}`,
+    userAgent: request.headers.get('user-agent'),
+    origin: request.headers.get('origin')
+  });
+  
+  // Validate API_BASE_URL
+  if (!API_BASE_URL || API_BASE_URL === 'http://localhost:8000') {
+    console.error('❌ Invalid API_BASE_URL:', API_BASE_URL);
+    return NextResponse.json(
+      { 
+        error: 'API_BASE_URL not configured properly',
+        currentValue: API_BASE_URL,
+        expected: 'https://musical-instruments-platform.onrender.com',
+        instructions: 'Set NEXT_PUBLIC_API_BASE_URL environment variable in Vercel dashboard'
+      },
+      { status: 500 }
+    );
+  }
+  
+  // Validate API_KEY
+  if (!API_KEY) {
+    console.error('❌ API_KEY not configured');
+    return NextResponse.json(
+      { 
+        error: 'API_KEY not configured',
+        hint: 'Set API_KEY environment variable in Vercel'
+      },
+      { status: 500 }
+    );
+  }
+  
+  try {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const targetUrl = `${baseUrl}/api/v1/${path}?${searchParams}`;
+    console.log('🚀 Making request to:', targetUrl);
+    
+    const response = await fetch(targetUrl, {
+      headers: {
+        'X-API-Key': API_KEY,
+        'Content-Type': 'application/json',
+        'User-Agent': 'MusicalInstrumentsPlatform/1.0',
+      },
+      // Add timeout
+      signal: AbortSignal.timeout(10000), // 10 second timeout
+    });
+
+    console.log('📡 Backend response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Backend error response:', errorText);
+      return NextResponse.json(
+        { 
+          error: 'Backend request failed',
+          details: errorText,
+          status: response.status,
+          url: targetUrl
+        },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    console.log('✅ Successfully received data from backend');
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('💥 Proxy error:', error);
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return NextResponse.json(
+          { 
+            error: 'Request timeout',
+            details: 'Backend request took too long to respond',
+            apiBaseUrl: API_BASE_URL
+          },
+          { status: 504 }
+        );
+      }
+      
+      if (error.message.includes('fetch')) {
+        return NextResponse.json(
+          { 
+            error: 'Network error',
+            details: error.message,
+            apiBaseUrl: API_BASE_URL,
+            hint: 'Check if backend is accessible'
+          },
+          { status: 502 }
+        );
+      }
+    }
+    
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        apiBaseUrl: API_BASE_URL,
+        hasApiKey: !!API_KEY
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  const path = params.path.join('/');
+  const body = await request.json();
+  
+  try {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
+      method: 'POST',
+      headers: {
+        'X-API-Key': API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Backend request failed' },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Proxy error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  const path = params.path.join('/');
+  const body = await request.json();
+  
+  try {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
+      method: 'PUT',
+      headers: {
+        'X-API-Key': API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Backend request failed' },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Proxy error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  const path = params.path.join('/');
+  
+  try {
+    // Ensure no double slashes by properly joining the URL parts
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
+      method: 'DELETE',
+      headers: {
+        'X-API-Key': API_KEY,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Backend request failed' },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Proxy error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

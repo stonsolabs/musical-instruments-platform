@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: getyourmusicgear-backend
+    runtime: docker
+    repo: https://github.com/stonsolabs/musical-instruments-platform
+    plan: free
+    region: frankfurt
+    dockerContext: .
+    dockerfilePath: ./backend/Dockerfile
+    
+    envVars:
+      - fromGroup: backend_vars
+    
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    
+    # Optional: Custom domains for the backend API
+    # domains:
+    #   - api.getyourmusicgear.com
+
+version: "1"
