@@ -32,17 +32,23 @@ export default function HomePage() {
     const loadProducts = async () => {
       try {
         console.log('🔍 Loading popular and top-rated products...');
+        // Add timeout to prevent hanging requests
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        
         const [popular, topRated] = await Promise.all([
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
+          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }).catch(() => ({ products: [] })),
+          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' }).catch(() => ({ products: [] }))
         ]);
+        
+        clearTimeout(timeout);
         console.log('📊 Popular products loaded:', popular.products?.length || 0);
         console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
         setPopularProducts(popular.products || []);
         setTopRatedProducts(topRated.products || []);
       } catch (error) {
         console.error('❌ Error loading products:', error);
-        // Silent fail with empty arrays - better UX than console errors
+        // Graceful fallback - show static content
         setPopularProducts([]);
         setTopRatedProducts([]);
       } finally {

@@ -26,18 +26,18 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Optimized for better fit */}
+          {/* Desktop Navigation - Fixed spacing */}
           <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
-            <div className="flex items-center space-x-2 xl:space-x-3 flex-nowrap overflow-hidden">
-              <Link href="/products?category=guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Guitars</Link>
-              <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Electric</Link>
-              <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Acoustic</Link>
-              <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Bass</Link>
-              <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Drums</Link>
-              <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Keyboards</Link>
-              <Link href="/products?category=orchestral" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Orchestral</Link>
-              <Link href="/products?category=studio-production" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
-              <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">DJ</Link>
+            <div className="flex items-center space-x-4 flex-wrap justify-center">
+              <Link href="/products?category=guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Guitars</Link>
+              <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Electric</Link>
+              <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Acoustic</Link>
+              <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Bass</Link>
+              <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Drums</Link>
+              <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Keyboards</Link>
+              <Link href="/products?category=orchestral" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Orchestral</Link>
+              <Link href="/products?category=studio-production" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">Studio</Link>
+              <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-2 py-2 rounded-md hover:bg-gray-50">DJ</Link>
             </div>
           </nav>
 

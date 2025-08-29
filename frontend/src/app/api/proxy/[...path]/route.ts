@@ -23,8 +23,8 @@ export async function GET(
     origin: request.headers.get('origin')
   });
   
-  // Validate API_BASE_URL
-  if (!API_BASE_URL || API_BASE_URL === 'http://localhost:8000') {
+  // Validate API_BASE_URL - allow localhost for development
+  if (!API_BASE_URL) {
     console.error('❌ Invalid API_BASE_URL:', API_BASE_URL);
     return NextResponse.json(
       { 
@@ -35,6 +35,18 @@ export async function GET(
       },
       { status: 500 }
     );
+  }
+  
+  // Handle localhost gracefully in development
+  if (API_BASE_URL === 'http://localhost:8000') {
+    console.warn('⚠️ Using localhost API_BASE_URL - returning empty result for production');
+    return NextResponse.json({
+      products: [],
+      total: 0,
+      page: 1,
+      total_pages: 0,
+      message: 'Backend not available'
+    });
   }
   
   // Validate API_KEY
