@@ -16,17 +16,6 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     
-    # OpenAI
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    
-    # Azure OpenAI
-    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
-    AZURE_OPENAI_DEPLOYMENT_NAME: str = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4")
-    
-    # Azure OpenAI Batch (for batch processing)
-    AZURE_OPENAI_BATCH_ENDPOINT: str = os.getenv("AZURE_OPENAI_BATCH_ENDPOINT", "")
-    AZURE_OPENAI_BATCH_DEPLOYMENT_NAME: str = os.getenv("AZURE_OPENAI_BATCH_DEPLOYMENT_NAME", "gpt-4")
-    
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     API_KEY: str = os.getenv("API_KEY", "")
