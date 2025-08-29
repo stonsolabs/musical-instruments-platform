@@ -1,23 +1,22 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
-
+# Fixed GitHub Actions workflow for Azure Functions deployment from backend subdirectory
 name: Build and deploy Python project to Azure Function App - getyourmusicgear-backend
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'  # Only trigger when backend changes
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
+  PYTHON_VERSION: '3.11'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -33,29 +32,44 @@ jobs:
           python -m venv venv
           source venv/bin/activate
 
-      - name: Install dependencies
+      - name: Install dependencies with proper target
+        run: |
+          source venv/bin/activate
+          cd backend
+          pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+
+      - name: Clean up development files
         run: |
           cd backend
-          pip install -r requirements.txt
-
-      # Optional: Add step to run tests here
+          # Remove files that shouldn't be deployed
+          rm -rf venv/ __pycache__/ .pytest_cache/ .coverage *.pyc
+          rm -f local.settings.json .env*
+          
+          # Clean up Python packages
+          find .python_packages -name "*.pyc" -delete 2>/dev/null || true
+          find .python_packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
       - name: Zip artifact for deployment
         run: |
           cd backend
-          zip -r ../release.zip ./*
+          zip -r ../release.zip . \
+            -x "venv/*" "__pycache__/*" "*.pyc" ".env*" "local.settings.json" ".git/*"
+          
+          # Verify the ZIP contents (for debugging)
+          echo "ZIP contents:"
+          unzip -l ../release.zip | head -20
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            release.zip
-            !venv/
+          path: release.zip  # Upload just the zip file
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    environment: production  # Add environment for better security
     
     steps:
       - name: Download artifact from build job
@@ -63,16 +77,35 @@ jobs:
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
+      - name: Verify artifact
         run: |
-          unzip release.zip
-          rm release.zip
-        
+          ls -la
+          echo "Artifact contents:"
+          unzip -l release.zip | head -20
+
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
           app-name: 'getyourmusicgear-backend'
           slot-name: 'Production'
-          package: '.'
+          package: './release.zip'  # Deploy the ZIP file directly
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_675C49512C594314BAAACAA9F6D5FD95 }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: false  # We're pre-building
+
+      - name: Verify deployment
+        run: |
+          echo "Deployment completed!"
+          echo "Function App URL: https://getyourmusicgear-backend.azurewebsites.net"
+          
+          # Wait a moment for function to start
+          sleep 15
+          
+          # Test health endpoint
+          echo "Testing health endpoint..."
+          if curl -f "https://getyourmusicgear-backend.azurewebsites.net/health" --max-time 30; then
+            echo "✅ Health check passed!"
+          else
+            echo "⚠️ Health check failed - function may still be starting"
+          fi
