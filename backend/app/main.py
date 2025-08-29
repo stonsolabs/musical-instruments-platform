@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import init_db
-from .api import brands, categories, compare, products, redirect, search
+from .api import brands, categories, products, search, trending
 from .auth import verify_api_key, optional_api_key
 
 
@@ -25,8 +25,6 @@ async def on_startup() -> None:
     await init_db()
 
 
-
-
 # Health check endpoint (no API key required)
 @app.get("/health")
 async def health_check():
@@ -36,10 +34,7 @@ async def health_check():
 app.include_router(products.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 app.include_router(categories.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 app.include_router(brands.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(compare.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(redirect.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 app.include_router(search.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-
-# API-only routes - frontend is served by nginx reverse proxy
+app.include_router(trending.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 
 

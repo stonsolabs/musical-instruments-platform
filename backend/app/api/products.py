@@ -6,13 +6,58 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload, joinedload
 
 from ..database import get_db
 from ..models import AffiliateStore, Product, ProductPrice
+from ..services.enhanced_affiliate_service import EnhancedAffiliateService
 
 
 router = APIRouter(prefix="/products", tags=["products"])
+
+
+def get_content_for_display(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
+    """
+    Extract content for display, combining localized content with global fields.
+    Some fields like specifications, store_links, etc. are always in English.
+    """
+    if not content:
+        return {}
+    
+    result = {}
+    
+    # Add global fields that are always in English
+    global_fields = ['specifications', 'store_links', 'warranty_info', 'qa', 'sources', 'dates', 'content_metadata', 'related_products']
+    for field in global_fields:
+        if field in content:
+            result[field] = content[field]
+    
+    # Get localized content
+    localized_content = content.get('localized_content', {})
+    if localized_content:
+        # Try requested language first
+        selected_content = None
+        if language in localized_content:
+            selected_content = localized_content[language]
+        else:
+            # Fallback to English variants
+            english_variants = ['en-GB', 'en-US', 'en']
+            for variant in english_variants:
+                if variant in localized_content:
+                    selected_content = localized_content[variant]
+                    break
+        
+        # If no English found, use first available
+        if not selected_content and localized_content:
+            first_language = next(iter(localized_content.keys()))
+            selected_content = localized_content[first_language]
+        
+        # Merge localized content into result
+        if selected_content:
+            result.update(selected_content)
+            result['_language_used'] = language if language in localized_content else next(iter(localized_content.keys()))
+    
+    return result
 
 
 @router.get("")
@@ -186,6 +231,9 @@ async def search_products(
                 if pr.is_available
             ]
         
+        # Get content for display (combines localized + global fields)
+        display_content = get_content_for_display(p.content or {})
+        
         items.append(
             {
                 "id": p.id,
@@ -198,7 +246,7 @@ async def search_products(
                     "slug": p.category.slug,
                 },
                 "description": p.description,
-                "specifications": p.specifications or {},
+                "specifications": p.content.get('specifications', {}) if p.content else {},
                 "images": p.images or [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price is not None else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating is not None else 0.0,
@@ -215,7 +263,8 @@ async def search_products(
                     else None
                 ),
                 "prices": prices,
-                "ai_content": p.ai_generated_content or {},
+                "ai_content": p.content or {},
+                "content": display_content,
             }
         )
 
@@ -242,11 +291,19 @@ async def search_products(
     }
 
 
+
+
+
 @router.get("/{product_id}")
-async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
+async def get_product(
+    product_id: int, 
+    user_region: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get product with affiliate stores following brand exclusivity and regional rules"""
     stmt = (
         select(Product)
-        .options(joinedload(Product.brand), joinedload(Product.category), joinedload(Product.prices).joinedload(ProductPrice.store))
+        .options(selectinload(Product.brand), selectinload(Product.category), selectinload(Product.prices).selectinload(ProductPrice.store))
         .where(Product.id == product_id)
     )
     result = await db.execute(stmt)
@@ -273,6 +330,16 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
     ]
     best_price = prices[0] if prices else None
 
+    # Get affiliate stores using enhanced service with brand exclusivity rules
+    affiliate_service = EnhancedAffiliateService(db)
+    affiliate_stores = await affiliate_service.get_affiliate_stores_for_product(
+        product=product,
+        user_region=user_region
+    )
+
+    # Get content for display (combines localized + global fields)
+    display_content = get_content_for_display(product.content or {})
+
     return {
         "id": product.id,
         "sku": product.sku,
@@ -285,14 +352,89 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
             "slug": product.category.slug,
         },
         "description": product.description,
-        "specifications": product.specifications or {},
+        "specifications": product.content.get('specifications', {}) if product.content else {},
         "images": product.images or [],
         "msrp_price": float(product.msrp_price) if product.msrp_price is not None else None,
         "avg_rating": float(product.avg_rating) if product.avg_rating is not None else 0.0,
         "review_count": product.review_count,
-        "ai_content": product.ai_generated_content or {},
+        "ai_content": product.content or {},
+        "content": display_content,
         "prices": prices,
         "best_price": best_price,
+        "affiliate_stores": affiliate_stores,
+        "total_affiliate_stores": len(affiliate_stores),
+        "user_region": user_region,
     }
+
+
+@router.post("/{product_id}/affiliate-stores")
+async def get_product_affiliate_stores_with_links(
+    product_id: int,
+    store_links: Dict,
+    user_region: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get affiliate stores for a product with store links and regional preferences"""
+    
+    # Get product with brand relationship
+    product_query = select(Product).options(selectinload(Product.brand)).where(Product.id == product_id)
+    product_result = await db.execute(product_query)
+    product = product_result.scalar_one_or_none()
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Get affiliate stores using enhanced service
+    affiliate_service = EnhancedAffiliateService(db)
+    affiliate_stores = await affiliate_service.get_affiliate_stores_for_product(
+        product=product,
+        user_region=user_region,
+        store_links=store_links
+    )
+    
+    return {
+        "product_id": product_id,
+        "product_name": product.name,
+        "brand": product.brand.name if product.brand else None,
+        "affiliate_stores": affiliate_stores,
+        "total_stores": len(affiliate_stores),
+        "store_links_provided": len(store_links),
+        "user_region": user_region,
+        "message": "Returns stores filtered by brand exclusivity, regional preferences, and store links"
+    }
+
+
+@router.get("/{product_id}/affiliate-urls")
+async def get_product_affiliate_urls(
+    product_id: int,
+    user_region: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get affiliate URLs for a product in all available stores"""
+    
+    # First check if product exists
+    product_query = select(Product).options(selectinload(Product.brand)).where(Product.id == product_id)
+    product_result = await db.execute(product_query)
+    product = product_result.scalar_one_or_none()
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Get affiliate stores for this product using enhanced service
+    affiliate_service = EnhancedAffiliateService(db)
+    affiliate_stores = await affiliate_service.get_affiliate_stores_for_product(
+        product=product,
+        user_region=user_region
+    )
+    
+    return {
+        "product_id": product_id,
+        "product_name": product.name,
+        "affiliate_stores": affiliate_stores,
+        "total_stores": len(affiliate_stores)
+    }
+
+
+
 
 

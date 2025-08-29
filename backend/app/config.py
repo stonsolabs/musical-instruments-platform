@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 from typing import Optional, List
 
 class Settings(BaseSettings):
-    # Database - Ensure asyncpg is used
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/musical_instruments")
+    # Database - Use the same database as batch processing
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/database")
     
     # Fix DATABASE_URL to use asyncpg if it doesn't already
     @property
@@ -18,6 +18,14 @@ class Settings(BaseSettings):
     
     # OpenAI
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    
+    # Azure OpenAI
+    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
+    AZURE_OPENAI_DEPLOYMENT_NAME: str = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4")
+    
+    # Azure OpenAI Batch (for batch processing)
+    AZURE_OPENAI_BATCH_ENDPOINT: str = os.getenv("AZURE_OPENAI_BATCH_ENDPOINT", "")
+    AZURE_OPENAI_BATCH_DEPLOYMENT_NAME: str = os.getenv("AZURE_OPENAI_BATCH_DEPLOYMENT_NAME", "gpt-4")
     
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")

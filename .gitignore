@@ -116,3 +116,16 @@ alembic/versions/*.py
 context/
 scripts/setup_dev_environment.sh
 setup_repo.sh
+.cursor/
+.claude/
+
+# Azure deployment scripts with credentials
+crawler/deploy-azure.sh
+crawler/start-all-replicas.sh
+
+# Local settings with placeholder credentials
+backend/local.settings.json
+
+# Batch processing files (large and contain sensitive data)
+openai/batch_files/
+openai/batch_results/

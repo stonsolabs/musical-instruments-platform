@@ -100,6 +100,19 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Redirect www to non-www (canonical domain)
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.getyourmusicgear.com',
+          },
+        ],
+        destination: 'https://getyourmusicgear.com/:path*',
+        permanent: true,
+      },
+      // Existing redirects
       {
         source: '/deals',
         destination: '/products',
