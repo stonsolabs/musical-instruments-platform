@@ -17,9 +17,10 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 python-slugify==8.0.1
 requests==2.31.0
-azure-functions==1.18.0
-azure-functions-worker==1.0.0
+# Azure Functions - minimal setup to avoid grpcio compilation issues
+azure-functions==1.17.0
 azure-storage-blob==12.19.0
 azure-identity==1.15.0
-# Let azure-functions-worker manage grpcio version to avoid conflicts
-# grpcio will be installed as ~1.20.1 by azure-functions-worker
+
+# Alternative: Skip Azure Functions worker for now and use simple HTTP hosting
+# The function_app.py can still work with just azure-functions package
