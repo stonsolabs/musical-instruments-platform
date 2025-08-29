@@ -51,11 +51,36 @@ rsync -av --exclude='venv/' \
           --exclude='.pytest_cache/' \
           --exclude='*.pyc' \
           --exclude='.coverage' \
-          --exclude='local.settings.json' \
           --exclude='.env*' \
           --exclude='deployment/' \
           --exclude='.git' \
           ./ deployment/
+
+# Create a deployment-specific local.settings.json if it doesn't exist
+echo "⚙️  Creating deployment configuration..."
+if [[ ! -f "deployment/local.settings.json" ]]; then
+    cat > deployment/local.settings.json << EOF
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "DATABASE_URL": "postgresql://getyourmusicgear:arg-KDP8cjy.czu2zdv@getyourmusicgear-db.postgres.database.azure.com:5432/getyourmusicgear",
+    "API_KEY": "your-api-key-here",
+    "OPENAI_API_KEY": "",
+    "AZURE_OPENAI_ENDPOINT": "",
+    "AZURE_OPENAI_DEPLOYMENT_NAME": "gpt-4.1",
+    "ENVIRONMENT": "production",
+    "PROJECT_NAME": "getyourmusicgear",
+    "SECRET_KEY": "your-secret-key-here",
+    "DEBUG": "false",
+    "FRONTEND_URL": "https://getyourmusicgear.com",
+    "BACKEND_URL": "https://$FUNCTION_APP_NAME.azurewebsites.net",
+    "DOMAIN": "getyourmusicgear.com"
+  }
+}
+EOF
+fi
 
 # Install dependencies in deployment directory
 echo "📥 Installing Python dependencies..."
