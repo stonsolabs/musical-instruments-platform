@@ -4,7 +4,7 @@ from typing import Optional, List
 
 class Settings(BaseSettings):
     # Database - Use the same database as batch processing
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://getyourmusicgear:arg-KDP8cjy.czu2zdv@getyourmusicgear-db.postgres.database.azure.com:5432/getyourmusicgear")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/database")
     
     # Fix DATABASE_URL to use asyncpg if it doesn't already
     @property
