@@ -32,6 +32,7 @@ async def process_all_batch_results() -> None:
     total_success = 0
     total_errors = 0
     total_processed = 0
+    error_details = []  # Store detailed error information
     
     for i, results_file in enumerate(result_files, 1):
         print(f"\n📁 Processing file {i}/{len(result_files)}: {results_file.name}")
@@ -69,14 +70,35 @@ async def process_all_batch_results() -> None:
                             success_count += 1
                         else:
                             error_count += 1
+                            error_details.append({
+                                'file': results_file.name,
+                                'line': j,
+                                'custom_id': custom_id,
+                                'error_type': 'parse_failure',
+                                'error': 'Parser returned False'
+                            })
                     else:
                         error_count += 1
                         error_msg = result.get('error', 'Unknown error')
+                        error_details.append({
+                            'file': results_file.name,
+                            'line': j,
+                            'custom_id': custom_id,
+                            'error_type': 'azure_error',
+                            'error': error_msg
+                        })
                         if j % 100 == 0:  # Progress indicator every 100 items
                             print(f"    Skipping {j}/{len(results_lines)}: {custom_id} - Error: {error_msg}")
                         
                 except Exception as e:
                     error_count += 1
+                    error_details.append({
+                        'file': results_file.name,
+                        'line': j,
+                        'custom_id': custom_id,
+                        'error_type': 'exception',
+                        'error': str(e)
+                    })
                     if j % 100 == 0:  # Progress indicator every 100 items
                         print(f"    ❌ Error processing result {j}: {str(e)}")
             
@@ -98,6 +120,33 @@ async def process_all_batch_results() -> None:
     print(f"  ❌ Total Errors: {total_errors}")
     print(f"  📊 Total Processed: {total_processed}")
     print(f"  📈 Success Rate: {(total_success/total_processed*100):.1f}%" if total_processed > 0 else "  📈 Success Rate: 0%")
+    
+    # Display error details
+    if error_details:
+        print(f"\n🔍 Error Details ({len(error_details)} errors):")
+        print("=" * 80)
+        
+        # Group errors by type
+        error_types = {}
+        for error in error_details:
+            error_type = error['error_type']
+            if error_type not in error_types:
+                error_types[error_type] = []
+            error_types[error_type].append(error)
+        
+        for error_type, errors in error_types.items():
+            print(f"\n📋 {error_type.upper()} Errors ({len(errors)}):")
+            for error in errors[:5]:  # Show first 5 of each type
+                print(f"  • {error['custom_id']} (Line {error['line']} in {error['file']})")
+                print(f"    Error: {error['error']}")
+            if len(errors) > 5:
+                print(f"  ... and {len(errors) - 5} more {error_type} errors")
+        
+        # Save detailed error log to file
+        error_log_file = "batch_processing_errors.json"
+        with open(error_log_file, 'w') as f:
+            json.dump(error_details, f, indent=2)
+        print(f"\n📄 Detailed error log saved to: {error_log_file}")
 
 
 def main():
