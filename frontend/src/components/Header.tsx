@@ -29,17 +29,15 @@ export function Header() {
           {/* Desktop Navigation - Optimized for better fit */}
           <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
             <div className="flex items-center space-x-2 xl:space-x-3 flex-nowrap overflow-hidden">
-              <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Acoustic</Link>
+              <Link href="/products?category=guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Guitars</Link>
               <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Electric</Link>
+              <Link href="/products?category=acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Acoustic</Link>
               <Link href="/products?category=bass-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Bass</Link>
               <Link href="/products?category=drums-percussion" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Drums</Link>
-              <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Pianos</Link>
+              <Link href="/products?category=pianos-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Keyboards</Link>
               <Link href="/products?category=orchestral" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Orchestral</Link>
-              <Link href="/products?category=live-sound-lighting" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Live Sound</Link>
               <Link href="/products?category=studio-production" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
-              <Link href="/products?category=music-software" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Software</Link>
               <Link href="/products?category=dj-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">DJ</Link>
-              <Link href="/products?category=home-audio" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Audio</Link>
             </div>
           </nav>
 
@@ -62,17 +60,15 @@ export function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-300 animate-slide-up">
           <div className="px-4 pt-4 pb-3 space-y-2">
-            <Link href="/products?category=acoustic-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
+            <Link href="/products?category=guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">All Guitars</Link>
             <Link href="/products?category=electric-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Electric Guitars</Link>
+            <Link href="/products?category=acoustic-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
             <Link href="/products?category=bass-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Bass Guitars</Link>
             <Link href="/products?category=drums-percussion" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Drums & Percussion</Link>
             <Link href="/products?category=pianos-keyboards" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Pianos & Keyboards</Link>
             <Link href="/products?category=orchestral" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Orchestral</Link>
-            <Link href="/products?category=live-sound-lighting" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Live Sound & Lighting</Link>
             <Link href="/products?category=studio-production" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Studio & Production</Link>
-            <Link href="/products?category=music-software" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Music Software</Link>
             <Link href="/products?category=dj-equipment" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">DJ Equipment</Link>
-            <Link href="/products?category=home-audio" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Home Audio</Link>
           </div>
         </div>
       )}

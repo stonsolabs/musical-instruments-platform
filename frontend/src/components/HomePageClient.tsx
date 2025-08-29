@@ -110,7 +110,7 @@ export default function HomePageClient() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white hero-content" aria-labelledby="hero-heading">
+      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white hero-content" aria-labelledby="hero-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
@@ -121,7 +121,7 @@ export default function HomePageClient() {
               <p className="text-2xl md:text-3xl font-semibold mb-4">
                 Expert Reviews, Detailed Comparisons, and Trusted Recommendations
               </p>
-              <p className="text-xl text-primary-200 mb-8">
+              <p className="text-xl text-gray-200 mb-8">
                 Discover the ideal instrument for your musical journey with comprehensive reviews, detailed specifications, and expert guidance from trusted music retailers worldwide
               </p>
             </div>
@@ -169,7 +169,7 @@ export default function HomePageClient() {
 
               <button
                 onClick={handleCompare}
-                className="w-full mt-6 bg-primary-800 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
+                className="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
               >
                 Compare {selectedProducts.filter(product => product !== null).length} Instrument{selectedProducts.filter(product => product !== null).length !== 1 ? 's' : ''}
               </button>
@@ -179,12 +179,12 @@ export default function HomePageClient() {
       </section>
 
       {/* Ad Space - Top Banner */}
-      <section className="py-6 bg-primary-50">
+      <section className="py-6 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-accent-400 to-accent-600 rounded-lg p-6 text-white text-center">
+          <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Special Offer!</h3>
             <p className="mb-4">Get 15% off on all Fender guitars this month</p>
-            <button className="bg-white text-accent-600 px-6 py-2 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
+            <button className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
               Shop Now
             </button>
           </div>
@@ -194,25 +194,25 @@ export default function HomePageClient() {
       {/* Popular Instruments Right Now */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Trending Musical Instruments</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Trending Musical Instruments</h2>
           
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 animate-pulse">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-primary-200 rounded mb-2"></div>
-                  <div className="h-6 bg-primary-200 rounded mb-2"></div>
-                  <div className="h-4 bg-primary-200 rounded"></div>
+                <div key={i} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularProducts.map((product, index) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
+                <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <Image 
                           src={product.images[0]} 
@@ -225,21 +225,21 @@ export default function HomePageClient() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                          <span className="text-gray-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                         </div>
                       )}
                     </div>
                   </Link>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
-                    <span className="text-sm text-primary-500">1000+ watching</span>
+                    <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
+                    <span className="text-sm text-gray-500">1000+ watching</span>
                   </div>
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>
                   </Link>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-warning-500">★</span>
+                      <span className="text-yellow-500">★</span>
                       <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
                     </div>
                   </div>
@@ -300,7 +300,7 @@ export default function HomePageClient() {
                         {product.prices.length > 2 && (
                           <Link 
                             href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
+                            className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
                           >
                             View All {product.prices.length} Stores
                           </Link>
@@ -337,32 +337,32 @@ export default function HomePageClient() {
       </section>
 
       {/* Popular Comparisons */}
-      <section className="py-16 bg-primary-50">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Popular Instrument Comparisons</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Popular Instrument Comparisons</h2>
           
           <div className="grid md:grid-cols-3 gap-6">
             {popularComparisons.map((comparison, index) => (
               <Link
                 key={index}
                 href={`/compare?products=${comparison.products}`}
-                className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg transition-all"
+                className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center relative overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
                   <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold text-accent-600 uppercase tracking-wide">{comparison.category}</span>
+                    <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">{comparison.category}</span>
                   </div>
-                  <h3 className="font-semibold text-primary-900 mb-2 group-hover:text-accent-600 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
                     {comparison.title}
                   </h3>
-                  <p className="text-primary-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     {comparison.description}
                   </p>
-                  <div className="flex items-center text-accent-600 font-medium group-hover:text-accent-700">
+                  <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
                     Compare Now
                     <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -378,10 +378,10 @@ export default function HomePageClient() {
       {/* Ad Space - Middle Banner */}
       <section className="py-6 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-success-400 to-primary-500 rounded-lg p-6 text-white text-center">
+          <div className="bg-gradient-to-r from-green-400 to-gray-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
             <p className="mb-4">Free shipping on orders over €199</p>
-            <button className="bg-white text-success-600 px-6 py-2 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
+            <button className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
               Learn More
             </button>
           </div>
@@ -391,13 +391,13 @@ export default function HomePageClient() {
       {/* Top Rated Instruments */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Highest Rated Instruments</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Highest Rated Instruments</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
+              <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
                     {product.images && product.images.length > 0 ? (
                       <Image 
                         src={product.images[0]} 

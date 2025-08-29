@@ -1,0 +1,51 @@
+[
+  {
+    "file": "file-ccb60f53-86c7-4c6f-b72b-e58836d9b23f.jsonl",
+    "line": 318,
+    "custom_id": "audio_technica_at_lp140xp_silver.htm",
+    "error_type": "parse_failure",
+    "error": "Parser returned False"
+  },
+  {
+    "file": "file-ccb60f53-86c7-4c6f-b72b-e58836d9b23f.jsonl",
+    "line": 330,
+    "custom_id": "audio_technica_at_lp140xp_black.htm",
+    "error_type": "parse_failure",
+    "error": "Parser returned False"
+  },
+  {
+    "file": "file-ccb60f53-86c7-4c6f-b72b-e58836d9b23f.jsonl",
+    "line": 976,
+    "custom_id": "roland_v_stage_76.htm",
+    "error_type": "exception",
+    "error": "Unterminated string starting at: line 209 column 7 (char 16892)"
+  },
+  {
+    "file": "file-727c5477-fefa-4bde-ab80-2244ad6df35d.jsonl",
+    "line": 1,
+    "custom_id": "nux_ntk_37.htm",
+    "error_type": "parse_failure",
+    "error": "Parser returned False"
+  },
+  {
+    "file": "file-727c5477-fefa-4bde-ab80-2244ad6df35d.jsonl",
+    "line": 193,
+    "custom_id": "clavia_nord_electro_6d_73.htm",
+    "error_type": "exception",
+    "error": "Unterminated string starting at: line 172 column 17 (char 16158)"
+  },
+  {
+    "file": "file-727c5477-fefa-4bde-ab80-2244ad6df35d.jsonl",
+    "line": 313,
+    "custom_id": "nux_ntk_61.htm",
+    "error_type": "parse_failure",
+    "error": "Parser returned False"
+  },
+  {
+    "file": "file-727c5477-fefa-4bde-ab80-2244ad6df35d.jsonl",
+    "line": 314,
+    "custom_id": "nux_ntk_49.htm",
+    "error_type": "parse_failure",
+    "error": "Parser returned False"
+  }
+]
