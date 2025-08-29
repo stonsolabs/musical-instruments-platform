@@ -39,14 +39,28 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
+      - name: Create deployment configuration
+        run: |
+          cd backend
+          # Create a deployment-specific local.settings.json with minimal config
+          cat > local.settings.json << EOF
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python"
+  }
+}
+EOF
+
       - name: Clean up development files
         run: |
           cd backend
           # Remove files that shouldn't be deployed
           rm -rf venv/ __pycache__/ .pytest_cache/ .coverage *.pyc
-          rm -f local.settings.json .env*
+          rm -f .env*
           
-          # Clean up Python packages
+          # Clean up Python packages.
           find .python_packages -name "*.pyc" -delete 2>/dev/null || true
           find .python_packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
@@ -54,7 +68,7 @@ jobs:
         run: |
           cd backend
           zip -r ../release.zip . \
-            -x "venv/*" "__pycache__/*" "*.pyc" ".env*" "local.settings.json" ".git/*"
+            -x "venv/*" "__pycache__/*" "*.pyc" ".env*" ".git/*"
           
           # Verify the ZIP contents (for debugging)
           echo "ZIP contents:"
