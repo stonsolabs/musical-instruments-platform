@@ -145,7 +145,7 @@ export default function HomePageClient() {
                       {selectedProducts.length > 1 && (
                         <button
                           onClick={() => removeSearchField(index)}
-                          className="w-8 h-8 rounded-full bg-error-500 text-white flex items-center justify-center hover:bg-error-600 transition-colors"
+                          className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
                         >
                           ×
                         </button>
@@ -410,26 +410,26 @@ export default function HomePageClient() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                        <span className="text-gray-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                       </div>
                     )}
                   </div>
                 </Link>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
+                  <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
                   <div className="flex items-center gap-1">
-                    <span className="text-warning-500">★★★★★</span>
+                    <span className="text-yellow-500">★★★★★</span>
                     <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.8'}</span>
                   </div>
                 </div>
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <h3 className="font-semibold text-primary-900 mb-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>
                 </Link>
-                <p className="text-primary-600 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                   {product.description || "Exceptional quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-500">({product.review_count || 150} reviews)</span>
+                  <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
                 </div>
                 <div className="space-y-2 mt-4">
                   {product.prices && product.prices.length > 0 ? (

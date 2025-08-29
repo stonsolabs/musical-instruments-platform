@@ -21,6 +21,5 @@ azure-functions==1.18.0
 azure-functions-worker==1.0.0
 azure-storage-blob==12.19.0
 azure-identity==1.15.0
-# Use specific versions to avoid grpcio build issues
-grpcio==1.60.1
-grpcio-tools==1.60.1
+# Let azure-functions-worker manage grpcio version to avoid conflicts
+# grpcio will be installed as ~1.20.1 by azure-functions-worker
