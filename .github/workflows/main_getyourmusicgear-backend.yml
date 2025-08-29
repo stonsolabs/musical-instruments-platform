@@ -43,7 +43,7 @@ jobs:
         run: |
           cd backend
           # Create a deployment-specific local.settings.json with minimal config
-          cat > local.settings.json << EOF
+          cat > local.settings.json << 'EOF'
 {
   "IsEncrypted": false,
   "Values": {
