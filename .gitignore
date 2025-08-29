@@ -116,3 +116,5 @@ alembic/versions/*.py
 context/
 scripts/setup_dev_environment.sh
 setup_repo.sh
+.cursor/
+.claude/

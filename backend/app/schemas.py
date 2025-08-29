@@ -47,8 +47,7 @@ class ProductBase(BaseModel):
     brand_id: int
     category_id: int
     description: Optional[str] = None
-    specifications: Dict[str, Any] = {}
-    images: List[str] = []
+    images: Dict[str, Any] = {}  # Universal images (separate for search)
     msrp_price: Optional[Decimal] = None
 
 
@@ -63,7 +62,7 @@ class ProductResponse(ProductBase):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    ai_generated_content: Dict[str, Any] = {}
+    content: Dict[str, Any] = {}  # All AI-generated content (locales, models, artists, etc.)
 
     class Config:
         from_attributes = True

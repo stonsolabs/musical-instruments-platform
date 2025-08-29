@@ -119,15 +119,30 @@ export async function generateMetadata({ searchParams }: {
     description = `Browse ${brand} products. Compare models and find the best prices.`;
   }
 
+  // Build canonical URL based on search params
+  let canonicalUrl = 'https://getyourmusicgear.com/products';
+  const params = new URLSearchParams();
+  
+  if (query) params.append('query', query);
+  if (category) params.append('category', category);
+  if (brand) params.append('brand', brand);
+  
+  if (params.toString()) {
+    canonicalUrl += `?${params.toString()}`;
+  }
+
   return {
     title,
     description,
     keywords: `musical instruments, ${query || category || brand || 'guitars, pianos, drums'}, music equipment, buy instruments online`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: 'https://getyourmusicgear.com/products',
+      url: canonicalUrl,
     },
     twitter: {
       card: 'summary',

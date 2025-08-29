@@ -1,0 +1,22 @@
+*.js.map
+*.ts
+.git/
+.gitignore
+.DS_Store
+.vscode/
+__pycache__/
+*.pyc
+.env
+local.settings.json
+.azure/
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Keep these for Azure Functions
+!host.json
+!function_app.py
+!requirements.txt
