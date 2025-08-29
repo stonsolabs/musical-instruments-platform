@@ -1,48 +1,92 @@
-# Fixed GitHub Actions workflow for Azure Functions deployment from backend subdirectory
-name: Build and deploy Python project to Azure Function App - getyourmusicgear-backend
+# Enhanced GitHub Actions workflow for Azure Functions deployment
+name: Deploy Backend to Azure Functions
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'backend/**'  # Only trigger when backend changes
+      - 'backend/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
   workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.11'
+  FUNCTION_APP_NAME: 'getyourmusicgear-backend'
+  RESOURCE_GROUP: 'your-resource-group'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
+    if: github.event_name == 'pull_request'
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python version
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-      - name: Install dependencies with proper target
+      - name: Install dependencies
         run: |
-          source venv/bin/activate
           cd backend
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          cd backend
+          python -m pytest tests/ -v --tb=short
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    outputs:
+      artifact-name: ${{ steps.set-output.outputs.artifact-name }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       - name: Create deployment configuration
         run: |
           cd backend
-          # Create a deployment-specific local.settings.json with minimal config
           cat > local.settings.json << 'EOF'
 {
   "IsEncrypted": false,
@@ -56,70 +100,117 @@ EOF
       - name: Clean up development files
         run: |
           cd backend
-          # Remove files that shouldn't be deployed
-          rm -rf venv/ __pycache__/ .pytest_cache/ .coverage *.pyc
-          rm -f .env*
+          # Remove development files
+          find . -name "*.pyc" -delete
+          find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+          find . -name ".pytest_cache" -type d -exec rm -rf {} + 2>/dev/null || true
+          find . -name ".coverage" -delete
+          find . -name ".env*" -delete
+          find . -name "venv" -type d -exec rm -rf {} + 2>/dev/null || true
           
-          # Clean up Python packages.
+          # Clean up Python packages
           find .python_packages -name "*.pyc" -delete 2>/dev/null || true
           find .python_packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Zip artifact for deployment
+      - name: Create deployment package
+        id: set-output
         run: |
           cd backend
-          zip -r ../release.zip . \
-            -x "venv/*" "__pycache__/*" "*.pyc" ".env*" ".git/*"
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          ARTIFACT_NAME="backend-deploy-${TIMESTAMP}-${COMMIT_SHA}.zip"
           
-          # Verify the ZIP contents (for debugging)
-          echo "ZIP contents:"
-          unzip -l ../release.zip | head -20
+          zip -r "../${ARTIFACT_NAME}" . \
+            -x "venv/*" "__pycache__/*" "*.pyc" ".env*" ".git/*" ".pytest_cache/*" ".coverage" "tests/*"
+          
+          echo "artifact-name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+          
+          # Verify package contents
+          echo "📦 Package contents:"
+          unzip -l "../${ARTIFACT_NAME}" | head -15
+          echo "📊 Package size: $(du -h "../${ARTIFACT_NAME}" | cut -f1)"
 
-      - name: Upload artifact for deployment job
+      - name: Upload deployment package
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
-          path: release.zip  # Upload just the zip file
+          name: ${{ steps.set-output.outputs.artifact-name }}
+          path: ${{ steps.set-output.outputs.artifact-name }}
+          retention-days: 7
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: production  # Add environment for better security
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    environment: 
+      name: production
+      url: https://${{ env.FUNCTION_APP_NAME }}.azurewebsites.net
     
     steps:
-      - name: Download artifact from build job
+      - name: Download deployment package
         uses: actions/download-artifact@v4
         with:
-          name: python-app
+          name: ${{ needs.build.outputs.artifact-name }}
 
-      - name: Verify artifact
+      - name: Verify deployment package
         run: |
+          echo "📦 Verifying deployment package..."
           ls -la
-          echo "Artifact contents:"
-          unzip -l release.zip | head -20
+          echo "📋 Package contents:"
+          unzip -l *.zip | head -10
+          echo "📊 Package size: $(du -h *.zip | cut -f1)"
 
-      - name: 'Deploy to Azure Functions'
+      - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
-        id: deploy-to-function
+        id: deploy
         with:
-          app-name: 'getyourmusicgear-backend'
+          app-name: ${{ env.FUNCTION_APP_NAME }}
           slot-name: 'Production'
-          package: './release.zip'  # Deploy the ZIP file directly
+          package: './*.zip'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_675C49512C594314BAAACAA9F6D5FD95 }}
-          scm-do-build-during-deployment: true
-          enable-oryx-build: false  # We're pre-building
+          scm-do-build-during-deployment: false
+          enable-oryx-build: false
 
-      - name: Verify deployment
+      - name: Wait for function to start
         run: |
-          echo "Deployment completed!"
-          echo "Function App URL: https://getyourmusicgear-backend.azurewebsites.net"
+          echo "⏳ Waiting for function to start..."
+          sleep 30
+
+      - name: Health check
+        run: |
+          echo "🏥 Performing health check..."
+          MAX_RETRIES=5
+          RETRY_DELAY=10
           
-          # Wait a moment for function to start
-          sleep 15
-          
-          # Test health endpoint
-          echo "Testing health endpoint..."
-          if curl -f "https://getyourmusicgear-backend.azurewebsites.net/health" --max-time 30; then
-            echo "✅ Health check passed!"
-          else
-            echo "⚠️ Health check failed - function may still be starting"
-          fi
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES"
+            if curl -f "https://${{ env.FUNCTION_APP_NAME }}.azurewebsites.net/health" \
+                     --max-time 30 \
+                     --retry 3 \
+                     --retry-delay 2 \
+                     --silent --show-error; then
+              echo "✅ Health check passed!"
+              break
+            else
+              echo "⚠️ Health check failed (attempt $i)"
+              if [ $i -lt $MAX_RETRIES ]; then
+                echo "⏳ Retrying in $RETRY_DELAY seconds..."
+                sleep $RETRY_DELAY
+              else
+                echo "❌ Health check failed after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "🎉 Deployment Summary"
+          echo "===================="
+          echo "Function App: ${{ env.FUNCTION_APP_NAME }}"
+          echo "Environment: production"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Deployment URL: https://${{ env.FUNCTION_APP_NAME }}.azurewebsites.net"
+          echo "Health Check: https://${{ env.FUNCTION_APP_NAME }}.azurewebsites.net/health"
