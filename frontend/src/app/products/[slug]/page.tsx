@@ -344,7 +344,7 @@ export default function ProductDetailPage() {
                     <span className="text-sm text-primary-600">Build Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-primary-200 rounded-full h-2">
-                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.build_quality || '0') || 0) * 10}%` }}></div>
+                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.build_quality) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
                     </div>
@@ -353,7 +353,7 @@ export default function ProductDetailPage() {
                     <span className="text-sm text-primary-600">Sound Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-primary-200 rounded-full h-2">
-                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.sound_quality || '0') || 0) * 10}%` }}></div>
+                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.sound_quality) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
                     </div>
@@ -362,7 +362,7 @@ export default function ProductDetailPage() {
                     <span className="text-sm text-primary-600">Value for Money</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-primary-200 rounded-full h-2">
-                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(parseFloat(product.ai_content?.professional_assessment.expert_rating.value_for_money || '0') || 0) * 10}%` }}></div>
+                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.value_for_money) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium text-primary-900">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
                     </div>

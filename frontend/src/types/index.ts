@@ -120,10 +120,10 @@ export interface MaintenanceCare {
 }
 
 export interface ExpertRating {
-  build_quality: string;
-  sound_quality: string;
-  value_for_money: string;
-  versatility: string;
+  build_quality: number | string;
+  sound_quality: number | string;
+  value_for_money: number | string;
+  versatility: number | string;
 }
 
 export interface ProfessionalAssessment {
@@ -237,6 +237,89 @@ export interface SearchAutocompleteResponse {
   query: string;
   results: SearchAutocompleteProduct[];
   total: number;
+}
+
+// New interfaces for enhanced backend features
+
+export interface AffiliateStore {
+  id: number;
+  name: string;
+  slug: string;
+  website_url: string;
+  logo_url?: string;
+  description?: string;
+  has_affiliate_program: boolean;
+  affiliate_base_url?: string;
+  affiliate_id?: string;
+  domain_affiliate_ids?: Record<string, string>;
+  available_regions: string[];
+  primary_region: string;
+  regional_priority?: Record<string, number>;
+  use_store_fallback: boolean;
+  store_fallback_url?: string;
+  priority: number;
+  show_affiliate_buttons: boolean;
+  is_active: boolean;
+}
+
+export interface TrendingProduct {
+  id: number;
+  name: string;
+  slug: string;
+  brand: Brand;
+  category: Category;
+  images: string[];
+  best_price?: ProductPrice;
+  prices?: ProductPrice[];
+  avg_rating: number;
+  review_count: number;
+  view_count: number;
+  comparison_count: number;
+  trending_score: number;
+}
+
+export interface TrendingResponse {
+  products: TrendingProduct[];
+  total: number;
+  period: string;
+  generated_at: string;
+}
+
+export interface TrendingComparison {
+  products: Product[];
+  comparison_count: number;
+  last_compared: string;
+}
+
+export interface TrendingComparisonsResponse {
+  comparisons: TrendingComparison[];
+  total: number;
+  period: string;
+  generated_at: string;
+}
+
+export interface AffiliateStoreWithUrl extends AffiliateStore {
+  affiliate_url: string;
+  is_exclusive: boolean;
+  regional_score: number;
+}
+
+export interface ProductAffiliateStoresResponse {
+  product_id: number;
+  stores: AffiliateStoreWithUrl[];
+  user_region: string;
+  total_stores: number;
+}
+
+export interface ProductAffiliateUrlsResponse {
+  product_id: number;
+  affiliate_urls: Array<{
+    store: AffiliateStore;
+    affiliate_url: string;
+    is_exclusive: boolean;
+    regional_score: number;
+  }>;
+  user_region: string;
 }
 
 
