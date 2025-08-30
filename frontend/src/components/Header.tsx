@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   return (
     <header className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
@@ -29,34 +30,54 @@ export function Header() {
           {/* Desktop Navigation - Optimized for better fit */}
           <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
             <div className="flex items-center space-x-2 xl:space-x-3 flex-nowrap overflow-hidden">
-              <div className="relative group">
-                <button className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center">
+              <div className="relative">
+                <button 
+                  className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center"
+                  onMouseEnter={() => setActiveDropdown('guitars')}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
                   Guitars
                   <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <Link href="/products?category=acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Acoustic</Link>
-                  <Link href="/products?category=electric-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electric</Link>
-                </div>
+                {activeDropdown === 'guitars' && (
+                  <div 
+                    className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                    onMouseEnter={() => setActiveDropdown('guitars')}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    <Link href="/products?category=acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Acoustic</Link>
+                    <Link href="/products?category=electric-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electric</Link>
+                  </div>
+                )}
               </div>
               <Link href="/products?category=electric-basses" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Bass</Link>
-              <div className="relative group">
-                <button className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center">
+              <div className="relative">
+                <button 
+                  className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center"
+                  onMouseEnter={() => setActiveDropdown('keys')}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
                   Keys
                   <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <Link href="/products?category=digital-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Digital Pianos</Link>
-                  <Link href="/products?category=stage-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Stage Pianos</Link>
-                  <Link href="/products?category=home-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Keyboards</Link>
-                  <Link href="/products?category=synthesizer-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Synthesizers</Link>
-                  <Link href="/products?category=workstations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Workstations</Link>
-                  <Link href="/products?category=midi-master-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">MIDI Controllers</Link>
-                </div>
+                {activeDropdown === 'keys' && (
+                  <div 
+                    className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                    onMouseEnter={() => setActiveDropdown('keys')}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    <Link href="/products?category=digital-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Digital Pianos</Link>
+                    <Link href="/products?category=stage-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Stage Pianos</Link>
+                    <Link href="/products?category=home-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Keyboards</Link>
+                    <Link href="/products?category=synthesizer-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Synthesizers</Link>
+                    <Link href="/products?category=workstations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Workstations</Link>
+                    <Link href="/products?category=midi-master-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">MIDI Controllers</Link>
+                  </div>
+                )}
               </div>
               <Link href="/products?category=turntables" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">DJ</Link>
               <Link href="/products?category=studio-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
