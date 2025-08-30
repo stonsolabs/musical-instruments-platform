@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://getyourmusicgear.com'),
   alternates: {
-    canonical: 'https://getyourmusicgear.com',
+    canonical: '/',
   },
   openGraph: {
     title: 'Compare Musical Instruments - Find Your Perfect Instrument',

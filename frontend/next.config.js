@@ -85,12 +85,21 @@ const nextConfig = {
   // Generate source maps for better debugging
   productionBrowserSourceMaps: false,
 
-  // Removed circular rewrites that were causing redirect loops
-  // sitemap.xml and robots.txt are handled by route handlers
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemap.xml',
+      },
+      {
+        source: '/robots.txt',
+        destination: '/robots.txt',
+      },
+    ];
+  },
 
   async redirects() {
     return [
-      // Existing redirects
       {
         source: '/deals',
         destination: '/products',

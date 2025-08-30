@@ -15,9 +15,6 @@ Disallow: /private/
 # Allow important pages
 Allow: /api/sitemap
 
-# Canonical domain
-Host: ${baseUrl}
-
 # Sitemap
 Sitemap: ${baseUrl}/sitemap.xml
 
