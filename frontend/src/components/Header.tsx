@@ -29,14 +29,37 @@ export function Header() {
           {/* Desktop Navigation - Optimized for better fit */}
           <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
             <div className="flex items-center space-x-2 xl:space-x-3 flex-nowrap overflow-hidden">
-              <Link href="/products?category=steel-string-acoustic-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Acoustic</Link>
-              <Link href="/products?category=electric-guitars" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Electric</Link>
+              <div className="relative group">
+                <button className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center">
+                  Guitars
+                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <Link href="/products?category=acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Acoustic</Link>
+                  <Link href="/products?category=electric-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electric</Link>
+                </div>
+              </div>
               <Link href="/products?category=electric-basses" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Bass</Link>
-              <Link href="/products?category=digital-pianos" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Pianos</Link>
-              <Link href="/products?category=home-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Keyboards</Link>
-              <Link href="/products?category=synthesizer-keyboards" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Synths</Link>
-              <Link href="/products?category=studio-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
+              <div className="relative group">
+                <button className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center">
+                  Keys
+                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <Link href="/products?category=digital-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Digital Pianos</Link>
+                  <Link href="/products?category=stage-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Stage Pianos</Link>
+                  <Link href="/products?category=home-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Keyboards</Link>
+                  <Link href="/products?category=synthesizer-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Synthesizers</Link>
+                  <Link href="/products?category=workstations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Workstations</Link>
+                  <Link href="/products?category=midi-master-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">MIDI Controllers</Link>
+                </div>
+              </div>
               <Link href="/products?category=turntables" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">DJ</Link>
+              <Link href="/products?category=studio-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
               <Link href="/products?category=accessories" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Accessories</Link>
             </div>
           </nav>
@@ -60,16 +83,23 @@ export function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-300 animate-slide-up">
           <div className="px-4 pt-4 pb-3 space-y-2">
-            <Link href="/products?category=steel-string-acoustic-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
-            <Link href="/products?category=electric-guitars" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Electric Guitars</Link>
-            <Link href="/products?category=electric-basses" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Bass Guitars</Link>
-            <Link href="/products?category=digital-pianos" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Digital Pianos</Link>
-            <Link href="/products?category=home-keyboards" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Home Keyboards</Link>
-            <Link href="/products?category=synthesizer-keyboards" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Synthesizers</Link>
-            <Link href="/products?category=stage-pianos" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Stage Pianos</Link>
-            <Link href="/products?category=studio-equipment" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Studio Equipment</Link>
-            <Link href="/products?category=turntables" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Turntables</Link>
-            <Link href="/products?category=accessories" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Accessories</Link>
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-1">Guitars</div>
+            <Link href="/products?category=acoustic-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic</Link>
+            <Link href="/products?category=electric-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Electric</Link>
+            
+            <Link href="/products?category=electric-basses" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Bass</Link>
+            
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-1 mt-3">Keys</div>
+            <Link href="/products?category=digital-pianos" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Digital Pianos</Link>
+            <Link href="/products?category=stage-pianos" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Stage Pianos</Link>
+            <Link href="/products?category=home-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Keyboards</Link>
+            <Link href="/products?category=synthesizer-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Synthesizers</Link>
+            <Link href="/products?category=workstations" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Workstations</Link>
+            <Link href="/products?category=midi-master-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">MIDI Controllers</Link>
+            
+            <Link href="/products?category=turntables" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">DJ</Link>
+            <Link href="/products?category=studio-equipment" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Studio</Link>
+            <Link href="/products?category=accessories" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Accessories</Link>
           </div>
         </div>
       )}
