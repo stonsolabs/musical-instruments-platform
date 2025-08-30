@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamicImport from 'next/dynamic';
-import { Product, SearchAutocompleteProduct } from '@/types';
+import { Product, SearchAutocompleteProduct, TrendingProduct, TrendingComparison } from '@/types';
 import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
 
 // Lazy load heavy components
@@ -20,27 +20,32 @@ import { apiClient } from '@/lib/api';
 
 export default function HomePageClient() {
   const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
-  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+  const [trendingProducts, setTrendingProducts] = useState<TrendingProduct[]>([]);
+  const [trendingComparisons, setTrendingComparisons] = useState<TrendingComparison[]>([]);
   const [topRatedProducts, setTopRatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load popular and top-rated products
+  // Load trending products, comparisons, and top-rated products
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        console.log('🔍 Loading popular and top-rated products...');
-        const [popular, topRated] = await Promise.all([
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
+        console.log('🔍 Loading trending and top-rated products...');
+        const [trending, trendingComps, topRated] = await Promise.all([
+          apiClient.getTrendingInstruments(6).catch(() => ({ products: [] })),
+          apiClient.getTrendingComparisons(4).catch(() => ({ comparisons: [] })),
+          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' }).catch(() => ({ products: [] }))
         ]);
-        console.log('📊 Popular products loaded:', popular.products?.length || 0);
+        console.log('📊 Trending products loaded:', trending.products?.length || 0);
+        console.log('📊 Trending comparisons loaded:', trendingComps.comparisons?.length || 0);
         console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
-        setPopularProducts(popular.products || []);
+        setTrendingProducts(trending.products || []);
+        setTrendingComparisons(trendingComps.comparisons || []);
         setTopRatedProducts(topRated.products || []);
       } catch (error) {
         console.error('❌ Error loading products:', error);
         // Silent fail with empty arrays - better UX than console errors
-        setPopularProducts([]);
+        setTrendingProducts([]);
+        setTrendingComparisons([]);
         setTopRatedProducts([]);
       } finally {
         setLoading(false);
@@ -209,7 +214,7 @@ export default function HomePageClient() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {popularProducts.map((product, index) => (
+              {trendingProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
                     <div className="h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
@@ -232,7 +237,7 @@ export default function HomePageClient() {
                   </Link>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
-                    <span className="text-sm text-gray-500">1000+ watching</span>
+                    <span className="text-sm text-gray-500">{product.view_count || 0} views</span>
                   </div>
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>
@@ -336,41 +341,79 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      {/* Popular Comparisons */}
+      {/* Trending Comparisons */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Popular Instrument Comparisons</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Trending Instrument Comparisons</h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {popularComparisons.map((comparison, index) => (
-              <Link
-                key={index}
-                href={`/compare?products=${comparison.products}`}
-                className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
-              >
-                <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                  <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">{comparison.category}</span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trendingComparisons.length > 0 ? (
+              trendingComparisons.map((comparison, index) => (
+                <Link
+                  key={index}
+                  href={`/compare?products=${comparison.products.map(p => p.slug).join(',')}`}
+                  className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+                >
+                  <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                    <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
-                    {comparison.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {comparison.description}
-                  </p>
-                  <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
-                    Compare Now
-                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">
+                        {comparison.products[0]?.category?.name || 'Instruments'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {comparison.comparison_count} comparisons
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                      {comparison.products.map(p => p.brand.name + ' ' + p.name.split(' ').slice(0, 2).join(' ')).join(' vs ')}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      Compare {comparison.products.length} popular {comparison.products[0]?.category?.name.toLowerCase() || 'instruments'}
+                    </p>
+                    <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
+                      Compare Now
+                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            ) : (
+              // Fallback to popular comparisons if no trending data
+              popularComparisons.map((comparison, index) => (
+                <Link
+                  key={index}
+                  href={`/compare?products=${comparison.products}`}
+                  className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+                >
+                  <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                    <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">{comparison.category}</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                      {comparison.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      {comparison.description}
+                    </p>
+                    <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
+                      Compare Now
+                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>

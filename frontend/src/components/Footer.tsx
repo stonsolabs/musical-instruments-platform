@@ -50,10 +50,10 @@ export function Footer() {
             <ul className="space-y-3">
               <li><Link href="/products" className="text-gray-400 hover:text-white transition-colors">All Products</Link></li>
               <li><Link href="/products?category=electric-guitars" className="text-gray-400 hover:text-white transition-colors">Electric Guitars</Link></li>
-              <li><Link href="/products?category=acoustic-guitars" className="text-gray-400 hover:text-white transition-colors">Acoustic Guitars</Link></li>
-              <li><Link href="/products?category=pianos-keyboards" className="text-gray-400 hover:text-white transition-colors">Pianos & Keyboards</Link></li>
+              <li><Link href="/products?category=steel-string-acoustic-guitars" className="text-gray-400 hover:text-white transition-colors">Acoustic Guitars</Link></li>
+              <li><Link href="/products?category=digital-pianos" className="text-gray-400 hover:text-white transition-colors">Digital Pianos</Link></li>
+              <li><Link href="/products?category=electric-basses" className="text-gray-400 hover:text-white transition-colors">Bass Guitars</Link></li>
               <li><Link href="/compare" className="text-gray-400 hover:text-white transition-colors">Compare Instruments</Link></li>
-              <li><Link href="/deals" className="text-gray-400 hover:text-white transition-colors">Special Deals</Link></li>
             </ul>
           </div>
 

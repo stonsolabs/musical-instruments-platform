@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { Product } from '@/types';
 import { trackProductView, trackEvent } from '@/components/Analytics';
+import { apiClient } from '@/lib/api';
 import { formatPrice, formatRating } from '@/lib/utils';
 import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
 import TechnicalSpecifications from '@/components/TechnicalSpecifications';
@@ -18,13 +19,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [showSimilarProducts, setShowSimilarProducts] = useState(true);
 
   useEffect(() => {
-    // Track product view
+    // Track product view (existing analytics)
     trackProductView(
       product.id.toString(),
       product.name,
       product.category?.name || 'unknown',
       product.best_price?.price
     );
+
+    // Track product view in backend for trending calculations
+    const trackBackendView = async () => {
+      try {
+        await apiClient.trackProductView(product.id);
+      } catch (error) {
+        console.error('Failed to track product view in backend:', error);
+      }
+    };
+
+    trackBackendView();
   }, [product]);
 
   return (
@@ -296,7 +308,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <span className="text-sm text-primary-600">Build Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.build_quality || 0) * 10}%` }}></div>
+                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.build_quality) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
                     </div>
@@ -305,7 +317,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <span className="text-sm text-primary-600">Sound Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.sound_quality || 0) * 10}%` }}></div>
+                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.sound_quality) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
                     </div>
@@ -314,7 +326,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <span className="text-sm text-primary-600">Value for Money</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.value_for_money || 0) * 10}%` }}></div>
+                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.value_for_money) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
                     </div>
@@ -323,7 +335,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <span className="text-sm text-primary-600">Versatility</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-primary-500 h-2 rounded-full" style={{ width: `${(product.ai_content?.professional_assessment.expert_rating.versatility || 0) * 10}%` }}></div>
+                        <div className="bg-primary-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.versatility) || 0) * 10}%` }}></div>
                       </div>
                       <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.versatility || 0}/10</span>
                     </div>

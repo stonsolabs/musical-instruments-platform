@@ -123,6 +123,17 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           // Track comparison analytics
           if (typeof window !== 'undefined') {
             console.log('Comparison loaded:', comparisonData.products.map(p => p.name));
+            
+            // Track comparison in backend for trending calculations
+            const trackBackendComparison = async () => {
+              try {
+                await apiClient.trackComparison(comparisonData.products.map(p => p.id));
+              } catch (error) {
+                console.error('Failed to track comparison in backend:', error);
+              }
+            };
+            
+            trackBackendComparison();
           }
         } catch (e) {
           setError('Failed to load comparison');

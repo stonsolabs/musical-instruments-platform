@@ -85,8 +85,72 @@ export const apiClient = {
     return this.get(`/products/${productId}`);
   },
 
-  // Compare products
-  async compareProducts(productSlugs: string[]) {
-    return this.get(`/compare?products=${productSlugs.join(',')}`);
+  // Compare products - updated to match backend implementation
+  async compareProducts(productIds: number[]) {
+    return this.post(`/compare`, { product_ids: productIds });
+  },
+
+  // Get affiliate stores
+  async getAffiliateStores(filters?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    return this.get(`/affiliate-stores?${searchParams.toString()}`);
+  },
+
+  // Get affiliate store by ID
+  async getAffiliateStore(storeId: number) {
+    return this.get(`/affiliate-stores/${storeId}`);
+  },
+
+  // Track product view
+  async trackProductView(productId: number) {
+    return this.post(`/trending/track/view/${productId}`);
+  },
+
+  // Track comparison
+  async trackComparison(productIds: number[]) {
+    return this.post(`/trending/track/comparison`, { product_ids: productIds });
+  },
+
+  // Get trending instruments
+  async getTrendingInstruments(limit?: number, categoryId?: number) {
+    const searchParams = new URLSearchParams();
+    if (limit) searchParams.append('limit', String(limit));
+    if (categoryId) searchParams.append('category_id', String(categoryId));
+    return this.get(`/trending/instruments?${searchParams.toString()}`);
+  },
+
+  // Get trending comparisons
+  async getTrendingComparisons(limit?: number) {
+    const searchParams = new URLSearchParams();
+    if (limit) searchParams.append('limit', String(limit));
+    return this.get(`/trending/comparisons?${searchParams.toString()}`);
+  },
+
+  // Get trending by category
+  async getTrendingByCategory(categoryId: number, limit?: number) {
+    const searchParams = new URLSearchParams();
+    if (limit) searchParams.append('limit', String(limit));
+    return this.get(`/trending/by-category?category_id=${categoryId}&${searchParams.toString()}`);
+  },
+
+  // Get product affiliate stores
+  async getProductAffiliateStores(productId: number, userRegion?: string) {
+    const searchParams = new URLSearchParams();
+    if (userRegion) searchParams.append('user_region', userRegion);
+    return this.post(`/products/${productId}/affiliate-stores`, { user_region: userRegion });
+  },
+
+  // Get affiliate URLs for product
+  async getProductAffiliateUrls(productId: number, userRegion?: string) {
+    const searchParams = new URLSearchParams();
+    if (userRegion) searchParams.append('user_region', userRegion);
+    return this.get(`/products/${productId}/affiliate-urls?${searchParams.toString()}`);
   }
 };
