@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     
     # API Settings
     API_V1_STR: str = os.getenv("API_V1_STR", "/api/v1")
-    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Musical Instruments Platform")
+    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "getyourmusicgear")
     
     # Environment
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
