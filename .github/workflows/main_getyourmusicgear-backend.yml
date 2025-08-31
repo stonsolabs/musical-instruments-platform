@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './backend' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
@@ -35,16 +35,12 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r backend/requirements.txt
+        run: pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: |
-          cd backend
-          zip -r ../release.zip . -x "venv/*" "*.pyc" "__pycache__/*" ".git/*"
-          echo "Files in zip:"
-          unzip -l ../release.zip | head -20
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -75,9 +71,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4877DC33A52C49BFB0B5EA13D2AA3BEF }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_407AA262ED5447E4944E020789A705E3 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F120A69A412C4F258ACD9480D77C2452 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FAEF6AA2E9CF41CA9B7699445D8E20DB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D73463363A5242EC857200621D833DCD }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A982E1FBC07D49F188D441CD8DAEC50D }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
@@ -85,5 +81,5 @@ jobs:
         with:
           app-name: 'getyourmusicgear-backend'
           slot-name: 'Production'
-          package: '.'
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           
