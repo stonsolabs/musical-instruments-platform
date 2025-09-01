@@ -1,17 +1,53 @@
 import azure.functions as func
 import logging
-from app.main import app as fastapi_app
+import json
 
 # Create the Azure Functions app
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.route(route="{*route}", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-async def main(req: func.HttpRequest) -> func.HttpResponse:
-    """Main function to handle all routes via FastAPI ASGI"""
+@app.route(route="health", auth_level=func.AuthLevel.ANONYMOUS)
+async def health(req: func.HttpRequest) -> func.HttpResponse:
+    """Health check endpoint"""
     try:
+        # Test if we can import the FastAPI app
+        from app.main import app as fastapi_app
+        return func.HttpResponse(
+            json.dumps({
+                "status": "healthy", 
+                "service": "GetYourMusicGear",
+                "fastapi_imported": str(type(fastapi_app))
+            }),
+            status_code=200,
+            mimetype="application/json"
+        )
+    except ImportError as e:
+        return func.HttpResponse(
+            json.dumps({
+                "status": "error", 
+                "error": f"Cannot import FastAPI app: {str(e)}"
+            }),
+            status_code=500,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        return func.HttpResponse(
+            json.dumps({
+                "status": "error", 
+                "error": str(e)
+            }),
+            status_code=500,
+            mimetype="application/json"
+        )
+
+@app.route(route="api/{*route}", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
+async def api_handler(req: func.HttpRequest) -> func.HttpResponse:
+    """Handle API routes via FastAPI"""
+    try:
+        from app.main import app as fastapi_app
+        
         # Extract path from route params
         route = req.route_params.get('route', '')
-        path = f"/{route}" if route else "/"
+        path = f"/api/{route}" if route else "/api/"
         
         # Build ASGI scope
         scope = {
@@ -60,10 +96,17 @@ async def main(req: func.HttpRequest) -> func.HttpResponse:
             mimetype=headers_dict.get('content-type', 'application/json')
         )
         
-    except Exception as e:
-        logging.error(f"Error in FastAPI handler: {str(e)}")
+    except ImportError as e:
+        logging.error(f"Import error: {str(e)}")
         return func.HttpResponse(
-            f'{{"error": "Internal server error", "details": "{str(e)}"}}',
+            json.dumps({"error": f"Cannot import FastAPI app: {str(e)}"}),
+            status_code=500,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        logging.error(f"Error in API handler: {str(e)}")
+        return func.HttpResponse(
+            json.dumps({"error": f"Internal server error: {str(e)}"}),
             status_code=500,
             mimetype="application/json"
         )
