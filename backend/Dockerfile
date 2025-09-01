@@ -1,22 +1,22 @@
-# Use the official Azure Functions Python base image
-FROM mcr.microsoft.com/azure-functions/python:4-python3.11
+# Use official Python runtime as base image
+FROM python:3.11-slim
 
 # Set environment variables
-ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
-    AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set the working directory
-WORKDIR /home/site/wwwroot
+# Set work directory
+WORKDIR /app
 
-# Copy requirements and install dependencies first (for better caching)
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire app
+# Copy the app
 COPY . .
 
-# Ensure the function app file is executable
-RUN chmod +x function_app.py
+# Expose port
+EXPOSE 8000
 
-# Verify the structure
-RUN ls -la /home/site/wwwroot/ && ls -la /home/site/wwwroot/app/
+# Command to run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

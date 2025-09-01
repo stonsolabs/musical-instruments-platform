@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python project to Azure Function App - getyourmusicgear-backend
+name: Build and deploy FastAPI to Azure App Service
 
 on:
   push:
@@ -56,12 +56,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D73463363A5242EC857200621D833DCD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A982E1FBC07D49F188D441CD8DAEC50D }}
 
-      - name: Deploy Docker image to Azure Functions
+      - name: Deploy Docker image to Azure App Service
         run: |
-          az functionapp config container set \
-            --name getyourmusicgear-backend-v2 \
+          az webapp config container set \
+            --name getyourmusicgear-api \
             --resource-group getyourmusicgear \
-            --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/getyourmusicgear-backend:${{ github.sha }} \
-            --registry-server https://${{ secrets.REGISTRY_LOGIN_SERVER }} \
-            --registry-username ${{ secrets.REGISTRY_USERNAME }} \
-            --registry-password ${{ secrets.REGISTRY_PASSWORD }}
+            --container-image-name ${{ secrets.REGISTRY_LOGIN_SERVER }}/getyourmusicgear-backend:${{ github.sha }} \
+            --container-registry-url https://${{ secrets.REGISTRY_LOGIN_SERVER }} \
+            --container-registry-user ${{ secrets.REGISTRY_USERNAME }} \
+            --container-registry-password ${{ secrets.REGISTRY_PASSWORD }}
