@@ -42,9 +42,15 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd backend
-          zip -r ../release.zip . -x "venv/*" "*.pyc" "__pycache__/*" ".git/*"
+          # Create zip excluding patterns from .funcignore
+          zip -r ../release.zip . \
+            -x "venv/*" "*.pyc" "__pycache__/*" ".git/*" \
+            -x "*.js.map" "*.ts" ".gitignore" ".DS_Store" ".vscode/*" \
+            -x ".env" "local.settings.json" ".azure/*" "node_modules/*" \
+            -x ".pytest_cache/*" ".coverage" "htmlcov/*" ".mypy_cache/*" \
+            -x ".ruff_cache/*" "*.md" "scripts/*" "test_import.py"
           echo "Files in zip:"
-          unzip -l ../release.zip | head -20
+          unzip -l ../release.zip | head -30
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
