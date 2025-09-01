@@ -17,10 +17,9 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 python-slugify==8.0.1
 requests==2.31.0
-# Azure Functions - minimal setup to avoid grpcio compilation issues
+# Azure Functions with ASGI adapter for FastAPI
 azure-functions==1.17.0
+azure-functions-worker==1.2.0
+fastapi-azure-functions==0.3.2
 azure-storage-blob==12.19.0
 azure-identity==1.15.0
-
-# Alternative: Skip Azure Functions worker for now and use simple HTTP hosting
-# The function_app.py can still work with just azure-functions package
