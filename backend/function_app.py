@@ -7,7 +7,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="health", auth_level=func.AuthLevel.ANONYMOUS)
 async def health(req: func.HttpRequest) -> func.HttpResponse:
-    """Health check endpoint"""
+    """Health check endpoint - Docker deployment test"""
     try:
         # Test if we can import the FastAPI app
         from app.main import app as fastapi_app
