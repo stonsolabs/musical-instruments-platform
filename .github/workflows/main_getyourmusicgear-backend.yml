@@ -59,7 +59,7 @@ jobs:
       - name: Deploy Docker image to Azure Functions
         run: |
           az functionapp config container set \
-            --name getyourmusicgear-backend \
+            --name getyourmusicgear-backend-v2 \
             --resource-group getyourmusicgear \
             --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/getyourmusicgear-backend:${{ github.sha }} \
             --registry-server https://${{ secrets.REGISTRY_LOGIN_SERVER }} \
