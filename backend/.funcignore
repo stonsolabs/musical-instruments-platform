@@ -15,6 +15,8 @@ node_modules/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+*.md
+/scripts
 
 # Keep these for Azure Functions
 !host.json
