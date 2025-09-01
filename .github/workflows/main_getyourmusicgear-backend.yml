@@ -56,9 +56,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D73463363A5242EC857200621D833DCD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A982E1FBC07D49F188D441CD8DAEC50D }}
 
-      - name: Deploy to Azure Functions
-        uses: azure/functions-action@v1
-        with:
-          app-name: getyourmusicgear-backend
-          slot-name: Production
-          image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/getyourmusicgear-backend:${{ github.sha }}
+      - name: Deploy Docker image to Azure Functions
+        run: |
+          az functionapp config container set \
+            --name getyourmusicgear-backend \
+            --resource-group getyourmusicgear \
+            --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/getyourmusicgear-backend:${{ github.sha }} \
+            --registry-server https://${{ secrets.REGISTRY_LOGIN_SERVER }} \
+            --registry-username ${{ secrets.REGISTRY_USERNAME }} \
+            --registry-password ${{ secrets.REGISTRY_PASSWORD }}
