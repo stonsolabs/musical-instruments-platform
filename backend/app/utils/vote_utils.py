@@ -2,7 +2,7 @@
 Utility functions for vote statistics calculation.
 """
 from typing import Dict, List, Optional
-from sqlalchemy import func, select
+from sqlalchemy import func, select, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import ProductVote
 
@@ -19,8 +19,8 @@ async def get_product_vote_stats(db: AsyncSession, product_id: int) -> Dict[str,
         Dictionary with vote statistics
     """
     vote_stats_query = select(
-        func.sum(func.case((ProductVote.vote_type == 'up', 1), else_=0)).label('thumbs_up'),
-        func.sum(func.case((ProductVote.vote_type == 'down', 1), else_=0)).label('thumbs_down'),
+        func.sum(case((ProductVote.vote_type == 'up', 1), else_=0)).label('thumbs_up'),
+        func.sum(case((ProductVote.vote_type == 'down', 1), else_=0)).label('thumbs_down'),
         func.count().label('total_votes')
     ).where(ProductVote.product_id == product_id)
     
@@ -56,8 +56,8 @@ async def get_multiple_products_vote_stats(db: AsyncSession, product_ids: List[i
     
     vote_stats_query = select(
         ProductVote.product_id,
-        func.sum(func.case((ProductVote.vote_type == 'up', 1), else_=0)).label('thumbs_up'),
-        func.sum(func.case((ProductVote.vote_type == 'down', 1), else_=0)).label('thumbs_down'),
+        func.sum(case((ProductVote.vote_type == 'up', 1), else_=0)).label('thumbs_up'),
+        func.sum(case((ProductVote.vote_type == 'down', 1), else_=0)).label('thumbs_down'),
         func.count().label('total_votes')
     ).where(ProductVote.product_id.in_(product_ids)).group_by(ProductVote.product_id)
     

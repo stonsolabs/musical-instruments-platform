@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-const API_KEY = process.env.API_KEY || 'de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+const API_KEY = process.env.API_KEY || '';
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +30,7 @@ export async function GET(
       { 
         error: 'API_BASE_URL not configured properly',
         currentValue: API_BASE_URL,
-        expected: 'https://musical-instruments-platform.onrender.com',
+        expected: 'https://getyourmusicgear-api.azurewebsites.net',
         instructions: 'Set NEXT_PUBLIC_API_BASE_URL environment variable in Vercel dashboard'
       },
       { status: 500 }

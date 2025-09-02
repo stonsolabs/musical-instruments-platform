@@ -121,16 +121,20 @@ class TrendingService:
 
     async def track_product_comparison(self, product_id_1: int, product_id_2: int) -> None:
         """Track when two products are compared together"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return  # Analytics disabled
+            
         try:
             # Create a consistent comparison pair key (smaller ID first)
             pair_key = f"{min(product_id_1, product_id_2)}:{max(product_id_1, product_id_2)}"
             
             # Increment comparison count
-            await self.redis_client.zincrby(self.comparison_count_key, 1, pair_key)
+            await redis_client.zincrby(self.comparison_count_key, 1, pair_key)
             
             # Track individual products in comparisons
-            await self.redis_client.zincrby("comparisons:individual", 1, product_id_1)
-            await self.redis_client.zincrby("comparisons:individual", 1, product_id_2)
+            await redis_client.zincrby("comparisons:individual", 1, product_id_1)
+            await redis_client.zincrby("comparisons:individual", 1, product_id_2)
             
         except Exception as e:
             print(f"Error tracking comparison: {e}")
@@ -143,9 +147,14 @@ class TrendingService:
     ) -> List[Dict[str, Any]]:
         """Get trending instruments based on views and comparisons"""
         
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            # If Redis is not available, fetch from database directly
+            return await self._get_trending_from_db(limit, category_id, db)
+        
         # Try cache first
         cache_key = f"{self.trending_key}:{category_id or 'all'}:{limit}"
-        cached_result = await self.redis_client.get(cache_key)
+        cached_result = await redis_client.get(cache_key)
         if cached_result:
             return json.loads(cached_result)
 
@@ -209,7 +218,7 @@ class TrendingService:
                     break
         
         # Cache the result
-        await self.redis_client.setex(
+        await redis_client.setex(
             cache_key,
             self.trending_cache_ttl,
             json.dumps(trending_products)
@@ -224,14 +233,18 @@ class TrendingService:
     ) -> List[Dict[str, Any]]:
         """Get most popular product comparisons"""
         
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return []  # No comparisons available without Redis
+        
         # Try cache first
         cache_key = f"{self.comparison_key}:{limit}"
-        cached_result = await self.redis_client.get(cache_key)
+        cached_result = await redis_client.get(cache_key)
         if cached_result:
             return json.loads(cached_result)
 
         # Get top comparison pairs from Redis
-        comparison_pairs = await self.redis_client.zrevrange(
+        comparison_pairs = await redis_client.zrevrange(
             self.comparison_count_key, 0, limit - 1, withscores=True
         )
         
@@ -295,7 +308,7 @@ class TrendingService:
                 })
         
         # Cache the result
-        await self.redis_client.setex(
+        await redis_client.setex(
             cache_key,
             self.comparison_cache_ttl,
             json.dumps(popular_comparisons)
@@ -306,8 +319,12 @@ class TrendingService:
     async def get_category_trending(self, db: AsyncSession = None) -> Dict[str, List[Dict]]:
         """Get trending products by category"""
         
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return {}  # No trending data without Redis
+        
         cache_key = "trending:by_category"
-        cached_result = await self.redis_client.get(cache_key)
+        cached_result = await redis_client.get(cache_key)
         if cached_result:
             return json.loads(cached_result)
 
@@ -334,7 +351,7 @@ class TrendingService:
                 }
         
         # Cache for 2 hours
-        await self.redis_client.setex(
+        await redis_client.setex(
             cache_key,
             7200,
             json.dumps(category_trending)
@@ -349,6 +366,10 @@ class TrendingService:
     ) -> List[int]:
         """Calculate trending products using weighted scoring"""
         
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return []
+        
         # Get recent views (last 24 hours)
         current_time = datetime.now()
         product_scores = defaultdict(float)
@@ -359,7 +380,7 @@ class TrendingService:
             weight = max(1.0 - (hours_ago * 0.02), 0.1)  # Decay factor
             
             try:
-                hourly_views = await self.redis_client.zrevrange(
+                hourly_views = await redis_client.zrevrange(
                     f"{self.view_count_key}:hour:{hour_key}", 
                     0, -1, 
                     withscores=True
@@ -374,7 +395,7 @@ class TrendingService:
         
         # Add comparison bonus (products frequently compared are trending)
         try:
-            comparison_scores = await self.redis_client.zrevrange(
+            comparison_scores = await redis_client.zrevrange(
                 "comparisons:individual", 0, -1, withscores=True
             )
             
@@ -397,6 +418,10 @@ class TrendingService:
 
     async def _get_product_trending_score(self, product_id: int) -> float:
         """Get trending score for a specific product"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return 0.0
+            
         try:
             # Recent views score
             views_score = 0
@@ -406,13 +431,13 @@ class TrendingService:
                 hour_key = (current_time - timedelta(hours=hours_ago)).strftime("%Y%m%d%H")
                 weight = max(1.0 - (hours_ago * 0.02), 0.1)
                 
-                views = await self.redis_client.zscore(
+                views = await redis_client.zscore(
                     f"{self.view_count_key}:hour:{hour_key}", product_id
                 ) or 0
                 views_score += views * weight
             
             # Comparison bonus
-            comparison_score = await self.redis_client.zscore(
+            comparison_score = await redis_client.zscore(
                 "comparisons:individual", product_id
             ) or 0
             
@@ -423,13 +448,17 @@ class TrendingService:
 
     async def _get_product_views_24h(self, product_id: int) -> int:
         """Get total views for product in last 24 hours"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return 0
+            
         try:
             total_views = 0
             current_time = datetime.now()
             
             for hours_ago in range(24):
                 hour_key = (current_time - timedelta(hours=hours_ago)).strftime("%Y%m%d%H")
-                views = await self.redis_client.zscore(
+                views = await redis_client.zscore(
                     f"{self.view_count_key}:hour:{hour_key}", product_id
                 ) or 0
                 total_views += int(views)
@@ -441,19 +470,27 @@ class TrendingService:
 
     async def clear_trending_cache(self) -> None:
         """Clear all trending and comparison caches"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return
+            
         try:
             # Get all cache keys
-            trending_keys = await self.redis_client.keys("trending:*")
-            comparison_keys = await self.redis_client.keys("popular:*")
+            trending_keys = await redis_client.keys("trending:*")
+            comparison_keys = await redis_client.keys("popular:*")
             
             if trending_keys or comparison_keys:
-                await self.redis_client.delete(*(trending_keys + comparison_keys))
+                await redis_client.delete(*(trending_keys + comparison_keys))
                 
         except Exception as e:
             print(f"Error clearing trending cache: {e}")
 
     async def get_analytics_summary(self) -> Dict[str, Any]:
         """Get analytics summary for admin dashboard"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return {"error": "Redis not available", "cache_status": "disabled"}
+            
         try:
             # Total views today
             today = datetime.now().strftime("%Y%m%d")
@@ -461,15 +498,15 @@ class TrendingService:
             
             for hour in range(24):
                 hour_key = f"{today}{hour:02d}"
-                hour_views = await self.redis_client.zcard(f"{self.view_count_key}:hour:{hour_key}")
+                hour_views = await redis_client.zcard(f"{self.view_count_key}:hour:{hour_key}")
                 total_views_today += hour_views
             
             # Total comparisons
-            total_comparisons = await self.redis_client.zcard(self.comparison_count_key)
+            total_comparisons = await redis_client.zcard(self.comparison_count_key)
             
             # Most viewed product today
             current_hour = datetime.now().strftime("%Y%m%d%H")
-            top_product_today = await self.redis_client.zrevrange(
+            top_product_today = await redis_client.zrevrange(
                 f"{self.view_count_key}:hour:{current_hour}", 0, 0, withscores=True
             )
             
@@ -483,9 +520,68 @@ class TrendingService:
         except Exception as e:
             return {"error": str(e), "cache_status": "error"}
 
+    async def _get_trending_from_db(
+        self, 
+        limit: int, 
+        category_id: Optional[int] = None,
+        db: AsyncSession = None
+    ) -> List[Dict[str, Any]]:
+        """Fallback method to get trending products from database when Redis is unavailable"""
+        if not db:
+            return []
+            
+        try:
+            # Simple fallback: get most recent products by category
+            query = (
+                select(Product)
+                .options(
+                    selectinload(Product.brand),
+                    selectinload(Product.category)
+                )
+                .where(Product.is_active.is_(True))
+                .order_by(desc(Product.created_at))
+                .limit(limit)
+            )
+            
+            if category_id:
+                query = query.where(Product.category_id == category_id)
+                
+            result = await db.execute(query)
+            products = result.scalars().all()
+            
+            trending_products = []
+            for product in products:
+                trending_products.append({
+                    "id": product.id,
+                    "name": product.name,
+                    "slug": product.slug,
+                    "brand": {
+                        "id": product.brand.id,
+                        "name": product.brand.name,
+                        "slug": product.brand.slug
+                    },
+                    "category": {
+                        "id": product.category.id,
+                        "name": product.category.name,
+                        "slug": product.category.slug
+                    },
+                    "images": self._extract_image_urls(product.images) if product.images else [],
+                    "msrp_price": float(product.msrp_price) if product.msrp_price else None,
+                    "trending_score": 0.0,  # No Redis scoring available
+                    "view_count_24h": 0  # No Redis tracking available
+                })
+            
+            return trending_products
+            
+        except Exception as e:
+            print(f"Error getting trending from DB: {e}")
+            return []
+
     async def close(self):
         """Close Redis connection"""
-        await self.redis_client.close()
+        redis_client = await self._get_redis_client()
+        if redis_client:
+            await redis_client.close()
 
 
 # Global trending service instance

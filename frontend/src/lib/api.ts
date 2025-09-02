@@ -1,8 +1,8 @@
 // API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 
 export const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 };
 
 // Get the base URL for server-side requests
