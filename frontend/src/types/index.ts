@@ -186,6 +186,11 @@ export interface Product {
   ai_content?: ComprehensiveAIContent;
   vote_stats?: VoteStats;
   thomann_info?: ThomannInfo;
+  content?: {
+    store_links?: Record<string, string>;
+    specifications?: Record<string, any>;
+    [key: string]: any;
+  };
 }
 
 export interface SearchResponse {

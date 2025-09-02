@@ -3,24 +3,23 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import dynamicNext from 'next/dynamic';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
 import { CompactProductVoting } from '@/components/ProductVoting';
+import { formatPrice } from '@/lib/utils';
+import { apiClient } from '@/lib/api';
 
 // Dynamic imports but WITH server-side rendering (no ssr: false)
-const UnifiedSearchAutocomplete = dynamic(() => import('@/components/UnifiedSearchAutocomplete'), {
+const UnifiedSearchAutocomplete = dynamicNext(() => import('@/components/UnifiedSearchAutocomplete'), {
   loading: () => <div className="animate-pulse h-12 bg-white rounded-lg border border-gray-200"></div>
 });
-const AffiliateButton = dynamic(() => import('@/components/AffiliateButton'), {
+const AffiliateButton = dynamicNext(() => import('@/components/AffiliateButton'), {
   loading: () => <div className="animate-pulse h-10 bg-white rounded-lg border border-gray-200"></div>
 });
 
 // Force dynamic rendering since this shows database products
 export const dynamic = 'force-dynamic';
-
-import { formatPrice } from '@/lib/utils';
-import { apiClient } from '@/lib/api';
 
 export default function HomePage() {
   const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
@@ -308,7 +307,7 @@ export default function HomePage() {
                     ) : (
                       <div className="space-y-2">
                         <a
-                          href={product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                          href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="fp-table__button fp-table__button--thomann"
@@ -317,7 +316,7 @@ export default function HomePage() {
                           <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                         </a>
                         <a
-                          href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                          href={product.content?.store_links?.['gear4music'] || product.content?.store_links?.['Gear4music'] || `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="fp-table__button fp-table__button--gear4music"
@@ -490,7 +489,7 @@ export default function HomePage() {
                   ) : (
                     <div className="space-y-2">
                       <a
-                        href={product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="fp-table__button fp-table__button--thomann"
@@ -499,7 +498,7 @@ export default function HomePage() {
                         <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                       </a>
                       <a
-                        href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                        href={product.content?.store_links?.['gear4music'] || product.content?.store_links?.['Gear4music'] || `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="fp-table__button fp-table__button--gear4music"

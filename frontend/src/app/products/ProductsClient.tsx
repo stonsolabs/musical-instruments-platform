@@ -613,7 +613,7 @@ export default function ProductsClient({
                             {/* Default affiliate store links when no prices available */}
                             <div className="space-y-2 mb-2">
                               <a
-                                href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                                href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="fp-table__button fp-table__button--thomann"
@@ -622,7 +622,7 @@ export default function ProductsClient({
                                 <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                               </a>
                               <a
-                                href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
+                                href={product.content?.store_links?.['gear4music'] || product.content?.store_links?.['Gear4music'] || `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="fp-table__button fp-table__button--gear4music"
