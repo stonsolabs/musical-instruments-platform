@@ -197,7 +197,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          style={{ objectFit: 'contain', backgroundColor: 'white' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -460,7 +461,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          style={{ objectFit: 'contain', backgroundColor: 'white' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -632,7 +634,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          style={{ objectFit: 'contain', backgroundColor: 'white' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -731,7 +734,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          style={{ objectFit: 'contain', backgroundColor: 'white' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1044,7 +1048,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className=""
+                          style={{ objectFit: 'contain', backgroundColor: 'white' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">

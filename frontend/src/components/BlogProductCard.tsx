@@ -46,7 +46,8 @@ export default function BlogProductCard({
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover"
+              className=""
+              style={{ backgroundColor: 'white' }}
             />
             {discount > 0 && (
               <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
@@ -165,7 +166,8 @@ export default function BlogProductCard({
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover"
+              className=""
+              style={{ backgroundColor: 'white' }}
             />
             {discount > 0 && (
               <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold">

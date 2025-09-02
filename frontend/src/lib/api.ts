@@ -87,7 +87,7 @@ export const apiClient = {
 
   // Compare products - updated to match backend implementation
   async compareProducts(productIds: number[]) {
-    return this.post(`/compare`, { product_ids: productIds });
+    return this.post(`/compare`, productIds);
   },
 
   // Get affiliate stores

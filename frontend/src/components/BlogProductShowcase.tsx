@@ -83,7 +83,8 @@ export default function BlogProductShowcase({
                   src={recommended.image}
                   alt={recommended.name}
                   fill
-                  className="object-cover"
+                  className=""
+                  style={{ backgroundColor: 'white' }}
                 />
                 {discount(recommended) > 0 && (
                   <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold">
@@ -237,7 +238,8 @@ export default function BlogProductShowcase({
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className=""
+                  style={{ backgroundColor: 'white' }}
                     />
                   </div>
                   <div className="flex-1">
@@ -329,7 +331,8 @@ export default function BlogProductShowcase({
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className=""
+                  style={{ backgroundColor: 'white' }}
                 />
                 {discount(product) > 0 && (
                   <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">
@@ -450,7 +453,8 @@ export default function BlogProductShowcase({
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className=""
+                  style={{ backgroundColor: 'white' }}
                 />
                 {discount(product) > 0 && (
                   <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">
@@ -563,7 +567,8 @@ export default function BlogProductShowcase({
                   src={recommended.image}
                   alt={recommended.name}
                   fill
-                  className="object-cover"
+                  className=""
+                  style={{ backgroundColor: 'white' }}
                 />
                 {discount(recommended) > 0 && (
                   <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold">
@@ -661,7 +666,8 @@ export default function BlogProductShowcase({
                         src={product.image}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className=""
+                  style={{ backgroundColor: 'white' }}
                       />
                     </div>
                     <div className="flex-1">

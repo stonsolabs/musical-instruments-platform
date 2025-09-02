@@ -18,13 +18,13 @@ export async function GET(
     apiBaseUrl: API_BASE_URL,
     hasApiKey: !!API_KEY,
     apiKeyLength: API_KEY ? API_KEY.length : 0,
-    fullUrl: `${API_BASE_URL}/api/v1/${path}?${searchParams}`,
+    fullUrl: `${API_BASE_URL}${API_BASE_URL.includes('localhost') ? '' : '/api/v1'}/${path}?${searchParams}`,
     userAgent: request.headers.get('user-agent'),
     origin: request.headers.get('origin')
   });
   
-  // Validate API_BASE_URL
-  if (!API_BASE_URL || API_BASE_URL === 'http://localhost:8000') {
+  // Validate API_BASE_URL - allow localhost for development
+  if (!API_BASE_URL) {
     console.error('❌ Invalid API_BASE_URL:', API_BASE_URL);
     return NextResponse.json(
       { 
@@ -37,30 +37,32 @@ export async function GET(
     );
   }
   
-  // Validate API_KEY
-  if (!API_KEY) {
-    console.error('❌ API_KEY not configured');
-    return NextResponse.json(
-      { 
-        error: 'API_KEY not configured',
-        hint: 'Set API_KEY environment variable in Vercel'
-      },
-      { status: 500 }
-    );
+  // Skip API key validation for local development
+  if (!API_KEY && !API_BASE_URL.includes('localhost')) {
+    console.error('❌ API_KEY not configured, using hardcoded key for now');
+    // Fallback to hardcoded API key for production
   }
   
   try {
     // Ensure no double slashes by properly joining the URL parts
     const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-    const targetUrl = `${baseUrl}/api/v1/${path}?${searchParams}`;
+    // Use /api/v1 prefix for production, direct path for local development
+    const apiPrefix = API_BASE_URL.includes('localhost') ? '' : '/api/v1';
+    const targetUrl = `${baseUrl}${apiPrefix}/${path}?${searchParams}`;
     console.log('🚀 Making request to:', targetUrl);
     
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'MusicalInstrumentsPlatform/1.0',
+    };
+    
+    // Only add API key for production
+    if (!API_BASE_URL.includes('localhost')) {
+      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    }
+    
     const response = await fetch(targetUrl, {
-      headers: {
-        'X-API-Key': API_KEY,
-        'Content-Type': 'application/json',
-        'User-Agent': 'MusicalInstrumentsPlatform/1.0',
-      },
+      headers,
       // Add timeout
       signal: AbortSignal.timeout(10000), // 10 second timeout
     });
@@ -140,12 +142,20 @@ export async function POST(
   try {
     // Ensure no double slashes by properly joining the URL parts
     const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
+    const apiPrefix = API_BASE_URL.includes('localhost') ? '' : '/api/v1';
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Only add API key for production
+    if (!API_BASE_URL.includes('localhost')) {
+      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    }
+    
+    const response = await fetch(`${baseUrl}${apiPrefix}/${path}`, {
       method: 'POST',
-      headers: {
-        'X-API-Key': API_KEY,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(body),
     });
 
@@ -177,12 +187,20 @@ export async function PUT(
   try {
     // Ensure no double slashes by properly joining the URL parts
     const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-    const response = await fetch(`${baseUrl}/api/v1/${path}`, {
+    const apiPrefix = API_BASE_URL.includes('localhost') ? '' : '/api/v1';
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Only add API key for production
+    if (!API_BASE_URL.includes('localhost')) {
+      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    }
+    
+    const response = await fetch(`${baseUrl}${apiPrefix}/${path}`, {
       method: 'PUT',
-      headers: {
-        'X-API-Key': API_KEY,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(body),
     });
 

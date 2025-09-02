@@ -262,7 +262,7 @@ export default function HomePage() {
                                   className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                   <span>View Price at</span>
-                                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                 </a>
                               );
                             } else if (isGear4Music) {
@@ -275,7 +275,7 @@ export default function HomePage() {
                                   className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                   <span>View Price at</span>
-                                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                 </a>
                               );
                             } else {
@@ -346,7 +346,7 @@ export default function HomePage() {
                 href={`/compare?products=${comparison.products}`}
                 className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg transition-all"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center relative overflow-hidden">
+                <div className="h-48 bg-white flex items-center justify-center relative overflow-hidden border border-gray-200">
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
                   <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
                 </div>
@@ -558,7 +558,7 @@ export default function HomePage() {
                 href={post.href}
                 className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg hover:border-primary-300 transition-all duration-300"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center relative overflow-hidden">
+                <div className="h-48 bg-white flex items-center justify-center relative overflow-hidden border border-gray-200">
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
                   <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">
                     📝

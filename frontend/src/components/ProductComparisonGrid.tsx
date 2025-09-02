@@ -180,12 +180,13 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
       <div className={isMobile ? "p-4" : "p-6"}>
         {/* Product Image */}
         <Link href={`/products/${product.slug}-${product.id}`} className="block mb-4">
-          <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow">
+          <div className="aspect-square bg-white rounded-lg flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow border border-gray-200">
             {product.images && product.images.length > 0 ? (
               <img 
                 src={product.images[0]} 
                 alt={product.name}
-                className="w-full h-full object-cover scale-105"
+                className="w-full h-full scale-105"
+                style={{ backgroundColor: 'white' }}
               />
             ) : (
               <span className={`text-primary-400 ${isMobile ? 'text-3xl' : 'text-4xl'}`}>🎸</span>
@@ -271,7 +272,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                                       className="fp-table__button fp-table__button--thomann"
                                     >
                                       <span>View Price at</span>
-                                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                     </a>
                       </div>
                     );
@@ -285,7 +286,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                                       className="fp-table__button fp-table__button--gear4music"
                                     >
                                       <span>View Price at</span>
-                                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                     </a>
                       </div>
                     );
@@ -326,7 +327,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     className="fp-table__button fp-table__button--thomann"
                   >
                     <span>View Price at</span>
-                    <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                    <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                   </a>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
@@ -337,7 +338,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                     className="fp-table__button fp-table__button--gear4music"
                   >
                     <span>View Price at</span>
-                    <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                    <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                   </a>
                 </div>
               </>

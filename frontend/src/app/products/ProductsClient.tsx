@@ -485,14 +485,15 @@ export default function ProductsClient({
                   }`}>
                     <div className="relative">
                       <div 
-                        className="h-48 bg-gray-200 flex items-center justify-center cursor-pointer relative group overflow-hidden"
+                        className="h-48 bg-white flex items-center justify-center cursor-pointer relative group overflow-hidden border border-gray-200"
                         onClick={() => toggleProductSelection(product.id)}
                       >
                         {product.images && product.images.length > 0 ? (
                           <img 
                             src={product.images[0]} 
                             alt={product.name}
-                            className="w-full h-full object-cover scale-105"
+                            className="w-full h-full scale-105"
+                            style={{ backgroundColor: 'white' }}
                           />
                         ) : (
                           <span className="text-gray-400 text-2xl">🎸</span>
@@ -567,7 +568,7 @@ export default function ProductsClient({
                                       className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                       <span>View Price at</span>
-                                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                     </a>
                                   );
                                 } else if (isGear4Music) {
@@ -580,7 +581,7 @@ export default function ProductsClient({
                                       className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                       <span>View Price at</span>
-                                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                     </a>
                                   );
                                 } else {
@@ -618,7 +619,7 @@ export default function ProductsClient({
                                 className="fp-table__button fp-table__button--thomann"
                               >
                                 <span>View Price at</span>
-                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                               </a>
                               <a
                                 href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -627,7 +628,7 @@ export default function ProductsClient({
                                 className="fp-table__button fp-table__button--gear4music"
                               >
                                 <span>View Price at</span>
-                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                               </a>
                             </div>
                           </>

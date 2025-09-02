@@ -68,12 +68,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div className="grid lg:grid-cols-2 gap-8 p-8">
             {/* Images */}
             <div>
-              <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
+              <div className="aspect-square bg-white rounded-lg overflow-hidden mb-4 flex items-center justify-center border border-gray-200">
                 {product.images && product.images.length > 0 ? (
                   <img 
                     src={product.images[selectedImage]} 
                     alt={`${product.name} - Image ${selectedImage + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full"
+                    style={{ backgroundColor: 'white' }}
                   />
                 ) : (
                   <span className="text-primary-400 text-6xl">🎸</span>
@@ -92,7 +93,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       <img 
                         src={img} 
                         alt={`${product.name} thumbnail ${idx + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
+                        style={{ backgroundColor: 'white' }}
                       />
                     </button>
                   ))}
@@ -175,7 +177,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                               onClick={() => trackEvent('affiliate_click', { store: 'thomann', product_id: product.id })}
                             >
                               <span>View Price at</span>
-                              <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                              <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                             </a>
                           );
                         } else if (isGear4Music) {
@@ -189,7 +191,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                               onClick={() => trackEvent('affiliate_click', { store: 'gear4music', product_id: product.id })}
                             >
                               <span>View Price at</span>
-                              <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                              <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                             </a>
                           );
                         } else {
@@ -224,7 +226,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         onClick={() => trackEvent('affiliate_click', { store: 'thomann', product_id: product.id })}
                       >
                         <span>View Price at</span>
-                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                       </a>
                       <a
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -234,7 +236,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         onClick={() => trackEvent('affiliate_click', { store: 'gear4music', product_id: product.id })}
                       >
                         <span>View Price at</span>
-                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                       </a>
                     </div>
                   )}

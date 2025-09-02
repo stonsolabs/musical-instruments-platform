@@ -65,7 +65,8 @@ export default function ProductComparisonTable({
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className=""
+                  style={{ objectFit: 'contain', backgroundColor: 'white' }}
                 />
               </div>
               <h3 className="font-semibold text-gray-900 text-sm mb-1">{product.name}</h3>

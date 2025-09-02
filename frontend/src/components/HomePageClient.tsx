@@ -205,7 +205,7 @@ export default function HomePageClient() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 animate-pulse">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                  <div className="h-48 bg-white border border-gray-200 rounded-lg mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
                   <div className="h-6 bg-gray-200 rounded mb-2"></div>
                   <div className="h-4 bg-gray-200 rounded"></div>
@@ -224,7 +224,8 @@ export default function HomePageClient() {
                           alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                           width={400}
                           height={192}
-                          className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full scale-105 hover:scale-110 transition-transform duration-300"
+                          style={{ backgroundColor: 'white' }}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 3}
                         />
@@ -268,7 +269,7 @@ export default function HomePageClient() {
                                   className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                   <span>View Price at</span>
-                                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                 </a>
                               );
                             } else if (isGear4Music) {
@@ -281,7 +282,7 @@ export default function HomePageClient() {
                                   className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                   <span>View Price at</span>
-                                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                                 </a>
                               );
                             } else {
@@ -320,7 +321,7 @@ export default function HomePageClient() {
                           className="fp-table__button fp-table__button--thomann"
                         >
                           <span>View Price at</span>
-                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                         </a>
                         <a
                           href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -329,7 +330,7 @@ export default function HomePageClient() {
                           className="fp-table__button fp-table__button--gear4music"
                         >
                           <span>View Price at</span>
-                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                         </a>
                       </div>
                     )}
@@ -447,7 +448,8 @@ export default function HomePageClient() {
                         alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                         width={400}
                         height={192}
-                        className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full scale-105 hover:scale-110 transition-transform duration-300"
+                        style={{ backgroundColor: 'white' }}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         loading="lazy"
                       />
@@ -490,7 +492,7 @@ export default function HomePageClient() {
                                 className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
                                 <span>View Price at</span>
-                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                               </a>
                             );
                           } else if (isGear4Music) {
@@ -503,7 +505,7 @@ export default function HomePageClient() {
                                 className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
                                 <span>View Price at</span>
-                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                               </a>
                             );
                           } else {
@@ -542,7 +544,7 @@ export default function HomePageClient() {
                         className="fp-table__button fp-table__button--thomann"
                       >
                         <span>View Price at</span>
-                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                       </a>
                       <a
                         href={`https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -551,7 +553,7 @@ export default function HomePageClient() {
                         className="fp-table__button fp-table__button--gear4music"
                       >
                         <span>View Price at</span>
-                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
                       </a>
                     </div>
                   )}
@@ -604,7 +606,7 @@ export default function HomePageClient() {
                 href={post.href}
                 className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg hover:border-primary-300 transition-all duration-300"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center relative overflow-hidden">
+                <div className="h-48 bg-white flex items-center justify-center relative overflow-hidden border border-gray-200">
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
                   <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">
                     📝

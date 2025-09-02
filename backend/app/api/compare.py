@@ -82,17 +82,18 @@ async def compare_products(
                     "name": p.category.name,
                     "slug": p.category.slug,
                 },
-                "specifications": p.specifications or {},
+                "specifications": p.content.get('specifications', {}) if p.content else {},
                 "images": _extract_image_urls(p.images) if p.images else [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating else 0.0,
                 "review_count": p.review_count,
-                "ai_content": p.ai_generated_content or {},
+                "ai_content": p.content or {},
                 "prices": prices,
                 "best_price": (sorted(prices, key=lambda x: x["price"])[0] if prices else None),
             }
         )
-        spec_sets.append(set(p.specifications.keys()) if p.specifications else set())
+        specs = p.content.get('specifications', {}) if p.content else {}
+        spec_sets.append(set(specs.keys()) if specs else set())
 
     common_specs = sorted(list(set.intersection(*spec_sets))) if spec_sets else []
 
@@ -101,7 +102,8 @@ async def compare_products(
     for spec in common_specs:
         row: Dict[str, Any] = {}
         for p in products:
-            row[str(p.id)] = (p.specifications or {}).get(spec, None)
+            specs = p.content.get('specifications', {}) if p.content else {}
+            row[str(p.id)] = specs.get(spec, None)
         comparison_matrix[spec] = row
 
     return {
