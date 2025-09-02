@@ -14,7 +14,12 @@ async function fetchProduct(slug: string): Promise<Product | null> {
     }
 
     const apiUrl = `https://getyourmusicgear-api.azurewebsites.net/api/v1/products/${productId}`;
-    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      console.error('API_KEY environment variable is not set');
+      return null;
+    }
 
     const response = await fetch(apiUrl, {
       headers: {
@@ -39,17 +44,6 @@ async function fetchProduct(slug: string): Promise<Product | null> {
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await fetchProduct(params.slug);
 
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-primary-900 mb-4">Product Not Found</h1>
-          <Link href="/products" className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">Browse All Products</Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-primary-50">
       {/* Ad Space - Top */}
@@ -61,7 +55,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
         </div>
       </section>
 
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={product} slug={params.slug} />
     </div>
   );
 }

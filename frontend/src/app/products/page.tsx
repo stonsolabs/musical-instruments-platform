@@ -27,7 +27,12 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
     // For server-side requests, call Azure API directly with API key
     const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/products';
-    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      console.error('API_KEY environment variable is not set');
+      return { products: [], total: 0, hasMore: false };
+    }
 
     console.log('🔍 Server-side fetching products:', `${apiUrl}?${params.toString()}`);
 
@@ -66,7 +71,12 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 async function fetchCategories(): Promise<Category[]> {
   try {
     const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/categories';
-    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      console.error('API_KEY environment variable is not set');
+      return [];
+    }
 
     const response = await fetch(apiUrl, {
       headers: {
@@ -93,7 +103,12 @@ async function fetchCategories(): Promise<Category[]> {
 async function fetchBrands(): Promise<Brand[]> {
   try {
     const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/brands';
-    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      console.error('API_KEY environment variable is not set');
+      return [];
+    }
 
     const response = await fetch(apiUrl, {
       headers: {

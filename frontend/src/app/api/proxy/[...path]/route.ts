@@ -39,8 +39,14 @@ export async function GET(
   
   // Skip API key validation for local development
   if (!API_KEY && !API_BASE_URL.includes('localhost')) {
-    console.error('❌ API_KEY not configured, using hardcoded key for now');
-    // Fallback to hardcoded API key for production
+    console.error('❌ API_KEY not configured for production');
+    return NextResponse.json(
+      { 
+        error: 'API_KEY environment variable is required for production',
+        instructions: 'Set API_KEY environment variable in your hosting platform'
+      },
+      { status: 500 }
+    );
   }
   
   try {
@@ -58,7 +64,7 @@ export async function GET(
     
     // Only add API key for production
     if (!API_BASE_URL.includes('localhost')) {
-      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+      headers['X-API-Key'] = API_KEY;
     }
     
     const response = await fetch(targetUrl, {
@@ -150,7 +156,7 @@ export async function POST(
     
     // Only add API key for production
     if (!API_BASE_URL.includes('localhost')) {
-      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+      headers['X-API-Key'] = API_KEY;
     }
     
     const response = await fetch(`${baseUrl}${apiPrefix}/${path}`, {
@@ -195,7 +201,7 @@ export async function PUT(
     
     // Only add API key for production
     if (!API_BASE_URL.includes('localhost')) {
-      headers['X-API-Key'] = API_KEY || 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
+      headers['X-API-Key'] = API_KEY;
     }
     
     const response = await fetch(`${baseUrl}${apiPrefix}/${path}`, {
