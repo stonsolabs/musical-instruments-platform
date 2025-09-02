@@ -297,6 +297,11 @@ export interface TrendingProduct {
   view_count: number;
   comparison_count: number;
   trending_score: number;
+  content?: {
+    store_links?: Record<string, string>;
+    specifications?: Record<string, any>;
+    [key: string]: any;
+  };
 }
 
 export interface TrendingResponse {
