@@ -10,6 +10,7 @@ import SpecificationsComparison from '@/components/SpecificationsComparison';
 import AffiliateButton from '@/components/AffiliateButton';
 import { CompactProductVoting } from '@/components/ProductVoting';
 import HydrationSafe from '@/components/HydrationSafe';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { formatPrice, formatRating } from '@/lib/utils';
 
@@ -22,43 +23,6 @@ interface ProductsClientProps {
   initialPagination: SearchResponse['pagination'];
   categories: Category[];
   brands: Brand[];
-}
-
-// Error Boundary Component
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean; error?: Error }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ProductsClient Error Boundary caught an error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="text-center py-12">
-          <div className="text-red-600 mb-4">Something went wrong loading the products.</div>
-          <button 
-            onClick={() => this.setState({ hasError: false })} 
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
 }
 
 export default function ProductsClient({

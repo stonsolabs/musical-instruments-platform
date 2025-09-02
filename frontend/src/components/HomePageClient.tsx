@@ -1,55 +1,61 @@
-
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product, SearchAutocompleteProduct, TrendingProduct, TrendingComparison } from '@/types';
-import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
-import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
-import AffiliateButton from '@/components/AffiliateButton';
+import dynamic from 'next/dynamic';
+import { Product, SearchAutocompleteProduct } from '@/types';
+import { CompactProductVoting } from '@/components/ProductVoting';
 import { formatPrice } from '@/lib/utils';
 import { apiClient } from '@/lib/api';
 
-export default function HomePageClient() {
-  const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
-  const [trendingProducts, setTrendingProducts] = useState<TrendingProduct[]>([]);
-  const [trendingComparisons, setTrendingComparisons] = useState<TrendingComparison[]>([]);
-  const [topRatedProducts, setTopRatedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+const UnifiedSearchAutocomplete = dynamic(() => import('@/components/UnifiedSearchAutocomplete'), {
+  loading: () => <div className="animate-pulse h-12 bg-white rounded-lg border border-gray-200"></div>,
+  ssr: false
+});
 
-  // Load trending products, comparisons, and top-rated products
+interface HomePageClientProps {
+  initialPopularProducts?: Product[];
+  initialTopRatedProducts?: Product[];
+}
+
+export default function HomePageClient({ 
+  initialPopularProducts = [], 
+  initialTopRatedProducts = [] 
+}: HomePageClientProps) {
+  const [selectedProducts, setSelectedProducts] = useState<SearchAutocompleteProduct[]>([null as any]);
+  const [popularProducts, setPopularProducts] = useState<Product[]>(initialPopularProducts);
+  const [topRatedProducts, setTopRatedProducts] = useState<Product[]>(initialTopRatedProducts);
+  const [loading, setLoading] = useState(initialPopularProducts.length === 0);
+
+  // Load popular and top-rated products if not provided
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        console.log('🔍 Loading trending and top-rated products...');
-        const [trending, trendingComps, topRated] = await Promise.all([
-          apiClient.getTrendingInstruments(6).catch(() => ({ products: [] })),
-          apiClient.getTrendingComparisons(4).catch(() => ({ comparisons: [] })),
-          apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' }).catch(() => ({ products: [] }))
-        ]);
-        console.log('📊 Trending products loaded:', trending.products?.length || 0);
-        console.log('📊 Trending comparisons loaded:', trendingComps.comparisons?.length || 0);
-        console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
-        setTrendingProducts(trending.products || []);
-        setTrendingComparisons(trendingComps.comparisons || []);
-        setTopRatedProducts(topRated.products || []);
-      } catch (error) {
-        console.error('❌ Error loading products:', error);
-        // Silent fail with empty arrays - better UX than console errors
-        setTrendingProducts([]);
-        setTrendingComparisons([]);
-        setTopRatedProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProducts();
-  }, []);
+    if (initialPopularProducts.length === 0 || initialTopRatedProducts.length === 0) {
+      const loadProducts = async () => {
+        try {
+          console.log('🔍 Loading popular and top-rated products...');
+          const [popular, topRated] = await Promise.all([
+            apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
+            apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
+          ]);
+          console.log('📊 Popular products loaded:', popular.products?.length || 0);
+          console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
+          setPopularProducts(popular.products || []);
+          setTopRatedProducts(topRated.products || []);
+        } catch (error) {
+          console.error('❌ Error loading products:', error);
+          setPopularProducts([]);
+          setTopRatedProducts([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadProducts();
+    }
+  }, [initialPopularProducts.length, initialTopRatedProducts.length]);
 
   const addSearchField = () => {
     if (selectedProducts.length < 5) {
-      // Add an empty slot for a new product
       setSelectedProducts([...selectedProducts, null as any]);
     }
   };
@@ -70,7 +76,6 @@ export default function HomePageClient() {
   const handleCompare = () => {
     const validProducts = selectedProducts.filter(product => product !== null);
     if (validProducts.length >= 1) {
-      // Create URL with product slugs for SEO (user only sees slugs)
       const productSlugs = validProducts.map(product => product.slug);
       const slugsString = productSlugs.join(',');
       window.location.href = `/compare?products=${slugsString}`;
@@ -93,22 +98,16 @@ export default function HomePageClient() {
     },
     { 
       title: 'Taylor 214ce vs Martin D-28 Standard', 
-      products: 'taylor-214ce-grand-auditorium,martin-d-28-standard', 
+      products: 'taylor-214ce-deluxe-grand-auditorium,martin-d-28-standard', 
       category: 'Acoustic Guitars',
-      description: 'Compare premium acoustic guitars for serious musicians'
+      description: 'Discover the differences between these premium acoustic guitars'
     },
-    { 
-      title: 'Roland TD-17KV vs Alesis Nitro Mesh Kit', 
-      products: 'roland-td-17kv-electronic-drum-kit,alesis-nitro-mesh-kit', 
-      category: 'Drums & Percussion',
-      description: 'Choose the right electronic drum kit for your practice needs'
-    }
   ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white hero-content" aria-labelledby="hero-heading">
+      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white hero-content" aria-labelledby="hero-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
@@ -119,7 +118,7 @@ export default function HomePageClient() {
               <p className="text-2xl md:text-3xl font-semibold mb-4">
                 Expert Reviews, Detailed Comparisons, and Trusted Recommendations
               </p>
-              <p className="text-xl text-gray-200 mb-8">
+              <p className="text-xl text-primary-200 mb-8">
                 Discover the ideal instrument for your musical journey with comprehensive reviews, detailed specifications, and expert guidance from trusted music retailers worldwide
               </p>
             </div>
@@ -143,7 +142,7 @@ export default function HomePageClient() {
                       {selectedProducts.length > 1 && (
                         <button
                           onClick={() => removeSearchField(index)}
-                          className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                          className="w-8 h-8 rounded-full bg-error-500 text-white flex items-center justify-center hover:bg-error-600 transition-colors"
                         >
                           ×
                         </button>
@@ -167,7 +166,7 @@ export default function HomePageClient() {
 
               <button
                 onClick={handleCompare}
-                className="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
+                className="w-full mt-6 bg-primary-800 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors"
               >
                 Compare {selectedProducts.filter(product => product !== null).length} Instrument{selectedProducts.filter(product => product !== null).length !== 1 ? 's' : ''}
               </button>
@@ -177,12 +176,12 @@ export default function HomePageClient() {
       </section>
 
       {/* Ad Space - Top Banner */}
-      <section className="py-6 bg-gray-50">
+      <section className="py-6 bg-primary-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg p-6 text-white text-center">
+          <div className="bg-gradient-to-r from-accent-400 to-accent-600 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Special Offer!</h3>
             <p className="mb-4">Get 15% off on all Fender guitars this month</p>
-            <button className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+            <button className="bg-white text-accent-600 px-6 py-2 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
               Shop Now
             </button>
           </div>
@@ -192,62 +191,60 @@ export default function HomePageClient() {
       {/* Popular Instruments Right Now */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Trending Musical Instruments</h2>
-          
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Trending Musical Instruments</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 animate-pulse">
-                  <div className="h-48 bg-white border border-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded"></div>
+                <div key={i} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 animate-pulse">
+                  <div className="h-64 bg-primary-200 rounded-lg mb-4"></div>
+                  <div className="h-4 bg-primary-200 rounded mb-2"></div>
+                  <div className="h-6 bg-primary-200 rounded mb-2"></div>
+                  <div className="h-4 bg-primary-200 rounded"></div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trendingProducts.map((product, index) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              {popularProducts.map((product, index) => (
+                <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
+                    <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <Image 
                           src={product.images[0]} 
                           alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                           width={400}
-                          height={192}
-                          className="w-full h-full scale-105 hover:scale-110 transition-transform duration-300"
-                          style={{ backgroundColor: 'white' }}
+                          height={256}
+                          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 3}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-gray-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                          <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                         </div>
                       )}
                     </div>
                   </Link>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
-                    <span className="text-sm text-gray-500">{product.view_count || 0} views</span>
+                    <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
+                    <span className="text-sm text-primary-500">1000+ watching</span>
                   </div>
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>
+                    <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                   </Link>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-yellow-500">★</span>
-                      <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
-                    </div>
+                  <div className="flex items-center justify-center mb-4">
+                    <CompactProductVoting 
+                      productId={product.id}
+                      initialStats={product.vote_stats}
+                      className=""
+                    />
                   </div>
                   <div className="space-y-2">
                     {product.prices && product.prices.length > 0 ? (
                       <>
-                        {/* Show only stores that are actually associated with this product */}
                         {product.prices
-                          .slice(0, 2) // Show max 2 stores to avoid clutter
+                          .slice(0, 2)
                           .map((price) => {
                             const isThomann = price.store.name.toLowerCase().includes('thomann');
                             const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
@@ -295,11 +292,10 @@ export default function HomePageClient() {
                           })
                         }
                         
-                        {/* Show more stores link if there are more than 2 */}
                         {product.prices.length > 2 && (
                           <Link 
                             href={`/products/${product.slug}-${product.id}`}
-                            className="block w-full text-center py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                            className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
                           >
                             View All {product.prices.length} Stores
                           </Link>
@@ -308,13 +304,13 @@ export default function HomePageClient() {
                     ) : (
                       <div className="space-y-2">
                         <a
-                          href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                          href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="fp-table__button fp-table__button--thomann"
                         >
                           <span>View Price at</span>
-                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                         </a>
                         <a
                           href={product.content?.store_links?.['gear4music'] || product.content?.store_links?.['Gear4music'] || `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -323,7 +319,7 @@ export default function HomePageClient() {
                           className="fp-table__button fp-table__button--gear4music"
                         >
                           <span>View Price at</span>
-                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                         </a>
                       </div>
                     )}
@@ -335,79 +331,40 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      {/* Trending Comparisons */}
-      <section className="py-16 bg-gray-50">
+      {/* Popular Comparisons */}
+      <section className="py-16 bg-primary-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Trending Instrument Comparisons</h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trendingComparisons.length > 0 ? (
-              trendingComparisons.map((comparison, index) => (
-                <Link
-                  key={index}
-                  href={`/compare?products=${comparison.products.map(p => p.slug).join(',')}`}
-                  className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
-                >
-                  <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                    <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Popular Instrument Comparisons</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {popularComparisons.map((comparison, index) => (
+              <Link
+                key={index}
+                href={`/compare?products=${comparison.products}`}
+                className="group block bg-white rounded-xl shadow-elegant border border-primary-200 overflow-hidden hover:shadow-lg transition-all"
+              >
+                <div className="h-48 bg-white flex items-center justify-center relative overflow-hidden border border-gray-200">
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                  <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-semibold text-accent-600 uppercase tracking-wide">{comparison.category}</span>
                   </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">
-                        {comparison.products[0]?.category?.name || 'Instruments'}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {comparison.comparison_count} comparisons
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
-                      {comparison.products.map(p => p.brand.name + ' ' + p.name.split(' ').slice(0, 2).join(' ')).join(' vs ')}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">
-                      Compare {comparison.products.length} popular {comparison.products[0]?.category?.name.toLowerCase() || 'instruments'}
-                    </p>
-                    <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
-                      Compare Now
-                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
+                  <h3 className="font-semibold text-primary-900 mb-2 group-hover:text-accent-600 transition-colors">
+                    {comparison.title}
+                  </h3>
+                  <p className="text-primary-600 text-sm mb-4">
+                    {comparison.description}
+                  </p>
+                  <div className="flex items-center text-accent-600 font-medium group-hover:text-accent-700">
+                    Compare Now
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
-                </Link>
-              ))
-            ) : (
-              // Fallback to popular comparisons if no trending data
-              popularComparisons.map((comparison, index) => (
-                <Link
-                  key={index}
-                  href={`/compare?products=${comparison.products}`}
-                  className="group block bg-white rounded-xl shadow-elegant border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
-                >
-                  <div className="h-48 bg-gradient-to-br from-gray-500 to-orange-600 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                    <div className="text-white text-4xl font-bold relative z-10 group-hover:scale-110 transition-transform duration-300">VS</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">{comparison.category}</span>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
-                      {comparison.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">
-                      {comparison.description}
-                    </p>
-                    <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
-                      Compare Now
-                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            )}
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -415,10 +372,10 @@ export default function HomePageClient() {
       {/* Ad Space - Middle Banner */}
       <section className="py-6 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-green-400 to-gray-500 rounded-lg p-6 text-white text-center">
+          <div className="bg-gradient-to-r from-success-400 to-primary-500 rounded-lg p-6 text-white text-center">
             <h3 className="text-xl font-bold mb-2">🎵 Thomann Special</h3>
             <p className="mb-4">Free shipping on orders over €199</p>
-            <button className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+            <button className="bg-white text-success-600 px-6 py-2 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
               Learn More
             </button>
           </div>
@@ -428,49 +385,43 @@ export default function HomePageClient() {
       {/* Top Rated Instruments */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Highest Rated Instruments</h2>
-          
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary-900">Highest Rated Instruments</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-gray-200 p-6">
+              <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
+                  <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
                     {product.images && product.images.length > 0 ? (
                       <Image 
                         src={product.images[0]} 
                         alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                         width={400}
-                        height={192}
-                        className="w-full h-full scale-105 hover:scale-110 transition-transform duration-300"
-                        style={{ backgroundColor: 'white' }}
+                        height={256}
+                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-gray-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
                       </div>
                     )}
                   </div>
                 </Link>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
+                  <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
                 </div>
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <h3 className="font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>
+                  <h3 className="font-semibold text-primary-900 mb-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                 </Link>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                <p className="text-primary-600 text-sm mb-4 line-clamp-2">
                   {product.description || "Exceptional quality instrument with outstanding reviews from musicians worldwide."}
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">({product.review_count || 150} reviews)</span>
-                </div>
                 <div className="space-y-2 mt-4">
                   {product.prices && product.prices.length > 0 ? (
                     <>
-                      {/* Show only stores that are actually associated with this product */}
                       {product.prices
-                        .slice(0, 2) // Show max 2 stores to avoid clutter
+                        .slice(0, 2)
                         .map((price) => {
                           const isThomann = price.store.name.toLowerCase().includes('thomann');
                           const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
@@ -485,7 +436,7 @@ export default function HomePageClient() {
                                 className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
                                 <span>View Price at</span>
-                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                                <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                               </a>
                             );
                           } else if (isGear4Music) {
@@ -498,7 +449,7 @@ export default function HomePageClient() {
                                 className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
                               >
                                 <span>View Price at</span>
-                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                                <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                               </a>
                             );
                           } else {
@@ -518,7 +469,6 @@ export default function HomePageClient() {
                         })
                       }
                       
-                      {/* Show more stores link if there are more than 2 */}
                       {product.prices.length > 2 && (
                         <Link 
                           href={`/products/${product.slug}-${product.id}`}
@@ -531,13 +481,13 @@ export default function HomePageClient() {
                   ) : (
                     <div className="space-y-2">
                       <a
-                        href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        href={product.content?.store_links?.['Thomann'] || product.content?.store_links?.['thomann'] || product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="fp-table__button fp-table__button--thomann"
                       >
                         <span>View Price at</span>
-                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" />
                       </a>
                       <a
                         href={product.content?.store_links?.['gear4music'] || product.content?.store_links?.['Gear4music'] || `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`}
@@ -546,10 +496,13 @@ export default function HomePageClient() {
                         className="fp-table__button fp-table__button--gear4music"
                       >
                         <span>View Price at</span>
-                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" />
                       </a>
                     </div>
                   )}
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-sm text-primary-500">({product.review_count || 150} reviews)</span>
                 </div>
               </div>
             ))}
@@ -677,6 +630,3 @@ export default function HomePageClient() {
     </div>
   );
 }
-
-
-

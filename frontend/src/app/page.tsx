@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import HomePageClient from './HomePageClient';
+import HomePageClient from '@/components/HomePageClient';
 
 export const metadata: Metadata = {
   title: 'Musical Instruments Platform - Find Your Perfect Instrument',
