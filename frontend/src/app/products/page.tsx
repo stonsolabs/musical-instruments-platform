@@ -8,7 +8,6 @@ import { API_BASE_URL, getServerBaseUrl } from '@/lib/api';
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
 
-
 async function fetchProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<SearchResponse> {
   try {
     const params = new URLSearchParams();
@@ -31,7 +30,11 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
     if (!apiKey) {
       console.error('API_KEY environment variable is not set');
-      return { products: [], total: 0, hasMore: false };
+      return { 
+        products: [], 
+        pagination: { page: 1, limit: 20, total: 0, pages: 0 },
+        filters_applied: { sort_by: 'name' }
+      };
     }
 
     console.log('🔍 Server-side fetching products:', `${apiUrl}?${params.toString()}`);
@@ -57,7 +60,40 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
     const data = await response.json();
     console.log('✅ Server-side products fetched:', data.products?.length || 0, 'products');
-    return data;
+    
+    // Ensure data structure consistency
+    const normalizedData: SearchResponse = {
+      products: data.products || [],
+      pagination: data.pagination || { page: 1, limit: 20, total: 0, pages: 0 },
+      filters_applied: data.filters_applied || { sort_by: 'name' }
+    };
+    
+    // Normalize product data to ensure all required fields exist
+    normalizedData.products = normalizedData.products.map(product => ({
+      id: product.id || 0,
+      sku: product.sku || '',
+      name: product.name || 'Unknown Product',
+      slug: product.slug || 'unknown-product',
+      brand: product.brand || { id: 0, name: 'Unknown Brand', slug: 'unknown-brand' },
+      category: product.category || { id: 0, name: 'Unknown Category', slug: 'unknown-category' },
+      description: product.description || '',
+      specifications: product.specifications || {},
+      images: product.images || [],
+      msrp_price: product.msrp_price,
+      best_price: product.best_price,
+      prices: product.prices || [],
+      avg_rating: product.avg_rating || 0,
+      review_count: product.review_count || 0,
+      is_active: product.is_active !== undefined ? product.is_active : true,
+      created_at: product.created_at || new Date().toISOString(),
+      updated_at: product.updated_at || new Date().toISOString(),
+      ai_content: product.ai_content,
+      vote_stats: product.vote_stats,
+      thomann_info: product.thomann_info,
+      content: product.content || {}
+    }));
+    
+    return normalizedData;
   } catch (error) {
     console.error('Error fetching products:', error);
     return {
@@ -93,7 +129,16 @@ async function fetchCategories(): Promise<Category[]> {
 
     const data = await response.json();
     console.log('✅ Server-side categories fetched:', data?.length || 0, 'categories');
-    return data;
+    
+    // Ensure data structure consistency
+    return (data || []).map((category: any) => ({
+      id: category.id || 0,
+      name: category.name || 'Unknown Category',
+      slug: category.slug || 'unknown-category',
+      description: category.description || '',
+      parent_id: category.parent_id,
+      image_url: category.image_url
+    }));
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -125,7 +170,15 @@ async function fetchBrands(): Promise<Brand[]> {
 
     const data = await response.json();
     console.log('✅ Server-side brands fetched:', data?.length || 0, 'brands');
-    return data;
+    
+    // Ensure data structure consistency
+    return (data || []).map((brand: any) => ({
+      id: brand.id || 0,
+      name: brand.name || 'Unknown Brand',
+      slug: brand.slug || 'unknown-brand',
+      logo_url: brand.logo_url,
+      description: brand.description || ''
+    }));
   } catch (error) {
     console.error('Error fetching brands:', error);
     return [];
@@ -180,12 +233,28 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  // Fetch data on the server
-  const [productsData, categories, brands] = await Promise.all([
-    fetchProducts(searchParams),
-    fetchCategories(),
-    fetchBrands(),
-  ]);
+  // Fetch data on the server with error handling
+  let productsData: SearchResponse;
+  let categories: Category[] = [];
+  let brands: Brand[] = [];
+
+  try {
+    [productsData, categories, brands] = await Promise.all([
+      fetchProducts(searchParams),
+      fetchCategories(),
+      fetchBrands(),
+    ]);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    // Provide fallback data
+    productsData = {
+      products: [],
+      pagination: { page: 1, limit: 20, total: 0, pages: 0 },
+      filters_applied: { sort_by: 'name' }
+    };
+    categories = [];
+    brands = [];
+  }
 
   // Generate structured data for SEO
   const structuredData = {
@@ -203,9 +272,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         name: product.name,
         brand: {
           '@type': 'Brand',
-          name: product.brand.name,
+          name: product.brand?.name || 'Unknown Brand',
         },
-        category: product.category.name,
+        category: product.category?.name || 'Unknown Category',
         url: `https://getyourmusicgear.com/products/${product.slug}-${product.id}`,
         offers: product.best_price ? {
           '@type': 'Offer',

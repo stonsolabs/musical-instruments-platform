@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { GoogleTagManager } from '@/components/Analytics'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Compare Musical Instruments - Find Your Perfect Instrument',
@@ -108,7 +109,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <a href="#main-content" className="skip-link">Skip to main content</a>
           <Header />
           <main id="main-content">
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </main>
           <Footer />
         </AnalyticsProvider>
