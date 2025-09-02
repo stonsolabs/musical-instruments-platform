@@ -223,25 +223,25 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="text-center">
                     <div className={`font-bold text-success-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                      {product.ai_content.professional_assessment.expert_rating.build_quality}/10
+                      {product.ai_content?.professional_assessment?.expert_rating?.build_quality || 0}/10
                     </div>
                     <div className="text-xs text-primary-600">Build</div>
                   </div>
                   <div className="text-center">
                     <div className={`font-bold text-accent-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                      {product.ai_content.professional_assessment.expert_rating.sound_quality}/10
+                      {product.ai_content?.professional_assessment?.expert_rating?.sound_quality || 0}/10
                     </div>
                     <div className="text-xs text-primary-600">Sound</div>
                   </div>
                   <div className="text-center">
                     <div className={`font-bold text-warning-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                      {product.ai_content.professional_assessment.expert_rating.value_for_money}/10
+                      {product.ai_content?.professional_assessment?.expert_rating?.value_for_money || 0}/10
                     </div>
                     <div className="text-xs text-primary-600">Value</div>
                   </div>
                   <div className="text-center">
                     <div className={`font-bold text-primary-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                      {product.ai_content.professional_assessment.expert_rating.versatility}/10
+                      {product.ai_content?.professional_assessment?.expert_rating?.versatility || 0}/10
                     </div>
                     <div className="text-xs text-primary-600">Versatility</div>
                   </div>

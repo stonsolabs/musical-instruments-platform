@@ -290,7 +290,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       <div>
                         <h5 className="text-sm font-semibold text-success-700 mb-2">Why Buy</h5>
                         <div className="space-y-2">
-                          {product.ai_content.purchase_decision.why_buy.slice(0, 2).map((reason, index) => (
+                          {(product.ai_content?.purchase_decision?.why_buy || []).slice(0, 2).map((reason, index) => (
                             <div key={index} className="p-2 bg-success-50 border border-success-200 rounded text-xs">
                               <div className="font-medium text-success-800">{reason.title}</div>
                               <div className="text-success-700 mt-1">{reason.description}</div>
@@ -303,7 +303,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       <div>
                         <h5 className="text-sm font-semibold text-error-700 mb-2">Considerations</h5>
                         <div className="space-y-2">
-                          {product.ai_content.purchase_decision.why_not_buy.slice(0, 1).map((reason, index) => (
+                          {(product.ai_content?.purchase_decision?.why_not_buy || []).slice(0, 1).map((reason, index) => (
                             <div key={index} className="p-2 bg-error-50 border border-error-200 rounded text-xs">
                               <div className="font-medium text-error-800">{reason.title}</div>
                               <div className="text-error-700 mt-1">{reason.description}</div>
@@ -316,7 +316,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       <div>
                         <h5 className="text-sm font-semibold text-primary-700 mb-2">Best For</h5>
                         <div className="space-y-2">
-                          {product.ai_content.purchase_decision.best_for.slice(0, 1).map((userType, index) => (
+                          {(product.ai_content?.purchase_decision?.best_for || []).slice(0, 1).map((userType, index) => (
                             <div key={index} className="p-2 bg-primary-50 border border-primary-200 rounded text-xs">
                               <div className="font-medium text-primary-800">{userType.user_type}</div>
                               <div className="text-primary-700 mt-1">{userType.reason}</div>
@@ -377,7 +377,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           <div>
                             <span className="text-xs font-medium text-success-600">Excellent:</span>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {product.ai_content.usage_guidance.suitable_music_styles.excellent.slice(0, 2).map((style, index) => (
+                              {(product.ai_content?.usage_guidance?.suitable_music_styles?.excellent || []).slice(0, 2).map((style, index) => (
                                 <span key={index} className="px-2 py-1 bg-success-100 text-success-800 text-xs rounded-full">
                                   {style}
                                 </span>
@@ -387,7 +387,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           <div>
                             <span className="text-xs font-medium text-primary-600">Good:</span>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {product.ai_content.usage_guidance.suitable_music_styles.good.slice(0, 2).map((style, index) => (
+                              {(product.ai_content?.usage_guidance?.suitable_music_styles?.good || []).slice(0, 2).map((style, index) => (
                                 <span key={index} className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded-full">
                                   {style}
                                 </span>
@@ -401,7 +401,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       {/* <div>
                         <span className="text-sm font-medium text-primary-500">Recommended Amps</span>
                         <div className="space-y-1 mt-2">
-                          {product.ai_content.usage_guidance.recommended_amplifiers.slice(0, 3).map((amp, index) => (
+                          {(product.ai_content?.usage_guidance?.recommended_amplifiers || []).slice(0, 3).map((amp, index) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs">
                               <span className="text-accent-800 font-medium truncate flex-1 mr-2">{amp}</span>
                               <div className="flex gap-1 flex-shrink-0">
@@ -428,7 +428,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       {/* Learning Curve */}
                       <div>
                         <span className="text-sm font-medium text-primary-500">Learning Curve</span>
-                        <p className="text-sm text-primary-700 mt-1">{product.ai_content.usage_guidance.skill_development.learning_curve}</p>
+                        <p className="text-sm text-primary-700 mt-1">{product.ai_content?.usage_guidance?.skill_development?.learning_curve || 'Learning curve information not available.'}</p>
                       </div>
                     </div>
                   ) : (
@@ -482,11 +482,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                         <div className="space-y-2">
                           <div>
                             <span className="text-xs font-medium text-primary-600">Daily:</span>
-                            <p className="text-xs text-primary-700 mt-1">{product.ai_content.maintenance_care.care_instructions.daily}</p>
+                            <p className="text-xs text-primary-700 mt-1">{product.ai_content?.maintenance_care?.care_instructions?.daily || 'Daily care instructions not available.'}</p>
                           </div>
                           <div>
                             <span className="text-xs font-medium text-primary-600">Weekly:</span>
-                            <p className="text-xs text-primary-700 mt-1">{product.ai_content.maintenance_care.care_instructions.weekly}</p>
+                            <p className="text-xs text-primary-700 mt-1">{product.ai_content?.maintenance_care?.care_instructions?.weekly || 'Weekly care instructions not available.'}</p>
                           </div>
                         </div>
                       </div>
@@ -498,14 +498,14 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                           <div>
                             <span className="text-xs font-medium text-primary-600">Easy Upgrades:</span>
                             <ul className="list-disc list-inside text-xs text-primary-700 mt-1">
-                              {product.ai_content.maintenance_care.upgrade_potential.easy_upgrades.slice(0, 2).map((upgrade, index) => (
+                              {(product.ai_content?.maintenance_care?.upgrade_potential?.easy_upgrades || []).slice(0, 2).map((upgrade, index) => (
                                 <li key={index}>{upgrade}</li>
                               ))}
                             </ul>
                           </div>
                           <div>
                             <span className="text-xs font-medium text-primary-600">Budget:</span>
-                            <p className="text-xs text-primary-700 mt-1">{product.ai_content.maintenance_care.upgrade_potential.recommended_budget}</p>
+                            <p className="text-xs text-primary-700 mt-1">{product.ai_content?.maintenance_care?.upgrade_potential?.recommended_budget || 'Budget recommendation not available.'}</p>
                           </div>
                         </div>
                       </div>
@@ -514,7 +514,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                       <div>
                         <h5 className="text-sm font-semibold text-primary-700 mb-2">Common Issues</h5>
                         <div className="flex flex-wrap gap-1">
-                          {product.ai_content.maintenance_care.common_issues.slice(0, 2).map((issue, index) => (
+                          {(product.ai_content?.maintenance_care?.common_issues || []).slice(0, 2).map((issue, index) => (
                             <span key={index} className="px-2 py-1 bg-warning-100 text-warning-800 text-xs rounded-full">
                               {issue}
                             </span>

@@ -192,19 +192,19 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
                   <h3 className="text-lg font-semibold text-primary-900 mb-3">Expert Ratings</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
-                      <div className="text-xl font-bold text-success-600">{product.ai_content.professional_assessment.expert_rating.build_quality}/10</div>
+                      <div className="text-xl font-bold text-success-600">{product.ai_content?.professional_assessment?.expert_rating?.build_quality || 0}/10</div>
                       <div className="text-xs text-primary-600">Build Quality</div>
                     </div>
                     <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
-                      <div className="text-xl font-bold text-accent-600">{product.ai_content.professional_assessment.expert_rating.sound_quality}/10</div>
+                      <div className="text-xl font-bold text-accent-600">{product.ai_content?.professional_assessment?.expert_rating?.sound_quality || 0}/10</div>
                       <div className="text-xs text-primary-600">Sound Quality</div>
                     </div>
                     <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
-                      <div className="text-xl font-bold text-warning-600">{product.ai_content.professional_assessment.expert_rating.value_for_money}/10</div>
+                      <div className="text-xl font-bold text-warning-600">{product.ai_content?.professional_assessment?.expert_rating?.value_for_money || 0}/10</div>
                       <div className="text-xs text-primary-600">Value</div>
                     </div>
                     <div className="text-center p-3 bg-white rounded-lg border border-primary-200">
-                      <div className="text-xl font-bold text-primary-600">{product.ai_content.professional_assessment.expert_rating.versatility}/10</div>
+                      <div className="text-xl font-bold text-primary-600">{product.ai_content?.professional_assessment?.expert_rating?.versatility || 0}/10</div>
                       <div className="text-xs text-primary-600">Versatility</div>
                     </div>
                   </div>
@@ -380,36 +380,36 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
                     <span className="text-sm text-primary-600">Build Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.build_quality) || 0) * 10}%` }}></div>
+                        <div className="bg-success-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment?.expert_rating?.build_quality) || 0) * 10}%` }}></div>
                       </div>
-                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.build_quality || 0}/10</span>
+                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment?.expert_rating?.build_quality || 0}/10</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-primary-600">Sound Quality</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.sound_quality) || 0) * 10}%` }}></div>
+                        <div className="bg-accent-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment?.expert_rating?.sound_quality) || 0) * 10}%` }}></div>
                       </div>
-                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.sound_quality || 0}/10</span>
+                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment?.expert_rating?.sound_quality || 0}/10</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-primary-600">Value for Money</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.value_for_money) || 0) * 10}%` }}></div>
+                        <div className="bg-warning-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment?.expert_rating?.value_for_money) || 0) * 10}%` }}></div>
                       </div>
-                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.value_for_money || 0}/10</span>
+                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment?.expert_rating?.value_for_money || 0}/10</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-primary-600">Versatility</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 bg-primary-200 rounded-full h-2">
-                        <div className="bg-primary-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment.expert_rating.versatility) || 0) * 10}%` }}></div>
+                        <div className="bg-primary-500 h-2 rounded-full" style={{ width: `${(Number(product.ai_content?.professional_assessment?.expert_rating?.versatility) || 0) * 10}%` }}></div>
                       </div>
-                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment.expert_rating.versatility || 0}/10</span>
+                      <span className="text-sm font-medium">{product.ai_content?.professional_assessment?.expert_rating?.versatility || 0}/10</span>
                     </div>
                   </div>
                 </div>

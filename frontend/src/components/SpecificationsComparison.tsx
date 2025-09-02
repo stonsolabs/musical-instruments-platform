@@ -198,7 +198,7 @@ export default function SpecificationsComparison({
                       <td key={product.id} className="py-3 px-4 text-gray-700">
                         {product.ai_content?.technical_analysis.build_quality.hardware_quality ? (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {product.ai_content.technical_analysis.build_quality.hardware_quality}
+                            {product.ai_content?.technical_analysis?.build_quality?.hardware_quality}
                           </span>
                         ) : 'N/A'}
                       </td>
@@ -274,7 +274,7 @@ export default function SpecificationsComparison({
                       <td key={product.id} className="py-3 px-4 text-gray-700">
                         {product.ai_content?.technical_analysis.playability.comfort_rating ? (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            {product.ai_content.technical_analysis.playability.comfort_rating}
+                            {product.ai_content?.technical_analysis?.playability?.comfort_rating}
                           </span>
                         ) : 'N/A'}
                       </td>
@@ -336,7 +336,7 @@ export default function SpecificationsComparison({
                       <td key={product.id} className="py-3 px-4 text-gray-700">
                         {product.ai_content?.technical_analysis.sound_characteristics.output_level ? (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {product.ai_content.technical_analysis.sound_characteristics.output_level}
+                            {product.ai_content?.technical_analysis?.sound_characteristics?.output_level}
                           </span>
                         ) : 'N/A'}
                       </td>
@@ -348,7 +348,7 @@ export default function SpecificationsComparison({
                       <td key={product.id} className="py-3 px-4 text-gray-700">
                         {product.ai_content?.technical_analysis.sound_characteristics.best_genres ? (
                           <div className="flex flex-wrap gap-1">
-                            {product.ai_content.technical_analysis.sound_characteristics.best_genres.slice(0, 3).map((genre, index) => (
+                            {(product.ai_content?.technical_analysis?.sound_characteristics?.best_genres || []).slice(0, 3).map((genre, index) => (
                               <span key={index} className="px-2 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 text-xs rounded-full font-medium">
                                 {genre}
                               </span>
@@ -430,7 +430,7 @@ export default function SpecificationsComparison({
                       <td key={product.id} className="py-3 px-4 text-gray-700">
                         {product.ai_content?.basic_info.key_features ? (
                           <ul className="text-sm space-y-1">
-                            {product.ai_content.basic_info.key_features.slice(0, 3).map((feature, index) => (
+                            {(product.ai_content?.basic_info?.key_features || []).slice(0, 3).map((feature, index) => (
                               <li key={index} className="flex items-start gap-1">
                                 <span className="text-blue-600 mt-1">•</span>
                                 <span>{feature}</span>
