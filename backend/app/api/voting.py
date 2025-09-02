@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, func, select, update, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -156,11 +156,11 @@ async def get_most_voted_products(
     vote_stats_subq = (
         select(
             ProductVote.product_id,
-            func.sum(func.case((ProductVote.vote_type == 'up', 1), 0)).label('thumbs_up_count'),
-            func.sum(func.case((ProductVote.vote_type == 'down', 1), 0)).label('thumbs_down_count'),
+            func.sum(case((ProductVote.vote_type == 'up', 1), else_=0)).label('thumbs_up_count'),
+            func.sum(case((ProductVote.vote_type == 'down', 1), else_=0)).label('thumbs_down_count'),
             func.count().label('total_votes'),
-            (func.sum(func.case((ProductVote.vote_type == 'up', 1), 0)) - 
-             func.sum(func.case((ProductVote.vote_type == 'down', 1), 0))).label('vote_score')
+            (func.sum(case((ProductVote.vote_type == 'up', 1), else_=0)) - 
+             func.sum(case((ProductVote.vote_type == 'down', 1), else_=0))).label('vote_score')
         )
         .group_by(ProductVote.product_id)
         .having(func.count() > 0)

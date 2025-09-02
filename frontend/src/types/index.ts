@@ -30,6 +30,12 @@ export interface ProductPrice {
   is_available: boolean;
 }
 
+export interface ThomannInfo {
+  has_direct_url: boolean;
+  url: string;
+  fallback_search_url: string;
+}
+
 // Comprehensive AI-generated content interfaces
 export interface BasicInfo {
   overview: string;
@@ -179,6 +185,7 @@ export interface Product {
   updated_at: string;
   ai_content?: ComprehensiveAIContent;
   vote_stats?: VoteStats;
+  thomann_info?: ThomannInfo;
 }
 
 export interface SearchResponse {

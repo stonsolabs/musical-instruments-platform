@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+was commi#!/usr/bin/env python3
 """
 Cleanup Duplicate Images
 - Find products with multiple images in blob storage

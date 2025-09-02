@@ -37,6 +37,40 @@ def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
     return urls
 
 
+def _get_thomann_info(product: Product) -> Dict[str, Any]:
+    """
+    Get Thomann URL information for a product.
+    Returns either the actual Thomann URL from store_links or a search URL.
+    """
+    thomann_info = {
+        "has_direct_url": False,
+        "url": None,
+        "fallback_search_url": f"https://thomann.com/intl/search_dir.html?sw={product.name.replace(' ', '%20')}&aff=123"
+    }
+    
+    # Check if we have Thomann URL in store_links (AI-generated content)
+    if product.content and isinstance(product.content, dict):
+        store_links = product.content.get('store_links', {})
+        if store_links:
+            # Try different possible keys for Thomann URL
+            thomann_url = (
+                store_links.get('Thomann') or 
+                store_links.get('thomann') or 
+                store_links.get('thomann_url') or 
+                store_links.get('THOMANN')
+            )
+            
+            if thomann_url and isinstance(thomann_url, str) and thomann_url.startswith('http'):
+                thomann_info["has_direct_url"] = True
+                thomann_info["url"] = thomann_url
+    
+    # If no direct URL found, use the fallback search URL
+    if not thomann_info["has_direct_url"]:
+        thomann_info["url"] = thomann_info["fallback_search_url"]
+    
+    return thomann_info
+
+
 def get_content_for_display(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
     """
     Extract content for display, combining localized content with global fields.
@@ -197,6 +231,8 @@ async def search_products(
     best_prices: Dict[int, Dict[str, Any]] = {}
     vote_stats_dict = await get_multiple_products_vote_stats(db, product_ids)
     
+    # Note: Thomann URLs are now extracted from store_links in product content, not prices
+    
     if product_ids:
         bp_stmt = (
             select(
@@ -263,6 +299,9 @@ async def search_products(
         # Get content for display (combines localized + global fields)
         display_content = get_content_for_display(p.content or {})
         
+        # Get Thomann URL information from store_links in product content
+        thomann_info = _get_thomann_info(p)
+        
         items.append(
             {
                 "id": p.id,
@@ -293,6 +332,7 @@ async def search_products(
                     else None
                 ),
                 "prices": prices,
+                "thomann_info": thomann_info,
                 "ai_content": p.content or {},
                 "content": display_content,
             }

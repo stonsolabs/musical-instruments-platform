@@ -197,7 +197,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 animate-pulse">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4"></div>
+                  <div className="h-64 bg-primary-200 rounded-lg mb-4"></div>
                   <div className="h-4 bg-primary-200 rounded mb-2"></div>
                   <div className="h-6 bg-primary-200 rounded mb-2"></div>
                   <div className="h-4 bg-primary-200 rounded"></div>
@@ -209,23 +209,23 @@ export default function HomePage() {
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                    <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
-                      {product.images && product.images.length > 0 ? (
-                        <Image 
-                          src={product.images[0]} 
-                          alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
-                          width={400}
-                          height={192}
-                          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority={index < 3}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
-                        </div>
-                      )}
-                    </div>
+                                      <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                    {product.images && product.images.length > 0 ? (
+                      <Image 
+                        src={product.images[0]} 
+                        alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
+                        width={400}
+                        height={256}
+                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={index < 3}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-primary-400 text-2xl" role="img" aria-label="Musical instrument">🎸</span>
+                      </div>
+                    )}
+                  </div>
                   </Link>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
@@ -308,7 +308,7 @@ export default function HomePage() {
                     ) : (
                       <div className="space-y-2">
                         <a
-                          href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                          href={product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="fp-table__button fp-table__button--thomann"
@@ -394,13 +394,13 @@ export default function HomePage() {
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
-                  <div className="h-48 bg-primary-200 rounded-lg mb-4 overflow-hidden">
+                  <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
                     {product.images && product.images.length > 0 ? (
                       <Image 
                         src={product.images[0]} 
                         alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                         width={400}
-                        height={192}
+                        height={256}
                         className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         loading="lazy"
@@ -490,7 +490,7 @@ export default function HomePage() {
                   ) : (
                     <div className="space-y-2">
                       <a
-                        href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
+                        href={product.thomann_info?.url || `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="fp-table__button fp-table__button--thomann"

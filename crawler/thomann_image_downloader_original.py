@@ -182,104 +182,41 @@ class ThomannImageDownloader:
             self.existing_blob_products = set()
             return self.existing_blob_products
     
-    def load_existing_blob_files(self) -> Set[str]:
-        """Load all existing blob file names from Azure storage"""
-        logger.info("📋 Loading existing blob files from storage...")
-        
-        try:
-            result = subprocess.run([
-                'az', 'storage', 'blob', 'list',
-                '--container-name', self.azure_container_name,
-                '--account-name', 'getyourmusicgear',
-                '--query', '[].name',
-                '--output', 'json'
-            ], capture_output=True, text=True, timeout=120)
-            
-            if result.returncode != 0:
-                logger.warning(f"⚠️ Could not load blob files (using empty set): {result.stderr}")
-                return set()
-            
-            blob_names = json.loads(result.stdout)
-            blob_files = set(blob_names)
-            logger.info(f"✅ Found {len(blob_files)} total blob files in storage")
-            return blob_files
-            
-        except Exception as e:
-            logger.warning(f"⚠️ Error loading blob files (using empty set): {e}")
-            return set()
-    
-    def product_needs_image_processing(self, product_row, existing_blob_files: Set[str]) -> bool:
-        """Check if a product needs image processing (no images OR broken links)"""
-        product_id = product_row['id']
-        images = product_row['images']
-        
-        # Case 1: No images in database
-        if (images is None or 
-            images == '{}' or 
-            images == 'null' or 
-            (isinstance(images, dict) and not images) or
-            (isinstance(images, dict) and not images.get('thomann_main'))):
-            return True
-        
-        # Case 2: Images in database but check if files exist in blob storage
-        if isinstance(images, str):
-            try:
-                images = json.loads(images)
-            except:
-                return True  # Corrupted JSON = needs processing
-        
-        if isinstance(images, dict):
-            thomann_main = images.get('thomann_main')
-            if thomann_main:
-                # Handle case where thomann_main might be a dict or string
-                image_url = thomann_main
-                if isinstance(thomann_main, dict):
-                    image_url = thomann_main.get('url', '')
-                
-                if isinstance(image_url, str) and image_url:
-                    # Extract blob name from URL
-                    match = re.search(r'/product-images/(.+)$', image_url)
-                    if match:
-                        blob_name = match.group(1)
-                        if blob_name in existing_blob_files:
-                            return False  # Image exists, no processing needed
-                        else:
-                            return True   # Broken link, needs processing
-                    else:
-                        return True  # Invalid URL format
-                else:
-                    return True  # Invalid image URL
-            else:
-                return True  # No thomann_main field
-        else:
-            return True  # Invalid images format
-    
     async def get_products_with_thomann_links(self) -> List[Dict[str, Any]]:
-        """Get products that need image processing (no images OR broken image links)"""
+        """Get products that have Thomann links but don't already have images in blob storage"""
         if not self.db.conn:
             logger.error("❌ Database connection not available")
             return []
         
-        # Load existing blob files (not just product IDs)
-        existing_blob_files = self.load_existing_blob_files()
+        # Load existing products from blob storage first
+        existing_blob_products = self.load_existing_blob_products()
         
         try:
-            # Query ALL products with Thomann links (including those with existing image records)
+            # Query products that have Thomann links but NO images yet
             query = """
                 SELECT p.id, p.sku, p.name, p.content, p.images
                 FROM products p
                 WHERE p.content->>'store_links' IS NOT NULL
                 AND p.content->'store_links'->>'Thomann' IS NOT NULL
+                AND (p.images IS NULL 
+                     OR p.images = '{}' 
+                     OR p.images = 'null' 
+                     OR p.images->>'thomann_main' IS NULL)
                 ORDER BY p.updated_at DESC
             """
             
             rows = await self.db.conn.fetch(query)
             products = []
-            skipped_valid_images = 0
+            skipped_blob_count = 0
             skipped_no_url_count = 0
             
             for row in rows:
                 product_id = row['id']
+                
+                # Skip if product already has image in blob storage
+                if product_id in existing_blob_products:
+                    skipped_blob_count += 1
+                    continue
                 
                 # Parse content if it's a string, otherwise use as dict
                 content = row['content'] or {}
@@ -292,14 +229,7 @@ class ThomannImageDownloader:
                 store_links = content.get('store_links', {})
                 thomann_url = store_links.get('Thomann')
                 
-                if not thomann_url:
-                    skipped_no_url_count += 1
-                    continue
-                
-                # Check if product needs processing
-                needs_processing = self.product_needs_image_processing(row, existing_blob_files)
-                
-                if needs_processing:
+                if thomann_url:
                     products.append({
                         'id': row['id'],
                         'sku': row['sku'],
@@ -309,11 +239,11 @@ class ThomannImageDownloader:
                         'images': row['images'] or {}
                     })
                 else:
-                    skipped_valid_images += 1
+                    skipped_no_url_count += 1
             
-            logger.info(f"📊 ENHANCED PRODUCT FILTERING RESULTS:")
+            logger.info(f"📊 PRODUCT FILTERING RESULTS:")
             logger.info(f"   🎯 Total products from DB: {len(rows)}")
-            logger.info(f"   ✅ Valid images (skipped): {skipped_valid_images}")
+            logger.info(f"   ✅ Already in blob storage: {skipped_blob_count}")
             logger.info(f"   ❌ No Thomann URL: {skipped_no_url_count}")
             logger.info(f"   📥 Need processing: {len(products)}")
             
