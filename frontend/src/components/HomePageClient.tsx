@@ -1,20 +1,13 @@
+
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamicImport from 'next/dynamic';
 import { Product, SearchAutocompleteProduct, TrendingProduct, TrendingComparison } from '@/types';
 import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
-
-// Lazy load heavy components
-const UnifiedSearchAutocomplete = dynamicImport(() => import('@/components/UnifiedSearchAutocomplete'), {
-  loading: () => <div className="animate-pulse h-12 bg-gray-200 rounded-lg"></div>
-});
-const AffiliateButton = dynamicImport(() => import('@/components/AffiliateButton'), {
-  loading: () => <div className="animate-pulse h-10 bg-gray-200 rounded-lg"></div>
-});
-
+import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
+import AffiliateButton from '@/components/AffiliateButton';
 import { formatPrice } from '@/lib/utils';
 import { apiClient } from '@/lib/api';
 

@@ -5,8 +5,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import CompareClient from './CompareClient';
 
+// Dynamic import WITH server-side rendering (no ssr: false)
 const UnifiedSearchAutocomplete = dynamic(() => import('@/components/UnifiedSearchAutocomplete'), {
-  ssr: false,
   loading: () => <div className="w-full px-4 py-3 pl-12 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg animate-pulse">Loading search...</div>
 });
 
@@ -57,7 +57,6 @@ export default function ComparePage() {
                         onProductSelect={React.useCallback((product) => {
                           // Handle instrument 1 selection
                           console.log('Instrument 1 selected:', product);
-                          // You can add logic here to store the selected instrument
                           if (product?.slug) {
                             window.location.href = `/compare?products=${product.slug}`;
                           }
@@ -76,7 +75,6 @@ export default function ComparePage() {
                         onProductSelect={React.useCallback((product) => {
                           // Handle instrument 2 selection
                           console.log('Instrument 2 selected:', product);
-                          // Add to existing comparison
                           if (product?.slug) {
                             const currentProducts = searchParams.products ? decodeURIComponent(searchParams.products).split(',') : [];
                             const newProducts = [...currentProducts, product.slug];

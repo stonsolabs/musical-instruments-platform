@@ -3,21 +3,21 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamicImport from 'next/dynamic';
+import dynamic from 'next/dynamic';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
 import { CompactProductVoting } from '@/components/ProductVoting';
 
-// Force dynamic rendering since this is a client component
-export const dynamic = 'force-dynamic';
+// Dynamic imports but WITH server-side rendering (no ssr: false)
+const UnifiedSearchAutocomplete = dynamic(() => import('@/components/UnifiedSearchAutocomplete'), {
+  loading: () => <div className="animate-pulse h-12 bg-white rounded-lg border border-gray-200"></div>
+});
+const AffiliateButton = dynamic(() => import('@/components/AffiliateButton'), {
+  loading: () => <div className="animate-pulse h-10 bg-white rounded-lg border border-gray-200"></div>
+});
 
-// Lazy load heavy components
-const UnifiedSearchAutocomplete = dynamicImport(() => import('@/components/UnifiedSearchAutocomplete'), {
-  loading: () => <div className="animate-pulse h-12 bg-gray-200 rounded-lg"></div>
-});
-const AffiliateButton = dynamicImport(() => import('@/components/AffiliateButton'), {
-  loading: () => <div className="animate-pulse h-10 bg-gray-200 rounded-lg"></div>
-});
+// Force dynamic rendering since this shows database products
+export const dynamic = 'force-dynamic';
 
 import { formatPrice } from '@/lib/utils';
 import { apiClient } from '@/lib/api';

@@ -1,15 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { GoogleTagManager } from '@/components/Analytics'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
-
-// Lazy load footer to improve initial load time
-const DynamicFooter = dynamic(() => import('@/components/Footer'), {
-  ssr: false,
-})
 
 export const metadata: Metadata = {
   title: 'Compare Musical Instruments - Find Your Perfect Instrument',
@@ -116,7 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main-content">
             {children}
           </main>
-          <DynamicFooter />
+          <Footer />
         </AnalyticsProvider>
       </body>
     </html>
