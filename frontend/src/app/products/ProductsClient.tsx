@@ -492,7 +492,7 @@ export default function ProductsClient({
                           <img 
                             src={product.images[0]} 
                             alt={product.name}
-                            className="w-full h-full object-cover scale-110"
+                            className="w-full h-full object-cover scale-105"
                           />
                         ) : (
                           <span className="text-gray-400 text-2xl">🎸</span>

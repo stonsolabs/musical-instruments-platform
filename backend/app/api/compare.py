@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload
 
 from ..database import get_db
 from ..models import Product, ProductPrice
+from ..services.trending_service import trending_service
 
 
 router = APIRouter(prefix="/compare", tags=["compare"])

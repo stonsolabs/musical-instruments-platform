@@ -1,8 +1,8 @@
 // API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 export const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 };
 
 // Get the base URL for server-side requests
@@ -115,11 +115,13 @@ export const apiClient = {
 
   // Track comparison
   async trackComparison(productIds: number[]) {
-    if (productIds.length !== 2) {
-      throw new Error('Comparison tracking requires exactly 2 product IDs');
+    if (productIds.length < 2) {
+      console.warn('Comparison tracking needs at least 2 products, skipping...');
+      return Promise.resolve(); // Don't fail if we don't have enough products
     }
     const [productId1, productId2] = productIds;
-    return this.post(`/trending/track/comparison?product_id_1=${productId1}&product_id_2=${productId2}`);
+    // Use GET request as per backend API definition
+    return this.get(`/trending/track/comparison?product_id_1=${productId1}&product_id_2=${productId2}`);
   },
 
   // Get trending instruments

@@ -1,0 +1,1084 @@
+{
+  "timestamp": "2025-09-02T15:12:14.584788",
+  "total_broken_products": 77,
+  "products_with_broken_images": {
+    "2780": {
+      "name": "Ibanez RG8570-RBS",
+      "broken_images": [
+        {
+          "product_id": 2780,
+          "product_name": "Ibanez RG8570-RBS",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/ibanez-rg8570-rbs_20250901_173249.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "43": {
+      "name": "Steinberger Guitars Gt-Pro Deluxe HR",
+      "broken_images": [
+        {
+          "product_id": 43,
+          "product_name": "Steinberger Guitars Gt-Pro Deluxe HR",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/steinberger-guitars-gt-pro-deluxe-hr_20250901_162118.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "142": {
+      "name": "Traveler Guitar Ultra-Light Nylon - Mahogany",
+      "broken_images": [
+        {
+          "product_id": 142,
+          "product_name": "Traveler Guitar Ultra-Light Nylon - Mahogany",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-ultra-light-nylon---mahogany_20250901_214502.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "389": {
+      "name": "Reloop RP 8000 MK",
+      "broken_images": [
+        {
+          "product_id": 389,
+          "product_name": "Reloop RP 8000 MK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/reloop-rp-8000-mk_20250901_171945.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "120": {
+      "name": "Furch LJ-10 Lefthand",
+      "broken_images": [
+        {
+          "product_id": 120,
+          "product_name": "Furch LJ-10 Lefthand",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/furch-lj-10-lefthand_20250901_173054.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "52": {
+      "name": "Harley Benton GS-Travel-E LH Mahogany",
+      "broken_images": [
+        {
+          "product_id": 52,
+          "product_name": "Harley Benton GS-Travel-E LH Mahogany",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-gs-travel-e-lh-mahogany_20250901_173004.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "48": {
+      "name": "Steinberger Guitars Spirit XT-2 Standard Bass HY",
+      "broken_images": [
+        {
+          "product_id": 48,
+          "product_name": "Steinberger Guitars Spirit XT-2 Standard Bass HY",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/steinberger-guitars-spirit-xt-2-standard-bass-hy_20250901_173059.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "117": {
+      "name": "Taylor Swift Baby Taylor-e TS-BTe",
+      "broken_images": [
+        {
+          "product_id": 117,
+          "product_name": "Taylor Swift Baby Taylor-e TS-BTe",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/taylor-swift-baby-taylor-e-ts-bte_20250901_162118.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "129": {
+      "name": "Traveler Guitar TR Vaibrant 88 DLX B",
+      "broken_images": [
+        {
+          "product_id": 129,
+          "product_name": "Traveler Guitar TR Vaibrant 88 DLX B",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-tr-vaibrant-88-dlx-b_20250901_172930.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "3057": {
+      "name": "Yamaha Revstar RSS20 Sunset Burst",
+      "broken_images": [
+        {
+          "product_id": 3057,
+          "product_name": "Yamaha Revstar RSS20 Sunset Burst",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/3057_20250902_073547.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "640": {
+      "name": "Schecter PT SLS Evil Twin",
+      "broken_images": [
+        {
+          "product_id": 640,
+          "product_name": "Schecter PT SLS Evil Twin",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/schecter-pt-sls-evil-twin_20250901_173013.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "1317": {
+      "name": "Marcus Miller V5 24-5 MLG",
+      "broken_images": [
+        {
+          "product_id": 1317,
+          "product_name": "Marcus Miller V5 24-5 MLG",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/marcus-miller-v5-24-5-mlg_20250901_170159.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "91": {
+      "name": "Traveler Guitar TB-4P Bass SBT",
+      "broken_images": [
+        {
+          "product_id": 91,
+          "product_name": "Traveler Guitar TB-4P Bass SBT",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-tb-4p-bass-sbt_20250901_214214.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "210": {
+      "name": "Takamine GN71CE-NAT",
+      "broken_images": [
+        {
+          "product_id": 210,
+          "product_name": "Takamine GN71CE-NAT",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/takamine-gn71ce-nat_20250901_214457.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "167": {
+      "name": "Traveler Guitar Ultra Light Bass Maple Natural",
+      "broken_images": [
+        {
+          "product_id": 167,
+          "product_name": "Traveler Guitar Ultra Light Bass Maple Natural",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-ultra-light-bass-maple-natural_20250901_173107.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "204": {
+      "name": "Gibson 50s J-45 Original Vintage Sunb",
+      "broken_images": [
+        {
+          "product_id": 204,
+          "product_name": "Gibson 50s J-45 Original Vintage Sunb",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/gibson-50s-j-45-original-vintage-sunb_20250901_173111.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "104": {
+      "name": "H\u00f6fner Shorty Cadillac Green",
+      "broken_images": [
+        {
+          "product_id": 104,
+          "product_name": "H\u00f6fner Shorty Cadillac Green",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/h%C3%B6fner-shorty-cadillac-green_20250901_173041.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "445": {
+      "name": "Harley Benton R-457FFB Roasted MultiScale",
+      "broken_images": [
+        {
+          "product_id": 445,
+          "product_name": "Harley Benton R-457FFB Roasted MultiScale",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-r-457ffb-roasted-multiscale_20250901_173145.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "1353": {
+      "name": "Harley Benton B-650 Black Progressive Series",
+      "broken_images": [
+        {
+          "product_id": 1353,
+          "product_name": "Harley Benton B-650 Black Progressive Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-b-650-black-progressive-series_20250901_172751.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "141": {
+      "name": "Harley Benton GS-Travel Spruce",
+      "broken_images": [
+        {
+          "product_id": 141,
+          "product_name": "Harley Benton GS-Travel Spruce",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-gs-travel-spruce_20250901_173102.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "197": {
+      "name": "Taylor 214ce",
+      "broken_images": [
+        {
+          "product_id": 197,
+          "product_name": "Taylor 214ce",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/taylor-214ce_20250901_214501.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "138": {
+      "name": "Traveler Guitar Travelcaster Deluxe",
+      "broken_images": [
+        {
+          "product_id": 138,
+          "product_name": "Traveler Guitar Travelcaster Deluxe",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-travelcaster-deluxe_20250901_173213.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "133": {
+      "name": "H\u00f6fner Shorty Guitar Yellow",
+      "broken_images": [
+        {
+          "product_id": 133,
+          "product_name": "H\u00f6fner Shorty Guitar Yellow",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/h%C3%B6fner-shorty-guitar-yellow_20250901_173040.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "119": {
+      "name": "H\u00f6fner Shorty Bass Cadillac Green",
+      "broken_images": [
+        {
+          "product_id": 119,
+          "product_name": "H\u00f6fner Shorty Bass Cadillac Green",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/h%C3%B6fner-shorty-bass-cadillac-green_20250901_170808.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "156": {
+      "name": "Traveler Guitar Electric Ultra Light Black",
+      "broken_images": [
+        {
+          "product_id": 156,
+          "product_name": "Traveler Guitar Electric Ultra Light Black",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-electric-ultra-light-black_20250901_173041.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "151": {
+      "name": "Traveler Guitar Escape Mark III Nylon Natural",
+      "broken_images": [
+        {
+          "product_id": 151,
+          "product_name": "Traveler Guitar Escape Mark III Nylon Natural",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/traveler-guitar-escape-mark-iii-nylon-natural_20250901_173337.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "190": {
+      "name": "Harley Benton D-120LH BK",
+      "broken_images": [
+        {
+          "product_id": 190,
+          "product_name": "Harley Benton D-120LH BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-d-120lh-bk_20250901_173036.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "1199": {
+      "name": "Epiphone 1942 Banner J-45 Reis. VS IBC",
+      "broken_images": [
+        {
+          "product_id": 1199,
+          "product_name": "Epiphone 1942 Banner J-45 Reis. VS IBC",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/epiphone-1942-banner-j-45-reis.-vs-ibc_20250901_173003.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "47": {
+      "name": "Furch Pioneer-ER a",
+      "broken_images": [
+        {
+          "product_id": 47,
+          "product_name": "Furch Pioneer-ER a",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/furch-pioneer-er-a_20250901_165112.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "282": {
+      "name": "Harley Benton ST-20HH Active SBK",
+      "broken_images": [
+        {
+          "product_id": 282,
+          "product_name": "Harley Benton ST-20HH Active SBK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-st-20hh-active-sbk_20250901_163202.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "158": {
+      "name": "Steinberger Guitars Spirit XT-25 Standard Bass BK",
+      "broken_images": [
+        {
+          "product_id": 158,
+          "product_name": "Steinberger Guitars Spirit XT-25 Standard Bass BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/steinberger-guitars-spirit-xt-25-standard-bass-bk_20250901_214455.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "187": {
+      "name": "Takamine EF341SC w/Softcase",
+      "broken_images": [
+        {
+          "product_id": 187,
+          "product_name": "Takamine EF341SC w/Softcase",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/takamine-ef341sc-w/softcase_20250901_173046.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "304": {
+      "name": "Harley Benton DC-580 CH Vintage Series",
+      "broken_images": [
+        {
+          "product_id": 304,
+          "product_name": "Harley Benton DC-580 CH Vintage Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-dc-580-ch-vintage-series_20250901_173132.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "2571": {
+      "name": "Gibson 59 Les Paul HPT TWR ULA #3",
+      "broken_images": [
+        {
+          "product_id": 2571,
+          "product_name": "Gibson 59 Les Paul HPT TWR ULA #3",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/gibson-59-les-paul-hpt-twr-ula-%233_20250901_173108.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "164": {
+      "name": "H\u00f6fner Shorty Violin Bass CT Red",
+      "broken_images": [
+        {
+          "product_id": 164,
+          "product_name": "H\u00f6fner Shorty Violin Bass CT Red",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/h\u00f6fner-shorty-violin-bass-ct-red_20250901_162200.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "316": {
+      "name": "Harley Benton Enhanced MP-5MN Natural",
+      "broken_images": [
+        {
+          "product_id": 316,
+          "product_name": "Harley Benton Enhanced MP-5MN Natural",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-enhanced-mp-5mn-natural_20250901_165044.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "327": {
+      "name": "H\u00f6fner Ignition Bass Limited HI-VB-SB",
+      "broken_images": [
+        {
+          "product_id": 327,
+          "product_name": "H\u00f6fner Ignition Bass Limited HI-VB-SB",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/h%C3%B6fner-ignition-bass-limited-hi-vb-sb_20250901_173120.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "320": {
+      "name": "Harley Benton Enhanced MJ-5EB Lake Blue",
+      "broken_images": [
+        {
+          "product_id": 320,
+          "product_name": "Harley Benton Enhanced MJ-5EB Lake Blue",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-enhanced-mj-5eb-lake-blue_20250901_172917.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "215": {
+      "name": "Takamine GY51ENAT",
+      "broken_images": [
+        {
+          "product_id": 215,
+          "product_name": "Takamine GY51ENAT",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/takamine-gy51enat_20250901_214419.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "168": {
+      "name": "Flight Mini Bass PBR",
+      "broken_images": [
+        {
+          "product_id": 168,
+          "product_name": "Flight Mini Bass PBR",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/flight-mini-bass-pbr_20250901_172915.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "343": {
+      "name": "Marcus Miller M7 Swamp Ash 5st TBK 2nd Gen",
+      "broken_images": [
+        {
+          "product_id": 343,
+          "product_name": "Marcus Miller M7 Swamp Ash 5st TBK 2nd Gen",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/marcus-miller-m7-swamp-ash-5st-tbk-2nd-gen_20250901_171910.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "373": {
+      "name": "Harley Benton TB-70 SBK Deluxe Series",
+      "broken_images": [
+        {
+          "product_id": 373,
+          "product_name": "Harley Benton TB-70 SBK Deluxe Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-tb-70-sbk-deluxe-series_20250901_173154.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "379": {
+      "name": "Epiphone ES-335 Cherry",
+      "broken_images": [
+        {
+          "product_id": 379,
+          "product_name": "Epiphone ES-335 Cherry",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/epiphone-es-335-cherry_20250901_214456.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "357": {
+      "name": "K&M 12298 LED Piano Lamp Gold",
+      "broken_images": [
+        {
+          "product_id": 357,
+          "product_name": "K&M 12298 LED Piano Lamp Gold",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/k%26m-12298-led-piano-lamp-gold_20250901_173434.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "350": {
+      "name": "Pro-Ject Debut RecordMaster II walnut",
+      "broken_images": [
+        {
+          "product_id": 350,
+          "product_name": "Pro-Ject Debut RecordMaster II walnut",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/pro-ject-debut-recordmaster-ii-walnut_20250901_173040.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "378": {
+      "name": "Korg handytraxx play",
+      "broken_images": [
+        {
+          "product_id": 378,
+          "product_name": "Korg handytraxx play",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/korg-handytraxx-play_20250901_171754.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "406": {
+      "name": "Marcus Miller Z3-4 Sparkle Black",
+      "broken_images": [
+        {
+          "product_id": 406,
+          "product_name": "Marcus Miller Z3-4 Sparkle Black",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/marcus-miller-z3-4-sparkle-black_20250901_165032.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "393": {
+      "name": "Thorens TD 204 walnut",
+      "broken_images": [
+        {
+          "product_id": 393,
+          "product_name": "Thorens TD 204 walnut",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/thorens-td-204-walnut_20250901_163230.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "306": {
+      "name": "Marcus Miller V3P-4 ORG",
+      "broken_images": [
+        {
+          "product_id": 306,
+          "product_name": "Marcus Miller V3P-4 ORG",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/marcus-miller-v3p-4-org_20250901_172835.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "419": {
+      "name": "Yamaha PSR-SX",
+      "broken_images": [
+        {
+          "product_id": 419,
+          "product_name": "Yamaha PSR-SX",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/yamaha-psr-sx_20250901_173036.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "261": {
+      "name": "Harley Benton SC-500 WH Vintage Series",
+      "broken_images": [
+        {
+          "product_id": 261,
+          "product_name": "Harley Benton SC-500 WH Vintage Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-sc-500-wh-vintage-series_20250901_173106.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "277": {
+      "name": "Harley Benton JA-Baritone BK",
+      "broken_images": [
+        {
+          "product_id": 277,
+          "product_name": "Harley Benton JA-Baritone BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-ja-baritone-bk_20250901_173235.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "505": {
+      "name": "Music Man Pino Palladino StingRay",
+      "broken_images": [
+        {
+          "product_id": 505,
+          "product_name": "Music Man Pino Palladino StingRay",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/music-man-pino-palladino-stingray_20250901_170235.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "271": {
+      "name": "Harley Benton D-120CE NT",
+      "broken_images": [
+        {
+          "product_id": 271,
+          "product_name": "Harley Benton D-120CE NT",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-d-120ce-nt_20250901_172910.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "336": {
+      "name": "Harley Benton Electric Guitar Kit Extreme-",
+      "broken_images": [
+        {
+          "product_id": 336,
+          "product_name": "Harley Benton Electric Guitar Kit Extreme-",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-electric-guitar-kit-extreme-_20250901_173049.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "625": {
+      "name": "ESP LTD EC-10 BLK",
+      "broken_images": [
+        {
+          "product_id": 625,
+          "product_name": "ESP LTD EC-10 BLK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/esp-ltd-ec-10-blk_20250901_214437.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "575": {
+      "name": "Roland RD-",
+      "broken_images": [
+        {
+          "product_id": 575,
+          "product_name": "Roland RD-",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/roland-rd-_20250901_173308.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "628": {
+      "name": "Gibson 1959 ES-355 Reissue VN VOS",
+      "broken_images": [
+        {
+          "product_id": 628,
+          "product_name": "Gibson 1959 ES-355 Reissue VN VOS",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/gibson-1959-es-355-reissue-vn-vos_20250901_172916.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "2535": {
+      "name": "Fender Stratocaster Deluxe NOS BS",
+      "broken_images": [
+        {
+          "product_id": 2535,
+          "product_name": "Fender Stratocaster Deluxe NOS BS",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/fender-stratocaster-deluxe-nos-bs_20250901_173324.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "637": {
+      "name": "Martin Guitar 000JR-10E Shawn Mendes",
+      "broken_images": [
+        {
+          "product_id": 637,
+          "product_name": "Martin Guitar 000JR-10E Shawn Mendes",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/martin-guitar-000jr-10e-shawn-mendes_20250901_214448.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "703": {
+      "name": "Gibson 1936 Advanced Jumbo VS",
+      "broken_images": [
+        {
+          "product_id": 703,
+          "product_name": "Gibson 1936 Advanced Jumbo VS",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/gibson-1936-advanced-jumbo-vs_20250901_170831.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "689": {
+      "name": "Thorens TD 202 black",
+      "broken_images": [
+        {
+          "product_id": 689,
+          "product_name": "Thorens TD 202 black",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/thorens-td-202-black_20250901_172933.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "3070": {
+      "name": "ESP LTD EC1000 Vintage BK EMG LH",
+      "broken_images": [
+        {
+          "product_id": 3070,
+          "product_name": "ESP LTD EC1000 Vintage BK EMG LH",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/3070_20250902_073641.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "818": {
+      "name": "Harley Benton SC-450 P90 GT Classic Series",
+      "broken_images": [
+        {
+          "product_id": 818,
+          "product_name": "Harley Benton SC-450 P90 GT Classic Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-sc-450-p90-gt-classic-series_20250901_170927.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "2000": {
+      "name": "Harley Benton BigTone Trem Vintage Orange",
+      "broken_images": [
+        {
+          "product_id": 2000,
+          "product_name": "Harley Benton BigTone Trem Vintage Orange",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-bigtone-trem-vintage-orange_20250901_171025.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "734": {
+      "name": "Kawai ES-120 W",
+      "broken_images": [
+        {
+          "product_id": 734,
+          "product_name": "Kawai ES-120 W",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/kawai-es-120-w_20250901_172958.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "861": {
+      "name": "Roland GO:KEYS 3 TQ",
+      "broken_images": [
+        {
+          "product_id": 861,
+          "product_name": "Roland GO:KEYS 3 TQ",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/roland-go%3Akeys-3-tq_20250901_173314.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "398": {
+      "name": "Marcus Miller M2 TBL 2nd Gen",
+      "broken_images": [
+        {
+          "product_id": 398,
+          "product_name": "Marcus Miller M2 TBL 2nd Gen",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/marcus-miller-m2-tbl-2nd-gen_20250901_162203.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "175": {
+      "name": "Ibanez AUP10N-OPN",
+      "broken_images": [
+        {
+          "product_id": 175,
+          "product_name": "Ibanez AUP10N-OPN",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/ibanez-aup10n-opn_20250901_173043.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "223": {
+      "name": "Gibson SJ-200 Original VS",
+      "broken_images": [
+        {
+          "product_id": 223,
+          "product_name": "Gibson SJ-200 Original VS",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/gibson-sj-200-original-vs_20250901_173052.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "171": {
+      "name": "Steinberger Guitars GT-Pro Deluxe BK",
+      "broken_images": [
+        {
+          "product_id": 171,
+          "product_name": "Steinberger Guitars GT-Pro Deluxe BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/steinberger-guitars-gt-pro-deluxe-bk_20250901_173207.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "224": {
+      "name": "Epiphone Hummingbird Deluxe EC AB IBC",
+      "broken_images": [
+        {
+          "product_id": 224,
+          "product_name": "Epiphone Hummingbird Deluxe EC AB IBC",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/epiphone-hummingbird-deluxe-ec-ab-ibc_20250901_172903.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "416": {
+      "name": "Harley Benton HWY-25BKS Progressive Series",
+      "broken_images": [
+        {
+          "product_id": 416,
+          "product_name": "Harley Benton HWY-25BKS Progressive Series",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-hwy-25bks-progressive-series_20250901_173311.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "229": {
+      "name": "Harley Benton D-200CE-12BK",
+      "broken_images": [
+        {
+          "product_id": 229,
+          "product_name": "Harley Benton D-200CE-12BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-d-200ce-12bk_20250901_162211.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "239": {
+      "name": "Harley Benton D-120CE-LH BK",
+      "broken_images": [
+        {
+          "product_id": 239,
+          "product_name": "Harley Benton D-120CE-LH BK",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-d-120ce-lh-bk_20250901_173100.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "152": {
+      "name": "Yamaha JR-",
+      "broken_images": [
+        {
+          "product_id": 152,
+          "product_name": "Yamaha JR-",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/yamaha-jr-_20250901_173113.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    },
+    "245": {
+      "name": "Harley Benton Custom Line King-CE NT",
+      "broken_images": [
+        {
+          "product_id": 245,
+          "product_name": "Harley Benton Custom Line King-CE NT",
+          "image_key": "thomann_main",
+          "url": "https://getyourmusicgear.blob.core.windows.net/product-images/thomann/harley-benton-custom-line-king-ce-nt_20250901_162214.jpg",
+          "category": "azure_blob",
+          "status_code": 404,
+          "error": "OK"
+        }
+      ]
+    }
+  }
+}

@@ -12,7 +12,9 @@ import os
 import time
 import uuid
 import random
-from typing import List, Dict, Any, Optional, Tuple
+import subprocess
+import re
+from typing import List, Dict, Any, Optional, Tuple, Set
 from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
@@ -84,6 +86,9 @@ class ThomannImageDownloader:
         logger.info(f"🔧 Image Downloader initialized with {max_concurrent} concurrent downloads")
         logger.info(f"📦 Azure Storage Container: {self.azure_container_name}")
         logger.info(f"🛡️  Anti-blocking delays: {self.delay_min}-{self.delay_max}s between requests")
+        
+        # Cache for existing product IDs in blob storage
+        self.existing_blob_products: Optional[Set[int]] = None
     
     async def __aenter__(self):
         """Async context manager entry"""
@@ -133,11 +138,58 @@ class ThomannImageDownloader:
         if self.db:
             await self.db.__aexit__(exc_type, exc_val, exc_tb)
     
+    def load_existing_blob_products(self) -> Set[int]:
+        """Load product IDs that already have images in blob storage"""
+        if self.existing_blob_products is not None:
+            return self.existing_blob_products
+        
+        logger.info("📋 Loading existing products from blob storage...")
+        
+        try:
+            # Use Azure CLI to list blobs (faster than SDK for this use case)
+            result = subprocess.run([
+                'az', 'storage', 'blob', 'list',
+                '--container-name', self.azure_container_name,
+                '--account-name', 'getyourmusicgear',
+                '--query', '[].name',
+                '--output', 'json'
+            ], capture_output=True, text=True, timeout=120)
+            
+            if result.returncode != 0:
+                logger.warning(f"⚠️ Could not load blob storage (using empty set): {result.stderr}")
+                self.existing_blob_products = set()
+                return self.existing_blob_products
+            
+            blob_names = json.loads(result.stdout)
+            existing_ids = set()
+            
+            for blob_name in blob_names:
+                if blob_name.startswith('thomann/'):
+                    filename = blob_name[8:]  # Remove 'thomann/' prefix
+                    
+                    # Extract product ID using pattern: {product_id}_{timestamp}.jpg
+                    match = re.match(r'^(\d+)_', filename)
+                    if match:
+                        product_id = int(match.group(1))
+                        existing_ids.add(product_id)
+            
+            self.existing_blob_products = existing_ids
+            logger.info(f"✅ Found {len(existing_ids)} products with existing images in blob storage")
+            return existing_ids
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Error loading blob storage (using empty set): {e}")
+            self.existing_blob_products = set()
+            return self.existing_blob_products
+    
     async def get_products_with_thomann_links(self) -> List[Dict[str, Any]]:
-        """Get ALL products that have Thomann links in their store_links content"""
+        """Get products that have Thomann links but don't already have images in blob storage"""
         if not self.db.conn:
             logger.error("❌ Database connection not available")
             return []
+        
+        # Load existing products from blob storage first
+        existing_blob_products = self.load_existing_blob_products()
         
         try:
             # Query products that have Thomann links but NO images yet
@@ -155,8 +207,17 @@ class ThomannImageDownloader:
             
             rows = await self.db.conn.fetch(query)
             products = []
+            skipped_blob_count = 0
+            skipped_no_url_count = 0
             
             for row in rows:
+                product_id = row['id']
+                
+                # Skip if product already has image in blob storage
+                if product_id in existing_blob_products:
+                    skipped_blob_count += 1
+                    continue
+                
                 # Parse content if it's a string, otherwise use as dict
                 content = row['content'] or {}
                 if isinstance(content, str):
@@ -177,8 +238,15 @@ class ThomannImageDownloader:
                         'content': content,
                         'images': row['images'] or {}
                     })
+                else:
+                    skipped_no_url_count += 1
             
-            logger.info(f"📋 Found {len(products)} products needing images")
+            logger.info(f"📊 PRODUCT FILTERING RESULTS:")
+            logger.info(f"   🎯 Total products from DB: {len(rows)}")
+            logger.info(f"   ✅ Already in blob storage: {skipped_blob_count}")
+            logger.info(f"   ❌ No Thomann URL: {skipped_no_url_count}")
+            logger.info(f"   📥 Need processing: {len(products)}")
+            
             return products
             
         except Exception as e:

@@ -146,11 +146,11 @@ export default function ProductVoting({
       {showNumbers && (
         <div className="flex items-center gap-1">
           <span className={`font-semibold text-green-600 ${classes.text}`}>
-            {voteStats.thumbs_up_count}
+            {voteStats.thumbs_up_count || 0}
           </span>
           <span className={`text-gray-400 ${classes.text}`}>|</span>
           <span className={`font-semibold text-red-600 ${classes.text}`}>
-            {voteStats.thumbs_down_count}
+            {voteStats.thumbs_down_count || 0}
           </span>
         </div>
       )}
@@ -158,10 +158,10 @@ export default function ProductVoting({
       {/* Vote Score (optional, for compact display) */}
       {!showNumbers && (
         <span className={`font-semibold ${classes.text} ${
-          voteStats.vote_score > 0 ? 'text-green-600' : 
-          voteStats.vote_score < 0 ? 'text-red-600' : 'text-gray-500'
+          (voteStats.vote_score || 0) > 0 ? 'text-green-600' : 
+          (voteStats.vote_score || 0) < 0 ? 'text-red-600' : 'text-gray-500'
         }`}>
-          {voteStats.vote_score > 0 ? '+' : ''}{voteStats.vote_score}
+          {(voteStats.vote_score || 0) > 0 ? '+' : ''}{voteStats.vote_score || 0}
         </span>
       )}
 

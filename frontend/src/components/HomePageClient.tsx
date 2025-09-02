@@ -224,7 +224,7 @@ export default function HomePageClient() {
                           alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                           width={400}
                           height={192}
-                          className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-300"
+                          className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-300"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 3}
                         />
@@ -447,7 +447,7 @@ export default function HomePageClient() {
                         alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                         width={400}
                         height={192}
-                        className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-300"
+                        className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         loading="lazy"
                       />

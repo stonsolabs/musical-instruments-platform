@@ -6,6 +6,7 @@ import Image from 'next/image';
 import dynamicImport from 'next/dynamic';
 import { Product, SearchAutocompleteProduct } from '@/types';
 import { getApiBaseUrl, getServerBaseUrl } from '@/lib/api';
+import { CompactProductVoting } from '@/components/ProductVoting';
 
 // Force dynamic rendering since this is a client component
 export const dynamic = 'force-dynamic';
@@ -233,11 +234,13 @@ export default function HomePage() {
                   <Link href={`/products/${product.slug}-${product.id}`} className="block">
                     <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                   </Link>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-warning-500">★</span>
-                      <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.5'}</span>
-                    </div>
+                  {/* Community Voting */}
+                  <div className="flex items-center justify-center mb-4">
+                    <CompactProductVoting 
+                      productId={product.id}
+                      initialStats={product.vote_stats}
+                      className=""
+                    />
                   </div>
                   <div className="space-y-2">
                     {product.prices && product.prices.length > 0 ? (
@@ -411,10 +414,6 @@ export default function HomePage() {
                 </Link>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-warning-500">★★★★★</span>
-                    <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.8'}</span>
-                  </div>
                 </div>
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
                   <h3 className="font-semibold text-primary-900 mb-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>

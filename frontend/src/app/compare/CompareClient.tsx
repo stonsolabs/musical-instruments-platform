@@ -120,20 +120,19 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
           console.log('✅ Comparison data created:', comparisonData);
           setData(comparisonData);
           
-          // Track comparison analytics
+          // Track comparison analytics (fire and forget - don't block main flow)
           if (typeof window !== 'undefined') {
             console.log('Comparison loaded:', comparisonData.products.map(p => p.name));
             
-            // Track comparison in backend for trending calculations
-            const trackBackendComparison = async () => {
+            // Track comparison in backend for trending calculations (async, non-blocking)
+            setTimeout(async () => {
               try {
                 await apiClient.trackComparison(comparisonData.products.map(p => p.id));
               } catch (error) {
                 console.error('Failed to track comparison in backend:', error);
+                // Tracking failure should not affect user experience
               }
-            };
-            
-            trackBackendComparison();
+            }, 100); // Small delay to ensure main loading is complete
           }
         } catch (e) {
           setError('Failed to load comparison');

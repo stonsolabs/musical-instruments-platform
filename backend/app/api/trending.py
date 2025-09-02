@@ -91,7 +91,7 @@ async def track_product_view(
         raise HTTPException(status_code=500, detail=f"Failed to track view: {str(e)}")
 
 
-@router.post("/track/comparison")
+@router.get("/track/comparison")
 async def track_product_comparison(
     product_id_1: int = Query(...),
     product_id_2: int = Query(...)
