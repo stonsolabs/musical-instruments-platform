@@ -27,8 +27,8 @@ DATABASE_URL=postgresql://getyourmusicgear:***@getyourmusicgear-db.postgres.data
 REDIS_URL=rediss://:***@getyourmusicgear-redis.redis.cache.windows.net:6380
 
 # Security
-API_KEY=de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db
-SECRET_KEY=6b171db449796025eae2e7de5908593f
+API_KEY=''
+SECRET_KEY=''
 
 # Application
 ENVIRONMENT=production
@@ -53,7 +53,7 @@ WEBSITES_PORT=8000
 // Frontend environment configuration
 const API_CONFIG = {
   baseURL: 'https://getyourmusicgear-api.azurewebsites.net',
-  apiKey: 'de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db',
+  apiKey: '',
   timeout: 10000
 }
 
