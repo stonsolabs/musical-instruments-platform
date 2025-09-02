@@ -86,16 +86,10 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
         try {
           // Fetch products directly using slugs
           console.log('🔍 Fetching products with slugs:', productSlugs);
-          const response = await fetch(`/api/proxy/products?slugs=${productSlugs.join(',')}&limit=100`);
-          console.log('📡 Response status:', response.status);
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ API Error:', errorText);
-            throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
-          }
-          
-          const productsData = await response.json();
+          const productsData = await apiClient.searchProducts({ 
+            slugs: productSlugs.join(','), 
+            limit: 100 
+          });
           console.log('✅ Products data received:', productsData);
           console.log('🔍 Products data structure:', {
             hasProducts: !!productsData.products,
