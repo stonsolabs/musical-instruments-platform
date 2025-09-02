@@ -9,6 +9,7 @@ import { formatPrice, formatRating } from '@/lib/utils';
 import ComprehensiveProductDetails from '@/components/ComprehensiveProductDetails';
 import TechnicalSpecifications from '@/components/TechnicalSpecifications';
 import ProductOverview from '@/components/ProductOverview';
+import { DetailedProductVoting } from '@/components/ProductVoting';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -145,6 +146,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </div>
                 </div>
               )}
+
+              {/* User Voting */}
+              <DetailedProductVoting 
+                productId={product.id}
+                initialStats={product.vote_stats}
+                className=""
+              />
 
               {/* Store Availability */}
               <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">

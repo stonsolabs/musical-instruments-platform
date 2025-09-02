@@ -115,7 +115,11 @@ export const apiClient = {
 
   // Track comparison
   async trackComparison(productIds: number[]) {
-    return this.post(`/trending/track/comparison`, { product_ids: productIds });
+    if (productIds.length !== 2) {
+      throw new Error('Comparison tracking requires exactly 2 product IDs');
+    }
+    const [productId1, productId2] = productIds;
+    return this.post(`/trending/track/comparison?product_id_1=${productId1}&product_id_2=${productId2}`);
   },
 
   // Get trending instruments
@@ -152,5 +156,23 @@ export const apiClient = {
     const searchParams = new URLSearchParams();
     if (userRegion) searchParams.append('user_region', userRegion);
     return this.get(`/products/${productId}/affiliate-urls?${searchParams.toString()}`);
+  },
+
+  // Vote on a product
+  async voteOnProduct(productId: number, voteType: 'up' | 'down') {
+    return this.post(`/voting/products/${productId}/vote`, { vote_type: voteType });
+  },
+
+  // Get product vote stats
+  async getProductVoteStats(productId: number) {
+    return this.get(`/voting/products/${productId}/stats`);
+  },
+
+  // Get most voted products
+  async getMostVotedProducts(limit?: number, sortBy?: 'vote_score' | 'total_votes' | 'thumbs_up_count') {
+    const searchParams = new URLSearchParams();
+    if (limit) searchParams.append('limit', String(limit));
+    if (sortBy) searchParams.append('sort_by', sortBy);
+    return this.get(`/voting/products/most-voted?${searchParams.toString()}`);
   }
 };

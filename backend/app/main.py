@@ -7,7 +7,7 @@ import time
 
 from .config import settings
 from .database import init_db
-from .api import brands, categories, products, search, trending, compare, affiliate_stores, redirect
+from .api import brands, categories, products, search, trending, compare, affiliate_stores, redirect, voting
 from .auth import verify_api_key, optional_api_key
 
 
@@ -68,5 +68,6 @@ app.include_router(trending.router, prefix=settings.API_V1_STR, dependencies=[De
 app.include_router(compare.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 app.include_router(redirect.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+app.include_router(voting.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 
 

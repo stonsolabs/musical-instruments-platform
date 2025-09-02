@@ -73,7 +73,8 @@ const nextConfig = {
       'gear4music.com',
       'amazon.es',
       'kytary.de',
-      'getyourmusicgear.com'
+      'getyourmusicgear.com',
+      'getyourmusicgear.blob.core.windows.net'
     ],
     unoptimized: false,
     formats: ['image/webp', 'image/avif'],

@@ -151,6 +151,14 @@ export interface ComprehensiveAIContent {
   content_metadata: ContentMetadata;
 }
 
+export interface VoteStats {
+  thumbs_up_count: number;
+  thumbs_down_count: number;
+  total_votes: number;
+  vote_score: number;
+  user_vote?: 'up' | 'down' | null;
+}
+
 export interface Product {
   id: number;
   sku: string;
@@ -170,6 +178,7 @@ export interface Product {
   created_at: string;
   updated_at: string;
   ai_content?: ComprehensiveAIContent;
+  vote_stats?: VoteStats;
 }
 
 export interface SearchResponse {

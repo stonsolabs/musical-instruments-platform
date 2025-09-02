@@ -298,3 +298,19 @@ class BrandExclusivity(Base):
     __table_args__ = (UniqueConstraint('brand_name', 'store_id', name='uq_brand_store_exclusivity'),)
 
 
+class ProductVote(Base):
+    __tablename__ = "product_votes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"), nullable=False, index=True)
+    user_ip: Mapped[str] = mapped_column(String(45), nullable=False, index=True)  # IPv4/IPv6 address
+    vote_type: Mapped[str] = mapped_column(String(10), nullable=False, index=True)  # 'up' or 'down'
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Note: No back_populates since we removed votes relationship from Product for better design
+
+    # Unique constraint to prevent duplicate votes from same IP for same product
+    __table_args__ = (UniqueConstraint('product_id', 'user_ip', name='uq_product_user_vote'),)
+
+

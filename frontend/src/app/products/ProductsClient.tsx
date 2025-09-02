@@ -8,6 +8,7 @@ import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
 import SpecificationsComparison from '@/components/SpecificationsComparison';
 import AffiliateButton from '@/components/AffiliateButton';
+import { CompactProductVoting } from '@/components/ProductVoting';
 
 import { formatPrice, formatRating } from '@/lib/utils';
 
@@ -532,6 +533,15 @@ export default function ProductsClient({
                           <span className="text-yellow-500">★★★★★</span>
                           <span className="text-sm font-medium">{formatRating(product.avg_rating || 0)}</span>
                         </div>
+                      </div>
+                      
+                      {/* Voting Component */}
+                      <div className="flex items-center justify-center mb-3">
+                        <CompactProductVoting 
+                          productId={product.id}
+                          initialStats={product.vote_stats}
+                          className=""
+                        />
                       </div>
                       {/* <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3> */}
                       <Link href={`/products/${product.slug}-${product.id}`} className="block">

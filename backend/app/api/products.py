@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload, joinedload
 from ..database import get_db
 from ..models import AffiliateStore, Product, ProductPrice
 from ..services.enhanced_affiliate_service import EnhancedAffiliateService
+from ..utils.vote_utils import get_multiple_products_vote_stats, get_product_vote_stats
 
 
 router = APIRouter(prefix="/products", tags=["products"])
@@ -191,9 +192,11 @@ async def search_products(
     print(f"🔍 Products API - Filters: query='{search_query}', category='{category}', brand='{brand}', price_min={min_price_filter}, price_max={max_price_filter}, sort_by='{sort_by}'")
     print(f"📊 Products API - Results: {len(products)} products, total={total}, page={page}, limit={limit}")
 
-    # Compute best price per product
+    # Compute best price per product and vote stats
     product_ids = [p.id for p in products]
     best_prices: Dict[int, Dict[str, Any]] = {}
+    vote_stats_dict = await get_multiple_products_vote_stats(db, product_ids)
+    
     if product_ids:
         bp_stmt = (
             select(
@@ -228,6 +231,12 @@ async def search_products(
     items: List[Dict[str, Any]] = []
     for p in products:
         bp = best_prices.get(p.id)
+        vote_stats = vote_stats_dict.get(p.id, {
+            "thumbs_up_count": 0,
+            "thumbs_down_count": 0,
+            "total_votes": 0,
+            "vote_score": 0
+        })
         
         # Build prices array if prices are loaded (for comparison)
         prices = None
@@ -271,6 +280,7 @@ async def search_products(
                 "msrp_price": float(p.msrp_price) if p.msrp_price is not None else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating is not None else 0.0,
                 "review_count": p.review_count,
+                "vote_stats": vote_stats,
                 "best_price": (
                     {
                         "price": bp["price"],
@@ -359,6 +369,9 @@ async def get_product(
 
     # Get content for display (combines localized + global fields)
     display_content = get_content_for_display(product.content or {})
+    
+    # Get vote statistics
+    vote_stats = await get_product_vote_stats(db, product_id)
 
     return {
         "id": product.id,
@@ -377,6 +390,7 @@ async def get_product(
         "msrp_price": float(product.msrp_price) if product.msrp_price is not None else None,
         "avg_rating": float(product.avg_rating) if product.avg_rating is not None else 0.0,
         "review_count": product.review_count,
+        "vote_stats": vote_stats,
         "ai_content": product.content or {},
         "content": display_content,
         "prices": prices,

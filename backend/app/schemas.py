@@ -147,3 +147,22 @@ class ComparisonResponse(BaseModel):
     generated_at: str
 
 
+class VoteRequest(BaseModel):
+    vote_type: str = Field(..., pattern="^(up|down)$", description="Vote type: 'up' or 'down'")
+
+
+class VoteResponse(BaseModel):
+    success: bool
+    message: str
+    vote_counts: Dict[str, int]
+    user_vote: Optional[str] = None
+
+
+class ProductVoteStats(BaseModel):
+    thumbs_up_count: int
+    thumbs_down_count: int
+    total_votes: int
+    vote_score: int
+    user_vote: Optional[str] = None
+
+
