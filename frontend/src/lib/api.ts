@@ -113,15 +113,16 @@ export const apiClient = {
     return this.post(`/trending/track/view/${productId}`);
   },
 
-  // Track comparison
+  // Track comparison (temporarily disabled to fix comparison page)
   async trackComparison(productIds: number[]) {
     if (productIds.length < 2) {
       console.warn('Comparison tracking needs at least 2 products, skipping...');
       return Promise.resolve(); // Don't fail if we don't have enough products
     }
-    const [productId1, productId2] = productIds;
-    // Use GET request as per backend API definition
-    return this.get(`/trending/track/comparison?product_id_1=${productId1}&product_id_2=${productId2}`);
+    
+    // TODO: Fix endpoint URL and re-enable tracking
+    console.log('🔍 Comparison tracking disabled temporarily - products:', productIds);
+    return Promise.resolve(); // Return success without actually tracking
   },
 
   // Get trending instruments
