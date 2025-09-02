@@ -16,6 +16,26 @@ from ..services.enhanced_affiliate_service import EnhancedAffiliateService
 router = APIRouter(prefix="/products", tags=["products"])
 
 
+def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
+    """
+    Extract image URLs from the images JSON object.
+    Expected format: {"thomann_main": {"url": "...", ...}, ...}
+    Returns: ["url1", "url2", ...]
+    """
+    if not images_dict or not isinstance(images_dict, dict):
+        return []
+    
+    urls = []
+    for key, image_data in images_dict.items():
+        if isinstance(image_data, dict) and "url" in image_data:
+            urls.append(image_data["url"])
+        elif isinstance(image_data, str):
+            # Fallback for simple string URLs
+            urls.append(image_data)
+    
+    return urls
+
+
 def get_content_for_display(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
     """
     Extract content for display, combining localized content with global fields.
@@ -247,7 +267,7 @@ async def search_products(
                 },
                 "description": p.description,
                 "specifications": p.content.get('specifications', {}) if p.content else {},
-                "images": p.images or [],
+                "images": _extract_image_urls(p.images) if p.images else [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price is not None else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating is not None else 0.0,
                 "review_count": p.review_count,
@@ -353,7 +373,7 @@ async def get_product(
         },
         "description": product.description,
         "specifications": product.content.get('specifications', {}) if product.content else {},
-        "images": product.images or [],
+        "images": _extract_image_urls(product.images) if product.images else [],
         "msrp_price": float(product.msrp_price) if product.msrp_price is not None else None,
         "avg_rating": float(product.avg_rating) if product.avg_rating is not None else 0.0,
         "review_count": product.review_count,

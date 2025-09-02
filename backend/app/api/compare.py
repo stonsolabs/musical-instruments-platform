@@ -15,6 +15,26 @@ from ..models import Product, ProductPrice
 router = APIRouter(prefix="/compare", tags=["compare"])
 
 
+def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
+    """
+    Extract image URLs from the images JSON object.
+    Expected format: {"thomann_main": {"url": "...", ...}, ...}
+    Returns: ["url1", "url2", ...]
+    """
+    if not images_dict or not isinstance(images_dict, dict):
+        return []
+    
+    urls = []
+    for key, image_data in images_dict.items():
+        if isinstance(image_data, dict) and "url" in image_data:
+            urls.append(image_data["url"])
+        elif isinstance(image_data, str):
+            # Fallback for simple string URLs
+            urls.append(image_data)
+    
+    return urls
+
+
 @router.post("")
 async def compare_products(
     product_ids: List[int] = Body(..., embed=False), db: AsyncSession = Depends(get_db)
@@ -62,7 +82,7 @@ async def compare_products(
                     "slug": p.category.slug,
                 },
                 "specifications": p.specifications or {},
-                "images": p.images or [],
+                "images": _extract_image_urls(p.images) if p.images else [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating else 0.0,
                 "review_count": p.review_count,

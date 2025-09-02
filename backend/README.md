@@ -1,22 +1,31 @@
 # Musical Instruments Platform - Backend
 
-A FastAPI-based backend for comparing musical instruments with AI-generated content and affiliate store integration, deployed on Azure Functions.
+A FastAPI-based backend for comparing musical instruments with AI-generated content and affiliate store integration, deployed on **Azure App Service** with Docker containers.
 
 ## 🏗️ Architecture
 
 - **Framework**: FastAPI with AsyncPG for PostgreSQL
-- **Database**: Azure PostgreSQL with rich AI-generated product content
-- **Authentication**: API key-based security
-- **Deployment**: Azure Functions with direct GitHub integration
+- **Database**: Azure PostgreSQL Flexible Server with rich AI-generated content
+- **Cache**: Azure Redis Cache for search and trending data
+- **Authentication**: API key-based security with CORS protection
+- **Deployment**: Azure App Service (Linux Container) with Docker
 - **Content**: OpenAI-powered product descriptions in multiple languages
 - **Affiliate System**: Smart store routing with brand exclusivity rules
+
+## 🚀 **LIVE DEPLOYMENT**
+
+**Production API**: `https://getyourmusicgear-api.azurewebsites.net`
+- Health Check: ✅ https://getyourmusicgear-api.azurewebsites.net/health
+- Documentation: Disabled in production for security
+- Authentication: Required via `X-API-Key` header
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.11+
-- PostgreSQL database (Azure PostgreSQL)
-- Azure Functions Core Tools (for local development)
+- PostgreSQL database (Azure PostgreSQL Flexible Server)
+- Redis server (Azure Redis Cache)
+- Docker (for containerized deployment)
 
 ### Local Development
 
@@ -46,41 +55,44 @@ alembic upgrade head
 
 4. **Run Locally**
 ```bash
-# For Azure Functions development
-func start
+# FastAPI development server
+python main.py
+# or
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# Or for FastAPI development  
-uvicorn app.main:app --reload
+# Docker development
+docker build -t getyourmusicgear-backend .
+docker run -p 8000:8000 --env-file .env getyourmusicgear-backend
 ```
 
-## 🔐 Azure Secrets Configuration
+## 🔐 Azure App Service Configuration
 
-**Yes, Azure Functions supports multiple secure ways to manage secrets:**
+**Environment variables are securely managed via Azure App Service Application Settings:**
 
-### Option 1: Application Settings (Recommended)
-Azure Portal → Function App → Configuration → Application Settings
-- Encrypted at rest and in transit
-- Easy to manage via Azure Portal
-- Environment variables accessible via `os.getenv()`
-
-### Option 2: Azure Key Vault Integration
+### Current Production Configuration
 ```bash
-# Reference Key Vault secrets in Application Settings
-@Microsoft.KeyVault(SecretUri=https://your-vault.vault.azure.net/secrets/database-url/)
+# Database & Cache
+DATABASE_URL=postgresql://getyourmusicgear:***@getyourmusicgear-db.postgres.database.azure.com:5432/getyourmusicgear
+REDIS_URL=rediss://:***@getyourmusicgear-redis.redis.cache.windows.net:6380
+
+# Security
+API_KEY=de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db
+SECRET_KEY=***
+
+# Application
+ENVIRONMENT=production
+DEBUG=false
+PROJECT_NAME=GetYourMusicGear API
+DOMAIN=getyourmusicgear.com
+FRONTEND_URL=https://getyourmusicgear.com
 ```
 
-### Option 3: Managed Identity (Most Secure)
-- No connection strings needed
-- Azure handles authentication automatically
-- Perfect for Azure PostgreSQL and Storage connections
+### Managing Settings
+```bash
+# Set environment variables via Azure CLI
+az webapp config appsettings set --name getyourmusicgear-api --resource-group getyourmusicgear --settings KEY=VALUE
 
-**Configuration Example:**
-```json
-{
-  "DATABASE_URL": "@Microsoft.KeyVault(SecretUri=https://getyourmusicgear-vault.vault.azure.net/secrets/database-url/)",
-  "API_KEY": "@Microsoft.KeyVault(SecretUri=https://getyourmusicgear-vault.vault.azure.net/secrets/api-key/)",
-  "OPENAI_API_KEY": "@Microsoft.KeyVault(SecretUri=https://getyourmusicgear-vault.vault.azure.net/secrets/openai-key/)"
-}
+# Or use Azure Portal → App Service → Configuration → Application Settings
 ```
 
 ## 🎵 Core Features
@@ -126,7 +138,7 @@ OpenAI batch processing system generates:
 ### Authentication
 All endpoints require `X-API-Key` header:
 ```bash
-curl -H "X-API-Key: your-api-key" https://api.getyourmusicgear.com/api/v1/products
+curl -H "X-API-Key: your-api-key" https://getyourmusicgear-api.azurewebsites.net/api/v1/products
 ```
 
 ### Core Endpoints
@@ -232,11 +244,11 @@ AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;...
 
 ## 📈 Performance & Scaling
 
-### Azure Functions Benefits
-- **Auto-scaling**: Handles traffic spikes automatically
-- **Cost-effective**: Pay only for actual requests  
-- **High availability**: Built-in redundancy across regions
-- **Cold start optimization**: ~2-3 second startup time
+### Azure App Service Benefits
+- **Container-based**: Docker deployment with full control
+- **Always On**: Eliminates cold starts for consistent performance
+- **Integrated scaling**: Manual and automatic scaling options
+- **Built-in security**: HTTPS, authentication, and firewall rules
 
 ### Database Optimization
 - **Indexes**: Optimized for search and filtering queries
@@ -246,41 +258,43 @@ AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;...
 
 ## 🚀 Deployment
 
-### Azure Functions Deployment
-1. **Create Function App** in Azure Portal
-2. **Configure Application Settings** with environment variables
-3. **Connect GitHub Repository** with direct integration
-4. **Deploy automatically** on every push to main branch
+### Azure App Service Container Deployment
+1. **Build Docker Image**: `docker build -t backend .`
+2. **Push to Container Registry**: `docker push getyourmusicgear.azurecr.io/getyourmusicgear-backend:latest`
+3. **Update App Service**: Configure to use new container image
+4. **Restart App Service**: Apply changes and deploy
 
-Detailed guide: See `AZURE_FUNCTIONS_DEPLOYMENT.md`
+**Detailed deployment guide**: See `DEPLOYMENT_README.md`
 
 ### Frontend Integration
-Frontend uses secure API proxy to handle authentication:
+Frontend can call the API directly with authentication:
 ```typescript
-// Frontend calls secure proxy
-const response = await fetch('/api/proxy/products?limit=10');
+// Direct API calls with authentication
+const response = await fetch('https://getyourmusicgear-api.azurewebsites.net/api/v1/products?limit=10', {
+  headers: {
+    'X-API-Key': 'de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db',
+    'Content-Type': 'application/json'
+  }
+});
 
-// Proxy adds API key and forwards to Azure Functions
-const backendResponse = await fetch(
-  'https://getyourmusicgear-backend.azurewebsites.net/api/v1/products?limit=10',
-  { headers: { 'X-API-Key': process.env.API_KEY } }
-);
+// Or use a proxy in your frontend for security (recommended)
+const response = await fetch('/api/proxy/products?limit=10');
 ```
 
 ## 🧪 Testing
 
 ### API Testing
 ```bash
-# Health check
-curl https://getyourmusicgear-backend.azurewebsites.net/health
+# Health check (no auth required)
+curl https://getyourmusicgear-api.azurewebsites.net/health
 
 # Product search (requires API key)
-curl -H "X-API-Key: your-key" \
-  "https://getyourmusicgear-backend.azurewebsites.net/api/v1/products?query=guitar&limit=5"
+curl -H "X-API-Key: de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db" \
+  "https://getyourmusicgear-api.azurewebsites.net/api/v1/products?query=guitar&limit=5"
 
 # Specific product with affiliate stores
-curl -H "X-API-Key: your-key" \
-  "https://getyourmusicgear-backend.azurewebsites.net/api/v1/products/36"
+curl -H "X-API-Key: de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db" \
+  "https://getyourmusicgear-api.azurewebsites.net/api/v1/products/36"
 ```
 
 ### Local Testing
@@ -326,11 +340,13 @@ logger.error("Database connection failed", exc_info=True)
 
 ## 🎯 System Status
 
-✅ **Database**: 45 products with rich AI content  
-✅ **API**: All endpoints operational with English-first content  
-✅ **Authentication**: Secure API key system  
-✅ **Affiliate System**: Smart routing with brand exclusivity  
-✅ **Content**: OpenAI batch processing generating quality descriptions  
-✅ **Deployment**: Ready for Azure Functions with GitHub integration  
+✅ **Database**: Azure PostgreSQL with rich AI content  
+✅ **Cache**: Azure Redis Cache for performance optimization  
+✅ **API**: All endpoints operational at https://getyourmusicgear-api.azurewebsites.net  
+✅ **Authentication**: Secure API key system with CORS protection  
+✅ **Security**: Production docs disabled, HTTPS enforced  
+✅ **Deployment**: Live on Azure App Service with Docker containers  
 
-The system is production-ready and fully operational! 🎉
+🚀 **The system is production-ready and fully operational!** 🎉
+
+**For detailed deployment information, see: [DEPLOYMENT_README.md](./DEPLOYMENT_README.md)**

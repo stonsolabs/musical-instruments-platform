@@ -32,6 +32,25 @@ class TrendingService:
         self.view_count_key = "views:product"
         self.comparison_count_key = "comparisons:pair"
         self.category_trending_key = "trending:category"
+    
+    def _extract_image_urls(self, images_dict: Dict[str, Any]) -> List[str]:
+        """
+        Extract image URLs from the images JSON object.
+        Expected format: {"thomann_main": {"url": "...", ...}, ...}
+        Returns: ["url1", "url2", ...]
+        """
+        if not images_dict or not isinstance(images_dict, dict):
+            return []
+        
+        urls = []
+        for key, image_data in images_dict.items():
+            if isinstance(image_data, dict) and "url" in image_data:
+                urls.append(image_data["url"])
+            elif isinstance(image_data, str):
+                # Fallback for simple string URLs
+                urls.append(image_data)
+        
+        return urls
 
     async def track_product_view(self, product_id: int, user_ip: str = None) -> None:
         """Track a product view for trending calculations"""
@@ -136,7 +155,7 @@ class TrendingService:
                         "name": product.category.name,
                         "slug": product.category.slug
                     },
-                    "images": product.images or [],
+                    "images": self._extract_image_urls(product.images) if product.images else [],
                     "msrp_price": float(product.msrp_price) if product.msrp_price else None,
                     "trending_score": trending_score,
                     "view_count_24h": await self._get_product_views_24h(product_id)
@@ -215,7 +234,7 @@ class TrendingService:
                             "slug": product1.slug,
                             "brand": {"name": product1.brand.name, "slug": product1.brand.slug},
                             "category": {"name": product1.category.name, "slug": product1.category.slug},
-                            "images": product1.images or [],
+                            "images": self._extract_image_urls(product1.images) if product1.images else [],
                             "msrp_price": float(product1.msrp_price) if product1.msrp_price else None
                         },
                         {
@@ -224,7 +243,7 @@ class TrendingService:
                             "slug": product2.slug,
                             "brand": {"name": product2.brand.name, "slug": product2.brand.slug},
                             "category": {"name": product2.category.name, "slug": product2.category.slug},
-                            "images": product2.images or [],
+                            "images": self._extract_image_urls(product2.images) if product2.images else [],
                             "msrp_price": float(product2.msrp_price) if product2.msrp_price else None
                         }
                     ],

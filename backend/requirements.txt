@@ -1,4 +1,5 @@
 fastapi==0.104.1
+uvicorn[standard]==0.24.0
 sqlalchemy>=2.0.25
 asyncpg==0.29.0
 psycopg2-binary==2.9.9
@@ -17,7 +18,7 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 python-slugify==8.0.1
 requests==2.31.0
-# Azure Functions - minimal setup to avoid grpcio compilation issues
-azure-functions==1.17.0
+slowapi==0.1.9
+# Azure dependencies for potential future integrations
 azure-storage-blob==12.19.0
 azure-identity==1.15.0

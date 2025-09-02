@@ -9,6 +9,8 @@ import redis.asyncio as redis
 from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
+import os
+import asyncio
 
 from ..models import Product, Brand, Category, ProductPrice, AffiliateStore
 from ..config import settings
@@ -16,8 +18,53 @@ from ..config import settings
 
 class SearchService:
     def __init__(self):
-        self.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+        if os.getenv("REDIS_USE_AAD") == "true":
+            # Use Azure AD authentication with managed identity
+            self.redis_client = None  # Initialize later with token
+        else:
+            # Use connection string
+            self.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
         self.cache_ttl = 300  # 5 minutes
+    
+    async def _get_redis_client(self):
+        """Get Redis client with AAD authentication if needed"""
+        if self.redis_client is None:
+            from azure.identity.aio import DefaultAzureCredential
+            
+            # Get token for Redis
+            credential = DefaultAzureCredential()
+            token = await credential.get_token("https://redis.azure.com/.default")
+            
+            # Create Redis client with token as password
+            self.redis_client = redis.Redis(
+                host="getyourmusicgear-redis.redis.cache.windows.net",
+                port=6380,
+                password=token.token,
+                ssl=True,
+                ssl_cert_reqs=None,
+                decode_responses=True
+            )
+        
+        return self.redis_client
+    
+    def _extract_image_urls(self, images_dict: Dict[str, Any]) -> List[str]:
+        """
+        Extract image URLs from the images JSON object.
+        Expected format: {"thomann_main": {"url": "...", ...}, ...}
+        Returns: ["url1", "url2", ...]
+        """
+        if not images_dict or not isinstance(images_dict, dict):
+            return []
+        
+        urls = []
+        for key, image_data in images_dict.items():
+            if isinstance(image_data, dict) and "url" in image_data:
+                urls.append(image_data["url"])
+            elif isinstance(image_data, str):
+                # Fallback for simple string URLs
+                urls.append(image_data)
+        
+        return urls
 
     async def search_products(
         self,
@@ -35,7 +82,8 @@ class SearchService:
         cache_key = f"search:{hashlib.md5(query.lower().encode()).hexdigest()}:{limit}"
         
         # Try to get from cache first
-        cached_result = await self.redis_client.get(cache_key)
+        redis_client = await self._get_redis_client()
+        cached_result = await redis_client.get(cache_key)
         if cached_result:
             return json.loads(cached_result)
 
@@ -43,7 +91,7 @@ class SearchService:
         search_results = await self._perform_full_text_search(query, limit, db)
         
         # Cache the results
-        await self.redis_client.setex(
+        await redis_client.setex(
             cache_key, 
             self.cache_ttl, 
             json.dumps(search_results)
@@ -126,7 +174,7 @@ class SearchService:
                 },
                 "avg_rating": float(product.avg_rating) if product.avg_rating else 0.0,
                 "review_count": product.review_count,
-                "images": product.images or [],
+                "images": self._extract_image_urls(product.images) if product.images else [],
                 "best_price": best_price,
                 "prices": product_prices,
                 "rank": float(rank),
@@ -261,7 +309,8 @@ class SearchService:
         cache_key = f"suggestions:{hashlib.md5(query.lower().encode()).hexdigest()}"
         
         # Try cache first
-        cached_suggestions = await self.redis_client.get(cache_key)
+        redis_client = await self._get_redis_client()
+        cached_suggestions = await redis_client.get(cache_key)
         if cached_suggestions:
             return json.loads(cached_suggestions)
 
@@ -280,7 +329,7 @@ class SearchService:
         suggestions = [row[0] for row in result.scalars().all()]
 
         # Cache suggestions
-        await self.redis_client.setex(
+        await redis_client.setex(
             cache_key,
             self.cache_ttl,
             json.dumps(suggestions)
@@ -293,17 +342,19 @@ class SearchService:
         Clear all search-related cache
         """
         # Get all search-related keys
-        search_keys = await self.redis_client.keys("search:*")
-        suggestion_keys = await self.redis_client.keys("suggestions:*")
+        redis_client = await self._get_redis_client()
+        search_keys = await redis_client.keys("search:*")
+        suggestion_keys = await redis_client.keys("suggestions:*")
         
         if search_keys or suggestion_keys:
-            await self.redis_client.delete(*(search_keys + suggestion_keys))
+            await redis_client.delete(*(search_keys + suggestion_keys))
 
     async def close(self):
         """
         Close Redis connection
         """
-        await self.redis_client.close()
+        if self.redis_client:
+            await self.redis_client.close()
 
 
 # Global search service instance
