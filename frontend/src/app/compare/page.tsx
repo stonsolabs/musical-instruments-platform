@@ -2,20 +2,26 @@
 
 import React from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import CompareClient from './CompareClient';
-import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
+
+const UnifiedSearchAutocomplete = dynamic(() => import('@/components/UnifiedSearchAutocomplete'), {
+  ssr: false,
+  loading: () => <div className="w-full px-4 py-3 pl-12 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg animate-pulse">Loading search...</div>
+});
 
 export default function ComparePage() {
   // Get search params from URL on client side
-  const [searchParams] = React.useState(() => {
+  const [searchParams, setSearchParams] = React.useState({ products: '' });
+  
+  React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
-      return {
+      setSearchParams({
         products: urlParams.get('products') || ''
-      };
+      });
     }
-    return { products: '' };
-  });
+  }, []);
   
   const productSlugs = searchParams.products ? decodeURIComponent(searchParams.products).split(',').filter(slug => slug.trim()) : [];
   
@@ -48,11 +54,14 @@ export default function ComparePage() {
                         variant="product-select"
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
-                        onProductSelect={(product) => {
+                        onProductSelect={React.useCallback((product) => {
                           // Handle instrument 1 selection
                           console.log('Instrument 1 selected:', product);
                           // You can add logic here to store the selected instrument
-                        }}
+                          if (product?.slug) {
+                            window.location.href = `/compare?products=${product.slug}`;
+                          }
+                        }, [])}
                       />
                     </div>
                     
@@ -64,11 +73,16 @@ export default function ComparePage() {
                         variant="product-select"
                         placeholder="Search for guitars, pianos, drums..."
                         className="w-full"
-                        onProductSelect={(product) => {
+                        onProductSelect={React.useCallback((product) => {
                           // Handle instrument 2 selection
                           console.log('Instrument 2 selected:', product);
-                          // You can add logic here to store the selected instrument
-                        }}
+                          // Add to existing comparison
+                          if (product?.slug) {
+                            const currentProducts = searchParams.products ? decodeURIComponent(searchParams.products).split(',') : [];
+                            const newProducts = [...currentProducts, product.slug];
+                            window.location.href = `/compare?products=${newProducts.join(',')}`;
+                          }
+                        }, [searchParams.products])}
                       />
                     </div>
                   </div>

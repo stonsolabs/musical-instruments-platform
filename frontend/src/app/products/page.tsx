@@ -8,6 +8,7 @@ import { API_BASE_URL, getServerBaseUrl } from '@/lib/api';
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
 
+
 async function fetchProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<SearchResponse> {
   try {
     const params = new URLSearchParams();
@@ -24,16 +25,24 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
     if (!params.has('page')) params.set('page', '1');
     if (!params.has('sort_by')) params.set('sort_by', 'name');
 
-    // Get the base URL for server-side requests
-    const baseUrl = getServerBaseUrl();
+    // For server-side requests, call Azure API directly with API key
+    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/products';
+    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
 
-    // Use proxy route instead of direct backend call
-    const response = await fetch(`${baseUrl}/api/proxy/products?${params.toString()}`, {
+    console.log('🔍 Server-side fetching products:', `${apiUrl}?${params.toString()}`);
+
+    const response = await fetch(`${apiUrl}?${params.toString()}`, {
+      headers: {
+        'X-API-Key': apiKey,
+        'Content-Type': 'application/json',
+      },
       next: { revalidate: 300 }, // Revalidate every 5 minutes
     });
 
     if (!response.ok) {
       console.error(`API Error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
       return {
         products: [],
         pagination: { page: 1, limit: 20, total: 0, pages: 0 },
@@ -41,7 +50,9 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
       };
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ Server-side products fetched:', data.products?.length || 0, 'products');
+    return data;
   } catch (error) {
     console.error('Error fetching products:', error);
     return {
@@ -54,10 +65,14 @@ async function fetchProducts(searchParams: { [key: string]: string | string[] | 
 
 async function fetchCategories(): Promise<Category[]> {
   try {
-    // Get the base URL for server-side requests
-    const baseUrl = getServerBaseUrl();
+    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/categories';
+    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
 
-    const response = await fetch(`${baseUrl}/api/proxy/categories`, {
+    const response = await fetch(apiUrl, {
+      headers: {
+        'X-API-Key': apiKey,
+        'Content-Type': 'application/json',
+      },
       next: { revalidate: 3600 }, // Revalidate every hour
     });
 
@@ -66,7 +81,9 @@ async function fetchCategories(): Promise<Category[]> {
       return [];
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ Server-side categories fetched:', data?.length || 0, 'categories');
+    return data;
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -75,10 +92,14 @@ async function fetchCategories(): Promise<Category[]> {
 
 async function fetchBrands(): Promise<Brand[]> {
   try {
-    // Get the base URL for server-side requests
-    const baseUrl = getServerBaseUrl();
+    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/brands';
+    const apiKey = 'nWwszgxjEvwZg4Yq3hg8NZtemBXVrgLuVcWNQP';
 
-    const response = await fetch(`${baseUrl}/api/proxy/brands`, {
+    const response = await fetch(apiUrl, {
+      headers: {
+        'X-API-Key': apiKey,
+        'Content-Type': 'application/json',
+      },
       next: { revalidate: 3600 }, // Revalidate every hour
     });
 
@@ -87,7 +108,9 @@ async function fetchBrands(): Promise<Brand[]> {
       return [];
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ Server-side brands fetched:', data?.length || 0, 'brands');
+    return data;
   } catch (error) {
     console.error('Error fetching brands:', error);
     return [];
