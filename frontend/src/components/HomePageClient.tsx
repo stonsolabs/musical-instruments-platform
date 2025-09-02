@@ -224,7 +224,7 @@ export default function HomePageClient() {
                           alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                           width={400}
                           height={192}
-                          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-300"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 3}
                         />
@@ -447,7 +447,7 @@ export default function HomePageClient() {
                         alt={`${product.name} - ${product.brand?.name || 'Musical Instrument'}`}
                         width={400}
                         height={192}
-                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         loading="lazy"
                       />
@@ -460,10 +460,6 @@ export default function HomePageClient() {
                 </Link>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500">★★★★★</span>
-                    <span className="text-sm font-medium">{product.avg_rating?.toFixed(1) || '4.8'}</span>
-                  </div>
                 </div>
                 <Link href={`/products/${product.slug}-${product.id}`} className="block">
                   <h3 className="font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors cursor-pointer">{product.name}</h3>

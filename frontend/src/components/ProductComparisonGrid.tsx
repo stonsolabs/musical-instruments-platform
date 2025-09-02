@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { Product, SearchAutocompleteProduct } from '@/types';
 import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
+import { CompactProductVoting } from '@/components/ProductVoting';
 import { formatPrice, formatRating } from '@/lib/utils';
 
 interface ProductComparisonGridProps {
@@ -184,7 +185,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
               <img 
                 src={product.images[0]} 
                 alt={product.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover scale-110"
               />
             ) : (
               <span className={`text-primary-400 ${isMobile ? 'text-3xl' : 'text-4xl'}`}>🎸</span>
@@ -202,6 +203,15 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                 {product.name}
               </h3>
             </Link>
+          </div>
+
+          {/* Community Voting */}
+          <div className="flex items-center justify-center">
+            <CompactProductVoting 
+              productId={product.id}
+              initialStats={product.vote_stats}
+              className=""
+            />
           </div>
 
           {/* Expert Ratings */}

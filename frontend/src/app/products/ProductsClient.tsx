@@ -492,7 +492,7 @@ export default function ProductsClient({
                           <img 
                             src={product.images[0]} 
                             alt={product.name}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover scale-110"
                           />
                         ) : (
                           <span className="text-gray-400 text-2xl">🎸</span>
@@ -529,10 +529,6 @@ export default function ProductsClient({
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-500">★★★★★</span>
-                          <span className="text-sm font-medium">{formatRating(product.avg_rating || 0)}</span>
-                        </div>
                       </div>
                       
                       {/* Voting Component */}
