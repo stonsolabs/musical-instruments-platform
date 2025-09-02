@@ -19,7 +19,9 @@ class TrendingService:
     """Service for managing trending products and popular comparisons using Redis"""
     
     def __init__(self):
-        self.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+        self.redis_client = None
+        self.redis_available = False
+        self._redis_init_attempted = False
         
         # Cache TTLs
         self.trending_cache_ttl = 3600  # 1 hour
@@ -32,6 +34,44 @@ class TrendingService:
         self.view_count_key = "views:product"
         self.comparison_count_key = "comparisons:pair"
         self.category_trending_key = "trending:category"
+    
+    async def _get_redis_client(self):
+        """Get Redis client with error handling"""
+        if not self._redis_init_attempted:
+            await self._init_redis()
+            
+        return self.redis_client if self.redis_available else None
+    
+    async def _init_redis(self):
+        """Initialize Redis connection using REDIS_URL"""
+        self._redis_init_attempted = True
+        
+        try:
+            redis_url = settings.REDIS_URL
+            if not redis_url or redis_url == "redis://localhost:6379":
+                print("⚠️ REDIS_URL not configured for trending - analytics disabled")
+                self.redis_available = False
+                return
+                
+            self.redis_client = redis.from_url(
+                redis_url, 
+                decode_responses=True,
+                socket_connect_timeout=10,
+                socket_timeout=10,
+                retry_on_timeout=True,
+                health_check_interval=30
+            )
+            
+            # Test connection
+            await self.redis_client.ping()
+            self.redis_available = True
+            print("✅ Redis connected for trending service")
+            
+        except Exception as e:
+            print(f"❌ Trending Redis connection failed: {e}")
+            print("⚠️ Trending analytics disabled")
+            self.redis_available = False
+            self.redis_client = None
     
     def _extract_image_urls(self, images_dict: Dict[str, Any]) -> List[str]:
         """
@@ -54,22 +94,26 @@ class TrendingService:
 
     async def track_product_view(self, product_id: int, user_ip: str = None) -> None:
         """Track a product view for trending calculations"""
+        redis_client = await self._get_redis_client()
+        if not redis_client:
+            return  # Analytics disabled
+            
         try:
             # Get current hour for time-based trending
             current_hour = datetime.now().strftime("%Y%m%d%H")
             
             # Increment product view count (overall and hourly)
-            await self.redis_client.zincrby(f"{self.view_count_key}:total", 1, product_id)
-            await self.redis_client.zincrby(f"{self.view_count_key}:hour:{current_hour}", 1, product_id)
+            await redis_client.zincrby(f"{self.view_count_key}:total", 1, product_id)
+            await redis_client.zincrby(f"{self.view_count_key}:hour:{current_hour}", 1, product_id)
             
             # Set expiry for hourly data (keep for 7 days)
-            await self.redis_client.expire(f"{self.view_count_key}:hour:{current_hour}", 604800)
+            await redis_client.expire(f"{self.view_count_key}:hour:{current_hour}", 604800)
             
             # Track unique views by IP (if provided)
             if user_ip:
                 unique_key = f"unique_views:{product_id}:{current_hour}"
-                await self.redis_client.sadd(unique_key, user_ip)
-                await self.redis_client.expire(unique_key, 86400)  # 24 hours
+                await redis_client.sadd(unique_key, user_ip)
+                await redis_client.expire(unique_key, 86400)  # 24 hours
                 
         except Exception as e:
             # Don't fail the main request if analytics fail

@@ -18,34 +18,48 @@ from ..config import settings
 
 class SearchService:
     def __init__(self):
-        if os.getenv("REDIS_USE_AAD") == "true":
-            # Use Azure AD authentication with managed identity
-            self.redis_client = None  # Initialize later with token
-        else:
-            # Use connection string
-            self.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+        self.redis_client = None
+        self.redis_available = False
         self.cache_ttl = 300  # 5 minutes
+        self._redis_init_attempted = False
     
     async def _get_redis_client(self):
-        """Get Redis client with AAD authentication if needed"""
-        if self.redis_client is None:
-            from azure.identity.aio import DefaultAzureCredential
+        """Get Redis client with robust error handling"""
+        if not self._redis_init_attempted:
+            await self._init_redis()
             
-            # Get token for Redis
-            credential = DefaultAzureCredential()
-            token = await credential.get_token("https://redis.azure.com/.default")
-            
-            # Create Redis client with token as password
-            self.redis_client = redis.Redis(
-                host="getyourmusicgear-redis.redis.cache.windows.net",
-                port=6380,
-                password=token.token,
-                ssl=True,
-                ssl_cert_reqs=None,
-                decode_responses=True
-            )
+        return self.redis_client if self.redis_available else None
+    
+    async def _init_redis(self):
+        """Initialize Redis connection using REDIS_URL"""
+        self._redis_init_attempted = True
         
-        return self.redis_client
+        try:
+            redis_url = settings.REDIS_URL
+            if not redis_url or redis_url == "redis://localhost:6379":
+                print("⚠️ REDIS_URL not configured - operating without cache")
+                self.redis_available = False
+                return
+                
+            self.redis_client = redis.from_url(
+                redis_url, 
+                decode_responses=True,
+                socket_connect_timeout=10,
+                socket_timeout=10,
+                retry_on_timeout=True,
+                health_check_interval=30
+            )
+            
+            # Test connection
+            await self.redis_client.ping()
+            self.redis_available = True
+            print("✅ Redis connected successfully")
+            
+        except Exception as e:
+            print(f"❌ Redis connection failed: {e}")
+            print("⚠️ Operating without cache - using database only")
+            self.redis_available = False
+            self.redis_client = None
     
     def _extract_image_urls(self, images_dict: Dict[str, Any]) -> List[str]:
         """
@@ -73,7 +87,7 @@ class SearchService:
         db: AsyncSession = None
     ) -> List[Dict[str, Any]]:
         """
-        Search products using PostgreSQL full-text search with Redis caching
+        Search products using PostgreSQL full-text search with optional Redis caching
         """
         if len(query.strip()) < 2:
             return []
@@ -81,21 +95,31 @@ class SearchService:
         # Create cache key
         cache_key = f"search:{hashlib.md5(query.lower().encode()).hexdigest()}:{limit}"
         
-        # Try to get from cache first
+        # Try to get from cache first (if Redis is available)
         redis_client = await self._get_redis_client()
-        cached_result = await redis_client.get(cache_key)
-        if cached_result:
-            return json.loads(cached_result)
+        if redis_client:
+            try:
+                cached_result = await redis_client.get(cache_key)
+                if cached_result:
+                    print(f"🎯 Cache hit for search: {query}")
+                    return json.loads(cached_result)
+            except Exception as e:
+                print(f"⚠️ Redis get failed: {e}")
 
         # Perform full-text search
         search_results = await self._perform_full_text_search(query, limit, db)
         
-        # Cache the results
-        await redis_client.setex(
-            cache_key, 
-            self.cache_ttl, 
-            json.dumps(search_results)
-        )
+        # Cache the results (if Redis is available)
+        if redis_client:
+            try:
+                await redis_client.setex(
+                    cache_key, 
+                    self.cache_ttl, 
+                    json.dumps(search_results)
+                )
+                print(f"💾 Cached search results for: {query}")
+            except Exception as e:
+                print(f"⚠️ Redis setex failed: {e}")
         
         return search_results
 
