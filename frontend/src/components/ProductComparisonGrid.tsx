@@ -33,7 +33,6 @@ export default function ProductComparisonGrid({
       // Convert SearchAutocompleteProduct to Product type
       const convertedProduct: Product = {
         id: product.id,
-        sku: product.slug, // Use slug as SKU since SearchAutocompleteProduct doesn't have sku
         name: product.name,
         slug: product.slug,
         brand: product.brand,
@@ -42,20 +41,6 @@ export default function ProductComparisonGrid({
         specifications: {}, // SearchAutocompleteProduct doesn't have specifications
         images: product.images,
         msrp_price: undefined,
-        best_price: product.prices && product.prices.length > 0 ? {
-          id: 0, // Generate a temporary ID
-          price: product.prices[0].price,
-          currency: product.prices[0].currency,
-          affiliate_url: product.prices[0].affiliate_url,
-          last_checked: new Date().toISOString(),
-          is_available: true,
-          store: {
-            id: product.prices[0].store.id,
-            name: product.prices[0].store.name,
-            logo_url: undefined,
-            website_url: '' // Add required field
-          }
-        } : undefined,
         prices: product.prices?.map(price => ({
           id: price.id,
           price: price.price,
@@ -72,9 +57,6 @@ export default function ProductComparisonGrid({
         })),
         avg_rating: product.avg_rating,
         review_count: product.review_count,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
         ai_content: undefined
       };
       

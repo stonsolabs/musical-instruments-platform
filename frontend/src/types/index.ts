@@ -167,7 +167,6 @@ export interface VoteStats {
 
 export interface Product {
   id: number;
-  sku: string;
   name: string;
   slug: string;
   brand: Brand;
@@ -178,10 +177,7 @@ export interface Product {
   msrp_price?: number;
   prices?: ProductPrice[];
   avg_rating: number;
-  review_count: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  review_count?: number;  // Made optional since API can return null
   ai_content?: ComprehensiveAIContent;
   vote_stats?: VoteStats;
   thomann_info?: ThomannInfo;
