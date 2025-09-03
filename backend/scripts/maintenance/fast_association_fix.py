@@ -37,14 +37,11 @@ class FastAssociationFixer:
         try:
             conn = await asyncpg.connect(self.database_url)
             
-            # Query products where thomann_main image URL is NULL or doesn't exist
+            # Query products where thomann_main image URL is NULL (exactly as specified)
             rows = await conn.fetch("""
                 SELECT id, name, images 
                 FROM products 
-                WHERE (images -> 'thomann_main' ->> 'url') IS NULL 
-                   OR (images -> 'thomann_main') IS NULL
-                   OR images = '{}'
-                   OR images IS NULL
+                WHERE images -> 'thomann_main' ->> 'url' IS NULL
                 ORDER BY id
             """)
             
@@ -153,7 +150,21 @@ class FastAssociationFixer:
                 await conn.close()
                 return False
             
-            existing_images = row['images'] or {}
+            # Handle different types of images field
+            existing_images = {}
+            if row['images']:
+                if isinstance(row['images'], str):
+                    try:
+                        # Try to parse string as JSON
+                        existing_images = json.loads(row['images'])
+                    except (json.JSONDecodeError, TypeError):
+                        # If it's not valid JSON, start with empty dict
+                        existing_images = {}
+                elif isinstance(row['images'], dict):
+                    existing_images = row['images']
+                else:
+                    # Unknown type, start with empty dict
+                    existing_images = {}
             source_url = await self.get_product_source_url(product_id)
             
             # Create new thomann_main image data

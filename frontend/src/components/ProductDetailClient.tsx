@@ -18,38 +18,11 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product: initialProduct, slug }: ProductDetailClientProps) {
   const [product, setProduct] = useState<Product | null>(initialProduct);
-  const [isLoading, setIsLoading] = useState(!initialProduct);
-  const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [showSimilarProducts, setShowSimilarProducts] = useState(true);
 
-  // Fetch product data if not provided by server
-  useEffect(() => {
-    if (!product && slug) {
-      const fetchProduct = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-          const idPart = slug.split('-').pop();
-          const productId = Number(idPart);
-          
-          if (!Number.isFinite(productId)) {
-            throw new Error('Invalid product ID from slug');
-          }
-
-          const productData = await apiClient.getProduct(productId.toString());
-          setProduct(productData);
-        } catch (err) {
-          console.error('Failed to fetch product:', err);
-          setError('Failed to load product');
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchProduct();
-    }
-  }, [product, slug]);
+  // Use the server-provided product data - no client-side fetching needed
+  // since server-side fetching is working correctly
 
   useEffect(() => {
     if (!product) return;
@@ -74,25 +47,13 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
     trackBackendView();
   }, [product]);
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-primary-600">Loading product...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error || !product) {
+  // Error state - product not found
+  if (!product) {
     return (
       <div className="min-h-screen bg-primary-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary-900 mb-4">
-            {error || 'Product Not Found'}
+            Product Not Found
           </h1>
           <Link href="/products" className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">
             Browse All Products
