@@ -3,8 +3,8 @@ import { getServerBaseUrl } from './api';
 // Server-side API client (SSR) - route via internal proxy to avoid API key issues
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    const baseUrl = getServerBaseUrl();
-    const url = `${baseUrl}/api/proxy${endpoint}`;
+    // Use relative URL so it works in all deployment contexts (Vercel, custom domain, preview)
+    const url = `/api/proxy${endpoint}`;
 
     try {
       const response = await fetch(url, {
