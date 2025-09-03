@@ -50,7 +50,7 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
   // Error state - product not found
   if (!product) {
     return (
-      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary-900 mb-4">
             Product Not Found
@@ -64,7 +64,7 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
   }
 
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen bg-white">
       {/* Ad Space - Top */}
       <section className="py-4 bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

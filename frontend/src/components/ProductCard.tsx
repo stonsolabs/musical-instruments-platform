@@ -34,21 +34,21 @@ export default function ProductCard({
                        `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`;
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 ${className}`}>
+    <div className={`bg-white rounded-lg shadow-elegant border border-primary-200 overflow-hidden hover:shadow-md transition-all duration-200 ${className}`}>
       {/* Product Image */}
       <div className="relative">
         <Link href={productUrl} className="block">
-          <div className="h-48 bg-white flex items-center justify-center overflow-hidden border border-gray-200 product-image-container">
+          <div className="h-48 bg-primary-200 flex items-center justify-center overflow-hidden border border-primary-200 product-image-container">
             {product.images && product.images.length > 0 ? (
               <img 
                 src={product.images[0]} 
                 alt={product.name}
-                className="w-full h-full object-contain scale-105"
+                className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                 style={{ backgroundColor: 'white' }}
                 loading="lazy"
               />
             ) : (
-              <span className="text-gray-400 text-2xl">🎸</span>
+              <span className="text-primary-400 text-2xl">🎸</span>
             )}
           </div>
         </Link>
@@ -64,11 +64,11 @@ export default function ProductCard({
       <div className="p-4">
         {/* Brand */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
+          <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
           {product.avg_rating > 0 && (
             <div className="flex items-center text-sm text-yellow-500">
               <span>⭐</span>
-              <span className="ml-1 text-gray-600">{product.avg_rating.toFixed(1)}</span>
+              <span className="ml-1 text-primary-600">{product.avg_rating.toFixed(1)}</span>
             </div>
           )}
         </div>
@@ -86,14 +86,14 @@ export default function ProductCard({
 
         {/* Product Name */}
         <Link href={productUrl} className="block">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">
+          <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">
             {product.name}
           </h3>
         </Link>
         
         {/* Description */}
         {variant !== 'compact' && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          <p className="text-primary-600 text-sm mb-4 line-clamp-2">
             {product.description || "High-quality musical instrument with excellent craftsmanship and sound."}
           </p>
         )}
@@ -149,8 +149,8 @@ export default function ProductCard({
 
         {/* Category and additional info for detailed variant */}
         {variant === 'detailed' && (
-          <div className="mt-4 pt-3 border-t border-gray-100">
-            <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="mt-4 pt-3 border-t border-primary-100">
+            <div className="flex items-center justify-between text-xs text-primary-500">
               <span>{product.category?.name || 'Category'}</span>
               {product.review_count > 0 && (
                 <span>{product.review_count} reviews</span>

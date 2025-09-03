@@ -13,7 +13,7 @@ export default function TopRatedClient({ initialProducts }: TopRatedClientProps)
   const products = initialProducts;
 
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -30,7 +30,7 @@ export default function TopRatedClient({ initialProducts }: TopRatedClientProps)
         {products.length > 0 ? (
           <>
             <div className="mb-6">
-              <p className="text-gray-600">
+              <p className="text-primary-600">
                 {products.length} top rated instruments found
               </p>
             </div>
@@ -44,7 +44,7 @@ export default function TopRatedClient({ initialProducts }: TopRatedClientProps)
           </>
         ) : (
           <div className="text-center py-12">
-            <div className="text-gray-500 mb-4">No top rated instruments found.</div>
+            <div className="text-primary-600 mb-4">No top rated instruments found.</div>
             <Link 
               href="/products"
               className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"

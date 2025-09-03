@@ -228,7 +228,7 @@ export default function ProductsClient({
           <div className="grid lg:grid-cols-4 gap-6 xl:gap-8">
             {/* Sidebar Filters */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto hidden lg:block">
+              <div className="bg-white rounded-xl shadow-elegant border border-primary-200 p-4 lg:p-6 sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto hidden lg:block">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 lg:mb-6">Filters</h2>
                 
                 {/* Search */}
@@ -378,25 +378,25 @@ export default function ProductsClient({
                 <>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                     {products.map((product) => (
-                      <div key={product.id} className={`bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-all duration-200 ${
+                      <div key={product.id} className={`bg-white rounded-lg shadow-elegant border overflow-hidden hover:shadow-md transition-all duration-200 ${
                         selectedProducts.includes(product.id) 
                           ? 'border-blue-500 shadow-lg ring-2 ring-blue-200' 
-                          : 'border-gray-200'
+                          : 'border-primary-200'
                       }`}>
                         <div className="relative">
                           <div 
-                            className="h-48 bg-white flex items-center justify-center cursor-pointer relative group overflow-hidden border border-gray-200"
+                            className="h-48 bg-primary-200 flex items-center justify-center cursor-pointer relative group overflow-hidden border border-primary-200"
                             onClick={() => toggleProductSelection(product.id)}
                           >
                             {product.images && product.images.length > 0 ? (
                               <img 
                                 src={product.images[0]} 
                                 alt={product.name}
-                                className="w-full h-full scale-105"
+                                className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                                 style={{ backgroundColor: 'white' }}
                               />
                             ) : (
-                              <span className="text-gray-400 text-2xl">🎸</span>
+                              <span className="text-primary-400 text-2xl">🎸</span>
                             )}
                             {/* Selection overlay */}
                             <div className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
@@ -429,7 +429,7 @@ export default function ProductsClient({
                         
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600">{product.brand?.name || 'Brand'}</span>
+                            <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
                           </div>
                           
                           {/* Voting Component - Only render if vote_stats exists */}
@@ -444,9 +444,9 @@ export default function ProductsClient({
                           )}
                           
                           <Link href={`/products/${product.slug}`} className="block">
-                            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
+                            <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                           </Link>
-                          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          <p className="text-primary-600 text-sm mb-4 line-clamp-2">
                             {product.description || "High-quality musical instrument with excellent craftsmanship and sound."}
                           </p>
                           
@@ -505,7 +505,7 @@ export default function ProductsClient({
                                 
                                 {/* Show more stores link if there are more than 3 */}
                                 {product.prices.length > 3 && (
-                                  <div className="text-center py-2 text-sm text-gray-500">
+                                  <div className="text-center py-2 text-sm text-primary-500">
                                     +{product.prices.length - 3} more stores available
                                   </div>
                                 )}

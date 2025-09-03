@@ -1,29 +1,49 @@
-// Server-side API client using proxy route to avoid API key issues
+// Server-side API client for SSR - calls backend directly
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    // Use the proxy route which handles API key authentication
-    // Ensure we always have the full URL with protocol
-    let baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'getyourmusicgear.com';
+    // For SSR, call the backend directly since we can't use the proxy route
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+    const API_KEY = process.env.API_KEY || '';
     
-    // Add protocol if missing
-    if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
-      baseUrl = `https://www.${baseUrl}`;
+    // Ensure we have the API key for production
+    if (!API_KEY && process.env.NODE_ENV === 'production') {
+      console.error('❌ API_KEY not available for server-side calls');
+      throw new Error('API key not available for server-side backend calls');
     }
     
-    const response = await fetch(`${baseUrl}/api/proxy${endpoint}`, {
+    // Add /api/v1 prefix for production
+    const apiPrefix = API_BASE_URL.includes('localhost') ? '' : '/api/v1';
+    const targetUrl = `${API_BASE_URL}${apiPrefix}${endpoint}`;
+    
+    console.log('🔍 ServerApi: Making direct backend request to:', targetUrl);
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'MusicalInstrumentsPlatform/1.0',
+    };
+    
+    // Add API key for production
+    if (process.env.NODE_ENV === 'production') {
+      headers['X-API-Key'] = API_KEY;
+    }
+    
+    const response = await fetch(targetUrl, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers as Record<string, string>,
-      },
+      headers,
       // Cache for 5 minutes for better performance  
       next: { revalidate: 300 },
     });
     
     if (!response.ok) {
+      console.error('❌ ServerApi: Backend request failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: targetUrl
+      });
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
+    console.log('✅ ServerApi: Backend request successful to:', targetUrl);
     return response.json();
   },
 

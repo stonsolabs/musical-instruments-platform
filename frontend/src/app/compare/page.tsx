@@ -104,7 +104,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen bg-white">
       {/* Ad Space - Top */}
       <section className="py-4 bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
