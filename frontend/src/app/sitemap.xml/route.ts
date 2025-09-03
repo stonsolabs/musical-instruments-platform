@@ -4,8 +4,8 @@ export async function GET(request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://getyourmusicgear.com';
   
   try {
-    // Fetch products from API for dynamic sitemap
-    const productsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/products?limit=1000`);
+    // Fetch products from API for dynamic sitemap via internal proxy
+    const productsResponse = await fetch(`/api/proxy/products?limit=1000`, { next: { revalidate: 3600 } });
     const productsData = await productsResponse.json();
     const products = productsData.products || [];
 
