@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
+  console.log('🚀 Server-side: HomePage component executing...');
+  
   // Server-side data fetching for SSR
   const [trendingData, mostVotedData] = await Promise.allSettled([
     serverApi.getTrendingProducts(12),
@@ -22,6 +24,13 @@ export default async function HomePage() {
   const topRatedProducts = mostVotedData.status === 'fulfilled' 
     ? mostVotedData.value.products || [] 
     : [];
+
+  console.log('✅ Server-side: Data fetched successfully', {
+    popularCount: popularProducts.length,
+    topRatedCount: topRatedProducts.length,
+    trendingStatus: trendingData.status,
+    mostVotedStatus: mostVotedData.status
+  });
 
   return (
     <HomePageClient 

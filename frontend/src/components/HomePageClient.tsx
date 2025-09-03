@@ -28,22 +28,23 @@ export default function HomePageClient({
   const [topRatedProducts, setTopRatedProducts] = useState<Product[]>(initialTopRatedProducts);
   const [loading, setLoading] = useState(initialPopularProducts.length === 0);
 
-  // Load popular and top-rated products if not provided
+  // Load popular and top-rated products if not provided server-side
   useEffect(() => {
-    if (initialPopularProducts.length === 0 || initialTopRatedProducts.length === 0) {
+    // Only load client-side if we have no server-side data
+    if (initialPopularProducts.length === 0 && initialTopRatedProducts.length === 0) {
       const loadProducts = async () => {
         try {
-          console.log('🔍 Loading popular and top-rated products...');
+          console.log('🔍 Client-side fallback: Loading popular and top-rated products...');
           const [popular, topRated] = await Promise.all([
             apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'popularity' }),
             apiClient.searchProducts({ page: 1, limit: 6, sort_by: 'rating' })
           ]);
-          console.log('📊 Popular products loaded:', popular.products?.length || 0);
-          console.log('📊 Top rated products loaded:', topRated.products?.length || 0);
+          console.log('📊 Client-side: Popular products loaded:', popular.products?.length || 0);
+          console.log('📊 Client-side: Top rated products loaded:', topRated.products?.length || 0);
           setPopularProducts(popular.products || []);
           setTopRatedProducts(topRated.products || []);
         } catch (error) {
-          console.error('❌ Error loading products:', error);
+          console.error('❌ Client-side error loading products:', error);
           setPopularProducts([]);
           setTopRatedProducts([]);
         } finally {
@@ -51,6 +52,13 @@ export default function HomePageClient({
         }
       };
       loadProducts();
+    } else {
+      // We have server-side data, use it and stop loading
+      console.log('✅ Using server-side data:', { 
+        popular: initialPopularProducts.length, 
+        topRated: initialTopRatedProducts.length 
+      });
+      setLoading(false);
     }
   }, [initialPopularProducts.length, initialTopRatedProducts.length]);
 

@@ -25,23 +25,21 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   if (productSlugs.length > 0) {
     try {
-      // Fetch products by slugs to get their IDs
-      const productPromises = productSlugs.map(slug => serverApi.getProduct(slug));
-      const products = await Promise.allSettled(productPromises);
+      // Fetch products by slugs directly from the backend
+      console.log('🔍 Server-side: Fetching products with slugs:', productSlugs);
+      const productsData = await serverApi.compareProductsBySlugs(productSlugs);
+      console.log('✅ Server-side: Products data received:', productsData);
       
-      const validProducts = products
-        .filter(result => result.status === 'fulfilled' && result.value)
-        .map(result => (result as PromiseFulfilledResult<any>).value);
-      
-      if (validProducts.length > 0) {
-        productIds = validProducts.map(p => p.id);
-        const comparisonData = await serverApi.compareProducts(productIds);
-        if (comparisonData) {
-          initialData = comparisonData;
-        }
+      if (productsData && productsData.products && productsData.products.length > 0) {
+        // Format data for comparison component
+        initialData = {
+          products: productsData.products,
+          comparison: null // Will be generated client-side if needed
+        };
+        productIds = productsData.products.map((p: any) => p.id);
       }
     } catch (error) {
-      console.error('Error fetching comparison data:', error);
+      console.error('Error fetching comparison data server-side:', error);
     }
   }
 

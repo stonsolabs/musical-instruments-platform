@@ -3,6 +3,10 @@ const getServerApiUrl = (): string => {
   return process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 };
 
+const getApiKey = (): string => {
+  return process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
+};
+
 // Server-side API client for direct backend calls
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
@@ -13,7 +17,7 @@ export const serverApi = {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.API_KEY || '',
+        'X-API-Key': getApiKey(),
         ...options.headers,
       },
       // Cache for 5 minutes for better performance
@@ -39,47 +43,53 @@ export const serverApi = {
     });
   },
 
-  // Get trending products for homepage
+  // Get trending products for homepage (using correct backend endpoint)
   async getTrendingProducts(limit: number = 12) {
     try {
-      return await this.get(`/trending/instruments?limit=${limit}`);
+      const response = await this.get(`/api/v1/trending/instruments?limit=${limit}`);
+      // Backend returns {trending_instruments: [...], total: X}
+      // Convert to format expected by frontend: {products: [...]}
+      return {
+        products: response.trending_instruments || [],
+        total: response.total || 0
+      };
     } catch (error) {
       console.error('Failed to fetch trending products:', error);
       return { products: [] };
     }
   },
 
-  // Get most voted products
+  // Get most voted products (using correct backend endpoint)
   async getMostVotedProducts(limit: number = 12) {
     try {
-      return await this.get(`/voting/products/most-voted?limit=${limit}&sort_by=vote_score`);
+      return await this.get(`/api/v1/products?sort_by=rating&limit=${limit}`);
     } catch (error) {
       console.error('Failed to fetch most voted products:', error);
       return { products: [] };
     }
   },
 
-  // Get products by category
+  // Get products by category (using correct backend endpoint)
   async getProductsByCategory(categoryId: number, limit: number = 12) {
     try {
-      return await this.get(`/products?category_id=${categoryId}&limit=${limit}`);
+      return await this.get(`/api/v1/products?category_id=${categoryId}&limit=${limit}`);
     } catch (error) {
       console.error('Failed to fetch products by category:', error);
       return { products: [] };
     }
   },
 
-  // Get single product
+  // Get single product (using correct backend endpoint)
   async getProduct(productSlug: string) {
     try {
-      return await this.get(`/products/${productSlug}`);
+      return await this.get(`/api/v1/products/${productSlug}`);
     } catch (error) {
       console.error('Failed to fetch product:', error);
       return null;
     }
   },
 
-  // Search products
+  // Search products (using correct backend endpoint)
   async searchProducts(params: Record<string, any>) {
     try {
       const searchParams = new URLSearchParams();
@@ -88,37 +98,48 @@ export const serverApi = {
           searchParams.append(key, String(value));
         }
       });
-      return await this.get(`/products?${searchParams.toString()}`);
+      return await this.get(`/api/v1/products?${searchParams.toString()}`);
     } catch (error) {
       console.error('Failed to search products:', error);
       return { products: [], total: 0 };
     }
   },
 
-  // Compare products
+  // Compare products by slugs (using correct backend endpoint)
+  async compareProductsBySlugs(slugs: string[]) {
+    try {
+      const slugsParam = slugs.join(',');
+      return await this.get(`/api/v1/products?slugs=${slugsParam}&limit=100`);
+    } catch (error) {
+      console.error('Failed to compare products:', error);
+      return { products: [] };
+    }
+  },
+
+  // Compare products by IDs (using correct backend endpoint)
   async compareProducts(productIds: number[]) {
     try {
-      return await this.post('/compare', productIds);
+      return await this.post('/api/v1/compare', productIds);
     } catch (error) {
       console.error('Failed to compare products:', error);
       return { products: [], comparison: null };
     }
   },
 
-  // Get categories
+  // Get categories (using correct backend endpoint)
   async getCategories() {
     try {
-      return await this.get('/categories');
+      return await this.get('/api/v1/categories');
     } catch (error) {
       console.error('Failed to fetch categories:', error);
       return { categories: [] };
     }
   },
 
-  // Get brands
+  // Get brands (using correct backend endpoint)
   async getBrands() {
     try {
-      return await this.get('/brands');
+      return await this.get('/api/v1/brands');
     } catch (error) {
       console.error('Failed to fetch brands:', error);
       return { brands: [] };
