@@ -1,9 +1,30 @@
 // Server-side API configuration
 const getServerApiUrl = (): string => {
-  // Force ALWAYS use proxy - hardcoded to fix the issue
-  const proxyUrl = 'https://www.getyourmusicgear.com/api/proxy';
+  // For server-side calls, we need to determine the base URL
+  // In production, use the domain; in development, use localhost
+  let baseUrl: string;
   
-  console.log('🌐 Server API URL (FORCED TO PROXY):', proxyUrl);
+  if (process.env.VERCEL_URL) {
+    // VERCEL_URL doesn't include protocol, add https://
+    baseUrl = `https://${process.env.VERCEL_URL}`;
+  } else if (process.env.NEXT_PUBLIC_DOMAIN) {
+    // NEXT_PUBLIC_DOMAIN might already include protocol
+    baseUrl = process.env.NEXT_PUBLIC_DOMAIN.startsWith('http') 
+      ? process.env.NEXT_PUBLIC_DOMAIN 
+      : `https://${process.env.NEXT_PUBLIC_DOMAIN}`;
+  } else {
+    // Development fallback
+    baseUrl = 'http://localhost:3000';
+  }
+    
+  const proxyUrl = `${baseUrl}/api/proxy`;
+  
+  console.log('🌐 Server API URL (USING INTERNAL PROXY):', proxyUrl, {
+    VERCEL_URL: process.env.VERCEL_URL,
+    NEXT_PUBLIC_DOMAIN: process.env.NEXT_PUBLIC_DOMAIN,
+    NODE_ENV: process.env.NODE_ENV,
+    finalBaseUrl: baseUrl
+  });
   
   return proxyUrl;
 };

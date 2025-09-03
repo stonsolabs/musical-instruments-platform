@@ -16,8 +16,21 @@ export const metadata: Metadata = {
 };
 
 export default async function TopRatedPage() {
-  // Server-side data fetching for SSR
-  const mostVotedData = await serverApi.getMostVotedProducts(50);
+  // Server-side data fetching for SSR with error handling
+  let mostVotedData;
+  
+  try {
+    console.log('🔍 Top rated page: Server-side data fetching started');
+    mostVotedData = await serverApi.getMostVotedProducts(50);
+    console.log('✅ Top rated page: Server-side data fetching completed', {
+      productsCount: mostVotedData?.products?.length || 0
+    });
+  } catch (error) {
+    console.error('🚨 Top rated page: Server-side data fetching failed', error);
+    // Provide fallback data to prevent 500 errors
+    mostVotedData = { products: [] };
+  }
+
   const products = mostVotedData?.products || [];
 
   return <TopRatedClient initialProducts={products} />;
