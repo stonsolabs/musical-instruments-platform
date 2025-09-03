@@ -32,7 +32,7 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
       product.id.toString(),
       product.name,
       product.category?.name || 'unknown',
-      product.best_price?.price
+      product.prices?.[0]?.price
     );
 
     // Track product view in backend for trending calculations
@@ -132,7 +132,7 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
                   <Link href={`/products?brand=${product.brand.slug}`} className="text-primary-600 hover:text-primary-800 font-medium">
                     {product.brand.name}
                   </Link>
-                  <span className="text-sm text-primary-500">SKU: {product.sku}</span>
+                  <span className="text-sm text-primary-500">ID: {product.id}</span>
                 </div>
                 <h1 className="text-3xl font-bold text-primary-900 mb-2">{product.name}</h1>
                 <div className="flex items-center gap-4">

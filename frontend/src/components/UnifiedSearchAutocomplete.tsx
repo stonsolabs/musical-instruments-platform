@@ -327,13 +327,13 @@ export default function UnifiedSearchAutocomplete({
                     {/* Price */}
                     {showPrices && (
                       <div className="ml-4 text-right">
-                        {suggestion.best_price ? (
+                        {suggestion.prices && suggestion.prices.length > 0 ? (
                           <div>
                             <div className="font-bold text-green-600">
-                              {formatPrice(suggestion.best_price.price, suggestion.best_price.currency)}
+                              {formatPrice(suggestion.prices[0].price, suggestion.prices[0].currency)}
                             </div>
                             <div className="text-xs text-gray-500">
-                              at {suggestion.best_price.store.name}
+                              at {suggestion.prices[0].store.name}
                             </div>
                           </div>
                         ) : (

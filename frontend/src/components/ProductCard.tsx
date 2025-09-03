@@ -54,9 +54,9 @@ export default function ProductCard({
         </Link>
         
         {/* Best Price Badge */}
-        {product.best_price && (
+        {product.prices && product.prices.length > 0 && (
           <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-            {formatPrice(product.best_price.price, product.best_price.currency)}
+            {formatPrice(product.prices[0].price, product.prices[0].currency)}
           </div>
         )}
       </div>
