@@ -1,29 +1,16 @@
-// Simple, direct server-side API client - no proxy needed!
-const getApiConfig = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const apiKey = process.env.API_KEY;
-  
-  if (!baseUrl) {
-    throw new Error('NEXT_PUBLIC_API_BASE_URL environment variable is required');
-  }
-  
-  if (!apiKey) {
-    throw new Error('API_KEY environment variable is required');
-  }
-  
-  return { baseUrl, apiKey };
-};
-
+// Simplified server-side API client using the working proxy
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    const { baseUrl, apiKey } = getApiConfig();
-    const url = `${baseUrl}/api/v1${endpoint}`;
+    // Use the proxy route that works, but with a proper base URL for SSR
+    const domain = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_DOMAIN || 'www.getyourmusicgear.com';
+    const baseUrl = domain.startsWith('http') ? domain : `https://${domain}`;
+    
+    const url = `${baseUrl}/api/proxy${endpoint}`;
 
     try {
       const response = await fetch(url, {
         ...options,
         headers: {
-          'X-API-Key': apiKey,
           'Content-Type': 'application/json',
           ...(options.headers as Record<string, string>),
         },
@@ -31,13 +18,13 @@ export const serverApi = {
       });
 
       if (!response.ok) {
-        console.error('Direct API fetch failed', { url, status: response.status });
+        console.error('Server API fetch failed', { url, status: response.status });
         throw new Error(`HTTP ${response.status}`);
       }
 
       return response.json();
     } catch (err) {
-      console.error('Direct API fetch error', { url, err });
+      console.error('Server API fetch error', { url, err });
       throw err;
     }
   },
