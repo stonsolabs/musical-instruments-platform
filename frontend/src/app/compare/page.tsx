@@ -6,6 +6,8 @@ import CompareClient from './CompareClient';
 import CompareSearchInterface from './CompareSearchInterface';
 import type { ComparisonResponse } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Compare Musical Instruments - Find the Perfect Match',
   description: 'Compare musical instruments side by side with detailed specifications, prices, and expert reviews.',
@@ -104,7 +106,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-primary-50">
       {/* Ad Space - Top */}
       <section className="py-4 bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

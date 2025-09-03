@@ -5,6 +5,8 @@ import type { Metadata } from 'next';
 import { serverApi } from '@/lib/server-api';
 import ProductDetailClient from '@/components/ProductDetailClient';
 
+export const dynamic = 'force-dynamic';
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
