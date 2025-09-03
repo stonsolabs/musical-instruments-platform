@@ -165,46 +165,12 @@ async def search_products(
         if slug_list:
             base_stmt = base_stmt.where(Product.slug.in_(slug_list))
 
-    # Price filtering
-    if min_price_filter is not None or max_price_filter is not None:
-        # Create subquery for best prices
-        price_subq = (
-            select(
-                ProductPrice.product_id,
-                func.min(ProductPrice.price).label("best_price"),
-            )
-            .where(ProductPrice.is_available.is_(True))
-            .group_by(ProductPrice.product_id)
-            .subquery()
-        )
-        base_stmt = base_stmt.outerjoin(price_subq, price_subq.c.product_id == Product.id)
-        
-        if min_price_filter is not None:
-            base_stmt = base_stmt.where(price_subq.c.best_price >= min_price_filter)
-        if max_price_filter is not None:
-            base_stmt = base_stmt.where(price_subq.c.best_price <= max_price_filter)
+    # Price filtering removed - not using best price functionality
 
     # Sorting
     if sort_by == "price":
-        # Sort by best available price
-        if min_price_filter is not None or max_price_filter is not None:
-            # Price subquery already joined above
-            base_stmt = base_stmt.order_by(asc(price_subq.c.best_price.nullslast()))
-        else:
-            price_subq = (
-                select(
-                    ProductPrice.product_id,
-                    func.min(ProductPrice.price).label("best_price"),
-                )
-                .where(ProductPrice.is_available.is_(True))
-                .group_by(ProductPrice.product_id)
-                .subquery()
-            )
-            base_stmt = (
-                base_stmt.outerjoin(price_subq, price_subq.c.product_id == Product.id).order_by(
-                    asc(price_subq.c.best_price.nullslast())
-                )
-            )
+        # Price sorting removed - not using best price functionality
+        base_stmt = base_stmt.order_by(asc(Product.name))  # Fallback to name sorting
     elif sort_by == "rating":
         base_stmt = base_stmt.order_by(desc(Product.avg_rating))
     elif sort_by == "popularity":
@@ -226,47 +192,12 @@ async def search_products(
     print(f"🔍 Products API - Filters: query='{search_query}', category='{category}', brand='{brand}', price_min={min_price_filter}, price_max={max_price_filter}, sort_by='{sort_by}'")
     print(f"📊 Products API - Results: {len(products)} products, total={total}, page={page}, limit={limit}")
 
-    # Compute best price per product and vote stats
+    # Get vote stats for products (best price functionality removed)
     product_ids = [p.id for p in products]
-    best_prices: Dict[int, Dict[str, Any]] = {}
     vote_stats_dict = await get_multiple_products_vote_stats(db, product_ids)
-    
-    # Note: Thomann URLs are now extracted from store_links in product content, not prices
-    
-    if product_ids:
-        bp_stmt = (
-            select(
-                ProductPrice.product_id,
-                func.min(ProductPrice.price).label("best_price"),
-            )
-            .where(ProductPrice.product_id.in_(product_ids), ProductPrice.is_available.is_(True))
-            .group_by(ProductPrice.product_id)
-            .subquery()
-        )
-
-        join_stmt = (
-            select(ProductPrice)
-            .join(bp_stmt, (bp_stmt.c.product_id == ProductPrice.product_id) & (bp_stmt.c.best_price == ProductPrice.price))
-            .join(AffiliateStore, AffiliateStore.id == ProductPrice.store_id)
-        )
-        join_res = await db.execute(join_stmt)
-        rows = join_res.scalars().all()
-        # Need store names: fetch mapping
-        store_map = {
-            s.id: s
-            for s in (await db.execute(select(AffiliateStore).where(AffiliateStore.id.in_([r.store_id for r in rows])))).scalars().all()
-        }
-        for r in rows:
-            store = store_map.get(r.store_id)
-            best_prices[r.product_id] = {
-                "price": float(r.price),
-                "currency": r.currency,
-                "store_name": store.name if store else None,
-            }
 
     items: List[Dict[str, Any]] = []
     for p in products:
-        bp = best_prices.get(p.id)
         vote_stats = vote_stats_dict.get(p.id, {
             "thumbs_up_count": 0,
             "thumbs_down_count": 0,
@@ -320,17 +251,6 @@ async def search_products(
                 "avg_rating": float(p.avg_rating) if p.avg_rating is not None else 0.0,
                 "review_count": p.review_count,
                 "vote_stats": vote_stats,
-                "best_price": (
-                    {
-                        "price": bp["price"],
-                        "currency": bp["currency"],
-                        "affiliate_url": None,
-                        "last_checked": None,
-                        "store": {"name": bp["store_name"]} if bp else None,
-                    }
-                    if bp
-                    else None
-                ),
                 "prices": prices,
                 "thomann_info": thomann_info,
                 "ai_content": p.content or {},
@@ -364,13 +284,14 @@ async def search_products(
 
 
 
+
 @router.get("/{product_id}")
 async def get_product(
     product_id: int, 
     user_region: Optional[str] = None,
     db: AsyncSession = Depends(get_db)
 ):
-    """Get product with affiliate stores following brand exclusivity and regional rules"""
+    """Get product by ID with affiliate stores following brand exclusivity and regional rules"""
     stmt = (
         select(Product)
         .options(selectinload(Product.brand), selectinload(Product.category), selectinload(Product.prices).selectinload(ProductPrice.store))
@@ -398,7 +319,7 @@ async def get_product(
         for pr in sorted(product.prices, key=lambda x: (x.price or Decimal("0")))
         if pr.is_available
     ]
-    best_price = prices[0] if prices else None
+    # Best price functionality removed
 
     # Get affiliate stores using enhanced service with brand exclusivity rules
     affiliate_service = EnhancedAffiliateService(db)
@@ -434,7 +355,6 @@ async def get_product(
         "ai_content": product.content or {},
         "content": display_content,
         "prices": prices,
-        "best_price": best_price,
         "affiliate_stores": affiliate_stores,
         "total_affiliate_stores": len(affiliate_stores),
         "user_region": user_region,

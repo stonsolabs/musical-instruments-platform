@@ -443,7 +443,7 @@ export default function ProductsClient({
                             </div>
                           )}
                           
-                          <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                          <Link href={`/products/${product.slug}`} className="block">
                             <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                           </Link>
                           <p className="text-gray-600 text-sm mb-4 line-clamp-2">

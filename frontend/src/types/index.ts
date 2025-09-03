@@ -176,7 +176,6 @@ export interface Product {
   specifications: Record<string, any>;
   images: string[];
   msrp_price?: number;
-  best_price?: ProductPrice;
   prices?: ProductPrice[];
   avg_rating: number;
   review_count: number;
@@ -227,16 +226,6 @@ export interface SearchAutocompleteProduct {
   avg_rating: number;
   review_count: number;
   images: string[];
-  best_price?: {
-    price: number;
-    currency: string;
-    store: {
-      id: number;
-      name: string;
-      slug: string;
-    };
-    affiliate_url: string;
-  };
   prices?: {
     id: number;
     price: number;
@@ -290,7 +279,6 @@ export interface TrendingProduct {
   brand: Brand;
   category: Category;
   images: string[];
-  best_price?: ProductPrice;
   prices?: ProductPrice[];
   avg_rating: number;
   review_count: number;

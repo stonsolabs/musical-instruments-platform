@@ -172,14 +172,12 @@ class SearchService:
         # Get product IDs for price lookup
         product_ids = [row[0].id for row in rows]
 
-        # Get best prices and all prices for these products
-        best_prices = await self._get_best_prices(product_ids, db)
+        # Get all prices for these products (best price functionality removed)
         all_prices = await self._get_all_prices(product_ids, db)
 
         # Build response
         search_results = []
         for product, brand, category, rank in rows:
-            best_price = best_prices.get(product.id)
             product_prices = all_prices.get(product.id, [])
             
             search_results.append({
@@ -199,7 +197,6 @@ class SearchService:
                 "avg_rating": float(product.avg_rating) if product.avg_rating else 0.0,
                 "review_count": product.review_count,
                 "images": self._extract_image_urls(product.images) if product.images else [],
-                "best_price": best_price,
                 "prices": product_prices,
                 "rank": float(rank),
                 "search_highlight": self._highlight_search_terms(product.name, query)
@@ -207,57 +204,6 @@ class SearchService:
 
         return search_results
 
-    async def _get_best_prices(
-        self,
-        product_ids: List[int],
-        db: AsyncSession
-    ) -> Dict[int, Optional[Dict[str, Any]]]:
-        """
-        Get best prices for a list of products
-        """
-        if not product_ids:
-            return {}
-
-        # Get best price per product
-        best_price_subq = (
-            select(
-                ProductPrice.product_id,
-                func.min(ProductPrice.price).label("best_price")
-            )
-            .where(
-                ProductPrice.product_id.in_(product_ids),
-                ProductPrice.is_available.is_(True)
-            )
-            .group_by(ProductPrice.product_id)
-            .subquery()
-        )
-
-        # Join with store information
-        stmt = (
-            select(ProductPrice, AffiliateStore)
-            .join(best_price_subq, 
-                  (best_price_subq.c.product_id == ProductPrice.product_id) & 
-                  (best_price_subq.c.best_price == ProductPrice.price))
-            .join(AffiliateStore, AffiliateStore.id == ProductPrice.store_id)
-        )
-
-        result = await db.execute(stmt)
-        rows = result.all()
-
-        best_prices = {}
-        for price, store in rows:
-            best_prices[price.product_id] = {
-                "price": float(price.price),
-                "currency": price.currency,
-                "store": {
-                    "id": store.id,
-                    "name": store.name,
-                    "slug": store.slug
-                },
-                "affiliate_url": price.affiliate_url
-            }
-
-        return best_prices
 
     async def _get_all_prices(
         self,

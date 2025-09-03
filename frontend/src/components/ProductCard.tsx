@@ -21,7 +21,7 @@ export default function ProductCard({
   variant = 'default',
   className = '' 
 }: ProductCardProps) {
-  const productSlug = `${product.slug}-${product.id}`;
+  const productSlug = product.slug;
   const productUrl = `/products/${productSlug}`;
 
   // Get fallback store links from content

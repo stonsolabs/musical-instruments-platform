@@ -107,11 +107,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           name: product.brand?.name || 'Unknown Brand',
         },
         category: product.category?.name || 'Unknown Category',
-        url: `https://getyourmusicgear.com/products/${product.slug}-${product.id}`,
-        offers: product.best_price ? {
+        url: `https://getyourmusicgear.com/products/${product.slug}`,
+        offers: product.prices && product.prices.length > 0 ? {
           '@type': 'Offer',
-          price: product.best_price.price,
-          priceCurrency: product.best_price.currency,
+          price: product.prices[0].price,
+          priceCurrency: product.prices[0].currency,
           availability: 'https://schema.org/InStock',
         } : undefined,
         aggregateRating: product.avg_rating > 0 ? {

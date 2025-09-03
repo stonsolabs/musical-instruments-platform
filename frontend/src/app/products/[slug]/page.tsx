@@ -8,12 +8,7 @@ import ProductDetailClient from '@/components/ProductDetailClient';
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
-    // Extract the slug part (remove product ID if present)
-    const slugPart = params.slug.includes('-') && /\d+$/.test(params.slug) 
-      ? params.slug.replace(/-\d+$/, '') 
-      : params.slug;
-    
-    const product = await serverApi.getProduct(slugPart);
+    const product = await serverApi.getProduct(params.slug);
     
     if (!product) {
       return {
@@ -59,14 +54,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   let product = null;
   
   try {
-    // Extract the slug part (remove product ID if present)
-    // URLs are in format: /products/slug-productId
-    const slugPart = params.slug.includes('-') && /\d+$/.test(params.slug) 
-      ? params.slug.replace(/-\d+$/, '') // Remove -123 suffix if present
-      : params.slug; // Use as-is if no ID suffix
-    
-    console.log('🔍 Product page: extracting slug from:', params.slug, '→', slugPart);
-    product = await serverApi.getProduct(slugPart);
+    console.log('🔍 Product page: fetching product with slug:', params.slug);
+    product = await serverApi.getProduct(params.slug);
   } catch (error) {
     console.error('🚨 Server-side error fetching product:', error);
     // Don't throw the error, continue with null product to show error state

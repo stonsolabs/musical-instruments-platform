@@ -1,5 +1,15 @@
 // Server-side API configuration
 const getServerApiUrl = (): string => {
+  // For server-side rendering, use the proxy endpoint when deployed
+  // This ensures consistent behavior between client and server
+  if (process.env.VERCEL_URL || process.env.NODE_ENV === 'production') {
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : `https://${process.env.NEXT_PUBLIC_DOMAIN}` || 'https://www.getyourmusicgear.com';
+    return `${baseUrl}/api/proxy`;
+  }
+  
+  // For local development, use direct backend URL
   return process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 };
 
@@ -12,14 +22,28 @@ export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
     const apiUrl = getServerApiUrl();
     const url = `${apiUrl}${endpoint}`;
+    const isUsingProxy = apiUrl.includes('/api/proxy');
+    
+    console.log('🌐 Server API call:', {
+      endpoint,
+      url,
+      isUsingProxy,
+      environment: process.env.NODE_ENV
+    });
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options.headers as Record<string, string>,
+    };
+    
+    // Only add API key if not using proxy (proxy handles authentication)
+    if (!isUsingProxy) {
+      headers['X-API-Key'] = getApiKey();
+    }
     
     const response = await fetch(url, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': getApiKey(),
-        ...options.headers,
-      },
+      headers,
       // Cache for 5 minutes for better performance
       next: { revalidate: 300 },
     });
@@ -46,7 +70,7 @@ export const serverApi = {
   // Get trending products for homepage (using correct backend endpoint)
   async getTrendingProducts(limit: number = 12) {
     try {
-      const response = await this.get(`/api/v1/trending/instruments?limit=${limit}`);
+      const response = await this.get(`/trending/instruments?limit=${limit}`);
       // Backend returns {trending_instruments: [...], total: X}
       // Convert to format expected by frontend: {products: [...]}
       return {
@@ -62,7 +86,7 @@ export const serverApi = {
   // Get most voted products (using correct backend endpoint)
   async getMostVotedProducts(limit: number = 12) {
     try {
-      return await this.get(`/api/v1/products?sort_by=rating&limit=${limit}`);
+      return await this.get(`/products?sort_by=rating&limit=${limit}`);
     } catch (error) {
       console.error('Failed to fetch most voted products:', error);
       return { products: [] };
@@ -72,17 +96,18 @@ export const serverApi = {
   // Get products by category (using correct backend endpoint)
   async getProductsByCategory(categoryId: number, limit: number = 12) {
     try {
-      return await this.get(`/api/v1/products?category_id=${categoryId}&limit=${limit}`);
+      return await this.get(`/products?category_id=${categoryId}&limit=${limit}`);
     } catch (error) {
       console.error('Failed to fetch products by category:', error);
       return { products: [] };
     }
   },
 
-  // Get single product (using correct backend endpoint)
+  // Get single product by slug (using search endpoint with slugs filter)
   async getProduct(productSlug: string) {
     try {
-      return await this.get(`/api/v1/products/${productSlug}`);
+      const result = await this.get(`/products?slugs=${productSlug}&limit=1`);
+      return result.products && result.products.length > 0 ? result.products[0] : null;
     } catch (error) {
       console.error('Failed to fetch product:', error);
       return null;
@@ -98,7 +123,7 @@ export const serverApi = {
           searchParams.append(key, String(value));
         }
       });
-      return await this.get(`/api/v1/products?${searchParams.toString()}`);
+      return await this.get(`/products?${searchParams.toString()}`);
     } catch (error) {
       console.error('Failed to search products:', error);
       return { products: [], total: 0 };
@@ -109,7 +134,7 @@ export const serverApi = {
   async compareProductsBySlugs(slugs: string[]) {
     try {
       const slugsParam = slugs.join(',');
-      return await this.get(`/api/v1/products?slugs=${slugsParam}&limit=100`);
+      return await this.get(`/products?slugs=${slugsParam}&limit=100`);
     } catch (error) {
       console.error('Failed to compare products:', error);
       return { products: [] };
@@ -119,7 +144,7 @@ export const serverApi = {
   // Compare products by IDs (using correct backend endpoint)
   async compareProducts(productIds: number[]) {
     try {
-      return await this.post('/api/v1/compare', productIds);
+      return await this.post('/compare', productIds);
     } catch (error) {
       console.error('Failed to compare products:', error);
       return { products: [], comparison: null };
@@ -129,7 +154,7 @@ export const serverApi = {
   // Get categories (using correct backend endpoint)
   async getCategories() {
     try {
-      return await this.get('/api/v1/categories');
+      return await this.get('/categories');
     } catch (error) {
       console.error('Failed to fetch categories:', error);
       return { categories: [] };
@@ -139,7 +164,7 @@ export const serverApi = {
   // Get brands (using correct backend endpoint)
   async getBrands() {
     try {
-      return await this.get('/api/v1/brands');
+      return await this.get('/brands');
     } catch (error) {
       console.error('Failed to fetch brands:', error);
       return { brands: [] };

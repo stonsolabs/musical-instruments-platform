@@ -36,7 +36,7 @@ ${staticPages
 ${products
   .map(
     (product: any) => `  <url>
-    <loc>${baseUrl}/products/${product.slug}-${product.id}</loc>
+    <loc>${baseUrl}/products/${product.slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

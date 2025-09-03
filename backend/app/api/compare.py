@@ -89,7 +89,6 @@ async def compare_products(
                 "review_count": p.review_count,
                 "ai_content": p.content or {},
                 "prices": prices,
-                "best_price": (sorted(prices, key=lambda x: x["price"])[0] if prices else None),
             }
         )
         specs = p.content.get('specifications', {}) if p.content else {}

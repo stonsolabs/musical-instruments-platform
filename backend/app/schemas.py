@@ -74,8 +74,6 @@ class ProductSummary(BaseModel):
     slug: str
     brand_name: str
     category_name: str
-    best_price: Optional[Decimal] = None
-    best_price_store: Optional[str] = None
     avg_rating: Optional[Decimal] = 0
     image_url: Optional[str] = None
 

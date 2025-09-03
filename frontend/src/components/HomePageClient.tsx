@@ -215,7 +215,7 @@ export default function HomePageClient({
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularProducts.map((product, index) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6 hover:shadow-md transition-shadow">
-                  <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                  <Link href={`/products/${product.slug}`} className="block">
                     <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <Image 
@@ -238,7 +238,7 @@ export default function HomePageClient({
                     <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
                     <span className="text-sm text-primary-500">1000+ watching</span>
                   </div>
-                  <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                  <Link href={`/products/${product.slug}`} className="block">
                     <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                   </Link>
                   <div className="flex items-center justify-center mb-4">
@@ -302,7 +302,7 @@ export default function HomePageClient({
                         
                         {product.prices.length > 2 && (
                           <Link 
-                            href={`/products/${product.slug}-${product.id}`}
+                            href={`/products/${product.slug}`}
                             className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
                           >
                             View All {product.prices.length} Stores
@@ -397,7 +397,7 @@ export default function HomePageClient({
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topRatedProducts.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-elegant border border-primary-200 p-6">
-                <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                <Link href={`/products/${product.slug}`} className="block">
                   <div className="h-64 bg-primary-200 rounded-lg mb-4 overflow-hidden">
                     {product.images && product.images.length > 0 ? (
                       <Image 
@@ -419,7 +419,7 @@ export default function HomePageClient({
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
                 </div>
-                <Link href={`/products/${product.slug}-${product.id}`} className="block">
+                <Link href={`/products/${product.slug}`} className="block">
                   <h3 className="font-semibold text-primary-900 mb-2 hover:text-accent-600 transition-colors cursor-pointer">{product.name}</h3>
                 </Link>
                 <p className="text-primary-600 text-sm mb-4 line-clamp-2">
@@ -479,7 +479,7 @@ export default function HomePageClient({
                       
                       {product.prices.length > 2 && (
                         <Link 
-                          href={`/products/${product.slug}-${product.id}`}
+                          href={`/products/${product.slug}`}
                           className="block w-full text-center py-2 border border-primary-300 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors text-sm"
                         >
                           View All {product.prices.length} Stores

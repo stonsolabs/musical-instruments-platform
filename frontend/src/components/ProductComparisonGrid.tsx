@@ -179,7 +179,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
       
       <div className={isMobile ? "p-4" : "p-6"}>
         {/* Product Image */}
-        <Link href={`/products/${product.slug}-${product.id}`} className="block mb-4">
+        <Link href={`/products/${product.slug}`} className="block mb-4">
           <div className="aspect-square bg-white rounded-lg flex items-center justify-center overflow-hidden hover:shadow-md transition-shadow border border-gray-200">
             {product.images && product.images.length > 0 ? (
               <img 
@@ -199,7 +199,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
           {/* Brand and Name */}
           <div>
             <p className="text-sm text-primary-600 mb-1">{product.brand.name}</p>
-            <Link href={`/products/${product.slug}-${product.id}`} className="block">
+            <Link href={`/products/${product.slug}`} className="block">
               <h3 className={`font-semibold text-primary-900 line-clamp-2 hover:text-accent-600 transition-colors ${isMobile ? 'text-sm' : ''}`}>
                 {product.name}
               </h3>
@@ -309,7 +309,7 @@ function ProductCard({ product, onRemove, showRemoveButton, isMobile = false }: 
                 {product.prices.length > 2 && (
                   <div className="text-center pt-1">
                     <Link 
-                      href={`/products/${product.slug}-${product.id}`}
+                      href={`/products/${product.slug}`}
                       className="text-xs text-primary-600 hover:text-primary-800 font-medium"
                     >
                       +{product.prices.length - 2} more stores

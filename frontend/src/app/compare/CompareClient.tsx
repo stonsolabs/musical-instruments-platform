@@ -580,7 +580,7 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                     </div>
                   )}
                   <Link 
-                    href={`/products/${product.slug}-${product.id}`}
+                    href={`/products/${product.slug}`}
                     className="text-sm text-primary-600 hover:text-primary-800 font-medium"
                   >
                     {product.avg_rating > 0 ? 'Read all reviews →' : 'View product details →'}
