@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types';
 import { CompactProductVoting } from '@/components/ProductVoting';
-import { ThomannButton, Gear4musicButton, GenericStoreButton } from '@/components/AffiliateButton';
+
 import { formatPrice } from '@/lib/utils';
 
 interface ProductCardProps {
@@ -111,28 +111,42 @@ export default function ProductCard({
                     
                     if (isThomann) {
                       return (
-                        <ThomannButton
+                        <a
                           key={price.id}
                           href={price.affiliate_url}
-                          isAvailable={price.is_available}
-                        />
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <span>View Price at</span>
+                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                        </a>
                       );
                     } else if (isGear4Music) {
                       return (
-                        <Gear4musicButton
+                        <a
                           key={price.id}
                           href={price.affiliate_url}
-                          isAvailable={price.is_available}
-                        />
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <span>View Price at</span>
+                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                        </a>
                       );
                     } else {
                       return (
-                        <GenericStoreButton
+                        <a 
                           key={price.id}
                           href={price.affiliate_url}
-                          storeName={price.store.name}
-                          isAvailable={price.is_available}
-                        />
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <span>View Price at</span>
+                          <span className="font-medium">{price.store.name}</span>
+                        </a>
                       );
                     }
                   })
@@ -140,8 +154,24 @@ export default function ProductCard({
               </>
             ) : (
               <>
-                <ThomannButton href={thomannUrl} />
-                <Gear4musicButton href={gear4musicUrl} />
+                <a
+                  href={thomannUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fp-table__button fp-table__button--thomann"
+                >
+                  <span>View Price at</span>
+                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                </a>
+                <a
+                  href={gear4musicUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fp-table__button fp-table__button--gear4music"
+                >
+                  <span>View Price at</span>
+                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                </a>
               </>
             )}
           </div>

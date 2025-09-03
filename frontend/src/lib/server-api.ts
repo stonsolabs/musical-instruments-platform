@@ -1,50 +1,32 @@
-// Server-side API client for SSR - calls backend directly
+import { getServerBaseUrl } from './api';
+
+// Server-side API client (SSR) - route via internal proxy to avoid API key issues
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    // For SSR, call the backend directly since we can't use the proxy route
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-    const API_KEY = process.env.API_KEY || '';
-    
-    // Ensure we have the API key for production
-    if (!API_KEY && process.env.NODE_ENV === 'production') {
-      console.error('❌ API_KEY not available for server-side calls');
-      throw new Error('API key not available for server-side backend calls');
-    }
-    
-    // Add /api/v1 prefix for production
-    const apiPrefix = API_BASE_URL.includes('localhost') ? '' : '/api/v1';
-    const targetUrl = `${API_BASE_URL}${apiPrefix}${endpoint}`;
-    
-    console.log('🔍 ServerApi: Making direct backend request to:', targetUrl);
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'User-Agent': 'MusicalInstrumentsPlatform/1.0',
-    };
-    
-    // Add API key for production
-    if (process.env.NODE_ENV === 'production') {
-      headers['X-API-Key'] = API_KEY;
-    }
-    
-    const response = await fetch(targetUrl, {
-      ...options,
-      headers,
-      // Cache for 5 minutes for better performance  
-      next: { revalidate: 300 },
-    });
-    
-    if (!response.ok) {
-      console.error('❌ ServerApi: Backend request failed:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: targetUrl
+    const baseUrl = getServerBaseUrl();
+    const url = `${baseUrl}/api/proxy${endpoint}`;
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers as Record<string, string>),
+        },
+        next: { revalidate: 300 },
       });
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        console.error('SSR serverApi fetch failed', { url, status: response.status, text });
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return response.json();
+    } catch (err) {
+      console.error('SSR serverApi fetch error', { url, err });
+      throw err;
     }
-    
-    console.log('✅ ServerApi: Backend request successful to:', targetUrl);
-    return response.json();
   },
 
   async get(endpoint: string) {
@@ -58,15 +40,12 @@ export const serverApi = {
     });
   },
 
-  // Get trending products for homepage (using correct backend endpoint)
   async getTrendingProducts(limit: number = 12) {
     try {
       const response = await this.get(`/trending/instruments?limit=${limit}`);
-      // Backend returns {trending_instruments: [...], total: X}
-      // Convert to format expected by frontend: {products: [...]}
       return {
         products: response.trending_instruments || [],
-        total: response.total || 0
+        total: response.total || 0,
       };
     } catch (error) {
       console.error('Failed to fetch trending products:', error);
@@ -74,7 +53,6 @@ export const serverApi = {
     }
   },
 
-  // Get most voted products (using correct backend endpoint)
   async getMostVotedProducts(limit: number = 12) {
     try {
       return await this.get(`/products?sort_by=rating&limit=${limit}`);
@@ -84,7 +62,6 @@ export const serverApi = {
     }
   },
 
-  // Get products by category (using correct backend endpoint)
   async getProductsByCategory(categoryId: number, limit: number = 12) {
     try {
       return await this.get(`/products?category_id=${categoryId}&limit=${limit}`);
@@ -94,7 +71,6 @@ export const serverApi = {
     }
   },
 
-  // Get single product by slug (using search endpoint with slugs filter)
   async getProduct(productSlug: string) {
     try {
       const result = await this.get(`/products?slugs=${productSlug}&limit=1`);
@@ -105,7 +81,6 @@ export const serverApi = {
     }
   },
 
-  // Search products (using correct backend endpoint)
   async searchProducts(params: Record<string, any>) {
     try {
       const searchParams = new URLSearchParams();
@@ -121,7 +96,6 @@ export const serverApi = {
     }
   },
 
-  // Compare products by slugs (using correct backend endpoint)
   async compareProductsBySlugs(slugs: string[]) {
     try {
       const slugsParam = slugs.join(',');
@@ -132,7 +106,6 @@ export const serverApi = {
     }
   },
 
-  // Compare products by IDs (using correct backend endpoint)
   async compareProducts(productIds: number[]) {
     try {
       return await this.post('/compare', productIds);
@@ -142,7 +115,6 @@ export const serverApi = {
     }
   },
 
-  // Get categories (using correct backend endpoint)
   async getCategories() {
     try {
       return await this.get('/categories');
@@ -152,7 +124,6 @@ export const serverApi = {
     }
   },
 
-  // Get brands (using correct backend endpoint)
   async getBrands() {
     try {
       return await this.get('/brands');
@@ -160,5 +131,5 @@ export const serverApi = {
       console.error('Failed to fetch brands:', error);
       return { brands: [] };
     }
-  }
+  },
 };

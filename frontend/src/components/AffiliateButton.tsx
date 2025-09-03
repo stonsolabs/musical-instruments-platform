@@ -49,6 +49,8 @@ export default function AffiliateButton({
   if (className) {
     buttonClasses += ` ${className}`;
   }
+  
+
 
   return (
     <a
@@ -64,7 +66,7 @@ export default function AffiliateButton({
           src={config.logo} 
           alt={config.logoAlt} 
           className="w-16 h-8 object-contain" 
-          style={{ backgroundColor: 'white' }} 
+          style={{ backgroundColor: 'white' }}
         />
       ) : (
         <span className="font-medium">{displayName}</span>

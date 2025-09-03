@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ComparisonResponse, Product } from '@/types';
 import { apiClient } from '@/lib/api';
-import AffiliateButton from '@/components/AffiliateButton';
+
 import SpecificationsComparison from '@/components/SpecificationsComparison';
 import UnifiedSearchAutocomplete from '@/components/UnifiedSearchAutocomplete';
 import ProductComparisonGrid from '@/components/ProductComparisonGrid';
@@ -408,20 +408,22 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
                             <div key={index} className="flex items-center justify-between p-2 bg-accent-50 border border-accent-200 rounded text-xs">
                               <span className="text-accent-800 font-medium truncate flex-1 mr-2">{amp}</span>
                               <div className="flex gap-1 flex-shrink-0">
-                                <AffiliateButton
-                                  store="thomann"
+                                <a
                                   href={`https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(amp)}&aff=123`}
-                                  className="text-xs px-2 py-1 min-w-[24px]"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="fp-table__button fp-table__button--thomann text-xs px-2 py-1 min-w-[24px]"
                                 >
                                   T
-                                </AffiliateButton>
-                                <AffiliateButton
-                                  store="gear4music"
+                                </a>
+                                <a
                                   href={`https://gear4music.com/search?search=${encodeURIComponent(amp)}&aff=123`}
-                                  className="text-xs px-2 py-1 min-w-[24px]"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="fp-table__button fp-table__button--gear4music text-xs px-2 py-1 min-w-[24px]"
                                 >
                                   G
-                                </AffiliateButton>
+                                </a>
                               </div>
                             </div>
                           ))}

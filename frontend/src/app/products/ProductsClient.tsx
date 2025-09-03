@@ -7,7 +7,7 @@ import { Product, SearchResponse, Category, Brand } from '@/types';
 import { getApiBaseUrl } from '@/lib/api';
 import FloatingCompareButton from '@/components/FloatingCompareButton';
 import SpecificationsComparison from '@/components/SpecificationsComparison';
-import AffiliateButton from '@/components/AffiliateButton';
+
 import { CompactProductVoting } from '@/components/ProductVoting';
 import HydrationSafe from '@/components/HydrationSafe';
 import ErrorBoundary from '@/components/ErrorBoundary';

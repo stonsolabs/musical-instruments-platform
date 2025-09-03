@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import AffiliateButton from '@/components/AffiliateButton';
+
 
 export const metadata: Metadata = {
   title: 'Special Deals - Musical Instruments',
@@ -175,17 +175,25 @@ export default function DealsPage() {
                     </div>
                     
                     {deal.store === "Thomann" ? (
-                      <AffiliateButton
-                        store="thomann"
+                      <a
                         href={deal.affiliateUrl}
-                        className="w-full"
-                      />
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fp-table__button fp-table__button--thomann w-full"
+                      >
+                        <span>View Price at</span>
+                        <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                      </a>
                     ) : deal.store === "Gear4Music" ? (
-                      <AffiliateButton
-                        store="gear4music"
+                      <a
                         href={deal.affiliateUrl}
-                        className="w-full"
-                      />
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fp-table__button fp-table__button--gear4music w-full"
+                      >
+                        <span>View Price at</span>
+                        <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                      </a>
                     ) : (
                       <a
                         href={deal.affiliateUrl}
@@ -239,17 +247,25 @@ export default function DealsPage() {
                   </div>
                   
                   {deal.store === "Thomann" ? (
-                    <AffiliateButton
-                      store="thomann"
+                    <a
                       href={deal.affiliateUrl}
-                      className="w-full"
-                    />
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="fp-table__button fp-table__button--thomann w-full"
+                    >
+                      <span>View Price at</span>
+                      <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                    </a>
                   ) : deal.store === "Gear4Music" ? (
-                    <AffiliateButton
-                      store="gear4music"
+                    <a
                       href={deal.affiliateUrl}
-                      className="w-full"
-                    />
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="fp-table__button fp-table__button--gear4music w-full"
+                    >
+                      <span>View Price at</span>
+                      <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
+                    </a>
                   ) : (
                     <a
                       href={deal.affiliateUrl}
