@@ -19,11 +19,13 @@ class Settings(BaseSettings):
                 raise ValueError("DATABASE_URL environment variable is required in production")
         
         if self.DATABASE_URL.startswith("postgresql://"):
-            # Add SSL requirement for production
+            # Convert to asyncpg format
             base_url = self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
-            if self.ENVIRONMENT == "production" and "sslmode=" not in base_url:
+            
+            # For production, use SSL with asyncpg-compatible parameters
+            if self.ENVIRONMENT == "production" and "ssl=" not in base_url:
                 connector = "&" if "?" in base_url else "?"
-                return f"{base_url}{connector}sslmode=require"
+                return f"{base_url}{connector}ssl=require"
             return base_url
         return self.DATABASE_URL
     

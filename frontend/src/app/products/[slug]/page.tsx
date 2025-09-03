@@ -7,14 +7,20 @@ import ProductDetailClient from '@/components/ProductDetailClient';
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const product = await serverApi.getProduct(params.slug);
-  
-  if (!product) {
-    return {
-      title: 'Product Not Found',
-      description: 'The requested product could not be found.',
-    };
-  }
+  try {
+    // Extract the slug part (remove product ID if present)
+    const slugPart = params.slug.includes('-') && /\d+$/.test(params.slug) 
+      ? params.slug.replace(/-\d+$/, '') 
+      : params.slug;
+    
+    const product = await serverApi.getProduct(slugPart);
+    
+    if (!product) {
+      return {
+        title: 'Product Not Found',
+        description: 'The requested product could not be found.',
+      };
+    }
 
   return {
     title: `${product.name} - ${product.brand?.name || 'Unknown Brand'}`,
@@ -39,10 +45,32 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       images: product.images?.[0] ? [product.images[0]] : [],
     },
   };
+  } catch (error) {
+    console.error('🚨 Error in generateMetadata:', error);
+    // Return fallback metadata when backend is down
+    return {
+      title: `Product: ${params.slug}`,
+      description: 'Product details and pricing information from top music stores.',
+    };
+  }
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = await serverApi.getProduct(params.slug);
+  let product = null;
+  
+  try {
+    // Extract the slug part (remove product ID if present)
+    // URLs are in format: /products/slug-productId
+    const slugPart = params.slug.includes('-') && /\d+$/.test(params.slug) 
+      ? params.slug.replace(/-\d+$/, '') // Remove -123 suffix if present
+      : params.slug; // Use as-is if no ID suffix
+    
+    console.log('🔍 Product page: extracting slug from:', params.slug, '→', slugPart);
+    product = await serverApi.getProduct(slugPart);
+  } catch (error) {
+    console.error('🚨 Server-side error fetching product:', error);
+    // Don't throw the error, continue with null product to show error state
+  }
 
   return (
     <div className="min-h-screen bg-primary-50">

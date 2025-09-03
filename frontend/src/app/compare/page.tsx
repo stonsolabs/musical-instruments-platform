@@ -39,7 +39,11 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         productIds = productsData.products.map((p: any) => p.id);
       }
     } catch (error) {
-      console.error('Error fetching comparison data server-side:', error);
+      console.error('🚨 Server-side error fetching comparison data:', error);
+      // Don't throw the error, just log it and continue with client-side rendering
+      // This prevents the 500 error when backend is down
+      initialData = null;
+      productIds = [];
     }
   }
 
