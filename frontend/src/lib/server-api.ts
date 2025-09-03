@@ -1,16 +1,11 @@
 // Server-side API configuration
 const getServerApiUrl = (): string => {
-  // For server-side rendering, use the proxy endpoint when deployed
-  // This ensures consistent behavior between client and server
-  if (process.env.VERCEL_URL || process.env.NODE_ENV === 'production') {
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : `https://${process.env.NEXT_PUBLIC_DOMAIN}` || 'https://www.getyourmusicgear.com';
-    return `${baseUrl}/api/proxy`;
-  }
+  // Force ALWAYS use proxy - hardcoded to fix the issue
+  const proxyUrl = 'https://www.getyourmusicgear.com/api/proxy';
   
-  // For local development, use direct backend URL
-  return process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  console.log('🌐 Server API URL (FORCED TO PROXY):', proxyUrl);
+  
+  return proxyUrl;
 };
 
 const getApiKey = (): string => {

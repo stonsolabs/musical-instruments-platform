@@ -11,11 +11,20 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   console.log('🚀 Server-side: HomePage component executing...');
   
-  // Server-side data fetching for SSR
-  const [trendingData, mostVotedData] = await Promise.allSettled([
-    serverApi.getTrendingProducts(12),
-    serverApi.getMostVotedProducts(12)
-  ]);
+  let trendingData, mostVotedData;
+  
+  try {
+    // Server-side data fetching for SSR
+    [trendingData, mostVotedData] = await Promise.allSettled([
+      serverApi.getTrendingProducts(12),
+      serverApi.getMostVotedProducts(12)
+    ]);
+  } catch (error) {
+    console.error('🚨 Home page: Server-side data fetching failed', error);
+    // Provide fallback data to prevent 500 errors
+    trendingData = { status: 'rejected', reason: error };
+    mostVotedData = { status: 'rejected', reason: error };
+  }
 
   const popularProducts = trendingData.status === 'fulfilled' 
     ? trendingData.value.products || [] 
@@ -25,7 +34,7 @@ export default async function HomePage() {
     ? mostVotedData.value.products || [] 
     : [];
 
-  console.log('✅ Server-side: Data fetched successfully', {
+  console.log('✅ Server-side: Data fetched', {
     popularCount: popularProducts.length,
     topRatedCount: topRatedProducts.length,
     trendingStatus: trendingData.status,

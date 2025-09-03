@@ -69,12 +69,28 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   if (!searchFilters.page) searchFilters.page = 1;
   if (!searchFilters.sort_by) searchFilters.sort_by = 'name';
 
-  // Fetch data on the server with error handling
-  const [productsData, categoriesData, brandsData] = await Promise.allSettled([
-    serverApi.searchProducts(searchFilters),
-    serverApi.getCategories(),
-    serverApi.getBrands(),
-  ]);
+  // Fetch data on the server with comprehensive error handling
+  let productsData, categoriesData, brandsData;
+  
+  try {
+    console.log('🔍 Products page: Server-side data fetching started', { searchFilters });
+    [productsData, categoriesData, brandsData] = await Promise.allSettled([
+      serverApi.searchProducts(searchFilters),
+      serverApi.getCategories(),
+      serverApi.getBrands(),
+    ]);
+    console.log('✅ Products page: Server-side data fetching completed', {
+      productsStatus: productsData.status,
+      categoriesStatus: categoriesData.status,
+      brandsStatus: brandsData.status
+    });
+  } catch (error) {
+    console.error('🚨 Products page: Server-side data fetching failed', error);
+    // Provide fallback data to prevent 500 errors
+    productsData = { status: 'rejected', reason: error };
+    categoriesData = { status: 'rejected', reason: error };
+    brandsData = { status: 'rejected', reason: error };
+  }
 
   const products = productsData.status === 'fulfilled' && productsData.value?.products 
     ? productsData.value 
