@@ -1,14 +1,30 @@
-// Import the shared backend client
-import { callBackendApi } from './backend-client';
-
-// Server-side API client using direct backend calls to avoid internal routing issues
+// Server-side API client using proxy route to avoid API key issues
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    return callBackendApi(endpoint, {
+    // Use the proxy route which handles API key authentication
+    // Ensure we always have the full URL with protocol
+    let baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'getyourmusicgear.com';
+    
+    // Add protocol if missing
+    if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+      baseUrl = `https://www.${baseUrl}`;
+    }
+    
+    const response = await fetch(`${baseUrl}/api/proxy${endpoint}`, {
       ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers as Record<string, string>,
+      },
       // Cache for 5 minutes for better performance  
       next: { revalidate: 300 },
     });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
   },
 
   async get(endpoint: string) {

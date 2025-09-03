@@ -26,7 +26,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   if (productSlugs.length > 0) {
     try {
-      // Fetch products by slugs directly from the backend
+      // Fetch products by slugs through the proxy route
       console.log('🔍 Server-side: Fetching products with slugs:', productSlugs);
       const productsData = await serverApi.compareProductsBySlugs(productSlugs);
       console.log('✅ Server-side: Products data received:', productsData);

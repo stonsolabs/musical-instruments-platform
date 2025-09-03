@@ -3,6 +3,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmus
 const API_KEY = process.env.API_KEY || '';
 
 export async function callBackendApi(endpoint: string, options: RequestInit = {}) {
+  // Check if we have the required API key for direct backend calls
+  if (!API_KEY) {
+    console.warn('⚠️ No API key available for direct backend calls, this may cause server-side rendering issues');
+    // For server-side rendering without API key, we'll need to handle this differently
+    // For now, throw an error to prevent silent failures
+    throw new Error('API key not available for server-side backend calls');
+  }
+
   // Ensure no double slashes by properly joining the URL parts
   const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
   const apiPrefix = '/api/v1';
@@ -22,9 +30,7 @@ export async function callBackendApi(endpoint: string, options: RequestInit = {}
   };
   
   // Add API key for authentication
-  if (API_KEY) {
-    headers['X-API-Key'] = API_KEY;
-  }
+  headers['X-API-Key'] = API_KEY;
   
   const response = await fetch(targetUrl, {
     ...options,
