@@ -6,7 +6,9 @@ import Script from 'next/script'
 export function GoogleTagManager() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID
 
-  if (!gtmId) {
+  // If no GTM ID is set, don't render anything to prevent errors
+  if (!gtmId || gtmId === 'GTM-XXXXXXX') {
+    console.warn('Google Tag Manager ID not configured. Set NEXT_PUBLIC_GTM_ID in your environment variables.');
     return null
   }
 

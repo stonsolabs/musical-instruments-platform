@@ -1,48 +1,48 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Product } from '@/types';
+import type { Metadata } from 'next';
+import { serverApi } from '@/lib/server-api';
 import ProductDetailClient from '@/components/ProductDetailClient';
 
-async function fetchProduct(slug: string): Promise<Product | null> {
-  try {
-    const idPart = slug.split('-').pop();
-    const productId = Number(idPart);
-    
-    if (!Number.isFinite(productId)) {
-      console.error('Invalid product ID from slug:', slug);
-      return null;
-    }
-
-    const apiUrl = `https://getyourmusicgear-api.azurewebsites.net/api/v1/products/${productId}`;
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      console.error('API_KEY environment variable is not set');
-      return null;
-    }
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-    });
-
-    if (!response.ok) {
-      console.error(`Product API Error: ${response.status} ${response.statusText}`);
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return null;
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const product = await serverApi.getProduct(params.slug);
+  
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+      description: 'The requested product could not be found.',
+    };
   }
+
+  return {
+    title: `${product.name} - ${product.brand?.name || 'Unknown Brand'}`,
+    description: product.description || `Compare prices for ${product.name} from top music stores. Expert reviews and detailed specifications.`,
+    keywords: `${product.name}, ${product.brand?.name || ''}, ${product.category?.name || ''}, musical instruments, buy online`,
+    openGraph: {
+      title: `${product.name} - ${product.brand?.name || 'Unknown Brand'}`,
+      description: product.description || `Compare prices for ${product.name} from top music stores.`,
+      type: 'website',
+      url: `https://getyourmusicgear.com/products/${params.slug}`,
+      images: product.images?.map(img => ({
+        url: img,
+        width: 800,
+        height: 600,
+        alt: product.name,
+      })) || [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} - ${product.brand?.name || 'Unknown Brand'}`,
+      description: product.description || `Compare prices for ${product.name} from top music stores.`,
+      images: product.images?.[0] ? [product.images[0]] : [],
+    },
+  };
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = await fetchProduct(params.slug);
+  const product = await serverApi.getProduct(params.slug);
 
   return (
     <div className="min-h-screen bg-primary-50">

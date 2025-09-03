@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { serverApi } from '@/lib/server-api';
 import CompareClient from './CompareClient';
 import CompareSearchInterface from './CompareSearchInterface';
 
@@ -13,10 +14,36 @@ interface ComparePageProps {
   searchParams: { products?: string };
 }
 
-export default function ComparePage({ searchParams }: ComparePageProps) {
+export default async function ComparePage({ searchParams }: ComparePageProps) {
   const productSlugs = searchParams.products 
     ? decodeURIComponent(searchParams.products).split(',').filter(slug => slug.trim()) 
     : [];
+
+  // Server-side data fetching for products when available
+  let initialData = null;
+  let productIds: number[] = [];
+
+  if (productSlugs.length > 0) {
+    try {
+      // Fetch products by slugs to get their IDs
+      const productPromises = productSlugs.map(slug => serverApi.getProduct(slug));
+      const products = await Promise.allSettled(productPromises);
+      
+      const validProducts = products
+        .filter(result => result.status === 'fulfilled' && result.value)
+        .map(result => (result as PromiseFulfilledResult<any>).value);
+      
+      if (validProducts.length > 0) {
+        productIds = validProducts.map(p => p.id);
+        const comparisonData = await serverApi.compareProducts(productIds);
+        if (comparisonData) {
+          initialData = comparisonData;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching comparison data:', error);
+    }
+  }
 
   // Handle case where no valid product slugs are provided
   if (productSlugs.length < 1) {
@@ -95,8 +122,8 @@ export default function ComparePage({ searchParams }: ComparePageProps) {
         {/* Client-side interactive component */}
         <CompareClient
           productSlugs={productSlugs}
-          productIds={[]}
-          initialData={null}
+          productIds={productIds}
+          initialData={initialData}
         />
       </div>
     </div>

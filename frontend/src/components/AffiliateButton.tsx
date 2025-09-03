@@ -1,62 +1,127 @@
 import React from 'react';
-import Image from 'next/image';
 
 interface AffiliateButtonProps {
-  store: 'thomann' | 'gear4music';
+  store: 'thomann' | 'gear4music' | 'generic';
   href: string;
   className?: string;
-  children?: React.ReactNode;
-  onClick?: (e: React.MouseEvent) => void;
+  storeName?: string;
+  isAvailable?: boolean;
+  variant?: 'default' | 'compact' | 'inline';
 }
 
-export default function AffiliateButton({ store, href, className = '', children, onClick }: AffiliateButtonProps) {
+export default function AffiliateButton({ 
+  store, 
+  href, 
+  className = '', 
+  storeName, 
+  isAvailable = true,
+  variant = 'default'
+}: AffiliateButtonProps) {
   const storeConfig = {
     thomann: {
-      bgColor: 'bg-cyan-500',
-      hoverColor: 'hover:bg-cyan-600',
-      text: 'View Price at th•mann',
+      cssClass: 'fp-table__button--thomann',
       logo: '/thomann-100.png',
-      altText: 'Thomann'
+      logoAlt: 'th•mann',
+      defaultName: 'Thomann'
     },
     gear4music: {
-      bgColor: 'bg-orange-500',
-      hoverColor: 'hover:bg-orange-600',
-      text: 'View Price at Gear4music',
+      cssClass: 'fp-table__button--gear4music',
       logo: '/gear-100.png',
-      altText: 'Gear4music'
+      logoAlt: 'Gear4music',
+      defaultName: 'Gear4music'
+    },
+    generic: {
+      cssClass: '',
+      logo: null,
+      logoAlt: '',
+      defaultName: storeName || 'Store'
     }
   };
 
   const config = storeConfig[store];
+  const displayName = storeName || config.defaultName;
 
-  // Determine if this is a compact button (based on custom children or className)
-  const isCompact = children && children !== config.text;
-  const hasCustomClass = className.includes('px-') || className.includes('py-');
+  // Build CSS classes
+  let buttonClasses = `fp-table__button ${config.cssClass}`;
+  if (!isAvailable) {
+    buttonClasses += ' opacity-50 cursor-not-allowed';
+  }
+  if (className) {
+    buttonClasses += ` ${className}`;
+  }
 
   return (
     <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={onClick}
-      className={`block text-center transition-colors font-medium text-white ${config.bgColor} ${config.hoverColor} ${
-        hasCustomClass 
-          ? className 
-          : `w-full py-2 px-3 rounded-lg text-sm ${className}`
-      }`}
+      href={isAvailable ? href : undefined}
+      target={isAvailable ? "_blank" : undefined}
+      rel={isAvailable ? "noopener noreferrer" : undefined}
+      className={buttonClasses}
+      aria-disabled={!isAvailable}
     >
-      <div className={`flex items-center justify-center ${isCompact && !hasCustomClass ? 'gap-1' : 'gap-2'}`}>
-        {!isCompact && (
-          <Image
-            src={config.logo}
-            alt={config.altText}
-            width={16}
-            height={16}
-            className="w-4 h-4"
-          />
-        )}
-        <span className={isCompact && hasCustomClass ? 'text-xs' : ''}>{children || config.text}</span>
-      </div>
+      <span>View Price at</span>
+      {config.logo ? (
+        <img 
+          src={config.logo} 
+          alt={config.logoAlt} 
+          className="w-16 h-8 object-contain" 
+          style={{ backgroundColor: 'white' }} 
+        />
+      ) : (
+        <span className="font-medium">{displayName}</span>
+      )}
     </a>
+  );
+}
+
+// Helper component for common usage patterns
+export function ThomannButton({ href, isAvailable = true, className = '' }: {
+  href: string;
+  isAvailable?: boolean;
+  className?: string;
+}) {
+  return (
+    <AffiliateButton
+      store="thomann"
+      href={href}
+      isAvailable={isAvailable}
+      className={className}
+    />
+  );
+}
+
+export function Gear4musicButton({ href, isAvailable = true, className = '' }: {
+  href: string;
+  isAvailable?: boolean;
+  className?: string;
+}) {
+  return (
+    <AffiliateButton
+      store="gear4music"
+      href={href}
+      isAvailable={isAvailable}
+      className={className}
+    />
+  );
+}
+
+export function GenericStoreButton({ 
+  href, 
+  storeName, 
+  isAvailable = true, 
+  className = '' 
+}: {
+  href: string;
+  storeName: string;
+  isAvailable?: boolean;
+  className?: string;
+}) {
+  return (
+    <AffiliateButton
+      store="generic"
+      href={href}
+      storeName={storeName}
+      isAvailable={isAvailable}
+      className={className}
+    />
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { serverApi } from '@/lib/server-api';
 import HomePageClient from '@/components/HomePageClient';
 
 export const metadata: Metadata = {
@@ -7,10 +8,27 @@ export const metadata: Metadata = {
   description: 'Compare musical instruments, read expert reviews, and find the best prices from trusted retailers worldwide.',
 };
 
-export const dynamic = 'force-dynamic';
+export default async function HomePage() {
+  // Server-side data fetching for SSR
+  const [trendingData, mostVotedData] = await Promise.allSettled([
+    serverApi.getTrendingProducts(12),
+    serverApi.getMostVotedProducts(12)
+  ]);
 
-export default function HomePage() {
-  return <HomePageClient />;
+  const popularProducts = trendingData.status === 'fulfilled' 
+    ? trendingData.value.products || [] 
+    : [];
+
+  const topRatedProducts = mostVotedData.status === 'fulfilled' 
+    ? mostVotedData.value.products || [] 
+    : [];
+
+  return (
+    <HomePageClient 
+      initialPopularProducts={popularProducts}
+      initialTopRatedProducts={topRatedProducts}
+    />
+  );
 }
 
 

@@ -3,187 +3,10 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { Product, SearchResponse, Category, Brand } from '@/types';
 import ProductsClient from './ProductsClient';
-import { API_BASE_URL, getServerBaseUrl } from '@/lib/api';
+import { serverApi } from '@/lib/server-api';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
-
-async function fetchProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<SearchResponse> {
-  try {
-    const params = new URLSearchParams();
-    
-    // Convert searchParams to URLSearchParams
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value && typeof value === 'string') {
-        params.append(key, value);
-      }
-    });
-
-    // Set defaults
-    if (!params.has('limit')) params.set('limit', '20');
-    if (!params.has('page')) params.set('page', '1');
-    if (!params.has('sort_by')) params.set('sort_by', 'name');
-
-    // For server-side requests, call Azure API directly with API key
-    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/products';
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      console.error('API_KEY environment variable is not set');
-      return { 
-        products: [], 
-        pagination: { page: 1, limit: 20, total: 0, pages: 0 },
-        filters_applied: { sort_by: 'name' }
-      };
-    }
-
-    console.log('🔍 Server-side fetching products:', `${apiUrl}?${params.toString()}`);
-
-    const response = await fetch(`${apiUrl}?${params.toString()}`, {
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-    });
-
-    if (!response.ok) {
-      console.error(`API Error: ${response.status} ${response.statusText}`);
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      return {
-        products: [],
-        pagination: { page: 1, limit: 20, total: 0, pages: 0 },
-        filters_applied: { sort_by: 'name' }
-      };
-    }
-
-    const data = await response.json();
-    console.log('✅ Server-side products fetched:', data.products?.length || 0, 'products');
-    
-    // Ensure data structure consistency
-    const normalizedData: SearchResponse = {
-      products: data.products || [],
-      pagination: data.pagination || { page: 1, limit: 20, total: 0, pages: 0 },
-      filters_applied: data.filters_applied || { sort_by: 'name' }
-    };
-    
-    // Normalize product data to ensure all required fields exist
-    normalizedData.products = normalizedData.products.map(product => ({
-      id: product.id || 0,
-      sku: product.sku || '',
-      name: product.name || 'Unknown Product',
-      slug: product.slug || 'unknown-product',
-      brand: product.brand || { id: 0, name: 'Unknown Brand', slug: 'unknown-brand' },
-      category: product.category || { id: 0, name: 'Unknown Category', slug: 'unknown-category' },
-      description: product.description || '',
-      specifications: product.specifications || {},
-      images: product.images || [],
-      msrp_price: product.msrp_price,
-      best_price: product.best_price,
-      prices: product.prices || [],
-      avg_rating: product.avg_rating || 0,
-      review_count: product.review_count || 0,
-      is_active: product.is_active !== undefined ? product.is_active : true,
-      created_at: product.created_at || new Date().toISOString(),
-      updated_at: product.updated_at || new Date().toISOString(),
-      ai_content: product.ai_content,
-      vote_stats: product.vote_stats,
-      thomann_info: product.thomann_info,
-      content: product.content || {}
-    }));
-    
-    return normalizedData;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return {
-      products: [],
-      pagination: { page: 1, limit: 20, total: 0, pages: 0 },
-      filters_applied: { sort_by: 'name' }
-    };
-  }
-}
-
-async function fetchCategories(): Promise<Category[]> {
-  try {
-    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/categories';
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      console.error('API_KEY environment variable is not set');
-      return [];
-    }
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 3600 }, // Revalidate every hour
-    });
-
-    if (!response.ok) {
-      console.error(`Categories API Error: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
-    console.log('✅ Server-side categories fetched:', data?.length || 0, 'categories');
-    
-    // Ensure data structure consistency
-    return (data || []).map((category: any) => ({
-      id: category.id || 0,
-      name: category.name || 'Unknown Category',
-      slug: category.slug || 'unknown-category',
-      description: category.description || '',
-      parent_id: category.parent_id,
-      image_url: category.image_url
-    }));
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
-}
-
-async function fetchBrands(): Promise<Brand[]> {
-  try {
-    const apiUrl = 'https://getyourmusicgear-api.azurewebsites.net/api/v1/brands';
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      console.error('API_KEY environment variable is not set');
-      return [];
-    }
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 3600 }, // Revalidate every hour
-    });
-
-    if (!response.ok) {
-      console.error(`Brands API Error: ${response.status} ${response.statusText}`);
-      return [];
-    }
-
-    const data = await response.json();
-    console.log('✅ Server-side brands fetched:', data?.length || 0, 'brands');
-    
-    // Ensure data structure consistency
-    return (data || []).map((brand: any) => ({
-      id: brand.id || 0,
-      name: brand.name || 'Unknown Brand',
-      slug: brand.slug || 'unknown-brand',
-      logo_url: brand.logo_url,
-      description: brand.description || ''
-    }));
-  } catch (error) {
-    console.error('Error fetching brands:', error);
-    return [];
-  }
-}
 
 // Generate metadata for SEO
 export async function generateMetadata({ searchParams }: {
@@ -233,28 +56,37 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  // Fetch data on the server with error handling
-  let productsData: SearchResponse;
-  let categories: Category[] = [];
-  let brands: Brand[] = [];
+  // Convert searchParams for server API
+  const searchFilters: Record<string, any> = {};
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (value && typeof value === 'string') {
+      searchFilters[key] = value;
+    }
+  });
 
-  try {
-    [productsData, categories, brands] = await Promise.all([
-      fetchProducts(searchParams),
-      fetchCategories(),
-      fetchBrands(),
-    ]);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    // Provide fallback data
-    productsData = {
-      products: [],
-      pagination: { page: 1, limit: 20, total: 0, pages: 0 },
-      filters_applied: { sort_by: 'name' }
-    };
-    categories = [];
-    brands = [];
-  }
+  // Set defaults
+  if (!searchFilters.limit) searchFilters.limit = 20;
+  if (!searchFilters.page) searchFilters.page = 1;
+  if (!searchFilters.sort_by) searchFilters.sort_by = 'name';
+
+  // Fetch data on the server with error handling
+  const [productsData, categoriesData, brandsData] = await Promise.allSettled([
+    serverApi.searchProducts(searchFilters),
+    serverApi.getCategories(),
+    serverApi.getBrands(),
+  ]);
+
+  const products = productsData.status === 'fulfilled' && productsData.value?.products 
+    ? productsData.value 
+    : { products: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 }, filters_applied: { sort_by: 'name' } };
+
+  const categories = categoriesData.status === 'fulfilled' && categoriesData.value?.categories
+    ? categoriesData.value.categories 
+    : [];
+
+  const brands = brandsData.status === 'fulfilled' && brandsData.value?.brands
+    ? brandsData.value.brands 
+    : [];
 
   // Generate structured data for SEO
   const structuredData = {
@@ -265,8 +97,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     url: 'https://getyourmusicgear.com/products',
     mainEntity: {
       '@type': 'ItemList',
-      numberOfItems: productsData.pagination.total,
-      itemListElement: productsData.products.map((product, index) => ({
+      numberOfItems: products.pagination.total,
+      itemListElement: products.products.map((product, index) => ({
         '@type': 'Product',
         position: index + 1,
         name: product.name,
@@ -321,7 +153,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               }
             </h1>
             <p className="text-lg text-gray-600">
-              {productsData.pagination.total} products found
+              {products.pagination.total} products found
               {searchParams.category && (
                 <span className="ml-2">
                   in {(searchParams.category as string).split('-').map(word => 
@@ -355,8 +187,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </div>
           }>
             <ProductsClient
-              initialProducts={productsData.products}
-              initialPagination={productsData.pagination}
+              initialProducts={products.products}
+              initialPagination={products.pagination}
               categories={categories}
               brands={brands}
             />
