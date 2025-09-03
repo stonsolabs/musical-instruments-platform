@@ -63,9 +63,8 @@ export function Header() {
                     onMouseEnter={() => handleMouseEnter('guitars')}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <Link href="/products?category=steel-string-acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
+                    <Link href="/products?category=acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
                     <Link href="/products?category=electric-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Electric Guitars</Link>
-                    <Link href="/products?category=classical-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Classical Guitars</Link>
                   </div>
                 )}
               </div>
@@ -125,9 +124,8 @@ export function Header() {
         <div className="lg:hidden bg-white border-t border-gray-300 animate-slide-up">
           <div className="px-4 pt-4 pb-3 space-y-2">
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-1">Guitars</div>
-            <Link href="/products?category=steel-string-acoustic-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
+            <Link href="/products?category=acoustic-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
             <Link href="/products?category=electric-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Electric Guitars</Link>
-            <Link href="/products?category=classical-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Classical Guitars</Link>
             
             <Link href="/products?category=electric-basses" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Bass</Link>
             

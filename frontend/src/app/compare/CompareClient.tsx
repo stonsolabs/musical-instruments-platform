@@ -159,6 +159,15 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
     }
   };
 
+  const handleAddProductFromSearch = (searchProduct: any) => {
+    // Convert search product to the format we need
+    if (searchProduct && searchProduct.slug) {
+      const newSlugs = [...productSlugs, searchProduct.slug];
+      const newUrl = `/compare?products=${newSlugs.join(',')}`;
+      window.location.href = newUrl;
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">

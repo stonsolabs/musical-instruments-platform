@@ -22,22 +22,10 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const teamMembers = [
     {
-      name: "Alex Johnson",
+      name: "Felipe Costa",
       role: "Founder & CEO",
       bio: "Passionate musician and entrepreneur with over 15 years of experience in the music industry.",
       image: "/images/team-alex.jpg"
-    },
-    {
-      name: "Sarah Chen",
-      role: "Head of Product",
-      bio: "Former music store manager with deep knowledge of instruments and customer needs.",
-      image: "/images/team-sarah.jpg"
-    },
-    {
-      name: "Marcus Rodriguez",
-      role: "Lead Developer",
-      bio: "Full-stack developer and amateur guitarist who loves building tools for musicians.",
-      image: "/images/team-marcus.jpg"
     }
   ];
 

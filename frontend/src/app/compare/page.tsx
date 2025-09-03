@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { serverApi } from '@/lib/server-api';
 import CompareClient from './CompareClient';
 import CompareSearchInterface from './CompareSearchInterface';
+import type { ComparisonResponse } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Compare Musical Instruments - Find the Perfect Match',
@@ -20,7 +21,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     : [];
 
   // Server-side data fetching for products when available
-  let initialData = null;
+  let initialData: ComparisonResponse | null = null;
   let productIds: number[] = [];
 
   if (productSlugs.length > 0) {
@@ -29,14 +30,29 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       console.log('🔍 Server-side: Fetching products with slugs:', productSlugs);
       const productsData = await serverApi.compareProductsBySlugs(productSlugs);
       console.log('✅ Server-side: Products data received:', productsData);
+      console.log('🔍 Server-side: Products data structure:', {
+        hasProducts: !!productsData.products,
+        productsLength: productsData.products?.length,
+        productsType: typeof productsData.products,
+        fullResponse: productsData
+      });
       
       if (productsData && productsData.products && productsData.products.length > 0) {
-        // Format data for comparison component
+        // Format data for comparison component - create proper ComparisonResponse structure
         initialData = {
           products: productsData.products,
-          comparison: null // Will be generated client-side if needed
+          common_specs: [], // Will be generated client-side
+          comparison_matrix: {}, // Will be generated client-side
+          generated_at: new Date().toISOString()
         };
         productIds = productsData.products.map((p: any) => p.id);
+        console.log('✅ Server-side: Initial data created:', {
+          initialData,
+          productIds,
+          productCount: initialData.products.length
+        });
+      } else {
+        console.warn('⚠️ Server-side: No products found in response:', productsData);
       }
     } catch (error) {
       console.error('🚨 Server-side error fetching comparison data:', error);
