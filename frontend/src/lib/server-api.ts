@@ -1,75 +1,14 @@
-// Server-side API configuration
-const getServerApiUrl = (): string => {
-  // For server-side calls, we need to determine the base URL
-  // In production, use the domain; in development, use localhost
-  let baseUrl: string;
-  
-  if (process.env.VERCEL_URL) {
-    // VERCEL_URL doesn't include protocol, add https://
-    baseUrl = `https://${process.env.VERCEL_URL}`;
-  } else if (process.env.NEXT_PUBLIC_DOMAIN) {
-    // NEXT_PUBLIC_DOMAIN might already include protocol
-    baseUrl = process.env.NEXT_PUBLIC_DOMAIN.startsWith('http') 
-      ? process.env.NEXT_PUBLIC_DOMAIN 
-      : `https://${process.env.NEXT_PUBLIC_DOMAIN}`;
-  } else {
-    // Development fallback
-    baseUrl = 'http://localhost:3000';
-  }
-    
-  const proxyUrl = `${baseUrl}/api/proxy`;
-  
-  console.log('🌐 Server API URL (USING INTERNAL PROXY):', proxyUrl, {
-    VERCEL_URL: process.env.VERCEL_URL,
-    NEXT_PUBLIC_DOMAIN: process.env.NEXT_PUBLIC_DOMAIN,
-    NODE_ENV: process.env.NODE_ENV,
-    finalBaseUrl: baseUrl
-  });
-  
-  return proxyUrl;
-};
+// Import the shared backend client
+import { callBackendApi } from './backend-client';
 
-const getApiKey = (): string => {
-  return process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
-};
-
-// Server-side API client for direct backend calls
+// Server-side API client using direct backend calls to avoid internal routing issues
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    const apiUrl = getServerApiUrl();
-    const url = `${apiUrl}${endpoint}`;
-    const isUsingProxy = apiUrl.includes('/api/proxy');
-    
-    console.log('🌐 Server API call:', {
-      endpoint,
-      url,
-      isUsingProxy,
-      environment: process.env.NODE_ENV
-    });
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...options.headers as Record<string, string>,
-    };
-    
-    // Only add API key if not using proxy (proxy handles authentication)
-    if (!isUsingProxy) {
-      headers['X-API-Key'] = getApiKey();
-    }
-    
-    const response = await fetch(url, {
+    return callBackendApi(endpoint, {
       ...options,
-      headers,
-      // Cache for 5 minutes for better performance
+      // Cache for 5 minutes for better performance  
       next: { revalidate: 300 },
     });
-    
-    if (!response.ok) {
-      console.error(`Server API error: ${response.status} ${response.statusText} for ${url}`);
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    return response.json();
   },
 
   async get(endpoint: string) {
