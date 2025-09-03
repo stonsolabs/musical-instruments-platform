@@ -53,14 +53,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
+  // Simple, direct data fetching
   let product = null;
   
   try {
-    console.log('🔍 Product page: fetching product with slug:', params.slug);
+    console.log('🔍 Fetching product:', params.slug);
     product = await serverApi.getProduct(params.slug);
+    console.log(product ? '✅ Product found' : '❌ Product not found');
   } catch (error) {
-    console.error('🚨 Server-side error fetching product:', error);
-    // Don't throw the error, continue with null product to show error state
+    console.error('Failed to fetch product:', error);
+    // Fail gracefully - ProductDetailClient will handle null
   }
 
   return (
@@ -74,6 +76,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
         </div>
       </section>
 
+      {/* Much simpler - no complex client-side fetching fallback needed */}
       <ProductDetailClient product={product} slug={params.slug} />
     </div>
   );

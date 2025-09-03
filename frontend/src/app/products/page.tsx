@@ -69,40 +69,23 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   if (!searchFilters.page) searchFilters.page = 1;
   if (!searchFilters.sort_by) searchFilters.sort_by = 'name';
 
-  // Fetch data on the server with comprehensive error handling
-  let productsData, categoriesData, brandsData;
+  // Much simpler server-side data fetching
+  let products = { products: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 } };
+  let categories: any[] = [];
+  let brands: any[] = [];
   
   try {
-    console.log('🔍 Products page: Server-side data fetching started', { searchFilters });
-    [productsData, categoriesData, brandsData] = await Promise.allSettled([
+    console.log('🔍 Fetching products page data');
+    [products, { categories }, { brands }] = await Promise.all([
       serverApi.searchProducts(searchFilters),
       serverApi.getCategories(),
       serverApi.getBrands(),
     ]);
-    console.log('✅ Products page: Server-side data fetching completed', {
-      productsStatus: productsData.status,
-      categoriesStatus: categoriesData.status,
-      brandsStatus: brandsData.status
-    });
+    console.log(`✅ Loaded ${products.products.length} products, ${categories.length} categories, ${brands.length} brands`);
   } catch (error) {
-    console.error('🚨 Products page: Server-side data fetching failed', error);
-    // Provide fallback data to prevent 500 errors
-    productsData = { status: 'rejected', reason: error };
-    categoriesData = { status: 'rejected', reason: error };
-    brandsData = { status: 'rejected', reason: error };
+    console.error('Failed to fetch products page data:', error);
+    // Graceful fallback - empty data
   }
-
-  const products = productsData.status === 'fulfilled' && productsData.value?.products 
-    ? productsData.value 
-    : { products: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 }, filters_applied: { sort_by: 'name' } };
-
-  const categories = categoriesData.status === 'fulfilled' && categoriesData.value?.categories
-    ? categoriesData.value.categories 
-    : [];
-
-  const brands = brandsData.status === 'fulfilled' && brandsData.value?.brands
-    ? brandsData.value.brands 
-    : [];
 
   // Generate structured data for SEO
   const structuredData = {
@@ -114,7 +97,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: products.pagination.total,
-      itemListElement: products.products.map((product, index) => ({
+      itemListElement: products.products.map((product: any, index: number) => ({
         '@type': 'Product',
         position: index + 1,
         name: product.name,

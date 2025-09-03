@@ -182,7 +182,7 @@ export default function ProductCard({
           <div className="mt-4 pt-3 border-t border-primary-100">
             <div className="flex items-center justify-between text-xs text-primary-500">
               <span>{product.category?.name || 'Category'}</span>
-              {product.review_count > 0 && (
+              {(product.review_count || 0) > 0 && (
                 <span>{product.review_count} reviews</span>
               )}
             </div>

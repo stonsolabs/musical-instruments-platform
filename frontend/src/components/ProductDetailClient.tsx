@@ -16,13 +16,9 @@ interface ProductDetailClientProps {
   slug: string;
 }
 
-export default function ProductDetailClient({ product: initialProduct, slug }: ProductDetailClientProps) {
-  const [product, setProduct] = useState<Product | null>(initialProduct);
+export default function ProductDetailClient({ product, slug }: ProductDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [showSimilarProducts, setShowSimilarProducts] = useState(true);
-
-  // Use the server-provided product data - no client-side fetching needed
-  // since server-side fetching is working correctly
 
   useEffect(() => {
     if (!product) return;
@@ -47,7 +43,7 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
     trackBackendView();
   }, [product]);
 
-  // Error state - product not found
+  // Much simpler - no loading states needed
   if (!product) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -55,6 +51,9 @@ export default function ProductDetailClient({ product: initialProduct, slug }: P
           <h1 className="text-2xl font-bold text-primary-900 mb-4">
             Product Not Found
           </h1>
+          <p className="text-gray-600 mb-6">
+            The product "{slug}" could not be found. It may have been removed or the URL is incorrect.
+          </p>
           <Link href="/products" className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">
             Browse All Products
           </Link>

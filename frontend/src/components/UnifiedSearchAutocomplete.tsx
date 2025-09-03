@@ -79,7 +79,7 @@ export default function UnifiedSearchAutocomplete({
         } else {
           // Navigate to product page after a short delay
           setTimeout(() => {
-            window.location.href = `/products/${product.slug}`;
+            window.location.href = `/products/${singleResult.slug}`;
           }, 500);
         }
       }
@@ -174,7 +174,7 @@ export default function UnifiedSearchAutocomplete({
       onSearch(suggestion.name);
     } else {
       // Navigate to product page
-      window.location.href = `/products/${product.slug}`;
+      window.location.href = `/products/${suggestion.slug}`;
     }
   };
 

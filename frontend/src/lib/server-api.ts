@@ -1,30 +1,43 @@
-import { getServerBaseUrl } from './api';
+// Simple, direct server-side API client - no proxy needed!
+const getApiConfig = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const apiKey = process.env.API_KEY;
+  
+  if (!baseUrl) {
+    throw new Error('NEXT_PUBLIC_API_BASE_URL environment variable is required');
+  }
+  
+  if (!apiKey) {
+    throw new Error('API_KEY environment variable is required');
+  }
+  
+  return { baseUrl, apiKey };
+};
 
-// Server-side API client (SSR) - route via internal proxy to avoid API key issues
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    // Use relative URL so it works in all deployment contexts (Vercel, custom domain, preview)
-    const url = `/api/proxy${endpoint}`;
+    const { baseUrl, apiKey } = getApiConfig();
+    const url = `${baseUrl}/api/v1${endpoint}`;
 
     try {
       const response = await fetch(url, {
         ...options,
         headers: {
+          'X-API-Key': apiKey,
           'Content-Type': 'application/json',
           ...(options.headers as Record<string, string>),
         },
-        next: { revalidate: 300 },
+        next: { revalidate: 300 }, // Built-in Next.js caching
       });
 
       if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        console.error('SSR serverApi fetch failed', { url, status: response.status, text });
+        console.error('Direct API fetch failed', { url, status: response.status });
         throw new Error(`HTTP ${response.status}`);
       }
 
       return response.json();
     } catch (err) {
-      console.error('SSR serverApi fetch error', { url, err });
+      console.error('Direct API fetch error', { url, err });
       throw err;
     }
   },

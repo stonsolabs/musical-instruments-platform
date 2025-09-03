@@ -64,80 +64,40 @@ const generateComparisonMatrix = (products: Product[]): {[spec: string]: {[produ
 };
 
 interface CompareClientProps {
+  products: Product[];
   productSlugs: string[];
-  productIds: number[];
-  initialData: ComparisonResponse | null;
 }
 
-export default function CompareClient({ productSlugs, productIds, initialData }: CompareClientProps) {
-  const [data, setData] = useState<ComparisonResponse | null>(initialData);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(!initialData && productSlugs.length >= 1);
-  // Collapsible section states
+export default function CompareClient({ products, productSlugs }: CompareClientProps) {
+  // Much simpler - no complex state management needed!
   const [showPurchaseGuide, setShowPurchaseGuide] = useState(true);
   const [showUsageGuidance, setShowUsageGuidance] = useState(true);
   const [showMaintenanceCare, setShowMaintenanceCare] = useState(true);
   const [showReviews, setShowReviews] = useState(true);
 
-  // Load data if not provided by server
-  useEffect(() => {
-    if (!initialData && productSlugs.length >= 1) {
-      const loadData = async () => {
-        try {
-          // Fetch products directly using slugs
-          console.log('🔍 Fetching products with slugs:', productSlugs);
-          const productsData = await apiClient.searchProducts({ 
-            slugs: productSlugs.join(','), 
-            limit: 100 
-          });
-          console.log('✅ Products data received:', productsData);
-          console.log('🔍 Products data structure:', {
-            hasProducts: !!productsData.products,
-            productsLength: productsData.products?.length,
-            productsType: typeof productsData.products,
-            fullResponse: productsData
-          });
-          
-          if (!productsData.products || productsData.products.length === 0) {
-            console.error('❌ No products found in response:', productsData);
-            throw new Error('No products found for the provided slugs');
-          }
+  // Create comparison data from products
+  const data: ComparisonResponse = {
+    products,
+    common_specs: generateCommonSpecs(products),
+    comparison_matrix: generateComparisonMatrix(products),
+    generated_at: new Date().toISOString()
+  };
 
-          // Create comparison data structure from SearchResponse
-          const comparisonData: ComparisonResponse = {
-            products: productsData.products,
-            common_specs: generateCommonSpecs(productsData.products),
-            comparison_matrix: generateComparisonMatrix(productsData.products),
-            generated_at: new Date().toISOString()
-          };
-          
-          console.log('✅ Comparison data created:', comparisonData);
-          setData(comparisonData);
-          
-          // Track comparison analytics (fire and forget - don't block main flow)
-          if (typeof window !== 'undefined') {
-            console.log('Comparison loaded:', comparisonData.products.map(p => p.name));
-            
-            // Track comparison in backend for trending calculations (async, non-blocking)
-            setTimeout(async () => {
-              try {
-                await apiClient.trackComparison(comparisonData.products.map(p => p.id));
-              } catch (error) {
-                console.error('Failed to track comparison in backend:', error);
-                // Tracking failure should not affect user experience
-              }
-            }, 100); // Small delay to ensure main loading is complete
-          }
-        } catch (e) {
-          setError('Failed to load comparison');
-          console.error('Comparison error:', e);
-        } finally {
-          setLoading(false);
+  // Track comparison analytics
+  useEffect(() => {
+    if (products.length > 0 && typeof window !== 'undefined') {
+      console.log('Comparison loaded:', products.map(p => p.name));
+      
+      // Track comparison in backend (fire and forget)
+      setTimeout(async () => {
+        try {
+          await apiClient.trackComparison(products.map(p => p.id));
+        } catch (error) {
+          console.error('Failed to track comparison:', error);
         }
-      };
-      loadData();
+      }, 100);
     }
-  }, [productSlugs, productIds, initialData]);
+  }, [products]);
 
   const handleAddProduct = (product: Product) => {
     if (product && data) {
@@ -168,33 +128,11 @@ export default function CompareClient({ productSlugs, productIds, initialData }:
     }
   };
 
-  if (loading) {
+  // No products found - much simpler handling
+  if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-        <p className="text-primary-600">Loading comparison...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-error-600 mb-4">⚠️ {error}</div>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
-  if (!data || data.products.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-primary-500 mb-4">No comparison data available.</div>
+        <div className="text-primary-500 mb-4">No products found for comparison.</div>
         <Link 
           href="/products"
           className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"

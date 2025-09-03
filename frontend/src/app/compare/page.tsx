@@ -22,46 +22,18 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     ? decodeURIComponent(searchParams.products).split(',').filter(slug => slug.trim()) 
     : [];
 
-  // Server-side data fetching for products when available
-  let initialData: ComparisonResponse | null = null;
-  let productIds: number[] = [];
+  // Simple server-side data fetching - much cleaner!
+  let products: any[] = [];
 
   if (productSlugs.length > 0) {
     try {
-      // Fetch products by slugs through the proxy route
-      console.log('🔍 Server-side: Fetching products with slugs:', productSlugs);
-      const productsData = await serverApi.compareProductsBySlugs(productSlugs);
-      console.log('✅ Server-side: Products data received:', productsData);
-      console.log('🔍 Server-side: Products data structure:', {
-        hasProducts: !!productsData.products,
-        productsLength: productsData.products?.length,
-        productsType: typeof productsData.products,
-        fullResponse: productsData
-      });
-      
-      if (productsData && productsData.products && productsData.products.length > 0) {
-        // Format data for comparison component - create proper ComparisonResponse structure
-        initialData = {
-          products: productsData.products,
-          common_specs: [], // Will be generated client-side
-          comparison_matrix: {}, // Will be generated client-side
-          generated_at: new Date().toISOString()
-        };
-        productIds = productsData.products.map((p: any) => p.id);
-        console.log('✅ Server-side: Initial data created:', {
-          initialData,
-          productIds,
-          productCount: initialData.products.length
-        });
-      } else {
-        console.warn('⚠️ Server-side: No products found in response:', productsData);
-      }
+      console.log('🔍 Fetching products:', productSlugs);
+      const response = await serverApi.compareProductsBySlugs(productSlugs);
+      products = response.products || [];
+      console.log(`✅ Found ${products.length} products`);
     } catch (error) {
-      console.error('🚨 Server-side error fetching comparison data:', error);
-      // Don't throw the error, just log it and continue with client-side rendering
-      // This prevents the 500 error when backend is down
-      initialData = null;
-      productIds = [];
+      console.error('Failed to fetch products:', error);
+      products = []; // Fail gracefully
     }
   }
 
@@ -139,11 +111,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           </ol>
         </nav>
 
-        {/* Client-side interactive component */}
+        {/* Much simpler - just pass the products directly */}
         <CompareClient
+          products={products}
           productSlugs={productSlugs}
-          productIds={productIds}
-          initialData={initialData}
         />
       </div>
     </div>
