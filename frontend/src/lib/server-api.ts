@@ -1,13 +1,24 @@
 // Simplified server-side API client using the working proxy
 export const serverApi = {
   async fetch(endpoint: string, options: RequestInit = {}) {
-    // Use the proxy route that works, but with a proper base URL for SSR
-    const domain = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_DOMAIN || 'www.getyourmusicgear.com';
-    const baseUrl = domain.startsWith('http') ? domain : `https://${domain}`;
+    // For development, we need to avoid circular calls to localhost
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    let baseUrl: string;
+    if (isDev) {
+      // In development, call the production API directly to avoid circular calls
+      baseUrl = 'https://www.getyourmusicgear.com';
+    } else {
+      // In production, use the proxy route
+      const domain = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_DOMAIN || 'www.getyourmusicgear.com';
+      baseUrl = domain.startsWith('http') ? domain : `https://${domain}`;
+    }
     
     const url = `${baseUrl}/api/proxy${endpoint}`;
 
     try {
+      console.log('🔍 Server API: Fetching', { url, endpoint });
+      
       const response = await fetch(url, {
         ...options,
         headers: {
@@ -17,14 +28,30 @@ export const serverApi = {
         next: { revalidate: 300 }, // Built-in Next.js caching
       });
 
+      console.log('📡 Server API response:', { 
+        url, 
+        status: response.status, 
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
       if (!response.ok) {
-        console.error('Server API fetch failed', { url, status: response.status });
-        throw new Error(`HTTP ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Server API fetch failed', { url, status: response.status, errorText });
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      console.log('✅ Server API success:', { 
+        url, 
+        dataType: typeof data,
+        hasProducts: !!data.products,
+        productCount: data.products?.length || 0
+      });
+      
+      return data;
     } catch (err) {
-      console.error('Server API fetch error', { url, err });
+      console.error('🚨 Server API fetch error', { url, endpoint, err });
       throw err;
     }
   },
