@@ -160,7 +160,15 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 @app.on_event("startup")
 async def on_startup() -> None:
-    await init_db()
+    try:
+        await init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        if settings.ENVIRONMENT == "development":
+            logger.warning(f"Database initialization failed (continuing in development mode): {e}")
+        else:
+            logger.error(f"Database initialization failed: {e}")
+            raise
 
 
 # Health check endpoint (no API key required)
@@ -169,15 +177,28 @@ async def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 
-# API routes with authentication
-app.include_router(products.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(categories.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(brands.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(search.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(trending.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(compare.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(redirect.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
-app.include_router(voting.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+# API routes with authentication (optional in development)
+if settings.ENVIRONMENT == "development":
+    # In development, include routes without strict authentication
+    app.include_router(products.router, prefix=settings.API_V1_STR)
+    app.include_router(categories.router, prefix=settings.API_V1_STR)
+    app.include_router(brands.router, prefix=settings.API_V1_STR)
+    app.include_router(search.router, prefix=settings.API_V1_STR)
+    app.include_router(trending.router, prefix=settings.API_V1_STR)
+    app.include_router(compare.router, prefix=settings.API_V1_STR)
+    app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR)
+    app.include_router(redirect.router, prefix=settings.API_V1_STR)
+    app.include_router(voting.router, prefix=settings.API_V1_STR)
+else:
+    # In production, require API key authentication
+    app.include_router(products.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(categories.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(brands.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(search.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(trending.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(compare.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(redirect.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(voting.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 
 
