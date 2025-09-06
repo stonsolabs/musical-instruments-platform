@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, validator
 import logging
 
 from app.database import get_db
-from app.api.dependencies import get_api_key
+from app.auth import verify_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class InstrumentRequestResponse(BaseModel):
         from_attributes = True
 
 class InstrumentRequestUpdate(BaseModel):
-    status: Optional[str] = Field(None, regex="^(pending|reviewing|approved|rejected|completed)$")
+    status: Optional[str] = Field(None, pattern="^(pending|reviewing|approved|rejected|completed)$")
     priority: Optional[int] = Field(None, ge=1, le=10)
     notes: Optional[str] = None
 
@@ -66,7 +66,7 @@ async def create_instrument_request(
     request_data: InstrumentRequestCreate,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Create a new instrument request"""
     
@@ -120,7 +120,7 @@ async def get_instrument_requests(
     limit: int = 50,
     offset: int = 0,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Get instrument requests with optional filtering"""
     
@@ -180,7 +180,7 @@ async def get_instrument_requests(
 async def get_instrument_request(
     request_id: int,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Get a specific instrument request"""
     
@@ -225,7 +225,7 @@ async def update_instrument_request(
     request_id: int,
     update_data: InstrumentRequestUpdate,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Update an instrument request (admin only)"""
     
@@ -288,7 +288,7 @@ async def update_instrument_request(
 async def delete_instrument_request(
     request_id: int,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Delete an instrument request (admin only)"""
     
@@ -314,7 +314,7 @@ async def delete_instrument_request(
 @router.get("/instrument-requests/stats", response_model=dict)
 async def get_instrument_requests_stats(
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(verify_api_key)
 ):
     """Get instrument requests statistics"""
     

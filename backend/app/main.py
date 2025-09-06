@@ -13,6 +13,7 @@ import uuid
 from .config import settings
 from .database import init_db
 from .api import brands, categories, products, search, trending, compare, affiliate_stores, redirect, voting
+from .api.v1 import instrument_requests
 from .auth import verify_api_key, optional_api_key
 
 
@@ -189,6 +190,7 @@ if settings.ENVIRONMENT == "development":
     app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR)
     app.include_router(redirect.router, prefix=settings.API_V1_STR)
     app.include_router(voting.router, prefix=settings.API_V1_STR)
+    app.include_router(instrument_requests.router, prefix=settings.API_V1_STR)
 else:
     # In production, require API key authentication
     app.include_router(products.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
@@ -200,5 +202,6 @@ else:
     app.include_router(affiliate_stores.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
     app.include_router(redirect.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
     app.include_router(voting.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
+    app.include_router(instrument_requests.router, prefix=settings.API_V1_STR, dependencies=[Depends(verify_api_key)])
 
 
