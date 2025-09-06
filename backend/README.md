@@ -289,11 +289,11 @@ const response = await fetch('/api/proxy/products?limit=10');
 curl https://getyourmusicgear-api.azurewebsites.net/health
 
 # Product search (requires API key)
-curl -H "X-API-Key: de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db" \
+curl -H "X-API-Key: YOUR_API_KEY" \
   "https://getyourmusicgear-api.azurewebsites.net/api/v1/products?query=guitar&limit=5"
 
 # Specific product with affiliate stores
-curl -H "X-API-Key: de798fd16f6a38539f9d590dd72c4a02f20afccd782e91bbbdc34037482632db" \
+curl -H "X-API-Key: YOUR_API_KEY" \
   "https://getyourmusicgear-api.azurewebsites.net/api/v1/products/36"
 ```
 

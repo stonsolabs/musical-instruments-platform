@@ -40,8 +40,7 @@ def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
 
 def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
     """
-    Extract content for frontend, removing sensitive AI metadata but keeping
-    essential data needed for comparisons and display.
+    Extract content for frontend, keeping essential functionality while removing sensitive AI metadata.
     """
     if not content:
         return {}
@@ -89,8 +88,12 @@ def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[
     if content.get('content_metadata', {}).get('qa'):
         result['qa'] = content['content_metadata']['qa'][:10]
     
-    # Remove sensitive AI metadata but keep structure
-    # Don't include: sources, dates, content_metadata, generation info
+    # Add minimal info for components that check for existence (no sensitive metadata)
+    if content.get('content_metadata', {}).get('sources'):
+        result['sources'] = []  # Empty array to indicate sources exist but hide actual URLs
+        
+    if localized_content:
+        result['localized_content'] = {language: True}  # Just indicate it exists
     
     return result
 
@@ -210,6 +213,14 @@ async def search_products(
         # Get clean content for display (no sensitive AI metadata)
         clean_content = get_clean_content(p.content or {})
         
+        # Extract thomann URL for affiliate buttons
+        thomann_info = None
+        if p.content and p.content.get('store_links', {}).get('Thomann'):
+            thomann_info = {
+                "has_direct_url": True,
+                "url": p.content['store_links']['Thomann']
+            }
+        
         items.append(
             {
                 "id": p.id,
@@ -222,7 +233,6 @@ async def search_products(
                     "slug": p.category.slug,
                 },
                 "description": p.description,
-                "specifications": p.content.get('specifications', {}) if p.content else {},
                 "images": _extract_image_urls(p.images) if p.images else [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price is not None else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating is not None else 0.0,
@@ -230,6 +240,7 @@ async def search_products(
                 "vote_stats": vote_stats,
                 "prices": prices,
                 "content": clean_content,
+                "thomann_info": thomann_info,
             }
         )
 
@@ -306,6 +317,14 @@ async def get_product(
     # Get clean content for display (no sensitive AI metadata) 
     clean_content = get_clean_content(product.content or {})
     
+    # Extract thomann URL for affiliate buttons
+    thomann_info = None
+    if product.content and product.content.get('store_links', {}).get('Thomann'):
+        thomann_info = {
+            "has_direct_url": True,
+            "url": product.content['store_links']['Thomann']
+        }
+    
     # Get vote statistics
     vote_stats = await get_product_vote_stats(db, product_id)
 
@@ -321,13 +340,13 @@ async def get_product(
             "slug": product.category.slug,
         },
         "description": product.description,
-        "specifications": product.content.get('specifications', {}) if product.content else {},
         "images": _extract_image_urls(product.images) if product.images else [],
         "msrp_price": float(product.msrp_price) if product.msrp_price is not None else None,
         "avg_rating": float(product.avg_rating) if product.avg_rating is not None else 0.0,
         "review_count": product.review_count,
         "vote_stats": vote_stats,
         "content": clean_content,
+        "thomann_info": thomann_info,
         "prices": prices,
     }
 
