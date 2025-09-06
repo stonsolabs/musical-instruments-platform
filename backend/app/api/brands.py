@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -15,6 +15,11 @@ router = APIRouter(prefix="/brands", tags=["brands"])
 
 @router.get("")
 async def list_brands(category: Optional[str] = Query(None), db: AsyncSession = Depends(get_db)):
+    """List brands, excluding placeholder/unknown entries.
+
+    Excludes brands with name 'Unknown Brand' or slug 'unknown-brand'.
+    """
+    # Base statement
     if category:
         # Brands that have products in a given category
         stmt = (
@@ -26,6 +31,12 @@ async def list_brands(category: Optional[str] = Query(None), db: AsyncSession = 
         )
     else:
         stmt = select(Brand)
+
+    # Exclude unknown brand by name or slug (case-insensitive for name)
+    stmt = stmt.where(
+        Brand.slug != "unknown-brand",
+        func.lower(Brand.name) != "unknown brand",
+    )
 
     result = await db.execute(stmt)
     brands = result.scalars().all()
@@ -39,5 +50,4 @@ async def list_brands(category: Optional[str] = Query(None), db: AsyncSession = 
         }
         for b in brands
     ]
-
 

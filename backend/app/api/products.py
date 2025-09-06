@@ -37,57 +37,24 @@ def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
     return urls
 
 
-def _get_thomann_info(product: Product) -> Dict[str, Any]:
-    """
-    Get Thomann URL information for a product.
-    Returns either the actual Thomann URL from store_links or a search URL.
-    """
-    thomann_info = {
-        "has_direct_url": False,
-        "url": None,
-        "fallback_search_url": f"https://thomann.com/intl/search_dir.html?sw={product.name.replace(' ', '%20')}&aff=123"
-    }
-    
-    # Check if we have Thomann URL in store_links (AI-generated content)
-    if product.content and isinstance(product.content, dict):
-        store_links = product.content.get('store_links', {})
-        if store_links:
-            # Try different possible keys for Thomann URL
-            thomann_url = (
-                store_links.get('Thomann') or 
-                store_links.get('thomann') or 
-                store_links.get('thomann_url') or 
-                store_links.get('THOMANN')
-            )
-            
-            if thomann_url and isinstance(thomann_url, str) and thomann_url.startswith('http'):
-                thomann_info["has_direct_url"] = True
-                thomann_info["url"] = thomann_url
-    
-    # If no direct URL found, use the fallback search URL
-    if not thomann_info["has_direct_url"]:
-        thomann_info["url"] = thomann_info["fallback_search_url"]
-    
-    return thomann_info
 
-
-def get_content_for_display(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
+def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
     """
-    Extract content for display, combining localized content with global fields.
-    Some fields like specifications, store_links, etc. are always in English.
+    Extract content for frontend, removing sensitive AI metadata but keeping
+    essential data needed for comparisons and display.
     """
     if not content:
         return {}
     
     result = {}
     
-    # Add global fields that are always in English
-    global_fields = ['specifications', 'store_links', 'warranty_info', 'qa', 'sources', 'dates', 'content_metadata', 'related_products']
-    for field in global_fields:
+    # Include essential fields for functionality
+    essential_fields = ['specifications', 'store_links', 'warranty_info']
+    for field in essential_fields:
         if field in content:
             result[field] = content[field]
     
-    # Get localized content
+    # Get localized content for the requested language
     localized_content = content.get('localized_content', {})
     if localized_content:
         # Try requested language first
@@ -107,10 +74,23 @@ def get_content_for_display(content: Dict[str, Any], language: str = "en-GB") ->
             first_language = next(iter(localized_content.keys()))
             selected_content = localized_content[first_language]
         
-        # Merge localized content into result
+        # Merge user-facing content
         if selected_content:
-            result.update(selected_content)
-            result['_language_used'] = language if language in localized_content else next(iter(localized_content.keys()))
+            content_fields = [
+                'basic_info', 'usage_guidance', 'customer_reviews', 
+                'maintenance_care', 'purchase_decision', 'technical_analysis', 
+                'professional_assessment'
+            ]
+            for field in content_fields:
+                if field in selected_content:
+                    result[field] = selected_content[field]
+    
+    # Add Q&A if present (limit to reasonable amount)
+    if content.get('content_metadata', {}).get('qa'):
+        result['qa'] = content['content_metadata']['qa'][:10]
+    
+    # Remove sensitive AI metadata but keep structure
+    # Don't include: sources, dates, content_metadata, generation info
     
     return result
 
@@ -227,11 +207,8 @@ async def search_products(
                 if pr.is_available
             ]
         
-        # Get content for display (combines localized + global fields)
-        display_content = get_content_for_display(p.content or {})
-        
-        # Get Thomann URL information from store_links in product content
-        thomann_info = _get_thomann_info(p)
+        # Get clean content for display (no sensitive AI metadata)
+        clean_content = get_clean_content(p.content or {})
         
         items.append(
             {
@@ -252,9 +229,7 @@ async def search_products(
                 "review_count": p.review_count,
                 "vote_stats": vote_stats,
                 "prices": prices,
-                "thomann_info": thomann_info,
-                "ai_content": p.content or {},
-                "content": display_content,
+                "content": clean_content,
             }
         )
 
@@ -328,8 +303,8 @@ async def get_product(
         user_region=user_region
     )
 
-    # Get content for display (combines localized + global fields)
-    display_content = get_content_for_display(product.content or {})
+    # Get clean content for display (no sensitive AI metadata) 
+    clean_content = get_clean_content(product.content or {})
     
     # Get vote statistics
     vote_stats = await get_product_vote_stats(db, product_id)
@@ -352,12 +327,8 @@ async def get_product(
         "avg_rating": float(product.avg_rating) if product.avg_rating is not None else 0.0,
         "review_count": product.review_count,
         "vote_stats": vote_stats,
-        "ai_content": product.content or {},
-        "content": display_content,
+        "content": clean_content,
         "prices": prices,
-        "affiliate_stores": affiliate_stores,
-        "total_affiliate_stores": len(affiliate_stores),
-        "user_region": user_region,
     }
 
 
