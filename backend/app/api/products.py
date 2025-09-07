@@ -40,23 +40,44 @@ def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
 
 def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
     """
-    Extract content for frontend, keeping essential functionality while removing sensitive AI metadata.
+    Extract content for frontend, including all rich product information.
     """
     if not content:
         return {}
     
     result = {}
     
-    # Include essential fields for functionality
-    essential_fields = ['specifications', 'store_links', 'warranty_info']
-    for field in essential_fields:
+    # Include all top-level content fields that the frontend expects
+    top_level_fields = [
+        'qa', 'dates', 'sources', 'setup_tips', 'audience_fit', 
+        'quick_badges', 'warranty_info', 'specifications', 
+        'category_specific', 'comparison_helpers', 'professional_ratings',
+        'accessory_recommendations', 'store_links'
+    ]
+    
+    for field in top_level_fields:
         if field in content:
             result[field] = content[field]
+    
+    # Handle Q&A from content_metadata if not found at top level
+    if 'qa' not in result and content.get('content_metadata', {}).get('qa'):
+        result['qa'] = content['content_metadata']['qa']
+    
+    # Handle sources from content_metadata if not found at top level  
+    if 'sources' not in result and content.get('content_metadata', {}).get('sources'):
+        result['sources'] = content['content_metadata']['sources']
+        
+    # Handle dates from content_metadata if not found at top level
+    if 'dates' not in result and content.get('content_metadata', {}).get('dates'):
+        result['dates'] = content['content_metadata']['dates']
     
     # Get localized content for the requested language
     localized_content = content.get('localized_content', {})
     if localized_content:
-        # Try requested language first
+        # Include the full localized_content structure for frontend to access
+        result['localized_content'] = localized_content
+        
+        # Also merge selected language content at root level for backward compatibility
         selected_content = None
         if language in localized_content:
             selected_content = localized_content[language]
@@ -73,7 +94,7 @@ def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[
             first_language = next(iter(localized_content.keys()))
             selected_content = localized_content[first_language]
         
-        # Merge user-facing content
+        # Merge user-facing content at root level
         if selected_content:
             content_fields = [
                 'basic_info', 'usage_guidance', 'customer_reviews', 
@@ -83,17 +104,6 @@ def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[
             for field in content_fields:
                 if field in selected_content:
                     result[field] = selected_content[field]
-    
-    # Add Q&A if present (limit to reasonable amount)
-    if content.get('content_metadata', {}).get('qa'):
-        result['qa'] = content['content_metadata']['qa'][:10]
-    
-    # Add minimal info for components that check for existence (no sensitive metadata)
-    if content.get('content_metadata', {}).get('sources'):
-        result['sources'] = []  # Empty array to indicate sources exist but hide actual URLs
-        
-    if localized_content:
-        result['localized_content'] = {language: True}  # Just indicate it exists
     
     return result
 

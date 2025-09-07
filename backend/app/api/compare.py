@@ -11,6 +11,8 @@ from sqlalchemy.orm import joinedload
 from ..database import get_db
 from ..models import Product, ProductPrice
 from ..services.trending_service import trending_service
+from ..utils.vote_utils import get_multiple_products_vote_stats
+from .products import get_clean_content
 
 
 router = APIRouter(prefix="/compare", tags=["compare"])
@@ -53,6 +55,10 @@ async def compare_products(
     if len(products) < 1:
         raise HTTPException(status_code=404, detail="Some products not found")
 
+    # Get vote stats for all products
+    product_ids_list = [p.id for p in products]
+    vote_stats_dict = await get_multiple_products_vote_stats(db, product_ids_list)
+
     # Build comparison data
     products_data: List[Dict[str, Any]] = []
     spec_sets: List[set[str]] = []
@@ -70,6 +76,17 @@ async def compare_products(
             for pr in p.prices
             if pr.is_available
         ]
+        # Get clean content with all rich data
+        clean_content = get_clean_content(p.content or {})
+        
+        # Get vote stats for this product
+        vote_stats = vote_stats_dict.get(p.id, {
+            "thumbs_up_count": 0,
+            "thumbs_down_count": 0,
+            "total_votes": 0,
+            "vote_score": 0
+        })
+        
         products_data.append(
             {
                 "id": p.id,
@@ -82,12 +99,14 @@ async def compare_products(
                     "name": p.category.name,
                     "slug": p.category.slug,
                 },
-                "specifications": p.content.get('specifications', {}) if p.content else {},
+                "specifications": clean_content.get('specifications', {}),
                 "images": _extract_image_urls(p.images) if p.images else [],
                 "msrp_price": float(p.msrp_price) if p.msrp_price else None,
                 "avg_rating": float(p.avg_rating) if p.avg_rating else 0.0,
                 "review_count": p.review_count,
-                "ai_content": p.content or {},
+                "vote_stats": vote_stats,
+                "content": clean_content,
+                "ai_content": clean_content,  # Keep for backward compatibility
                 "prices": prices,
             }
         )
