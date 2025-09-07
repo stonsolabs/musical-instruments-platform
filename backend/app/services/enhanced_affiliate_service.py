@@ -56,10 +56,12 @@ class EnhancedAffiliateService:
             # Check brand exclusivity
             exclusivity = brand_exclusivities.get(store.id)
             
-            # If brand is exclusive to this store, only show this store
-            if exclusivity and exclusivity.is_exclusive:
-                if not self._is_exclusive_store_only(brand_exclusivities, store.id):
-                    continue  # Skip other stores if this is exclusive
+            # Check if this brand has exclusive stores
+            has_exclusive_stores = any(ex.is_exclusive for ex in brand_exclusivities.values())
+            if has_exclusive_stores:
+                # If brand has exclusive stores, only show the exclusive store(s)
+                if not (exclusivity and exclusivity.is_exclusive):
+                    continue  # Skip non-exclusive stores when exclusive stores exist
             
             # Check regional availability
             if not self._is_store_available_in_region(store, user_region):
@@ -108,11 +110,6 @@ class EnhancedAffiliateService:
             return exclusive_stores
         
         return eligible_stores
-    
-    def _is_exclusive_store_only(self, brand_exclusivities: Dict, store_id: int) -> bool:
-        """Check if this is the only exclusive store for the brand"""
-        exclusive_stores = [ex for ex in brand_exclusivities.values() if ex.is_exclusive]
-        return len(exclusive_stores) == 1 and exclusive_stores[0].store_id == store_id
     
     def _is_store_available_in_region(self, store: AffiliateStore, user_region: Optional[str]) -> bool:
         """Check if store is available in user's region"""

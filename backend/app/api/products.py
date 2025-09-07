@@ -59,9 +59,40 @@ def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[
         if field in content:
             result[field] = content[field]
     
-    # Handle Q&A from content_metadata if not found at top level
-    if 'qa' not in result and content.get('content_metadata', {}).get('qa'):
-        result['qa'] = content['content_metadata']['qa']
+    # Merge Q&A from multiple locations
+    qa_list = []
+    
+    # Get Q&A from top level
+    if content.get('qa') and isinstance(content['qa'], list):
+        qa_list.extend(content['qa'])
+    
+    # Get Q&A from content_metadata (filter out sensitive metadata)
+    content_metadata = content.get('content_metadata', {})
+    if content_metadata.get('qa') and isinstance(content_metadata['qa'], list):
+        qa_list.extend(content_metadata['qa'])
+    
+    # Remove duplicates and sensitive metadata
+    if qa_list:
+        seen_questions = set()
+        unique_qa = []
+        for qa_item in qa_list:
+            if isinstance(qa_item, dict) and 'question' in qa_item and 'answer' in qa_item:
+                question_lower = qa_item['question'].lower().strip()
+                if question_lower not in seen_questions:
+                    # Filter out sensitive metadata fields
+                    clean_qa = {
+                        'question': qa_item['question'],
+                        'answer': qa_item['answer']
+                    }
+                    # Keep any other non-sensitive fields
+                    for key, value in qa_item.items():
+                        if key not in ['question', 'answer', 'generated_by', 'created_by', 'metadata', 'internal_notes']:
+                            clean_qa[key] = value
+                    unique_qa.append(clean_qa)
+                    seen_questions.add(question_lower)
+        
+        if unique_qa:
+            result['qa'] = unique_qa
     
     # Handle sources from content_metadata if not found at top level  
     if 'sources' not in result and content.get('content_metadata', {}).get('sources'):
