@@ -1,24 +1,15 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
-export function Footer() {
+export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
-          <div className="md:col-span-2">
-            <div className="flex items-center w-[100px] mb-6">
-              <Image 
-                src="/logo-white.png" 
-                alt="GetYourMusicGear Logo" 
-                width={90} 
-                height={30}
-                className="h-6 w-auto"
-              />
-            </div>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="text-2xl font-bold text-white mb-4">GetYourMusicGear</h3>
+            <p className="text-gray-300 mb-4 max-w-md">
               Your trusted source for comparing musical instruments from the world's top retailers. 
               Find the best deals, expert reviews, and make informed decisions on your next musical investment.
             </p>
@@ -46,37 +37,78 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-6 text-white">Quick Links</h4>
-            <ul className="space-y-3">
-              <li><Link href="/products" className="text-gray-400 hover:text-white transition-colors">All Products</Link></li>
-              <li><Link href="/products?category=electric-guitars" className="text-gray-400 hover:text-white transition-colors">Electric Guitars</Link></li>
-              <li><Link href="/products?category=steel-string-acoustic-guitars" className="text-gray-400 hover:text-white transition-colors">Acoustic Guitars</Link></li>
-              <li><Link href="/products?category=digital-pianos" className="text-gray-400 hover:text-white transition-colors">Digital Pianos</Link></li>
-              <li><Link href="/products?category=electric-basses" className="text-gray-400 hover:text-white transition-colors">Bass Guitars</Link></li>
-              <li><Link href="/compare" className="text-gray-400 hover:text-white transition-colors">Compare Instruments</Link></li>
+            <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/products" className="text-gray-300 hover:text-white transition-colors">
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=electric-guitars" className="text-gray-300 hover:text-white transition-colors">
+                  Electric Guitars
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=acoustic-guitars" className="text-gray-300 hover:text-white transition-colors">
+                  Acoustic Guitars
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=digital-pianos" className="text-gray-300 hover:text-white transition-colors">
+                  Digital Pianos
+                </Link>
+              </li>
+              <li>
+                <Link href="/compare" className="text-gray-300 hover:text-white transition-colors">
+                  Compare Instruments
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h4 className="text-lg font-semibold mb-6 text-white">Company</h4>
-            <ul className="space-y-3">
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/affiliate-disclosure" className="text-gray-400 hover:text-white transition-colors">Affiliate Disclosure</Link></li>
+            <h4 className="text-lg font-semibold text-white mb-4">Company</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Support Us</h4>
+            <p className="text-gray-300 mb-4 text-sm">
+              If you find our comparisons and guides helpful, consider sharing the site with friends.
+            </p>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8">
+        <div className="mt-8 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            <p className="text-gray-400 text-sm">
               © 2025 GetYourMusicGear. All rights reserved.
             </p>
-            <p className="text-gray-500 text-xs text-center md:text-right max-w-md">
+            <p className="text-gray-400 text-sm mt-2 md:mt-0">
               This website contains affiliate links. We may earn a commission from qualifying purchases at no additional cost to you.
             </p>
           </div>
@@ -85,7 +117,3 @@ export function Footer() {
     </footer>
   );
 }
-
-export default Footer;
-
-

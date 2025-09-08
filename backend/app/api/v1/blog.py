@@ -10,9 +10,16 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 import logging
 import re
+import json
 
 from app.database import get_db
-from app.api.dependencies import get_api_key
+from app.api.dependencies import get_api_key, require_admin, optional_admin
+from app.models.blog_ai import (
+    BlogGenerationTemplate, BlogGenerationTemplateCreate, BlogGenerationRequest,
+    BlogGenerationResult, AIBlogPost, BlogGenerationHistory, EnhancedBlogPostProduct,
+    BlogContentSection
+)
+from app.services.blog_ai_generator import BlogAIGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -379,7 +386,7 @@ async def get_blog_post(
 async def create_blog_post(
     post_data: BlogPostCreate,
     db: AsyncSession = Depends(get_db),
-    api_key: str = Depends(get_api_key)
+    admin: dict = Depends(require_admin)
 ):
     """Create a new blog post (admin only)"""
     
@@ -530,3 +537,353 @@ async def search_blog_posts(
     except Exception as e:
         logger.error(f"Failed to search blog posts: {e}")
         raise HTTPException(status_code=500, detail="Failed to search blog posts")
+
+# === AI GENERATION ENDPOINTS ===
+
+@router.get("/blog/templates", response_model=List[BlogGenerationTemplate])
+async def get_blog_generation_templates(
+    template_type: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get blog generation templates"""
+    
+    try:
+        where_clauses = ["is_active = true"]
+        params = {}
+        
+        if template_type:
+            where_clauses.append("template_type = :template_type")
+            params['template_type'] = template_type
+        
+        where_clause = "WHERE " + " AND ".join(where_clauses)
+        
+        query = f"""
+        SELECT id, name, description, category_id, template_type, base_prompt,
+               system_prompt, product_context_prompt, required_product_types,
+               min_products, max_products, suggested_tags, seo_title_template,
+               seo_description_template, content_structure, is_active,
+               created_at, updated_at
+        FROM blog_generation_templates
+        {where_clause}
+        ORDER BY template_type, name
+        """
+        
+        result = await db.execute(text(query), params)
+        templates = result.fetchall()
+        
+        return [
+            BlogGenerationTemplate(
+                id=row[0],
+                name=row[1],
+                description=row[2],
+                category_id=row[3],
+                template_type=row[4],
+                base_prompt=row[5],
+                system_prompt=row[6],
+                product_context_prompt=row[7],
+                required_product_types=row[8] or [],
+                min_products=row[9],
+                max_products=row[10],
+                suggested_tags=row[11] or [],
+                seo_title_template=row[12],
+                seo_description_template=row[13],
+                content_structure=row[14] or {},
+                is_active=row[15],
+                created_at=row[16],
+                updated_at=row[17]
+            )
+            for row in templates
+        ]
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch blog generation templates: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch templates")
+
+@router.post("/blog/templates", response_model=dict)
+async def create_blog_generation_template(
+    template_data: BlogGenerationTemplateCreate,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_admin)
+):
+    """Create a new blog generation template (admin only)"""
+    
+    try:
+        insert_query = """
+        INSERT INTO blog_generation_templates (
+            name, description, category_id, template_type, base_prompt,
+            system_prompt, product_context_prompt, required_product_types,
+            min_products, max_products, suggested_tags, seo_title_template,
+            seo_description_template, content_structure, is_active
+        ) VALUES (
+            :name, :description, :category_id, :template_type, :base_prompt,
+            :system_prompt, :product_context_prompt, :required_product_types,
+            :min_products, :max_products, :suggested_tags, :seo_title_template,
+            :seo_description_template, :content_structure, :is_active
+        ) RETURNING id
+        """
+        
+        result = await db.execute(text(insert_query), {
+            'name': template_data.name,
+            'description': template_data.description,
+            'category_id': template_data.category_id,
+            'template_type': template_data.template_type,
+            'base_prompt': template_data.base_prompt,
+            'system_prompt': template_data.system_prompt,
+            'product_context_prompt': template_data.product_context_prompt,
+            'required_product_types': json.dumps(template_data.required_product_types),
+            'min_products': template_data.min_products,
+            'max_products': template_data.max_products,
+            'suggested_tags': json.dumps(template_data.suggested_tags),
+            'seo_title_template': template_data.seo_title_template,
+            'seo_description_template': template_data.seo_description_template,
+            'content_structure': json.dumps(template_data.content_structure),
+            'is_active': template_data.is_active
+        })
+        
+        template_id = result.scalar()
+        await db.commit()
+        
+        logger.info(f"Created blog generation template {template_id}: {template_data.name}")
+        
+        return {
+            "id": template_id,
+            "message": "Blog generation template created successfully"
+        }
+        
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Failed to create blog generation template: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create template")
+
+@router.post("/blog/generate", response_model=BlogGenerationResult)
+async def generate_blog_post(
+    request: BlogGenerationRequest,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_admin)
+):
+    """Generate a blog post using AI (admin only)"""
+    
+    try:
+        # Get OpenAI API key from environment
+        import os
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        if not openai_api_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+        # Initialize AI generator
+        ai_generator = BlogAIGenerator(openai_api_key, db)
+        
+        # Generate blog post
+        result = await ai_generator.generate_blog_post(request)
+        
+        if result.success:
+            logger.info(f"Generated AI blog post {result.blog_post_id}")
+        else:
+            logger.error(f"AI blog generation failed: {result.error_message}")
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to generate blog post: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate blog post")
+
+@router.get("/blog/generation-history", response_model=List[BlogGenerationHistory])
+async def get_generation_history(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    status: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_admin)
+):
+    """Get blog generation history (admin only)"""
+    
+    try:
+        where_clauses = []
+        params = {'limit': limit, 'offset': offset}
+        
+        if status:
+            where_clauses.append("generation_status = :status")
+            params['status'] = status
+        
+        where_clause = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+        
+        query = f"""
+        SELECT id, blog_post_id, template_id, generation_status, prompt_used,
+               model_used, tokens_used, generation_time_ms, error_message,
+               generation_metadata, created_at
+        FROM blog_generation_history
+        {where_clause}
+        ORDER BY created_at DESC
+        LIMIT :limit OFFSET :offset
+        """
+        
+        result = await db.execute(text(query), params)
+        history = result.fetchall()
+        
+        return [
+            BlogGenerationHistory(
+                id=row[0],
+                blog_post_id=row[1],
+                template_id=row[2],
+                generation_status=row[3],
+                prompt_used=row[4],
+                model_used=row[5],
+                tokens_used=row[6],
+                generation_time_ms=row[7],
+                error_message=row[8],
+                generation_metadata=row[9] or {},
+                created_at=row[10]
+            )
+            for row in history
+        ]
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch generation history: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch generation history")
+
+@router.get("/blog/ai-posts/{post_id}", response_model=AIBlogPost)
+async def get_ai_blog_post(
+    post_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get AI-generated blog post with enhanced details"""
+    
+    try:
+        # Get the main post data with AI fields
+        query = """
+        SELECT 
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.featured_image,
+            bp.author_name, bp.status, bp.seo_title, bp.seo_description,
+            bp.reading_time, bp.view_count, bp.featured, bp.published_at,
+            bp.created_at, bp.updated_at, bp.category_id,
+            bp.generated_by_ai, bp.generation_prompt, bp.generation_model,
+            bp.generation_params, bp.ai_notes
+        FROM blog_posts bp
+        WHERE bp.id = :post_id
+        """
+        
+        result = await db.execute(text(query), {'post_id': post_id})
+        row = result.fetchone()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail="Blog post not found")
+        
+        # Get enhanced product associations
+        products_query = """
+        SELECT 
+            bpp.id, bpp.product_id, bpp.position, bpp.context,
+            bpp.ai_context, bpp.relevance_score, bpp.mentioned_in_sections,
+            p.name as product_name, p.slug as product_slug,
+            b.name as brand_name
+        FROM blog_post_products bpp
+        LEFT JOIN products p ON bpp.product_id = p.id
+        LEFT JOIN brands b ON p.brand_id = b.id
+        WHERE bpp.blog_post_id = :post_id
+        ORDER BY bpp.position, bpp.id
+        """
+        
+        products_result = await db.execute(text(products_query), {'post_id': post_id})
+        products_data = products_result.fetchall()
+        
+        # Get content sections
+        sections_query = """
+        SELECT id, blog_post_id, section_type, section_title, section_content,
+               section_order, products_featured, ai_generated, created_at
+        FROM blog_content_sections
+        WHERE blog_post_id = :post_id
+        ORDER BY section_order
+        """
+        
+        sections_result = await db.execute(text(sections_query), {'post_id': post_id})
+        sections_data = sections_result.fetchall()
+        
+        # Get generation history
+        history_query = """
+        SELECT id, blog_post_id, template_id, generation_status, prompt_used,
+               model_used, tokens_used, generation_time_ms, error_message,
+               generation_metadata, created_at
+        FROM blog_generation_history
+        WHERE blog_post_id = :post_id
+        ORDER BY created_at DESC
+        """
+        
+        history_result = await db.execute(text(history_query), {'post_id': post_id})
+        history_data = history_result.fetchall()
+        
+        return AIBlogPost(
+            id=row[0],
+            title=row[1],
+            slug=row[2],
+            excerpt=row[3],
+            content=row[4],
+            featured_image=row[5],
+            author_name=row[6],
+            status=row[7],
+            seo_title=row[8],
+            seo_description=row[9],
+            reading_time=row[10],
+            view_count=row[11],
+            featured=row[12],
+            published_at=row[13],
+            created_at=row[14],
+            updated_at=row[15],
+            category_id=row[16],
+            generated_by_ai=row[17],
+            generation_prompt=row[18],
+            generation_model=row[19],
+            generation_params=row[20] or {},
+            ai_notes=row[21],
+            products=[
+                EnhancedBlogPostProduct(
+                    id=prod[0],
+                    product_id=prod[1],
+                    position=prod[2],
+                    context=prod[3],
+                    ai_context=prod[4],
+                    relevance_score=prod[5],
+                    mentioned_in_sections=prod[6] or [],
+                    product_name=prod[7],
+                    product_slug=prod[8],
+                    product_brand=prod[9]
+                )
+                for prod in products_data
+            ],
+            sections=[
+                BlogContentSection(
+                    id=sec[0],
+                    blog_post_id=sec[1],
+                    section_type=sec[2],
+                    section_title=sec[3],
+                    section_content=sec[4],
+                    section_order=sec[5],
+                    products_featured=sec[6] or [],
+                    ai_generated=sec[7],
+                    created_at=sec[8]
+                )
+                for sec in sections_data
+            ],
+            generation_history=[
+                BlogGenerationHistory(
+                    id=hist[0],
+                    blog_post_id=hist[1],
+                    template_id=hist[2],
+                    generation_status=hist[3],
+                    prompt_used=hist[4],
+                    model_used=hist[5],
+                    tokens_used=hist[6],
+                    generation_time_ms=hist[7],
+                    error_message=hist[8],
+                    generation_metadata=hist[9] or {},
+                    created_at=hist[10]
+                )
+                for hist in history_data
+            ]
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to fetch AI blog post {post_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch AI blog post")

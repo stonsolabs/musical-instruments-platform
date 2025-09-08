@@ -1,181 +1,237 @@
-// API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+import { Product, ProductComparison, SearchResult, TrendingProduct, AffiliateStore, AffiliateStoreWithUrl, Category, Brand } from '@/types';
 
-export const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const PROXY_BASE = '/api/proxy/v1';
+
+function abs(path: string): string {
+  if (typeof window !== 'undefined') return path; // client can use relative
+  const origin = process.env.NEXT_PUBLIC_APP_ORIGIN
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  return origin.replace(/\/$/, '') + path;
+}
+
+async function apiFetch(pathWithQuery: string, init?: RequestInit) {
+  const url = abs(pathWithQuery);
+  return fetch(url, init);
+}
+
+const getHeaders = () => {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  
+  // Do NOT include API keys on the client. The proxy route adds X-API-Key server-side.
+  
+  return headers;
 };
 
-// Get the base URL for server-side requests
-export const getServerBaseUrl = (): string => {
-  return process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000';
-};
+export async function fetchProducts(params: {
+  page?: number;
+  per_page?: number; // alias for limit
+  limit?: number;
+  category?: string; // slug
+  brand?: string; // slug
+  search?: string; // alias for query
+  query?: string;
+  slugs?: string[]; // optional for exact slug filtering
+  sort_by?: 'name' | 'rating' | 'popularity' | 'price';
+  sort_order?: 'asc' | 'desc';
+}): Promise<SearchResult> {
+  const searchParams = new URLSearchParams();
+  if (params.page) searchParams.append('page', String(params.page));
+  const limit = params.limit ?? params.per_page;
+  if (limit) searchParams.append('limit', String(limit));
+  if (params.category) searchParams.append('category', params.category);
+  if (params.brand) searchParams.append('brand', params.brand);
+  const query = params.query ?? params.search;
+  if (query) searchParams.append('query', query);
+  if (params.slugs && params.slugs.length) searchParams.append('slugs', params.slugs.join(','));
+  if (params.sort_by) searchParams.append('sort_by', params.sort_by);
+  if (params.sort_order) searchParams.append('sort_order', params.sort_order);
 
-// API client for client-side calls (no API key exposed)
-export const apiClient = {
-  async fetch(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(`/api/proxy${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    return response.json();
-  },
-
-  async get(endpoint: string) {
-    return this.fetch(endpoint, { method: 'GET' });
-  },
-
-  async post(endpoint: string, data?: any) {
-    return this.fetch(endpoint, {
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  },
-
-  async put(endpoint: string, data?: any) {
-    return this.fetch(endpoint, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  },
-
-  async delete(endpoint: string) {
-    return this.fetch(endpoint, { method: 'DELETE' });
-  },
-
-  // Search autocomplete functionality (previously duplicated across components)
-  async searchAutocomplete(query: string, limit: number = 8) {
-    if (typeof window === 'undefined') {
-      return { results: [] };
-    }
-    
-    try {
-      const response = await fetch(`/api/proxy/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error('Autocomplete API call failed:', error);
-      return { results: [] };
-    }
-  },
-
-  // Product search functionality
-  async searchProducts(params: Record<string, any>) {
-    const searchParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        searchParams.append(key, String(value));
-      }
-    });
-    
-    return this.get(`/products?${searchParams.toString()}`);
-  },
-
-  // Get single product
-  async getProduct(productId: string) {
-    return this.get(`/products/${productId}`);
-  },
-
-  // Compare products - updated to match backend implementation
-  async compareProducts(productIds: number[]) {
-    return this.post(`/compare`, productIds);
-  },
-
-  // Get affiliate stores
-  async getAffiliateStores(filters?: Record<string, any>) {
-    const searchParams = new URLSearchParams();
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          searchParams.append(key, String(value));
-        }
-      });
-    }
-    return this.get(`/affiliate-stores?${searchParams.toString()}`);
-  },
-
-  // Get affiliate store by ID
-  async getAffiliateStore(storeId: number) {
-    return this.get(`/affiliate-stores/${storeId}`);
-  },
-
-  // Track product view
-  async trackProductView(productId: number) {
-    return this.post(`/trending/track/view/${productId}`);
-  },
-
-  // Track comparison (temporarily disabled to fix comparison page)
-  async trackComparison(productIds: number[]) {
-    if (productIds.length < 2) {
-      console.warn('Comparison tracking needs at least 2 products, skipping...');
-      return Promise.resolve(); // Don't fail if we don't have enough products
-    }
-    
-    // TODO: Fix endpoint URL and re-enable tracking
-    console.log('🔍 Comparison tracking disabled temporarily - products:', productIds);
-    return Promise.resolve(); // Return success without actually tracking
-  },
-
-  // Get trending instruments
-  async getTrendingInstruments(limit?: number, categoryId?: number) {
-    const searchParams = new URLSearchParams();
-    if (limit) searchParams.append('limit', String(limit));
-    if (categoryId) searchParams.append('category_id', String(categoryId));
-    return this.get(`/trending/instruments?${searchParams.toString()}`);
-  },
-
-  // Get trending comparisons
-  async getTrendingComparisons(limit?: number) {
-    const searchParams = new URLSearchParams();
-    if (limit) searchParams.append('limit', String(limit));
-    return this.get(`/trending/comparisons?${searchParams.toString()}`);
-  },
-
-  // Get trending by category
-  async getTrendingByCategory(categoryId: number, limit?: number) {
-    const searchParams = new URLSearchParams();
-    if (limit) searchParams.append('limit', String(limit));
-    return this.get(`/trending/by-category?category_id=${categoryId}&${searchParams.toString()}`);
-  },
-
-  // Get product affiliate stores
-  async getProductAffiliateStores(productId: number, userRegion?: string) {
-    const searchParams = new URLSearchParams();
-    if (userRegion) searchParams.append('user_region', userRegion);
-    return this.post(`/products/${productId}/affiliate-stores`, { user_region: userRegion });
-  },
-
-  // Get affiliate URLs for product
-  async getProductAffiliateUrls(productId: number, userRegion?: string) {
-    const searchParams = new URLSearchParams();
-    if (userRegion) searchParams.append('user_region', userRegion);
-    return this.get(`/products/${productId}/affiliate-urls?${searchParams.toString()}`);
-  },
-
-  // Vote on a product
-  async voteOnProduct(productId: number, voteType: 'up' | 'down') {
-    return this.post(`/voting/products/${productId}/vote`, { vote_type: voteType });
-  },
-
-  // Get product vote stats
-  async getProductVoteStats(productId: number) {
-    return this.get(`/voting/products/${productId}/stats`);
-  },
-
-  // Get most voted products
-  async getMostVotedProducts(limit?: number, sortBy?: 'vote_score' | 'total_votes' | 'thumbs_up_count') {
-    const searchParams = new URLSearchParams();
-    if (limit) searchParams.append('limit', String(limit));
-    if (sortBy) searchParams.append('sort_by', sortBy);
-    return this.get(`/voting/products/most-voted?${searchParams.toString()}`);
+  const response = await apiFetch(`${PROXY_BASE}/products?${searchParams.toString()}`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch products: ${response.statusText}`);
   }
-};
+ 
+  const data = await response.json();
+  // Normalize backend shape to SearchResult
+  const pagination = data.pagination || {};
+  return {
+    products: data.products || [],
+    total: pagination.total ?? data.total ?? (data.products ? data.products.length : 0),
+    page: pagination.page ?? data.page ?? 1,
+    per_page: pagination.limit ?? data.per_page ?? params.limit ?? params.per_page ?? 10,
+    total_pages: pagination.pages ?? data.total_pages ?? Math.ceil((pagination.total ?? data.total ?? 0) / (pagination.limit ?? data.per_page ?? params.limit ?? params.per_page ?? 10)),
+  } as SearchResult;
+}
+
+export async function fetchProduct(slugOrId: string | number): Promise<Product> {
+  // Prefer fetching by slug when a non-numeric value is provided, otherwise by id
+  const isNumericId = typeof slugOrId === 'number' || /^\d+$/.test(String(slugOrId));
+
+  try {
+    if (!isNumericId) {
+      // Try fetch by slugs param first (exact match support)
+      const url = `${PROXY_BASE}/products?slugs=${encodeURIComponent(String(slugOrId))}`;
+      const res = await apiFetch(url, { headers: getHeaders() });
+      if (res.ok) {
+        const data: SearchResult = await res.json();
+        const exact = data.products?.find(p => p.slug === String(slugOrId));
+        if (exact) return exact;
+        if (data.products && data.products.length > 0) return data.products[0];
+      }
+      // If query didn’t return a product, fall through to id endpoint in case API supports slug there in future
+      // Fallback to search by slug token
+      const searchRes = await apiFetch(`${PROXY_BASE}/search/autocomplete?q=${encodeURIComponent(String(slugOrId))}&limit=20`, { headers: getHeaders() });
+      if (searchRes.ok) {
+        const results: any = await searchRes.json();
+        const list = Array.isArray(results?.results) ? results.results : [];
+        const match = list.find((p: any) => p.slug === String(slugOrId));
+        if (match) return match;
+      }
+    }
+
+    const idPath = isNumericId ? String(slugOrId) : String(slugOrId);
+    const resById = await apiFetch(`${PROXY_BASE}/products/${idPath}`, { headers: getHeaders() });
+    if (!resById.ok) {
+      const errorText = await resById.text();
+      console.error('API Error:', resById.status, resById.statusText, errorText);
+      throw new Error(`Failed to fetch product: ${resById.statusText}`);
+    }
+    return resById.json();
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    throw err;
+  }
+}
+
+export async function fetchProductComparison(productIds: number[]): Promise<ProductComparison> {
+  const response = await apiFetch(`${PROXY_BASE}/compare`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(productIds),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to compare products: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchTrendingProducts(limit: number = 10): Promise<TrendingProduct[]> {
+  try {
+    // First try the dedicated trending endpoint
+    const response = await apiFetch(`${PROXY_BASE}/trending/instruments?limit=${limit}`, {
+      headers: getHeaders(),
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const trendingInstruments = data.trending_instruments || [];
+      
+      // If we have trending data, return it
+      if (trendingInstruments.length > 0) {
+        return trendingInstruments;
+      }
+    }
+  } catch (error) {
+    console.warn('Trending endpoint failed, falling back to products:', error);
+  }
+
+  // Fallback to products endpoint with high ratings
+  const response = await apiFetch(`${PROXY_BASE}/products?limit=${limit}&sort_by=rating&sort_order=desc`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch trending products: ${response.statusText}`);
+  }
+
+  const data: SearchResult = await response.json();
+  
+  // Convert products to trending products format
+  return data.products.map(product => ({
+    product,
+    trending_score: Math.random() * 10, // Mock trending score
+    price_change: Math.random() * 20 - 10, // Mock price change
+    popularity_increase: Math.random() * 100 // Mock popularity increase
+  }));
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  const response = await apiFetch(`${PROXY_BASE}/categories`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch categories: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchBrands(): Promise<Brand[]> {
+  const response = await apiFetch(`${PROXY_BASE}/brands`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch brands: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchAffiliateStores(): Promise<AffiliateStore[]> {
+  const response = await apiFetch(`${PROXY_BASE}/affiliate-stores`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch affiliate stores: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function searchProducts(query: string, limit: number = 10): Promise<Product[]> {
+  // Use autocomplete endpoint; it returns { query, results, total }
+  const response = await apiFetch(`${PROXY_BASE}/search/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`, {
+    headers: getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to search products: ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data.results || [];
+}
+
+export async function fetchProductAffiliateStores(productId: number, storeLinks?: Record<string, { product_url: string }>): Promise<{ affiliate_stores: AffiliateStoreWithUrl[] }> {
+  const response = await apiFetch(`${PROXY_BASE}/products/${productId}/affiliate-stores`, {
+    method: storeLinks ? 'POST' : 'GET',
+    headers: getHeaders(),
+    body: storeLinks ? JSON.stringify(storeLinks) : undefined,
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch affiliate stores: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function generateAffiliateUrls(productId: number): Promise<{ affiliate_urls: Array<{ store: AffiliateStore; affiliate_url: string; original_url?: string }> }> {
+  const response = await apiFetch(`${PROXY_BASE}/products/${productId}/affiliate-urls`, {
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to generate affiliate URLs: ${response.statusText}`);
+  }
+
+  return response.json();
+}

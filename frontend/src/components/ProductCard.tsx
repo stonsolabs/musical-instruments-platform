@@ -1,231 +1,134 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Product } from '@/types';
-import { CompactProductVoting } from '@/components/ProductVoting';
-
-import { formatPrice } from '@/lib/utils';
+import { Product } from '../types';
+import { getProductImageUrl, formatPrice, getCategoryIcon } from '../lib/utils';
+import { openTopAffiliate } from '../lib/affiliate';
+import { HandThumbDownIcon } from '@heroicons/react/24/outline';
+import { ProductCompareCheckbox } from './FloatingCompareButton';
 
 interface ProductCardProps {
   product: Product;
-  showVoting?: boolean;
-  showPricing?: boolean;
-  variant?: 'default' | 'compact' | 'detailed';
-  className?: string;
 }
 
-export default function ProductCard({ 
-  product, 
-  showVoting = false, 
-  showPricing = true, 
-  variant = 'default',
-  className = '' 
-}: ProductCardProps) {
-  const productSlug = product.slug;
-  const productUrl = `/products/${productSlug}`;
+export default function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = getProductImageUrl(product);
 
-  // Get fallback store links from content
-  const thomannUrl = product.content?.store_links?.['Thomann'] || 
-                    product.content?.store_links?.['thomann'] || 
-                    `https://thomann.com/intl/search_dir.html?sw=${encodeURIComponent(product.name)}&aff=123`;
-  
-  const gear4musicUrl = product.content?.store_links?.['gear4music'] || 
-                       product.content?.store_links?.['Gear4music'] || 
-                       `https://gear4music.com/search?search=${encodeURIComponent(product.name)}&aff=123`;
+  const onImageClick = () => openTopAffiliate(product as any);
 
   return (
-    <div className={`bg-white rounded-lg shadow-elegant border border-primary-200 overflow-hidden hover:shadow-md transition-all duration-200 ${className}`}>
-      {/* Product Image */}
-      <div className="relative">
-        <Link href={productUrl} className="block">
-          <div className="h-48 bg-primary-200 flex items-center justify-center overflow-hidden border border-primary-200 product-image-container">
-            {product.images && product.images.length > 0 ? (
-              <img 
-                src={product.images[0]} 
-                alt={product.name}
-                className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                style={{ backgroundColor: 'white' }}
-                loading="lazy"
-              />
-            ) : (
-              <span className="text-primary-400 text-2xl">🎸</span>
+    <div className="group relative">
+      <div className="card hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        {/* Product Image */}
+        <div className="aspect-square bg-gray-100 overflow-hidden relative cursor-pointer" onClick={onImageClick} title="View at top store">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
+          />
+          
+          {/* Overlay with quick action */}
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <Link
+              href={`/products/${product?.slug}`}
+              className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-110 font-medium"
+              title="View Details"
+            >
+              View Details
+            </Link>
+          </div>
+          
+          {/* Compare Button - Top Right */}
+          <div className="absolute top-2 right-2">
+            <ProductCompareCheckbox product={product} />
+          </div>
+          
+          {/* Product badges */}
+          <div className="absolute top-2 left-2 flex flex-col space-y-1">
+            {(product?.vote_stats?.thumbs_up_count || 0) > 10 && (
+              <span className="bg-blue-500 text-white px-2 py-1 text-xs rounded-full font-medium">
+                Popular
+              </span>
             )}
           </div>
-        </Link>
-        
-        {/* Best Price Badge */}
-        {product.prices && product.prices.length > 0 && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-            {formatPrice(product.prices[0].price, product.prices[0].currency)}
+        </div>
+
+        {/* Product Info */}
+        <div className="p-4">
+          {/* Category and Brand */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-1 text-sm text-gray-500">
+              <span>{getCategoryIcon(product?.category?.name || '')}</span>
+              <span className="truncate">{product?.category?.name || 'Unknown Category'}</span>
+            </div>
+            <span className="text-sm font-medium text-brand-primary truncate ml-2">
+              {product?.brand?.name || 'Unknown Brand'}
+            </span>
           </div>
-        )}
-      </div>
-      
-      <div className="p-4">
-        {/* Brand */}
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-primary-600">{product.brand?.name || 'Brand'}</span>
-          {product.avg_rating > 0 && (
-            <div className="flex items-center text-sm text-yellow-500">
-              <span>⭐</span>
-              <span className="ml-1 text-primary-600">{product.avg_rating.toFixed(1)}</span>
+
+          {/* Product Name */}
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
+            <Link href={`/products/${product?.slug}`} className="hover:text-brand-primary transition-colors">
+              {product?.name || 'Unknown Product'}
+            </Link>
+          </h3>
+
+          {/* Product Overview */}
+          {product?.description && (
+            <p className="text-xs text-gray-600 line-clamp-2 mb-3">
+              {product.description}
+            </p>
+          )}
+
+          {/* Key Specifications (most important first) */}
+          {product?.content?.specifications && (
+            <div className="mb-3">
+              <div className="text-xs text-gray-500 font-medium mb-1">Key Specs:</div>
+              <ul className="text-xs text-gray-600 space-y-1">
+                {Object.entries(product.content.specifications).slice(0,3).map(([key, value]) => (
+                  <li key={String(key)} className="flex justify-between">
+                    <span className="capitalize font-medium">{String(key).replace(/_/g,' ')}:</span> 
+                    <span className="text-gray-900">{String(value)}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-        </div>
-        
-        {/* Voting Component */}
-        {showVoting && (
-          <div className="flex items-center justify-center mb-3">
-            <CompactProductVoting 
-              productId={product.id}
-              initialStats={product.vote_stats}
-              className=""
-            />
-          </div>
-        )}
 
-        {/* Product Name */}
-        <Link href={productUrl} className="block">
-          <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2 hover:text-accent-600 transition-colors cursor-pointer">
-            {product.name}
-          </h3>
-        </Link>
-        
-        {/* Description */}
-        {variant !== 'compact' && (
-          <p className="text-primary-600 text-sm mb-4 line-clamp-2">
-            {product.description || "High-quality musical instrument with excellent craftsmanship and sound."}
-          </p>
-        )}
-        
-        {/* Pricing and Store Links */}
-        {showPricing && (
-          <div className="space-y-2">
-            {product.prices && product.prices.length > 0 ? (
-              <>
-                {product.prices
-                  .slice(0, variant === 'compact' ? 2 : 3)
-                  .map((price) => {
-                    const isThomann = price.store.name.toLowerCase().includes('thomann');
-                    const isGear4Music = price.store.name.toLowerCase().includes('gear4music');
-                    
-                    if (isThomann) {
-                      return (
-                        <a
-                          key={price.id}
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`fp-table__button fp-table__button--thomann ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <span>View Price at</span>
-                          <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
-                        </a>
-                      );
-                    } else if (isGear4Music) {
-                      return (
-                        <a
-                          key={price.id}
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`fp-table__button fp-table__button--gear4music ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <span>View Price at</span>
-                          <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
-                        </a>
-                      );
-                    } else {
-                      return (
-                        <a 
-                          key={price.id}
-                          href={price.affiliate_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`fp-table__button ${!price.is_available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <span>View Price at</span>
-                          <span className="font-medium">{price.store.name}</span>
-                        </a>
-                      );
-                    }
-                  })
-                }
-              </>
-            ) : (
-              <>
-                <a
-                  href={thomannUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="fp-table__button fp-table__button--thomann"
-                >
-                  <span>View Price at</span>
-                  <img src="/thomann-100.png" alt="th•mann" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
-                </a>
-                <a
-                  href={gear4musicUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="fp-table__button fp-table__button--gear4music"
-                >
-                  <span>View Price at</span>
-                  <img src="/gear-100.png" alt="Gear4music" className="w-16 h-8 object-contain" style={{ backgroundColor: 'white' }} />
-                </a>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* Category and additional info for detailed variant */}
-        {variant === 'detailed' && (
-          <div className="mt-4 pt-3 border-t border-primary-100">
-            <div className="flex items-center justify-between text-xs text-primary-500">
-              <span>{product.category?.name || 'Category'}</span>
-              {(product.review_count || 0) > 0 && (
-                <span>{product.review_count} reviews</span>
-              )}
+          {/* Community Voting Section */}
+          <div className="bg-gray-50 rounded-lg p-3 mb-4">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-500">Community:</span>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1 text-gray-600">
+                  <span className="text-sm">🤘</span>
+                  <span className="font-medium">{product.vote_stats?.thumbs_up_count || 0}</span>
+                </div>
+                <div className="flex items-center space-x-1 text-gray-400">
+                  <HandThumbDownIcon className="w-3 h-3" />
+                  <span className="font-medium">{product.vote_stats?.thumbs_down_count || 0}</span>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* View Details Link */}
+          <div className="text-center">
+              <Link
+              href={`/products/${product?.slug}`}
+              className="inline-flex items-center text-brand-primary hover:text-brand-dark font-medium transition-colors"
+            >
+              View Details
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
-  );
-}
-
-// Specialized variants for common use cases
-export function CompactProductCard({ product, className = '' }: { product: Product; className?: string }) {
-  return (
-    <ProductCard 
-      product={product} 
-      variant="compact" 
-      showPricing={true}
-      showVoting={false}
-      className={className}
-    />
-  );
-}
-
-export function VotingProductCard({ product, className = '' }: { product: Product; className?: string }) {
-  return (
-    <ProductCard 
-      product={product} 
-      variant="default" 
-      showPricing={true}
-      showVoting={true}
-      className={className}
-    />
-  );
-}
-
-export function DetailedProductCard({ product, className = '' }: { product: Product; className?: string }) {
-  return (
-    <ProductCard 
-      product={product} 
-      variant="detailed" 
-      showPricing={true}
-      showVoting={false}
-      className={className}
-    />
   );
 }

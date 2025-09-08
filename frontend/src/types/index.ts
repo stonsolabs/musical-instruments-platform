@@ -3,6 +3,7 @@ export interface Brand {
   name: string;
   slug: string;
   logo_url?: string;
+  website_url?: string;
   description?: string;
 }
 
@@ -10,9 +11,10 @@ export interface Category {
   id: number;
   name: string;
   slug: string;
-  description?: string;
   parent_id?: number;
+  description?: string;
   image_url?: string;
+  is_active: boolean;
 }
 
 export interface ProductPrice {
@@ -20,8 +22,7 @@ export interface ProductPrice {
   store: {
     id: number;
     name: string;
-    logo_url?: string;
-    website_url: string;
+    slug: string;
   };
   price: number;
   currency: string;
@@ -30,306 +31,144 @@ export interface ProductPrice {
   is_available: boolean;
 }
 
-export interface ThomannInfo {
-  has_direct_url: boolean;
-  url: string;
-  fallback_search_url: string;
+export interface ProductSpecifications {
+  [key: string]: string | number | boolean;
 }
 
-// Comprehensive AI-generated content interfaces
-export interface BasicInfo {
-  overview: string;
-  key_features: string[];
-  target_skill_level: string;
-  country_of_origin: string;
-  release_year: string;
-}
-
-export interface SoundCharacteristics {
-  tonal_profile: string;
-  output_level: string;
-  best_genres: string[];
-  pickup_positions?: Record<string, string>;
-}
-
-export interface BuildQuality {
-  construction_type: string;
-  hardware_quality: string;
-  finish_quality: string;
-  expected_durability: string;
-}
-
-export interface Playability {
-  neck_profile: string;
-  action_setup: string;
-  comfort_rating: string;
-  weight_category: string;
-}
-
-export interface TechnicalAnalysis {
-  sound_characteristics: SoundCharacteristics;
-  build_quality: BuildQuality;
-  playability: Playability;
-}
-
-export interface PurchaseReason {
-  title: string;
-  description: string;
-}
-
-export interface UserType {
-  user_type: string;
-  reason: string;
-}
-
-export interface PurchaseDecision {
-  why_buy: PurchaseReason[];
-  why_not_buy: PurchaseReason[];
-  best_for: UserType[];
-  not_ideal_for: UserType[];
-}
-
-export interface SuitableMusicStyles {
-  excellent: string[];
-  good: string[];
-  limited: string[];
-}
-
-export interface SkillDevelopment {
-  learning_curve: string;
-  growth_potential: string;
-}
-
-export interface UsageGuidance {
-  recommended_amplifiers: string[];
-  suitable_music_styles: SuitableMusicStyles;
-  skill_development: SkillDevelopment;
-}
-
-export interface CareInstructions {
-  daily: string;
-  weekly: string;
-  monthly: string;
-  annual: string;
-}
-
-export interface UpgradePotential {
-  easy_upgrades: string[];
-  recommended_budget: string;
-}
-
-export interface MaintenanceCare {
-  maintenance_level: string;
-  common_issues: string[];
-  care_instructions: CareInstructions;
-  upgrade_potential: UpgradePotential;
-}
-
-export interface ExpertRating {
-  build_quality: number | string;
-  sound_quality: number | string;
-  value_for_money: number | string;
-  versatility: number | string;
-}
-
-export interface ProfessionalAssessment {
-  expert_rating: ExpertRating;
-  standout_features: string[];
-  notable_limitations: string[];
-  competitive_position: string;
-}
-
-export interface ContentMetadata {
-  generated_date: string;
-  content_version: string;
-  seo_keywords: string[];
-  readability_score: string;
-  word_count: string;
-}
-
-export interface ComprehensiveAIContent {
-  basic_info: BasicInfo;
-  technical_analysis: TechnicalAnalysis;
-  purchase_decision: PurchaseDecision;
-  usage_guidance: UsageGuidance;
-  maintenance_care: MaintenanceCare;
-  professional_assessment: ProfessionalAssessment;
-  content_metadata: ContentMetadata;
+export interface ProductContent {
+  specifications?: ProductSpecifications;
+  store_links?: Record<string, string>;
+  warranty_info?: string;
+  qa?: Record<string, any>;
+  sources?: any[];
+  dates?: Record<string, string>;
+  content_metadata?: Record<string, any>;
+  related_products?: any[];
+  localized_content?: Record<string, any>;
+  // Enrichment fields (optional)
+  professional_ratings?: {
+    playability?: number;
+    sound?: number;
+    build?: number;
+    value?: number;
+    overall_score?: number;
+    notes?: string;
+  };
+  audience_fit?: {
+    beginners?: boolean;
+    intermediate?: boolean;
+    professionals?: boolean;
+    learning_curve?: string;
+    suitable_genres?: string[];
+    studio_live_role?: string;
+  };
+  comparison_helpers?: {
+    standout_strengths?: string[];
+    key_tradeoffs?: string[];
+    best_for?: string[];
+    not_ideal_for?: string[];
+  };
+  category_specific?: {
+    metrics?: Record<string, number>;
+  };
+  accessory_recommendations?: Array<{ name: string; why: string }>;
+  setup_tips?: string[];
+  quick_badges?: Record<string, boolean>;
 }
 
 export interface VoteStats {
   thumbs_up_count: number;
   thumbs_down_count: number;
-  total_votes: number;
-  vote_score: number;
-  user_vote?: 'up' | 'down' | null;
 }
 
 export interface Product {
   id: number;
+  sku: string;
   name: string;
   slug: string;
   brand: Brand;
   category: Category;
   description?: string;
-  specifications: Record<string, any>;
-  images: string[];
+  images?: string[];
   msrp_price?: number;
-  prices?: ProductPrice[];
-  avg_rating: number;
-  review_count?: number;  // Made optional since API can return null
-  ai_content?: ComprehensiveAIContent;
-  vote_stats?: VoteStats;
-  thomann_info?: ThomannInfo;
-  content?: {
+  specifications?: ProductSpecifications;
+  content?: ProductContent;
+  ai_content?: {
+    qa?: Array<{question: string; answer: string}>;
+    dates?: Record<string, string>;
+    sources?: string[];
     store_links?: Record<string, string>;
-    specifications?: Record<string, any>;
-    [key: string]: any;
+    warranty_info?: string;
+    specifications?: ProductSpecifications;
+    content_metadata?: Record<string, any>;
+    related_products?: any[];
+    localized_content?: Record<string, {
+      basic_info?: string;
+      usage_guidance?: string;
+      customer_reviews?: string;
+      maintenance_care?: string;
+      purchase_decision?: string;
+      technical_analysis?: string;
+      professional_assessment?: string;
+    }>;
   };
+  avg_rating?: number;
+  review_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  vote_stats?: VoteStats;
+  thomann_info?: {
+    url: string;
+  };
+  prices?: ProductPrice[];
 }
 
-export interface SearchResponse {
-  products: Product[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-  filters_applied: {
-    q?: string;
-    category?: string;
-    brand?: string;
-    min_price?: number;
-    max_price?: number;
-    sort_by: string;
-  };
-}
-
-export interface ComparisonResponse {
+export interface ProductComparison {
   products: Product[];
   common_specs: string[];
   comparison_matrix: Record<string, Record<string, any>>;
-  generated_at: string;
 }
 
-export interface SearchAutocompleteProduct {
-  id: number;
-  name: string;
-  slug: string;
-  brand: Brand;
-  category: Category;
-  avg_rating: number;
-  review_count: number;
-  images: string[];
-  prices?: {
-    id: number;
-    price: number;
-    currency: string;
-    store: {
-      id: number;
-      name: string;
-      slug: string;
-    };
-    affiliate_url: string;
-    is_available: boolean;
-    last_checked?: string;
-  }[];
-  rank: number;
-  search_highlight: string;
-}
-
-export interface SearchAutocompleteResponse {
-  query: string;
-  results: SearchAutocompleteProduct[];
+export interface SearchResult {
+  products: Product[];
   total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
 }
 
-// New interfaces for enhanced backend features
+export interface TrendingProduct {
+  product: Product;
+  trending_score: number;
+  price_change?: number;
+  popularity_increase?: number;
+}
 
 export interface AffiliateStore {
   id: number;
   name: string;
   slug: string;
-  website_url: string;
   logo_url?: string;
+  website_url: string;
   description?: string;
+  is_active: boolean;
   has_affiliate_program: boolean;
+  show_affiliate_buttons: boolean;
+  priority: number;
   affiliate_base_url?: string;
   affiliate_id?: string;
-  domain_affiliate_ids?: Record<string, string>;
-  available_regions: string[];
-  primary_region: string;
-  regional_priority?: Record<string, number>;
-  use_store_fallback: boolean;
-  store_fallback_url?: string;
-  priority: number;
-  show_affiliate_buttons: boolean;
-  is_active: boolean;
+  affiliate_parameters?: Record<string, any>;
 }
 
-export interface TrendingProduct {
-  id: number;
-  name: string;
-  slug: string;
-  brand: Brand;
-  category: Category;
-  images: string[];
-  prices?: ProductPrice[];
-  avg_rating: number;
-  review_count: number;
-  view_count: number;
-  comparison_count: number;
-  trending_score: number;
-  content?: {
-    store_links?: Record<string, string>;
-    specifications?: Record<string, any>;
-    [key: string]: any;
-  };
-}
-
-export interface TrendingResponse {
-  products: TrendingProduct[];
-  total: number;
-  period: string;
-  generated_at: string;
-}
-
-export interface TrendingComparison {
-  products: Product[];
-  comparison_count: number;
-  last_compared: string;
-}
-
-export interface TrendingComparisonsResponse {
-  comparisons: TrendingComparison[];
-  total: number;
-  period: string;
-  generated_at: string;
-}
-
+// Extended store shape returned by product affiliate endpoints
 export interface AffiliateStoreWithUrl extends AffiliateStore {
-  affiliate_url: string;
-  is_exclusive: boolean;
-  regional_score: number;
+  original_url?: string;
+  affiliate_url?: string;
 }
 
-export interface ProductAffiliateStoresResponse {
-  product_id: number;
-  stores: AffiliateStoreWithUrl[];
-  user_region: string;
-  total_stores: number;
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  error?: string;
 }
-
-export interface ProductAffiliateUrlsResponse {
-  product_id: number;
-  affiliate_urls: Array<{
-    store: AffiliateStore;
-    affiliate_url: string;
-    is_exclusive: boolean;
-    regional_score: number;
-  }>;
-  user_region: string;
-}
-
-

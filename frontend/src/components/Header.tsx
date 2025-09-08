@@ -1,153 +1,249 @@
-"use client";
-
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { MagnifyingGlassIcon, Bars3Icon, XMarkIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { cn } from '../lib/utils';
+import InstrumentRequestForm from './InstrumentRequestForm';
 
-export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+const navigation = [
+  { 
+    name: 'Guitars', 
+    icon: '🎸',
+    hasDropdown: true,
+    items: [
+      { name: 'Electric Guitars', href: '/products?category=electric-guitars' },
+      { name: 'Acoustic Guitars', href: '/products?category=acoustic-guitars' },
+    ]
+  },
+  { name: 'Bass', href: '/products?category=electric-basses', icon: '🎸' },
+  { 
+    name: 'Keys', 
+    icon: '🎹',
+    hasDropdown: true,
+    items: [
+      // Beginner / Home
+      { name: 'Home Keyboards', href: '/products?category=home-keyboards' },
+      { name: 'Entertainer Keyboards', href: '/products?category=entertainer-keyboards' },
+      
+      // Controllers
+      { name: 'MIDI Keyboards', href: '/products?category=midi-master-keyboards' },
+      
+      // Piano family
+      { name: 'Digital Pianos', href: '/products?category=digital-pianos' },
+      { name: 'Stage Pianos', href: '/products?category=stage-pianos' },
+      { name: 'Electric Pianos', href: '/products?category=electric-piano' },
+      
+      // Organs
+      { name: 'Electric Organs', href: '/products?category=electric-organs' },
+      
+      // Pro / Production
+      { name: 'Synthesizers', href: '/products?category=synthesizer-keyboards' },
+      { name: 'Workstations', href: '/products?category=workstations' },
+    ]
+  },
+  { name: 'DJ & Studio', href: '/products?category=turntables', icon: '🎛️' },
+  { name: 'Accessories', href: '/products?category=accessories', icon: '🎤' },
+  { name: 'Blog', href: '/blog', icon: '📚' },
+  { name: 'Top Rated', href: '/products?sort_by=rating&sort_order=desc', icon: '⭐' },
+];
 
-  const handleMouseEnter = (dropdown: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+
+export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const router = useRouter();
+
+  const isActive = (href?: string): boolean => {
+    if (!href) return false;
+    const path = href.split('?')[0];
+    if (path === '/blog') return router.pathname.startsWith('/blog');
+    if (path === '/products') {
+      try {
+        const url = new URL(href, 'http://localhost');
+        const cat = url.searchParams.get('category');
+        const sortBy = url.searchParams.get('sort_by');
+        const sortOrder = url.searchParams.get('sort_order');
+        if (cat) return router.pathname === '/products' && router.query.category === cat;
+        if (sortBy) {
+          const m = router.query.sort_by === sortBy && (!sortOrder || router.query.sort_order === sortOrder);
+          return router.pathname === '/products' && m;
+        }
+        return router.pathname === '/products' && !router.query.category && !router.query.sort_by;
+      } catch {
+        return router.asPath.split('?')[0] === path;
+      }
     }
-    setActiveDropdown(dropdown);
+    return router.asPath.split('?')[0] === path;
   };
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 150); // Small delay to allow moving to dropdown
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
-    <header className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center w-[100px]">
-            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity w-full h-16">
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center">
               <Image 
                 src="/logo.svg" 
-                alt="GetYourMusicGear Logo" 
-                width={100} 
-                height={24}
-                className="h-5 lg:h-6 w-full object-contain"
-                priority
-                style={{ maxWidth: '100%', height: 'auto' }}
+                alt="GetYourMusicGear" 
+                width={220} 
+                height={40} 
+                className="h-16 w-auto" 
               />
             </Link>
           </div>
 
-          {/* Desktop Navigation - Optimized for better fit */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 mx-4">
-            <div className="flex items-center space-x-2 xl:space-x-3 flex-nowrap overflow-hidden">
-              <div 
-                className="relative"
-                onMouseEnter={() => handleMouseEnter('guitars')}
-                onMouseLeave={handleMouseLeave}
-              >
-                <button 
-                  className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center"
-                >
-                  Guitars
-                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {activeDropdown === 'guitars' && (
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8">
+            {navigation.map((item) => (
+              <div key={item.name} className="relative">
+                {item.hasDropdown ? (
                   <div 
-                    className="absolute left-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-xl z-[99999] mt-1 py-1"
-                    onMouseEnter={() => handleMouseEnter('guitars')}
-                    onMouseLeave={handleMouseLeave}
+                    className="relative group"
                   >
-                    <Link href="/products?category=acoustic-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Acoustic Guitars</Link>
-                    <Link href="/products?category=electric-guitars" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Electric Guitars</Link>
+                    <button
+                      className={cn(
+                        'flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium rounded-md transition-colors group-hover:text-blue-600 group-hover:bg-blue-50'
+                      )}
+                      onMouseEnter={() => setOpenDropdown(item.name)}
+                    >
+                      <span>{item.icon}</span>
+                      <span>{item.name}</span>
+                      <ChevronDownIcon className="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" />
+                    </button>
+                    
+                    <div 
+                      className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      {item.items?.map((subItem) => (
+                        <Link
+                          key={subItem.name}
+                          href={subItem.href}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors rounded-md mx-2"
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
+                ) : (
+                  <Link
+                    href={item.href!}
+                    className={cn(
+                      'flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                      isActive(item.href) && 'text-blue-600 bg-blue-50'
+                    )}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </Link>
                 )}
               </div>
-              <Link href="/products?category=electric-basses" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Bass</Link>
-              <div 
-                className="relative"
-                onMouseEnter={() => handleMouseEnter('keys')}
-                onMouseLeave={handleMouseLeave}
-              >
-                <button 
-                  className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50 flex items-center"
-                >
-                  Keys
-                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {activeDropdown === 'keys' && (
-                  <div 
-                    className="absolute left-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-xl z-[99999] mt-1 py-1"
-                    onMouseEnter={() => handleMouseEnter('keys')}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <Link href="/products?category=digital-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Digital Pianos</Link>
-                    <Link href="/products?category=stage-pianos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Stage Pianos</Link>
-                    <Link href="/products?category=home-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Keyboards</Link>
-                    <Link href="/products?category=synthesizer-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Synthesizers</Link>
-                    <Link href="/products?category=workstations" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">Workstations</Link>
-                    <Link href="/products?category=midi-master-keyboards" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">MIDI Controllers</Link>
-                  </div>
-                )}
-              </div>
-              <Link href="/products?category=turntables" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">DJ</Link>
-              <Link href="/products?category=studio-equipment" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Studio</Link>
-              <Link href="/products?category=accessories" className="text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium whitespace-nowrap px-3 py-2 rounded-md hover:bg-gray-50">Accessories</Link>
-              <Link href="/top-rated" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm font-bold whitespace-nowrap px-4 py-2 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105">⭐ Top Rated</Link>
-            </div>
+            ))}
           </nav>
 
-          {/* Right side - Mobile menu button */}
-          <div className="flex items-center flex-shrink-0">
+          {/* Right side actions */}
+          <div className="flex items-center space-x-4">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden text-gray-900 hover:text-blue-600 p-2 rounded-md transition-colors"
-              aria-label="Toggle menu"
+              onClick={() => setShowRequestForm(true)}
+              className="hidden sm:inline-flex btn-secondary"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <PlusIcon className="w-4 h-4 mr-2" />
+              Request Instrument
+            </button>
+            
+            {/* Mobile menu button */}
+            <button
+              type="button"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-brand-primary hover:bg-gray-100"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <span className="sr-only">Open main menu</span>
+              {mobileMenuOpen ? (
+                <XMarkIcon className="block h-6 w-6" />
+              ) : (
+                <Bars3Icon className="block h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
       </div>
 
       {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-300 animate-slide-up">
-          <div className="px-4 pt-4 pb-3 space-y-2">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-1">Guitars</div>
-            <Link href="/products?category=acoustic-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Acoustic Guitars</Link>
-            <Link href="/products?category=electric-guitars" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Electric Guitars</Link>
-            
-            <Link href="/products?category=electric-basses" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Bass</Link>
-            
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-1 mt-3">Keys</div>
-            <Link href="/products?category=digital-pianos" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Digital Pianos</Link>
-            <Link href="/products?category=stage-pianos" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Stage Pianos</Link>
-            <Link href="/products?category=home-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Keyboards</Link>
-            <Link href="/products?category=synthesizer-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Synthesizers</Link>
-            <Link href="/products?category=workstations" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">Workstations</Link>
-            <Link href="/products?category=midi-master-keyboards" className="block px-6 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded">MIDI Controllers</Link>
-            
-            <Link href="/products?category=turntables" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">DJ</Link>
-            <Link href="/products?category=studio-equipment" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Studio</Link>
-            <Link href="/products?category=accessories" className="block px-3 py-2 text-gray-900 hover:text-blue-600 hover:bg-gray-50 transition-colors text-sm rounded font-medium">Accessories</Link>
-            <Link href="/top-rated" className="block px-3 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm rounded-lg font-bold mx-2 mt-2">⭐ Top Rated</Link>
+      {mobileMenuOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+            {/* Mobile Search */}
+            <form onSubmit={handleSearch} className="px-3 pb-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search instruments..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                />
+                <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+            </form>
+
+            {/* Mobile Navigation */}
+            {navigation.map((item) => (
+              <div key={item.name}>
+                {item.hasDropdown ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2 text-gray-700 px-3 py-2 text-base font-medium">
+                      <span className="text-lg">{item.icon}</span>
+                      <span>{item.name}</span>
+                    </div>
+                    <div className="pl-8 space-y-1">
+                      {item.items?.map((subItem) => (
+                        <Link
+                          key={subItem.name}
+                          href={subItem.href}
+                          className="block text-gray-600 hover:text-brand-primary hover:bg-gray-50 px-3 py-2 text-sm rounded-md transition-colors"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href={item.href!}
+                    className={cn(
+                      'flex items-center space-x-2 text-gray-700 hover:text-brand-primary hover:bg-gray-50 block px-3 py-2 text-base font-medium rounded-md transition-colors',
+                      isActive(item.href) && 'text-brand-primary bg-blue-50'
+                    )}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span>{item.name}</span>
+                  </Link>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
+      
+      {/* Instrument Request Form */}
+      <InstrumentRequestForm
+        isOpen={showRequestForm}
+        onClose={() => setShowRequestForm(false)}
+      />
     </header>
   );
 }
-
-export default Header;
-
-

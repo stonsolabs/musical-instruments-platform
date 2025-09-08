@@ -5,8 +5,9 @@ from typing import Optional
 
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Text, Float, Boolean, DateTime, ForeignKey, JSON, text
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base, relationship, Mapped, mapped_column
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
@@ -29,7 +30,7 @@ if async_database_url.startswith("postgresql://") and not async_database_url.sta
 
 # Create async engine
 async_engine = create_async_engine(async_database_url, echo=False)
-async_session_maker = async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
 # Create sync engine for migrations
 sync_engine = create_engine(DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://"), echo=False)
@@ -40,77 +41,77 @@ Base = declarative_base()
 class ProductsFilled(Base):
     __tablename__ = "products_filled"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    sku: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(500), nullable=False)
-    slug: Mapped[str] = mapped_column(String(500), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    images: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    msrp_price: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    msrp_currency: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
-    url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    sku = Column(String(255), unique=True, nullable=False)
+    name = Column(String(500), nullable=False)
+    slug = Column(String(500), nullable=False)
+    description = Column(Text, nullable=True)
+    images = Column(JSON, nullable=True)
+    msrp_price = Column(Float, nullable=True)
+    msrp_currency = Column(String(10), nullable=True)
+    url = Column(String(1000), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Brand(Base):
     __tablename__ = "brands"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    logo_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    website_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), unique=True, nullable=False)
+    slug = Column(String(255), unique=True, nullable=False)
+    logo_url = Column(Text, nullable=True)
+    website_url = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Category(Base):
     __tablename__ = "categories"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), unique=True, nullable=False)
+    slug = Column(String(255), unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Locale(Base):
     __tablename__ = "locales"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    code: Mapped[str] = mapped_column(String(10), unique=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    code = Column(String(10), unique=True, nullable=False)
+    name = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Product(Base):
     __tablename__ = "products"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(500), nullable=False)
-    slug: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    msrp_price: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(500), nullable=False)
+    slug = Column(String(500), unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    msrp_price = Column(Float, nullable=True)
     # msrp_currency moved to localized content per locale
-    brand_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("brands.id"), nullable=True)
-    category_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("categories.id"), nullable=True)
-    images: Mapped[dict] = mapped_column(JSONB, default=dict)  # Product images (universal)
-    content: Mapped[dict] = mapped_column(JSONB, default=dict)  # All content including specifications, localized content, metadata
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    brand_id = Column(Integer, ForeignKey("brands.id"), nullable=True)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    images = Column(JSONB, default=dict)  # Product images (universal)
+    content = Column(JSONB, default=dict)  # All content including specifications, localized content, metadata
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Product identifiers - these are important for e-commerce and inventory management
-    sku: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)  # Stock Keeping Unit
-    gtin12: Mapped[Optional[str]] = mapped_column(String(12), nullable=True, index=True)  # Global Trade Item Number (UPC)
-    gtin13: Mapped[Optional[str]] = mapped_column(String(13), nullable=True, index=True)  # Global Trade Item Number (EAN)
-    gtin14: Mapped[Optional[str]] = mapped_column(String(14), nullable=True, index=True)  # Global Trade Item Number (ITF-14)
-    upc: Mapped[Optional[str]] = mapped_column(String(12), nullable=True, index=True)  # Universal Product Code
-    ean: Mapped[Optional[str]] = mapped_column(String(13), nullable=True, index=True)  # European Article Number
-    mpn: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)  # Manufacturer Part Number
-    isbn: Mapped[Optional[str]] = mapped_column(String(13), nullable=True, index=True)  # International Standard Book Number (for music books)
+    sku = Column(String(255), nullable=True, index=True)  # Stock Keeping Unit
+    gtin12 = Column(String(12), nullable=True, index=True)  # Global Trade Item Number (UPC)
+    gtin13 = Column(String(13), nullable=True, index=True)  # Global Trade Item Number (EAN)
+    gtin14 = Column(String(14), nullable=True, index=True)  # Global Trade Item Number (ITF-14)
+    upc = Column(String(12), nullable=True, index=True)  # Universal Product Code
+    ean = Column(String(13), nullable=True, index=True)  # European Article Number
+    mpn = Column(String(255), nullable=True, index=True)  # Manufacturer Part Number
+    isbn = Column(String(13), nullable=True, index=True)  # International Standard Book Number (for music books)
     
     # Relationships
     brand = relationship("Brand", backref="products")

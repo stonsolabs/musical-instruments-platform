@@ -16,6 +16,16 @@ async def get_batch_prompt_from_db() -> str:
         row = result.fetchone()
         return row.content if row else None
 
+async def get_prompt_by_filename_from_db(filename: str) -> str:
+    """Get any prompt by filename from config_files table."""
+    async with await get_async_session() as session:
+        result = await session.execute(
+            text("SELECT content FROM config_files WHERE filename = :filename"),
+            {"filename": filename}
+        )
+        row = result.fetchone()
+        return row.content if row else None
+
 async def get_json_schema_from_db() -> str:
     """Get JSON schema from database."""
     async with await get_async_session() as session:
@@ -25,20 +35,7 @@ async def get_json_schema_from_db() -> str:
         row = result.fetchone()
         return row.content if row else None
 
-def get_batch_prompt() -> str:
-    """Get batch prompt from file or database."""
-    prompt_path = Path(__file__).parent / "batch_prompt.txt"
-    if prompt_path.exists():
-        return prompt_path.read_text()
-    try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(get_batch_prompt_from_db())
-        loop.close()
-        if result:
-            return result
-    except Exception as e:
-        print(f"Error retrieving prompt from database: {str(e)}")
+def _default_full_prompt() -> str:
     return """You are an expert product data enrichment engine for musical instruments. Your task is to analyze product information and generate comprehensive, accurate content for e-commerce platforms.
 
 TASKS:
@@ -99,6 +96,38 @@ STRICT REQUIREMENTS:
 - Content must be comprehensive but not repetitive
 
 OUTPUT: Return a single JSON object that strictly validates against the provided JSON schema. JSON only."""
+
+def get_prompt(filename, fallback_text=None):
+    """Get a prompt by filename from local file or database, with optional fallback text."""
+    prompt_path = Path(__file__).parent / filename
+    if prompt_path.exists():
+        return prompt_path.read_text()
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(get_prompt_by_filename_from_db(filename))
+        loop.close()
+        if result:
+            return result
+    except Exception as e:
+        print(f"Error retrieving '{filename}' from database: {str(e)}")
+    # Fallbacks
+    if fallback_text is not None:
+        return fallback_text
+    return ""
+
+def get_batch_prompt() -> str:
+    """Backwards-compatible: get the original full enrichment prompt."""
+    return get_prompt("batch_prompt.txt", _default_full_prompt())
+
+def get_ratings_append_prompt() -> str:
+    """Get the ratings/append prompt, from file or DB."""
+    # Fallback reads the file content if present; if not, a minimal inline fallback
+    file_path = Path(__file__).parent / "batch_prompt_ratings_append.txt"
+    fallback = file_path.read_text() if file_path.exists() else (
+        '{"content_append": {"professional_ratings": {"playability": 75, "sound": 78, "build": 80, "value": 82, "overall_score": 79, "notes": "Solid all-round performance."}}}'
+    )
+    return get_prompt("batch_prompt_ratings_append.txt", fallback)
 
 def get_json_schema() -> str:
     """Get JSON schema from file or database."""

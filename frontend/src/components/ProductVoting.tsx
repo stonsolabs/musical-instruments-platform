@@ -1,232 +1,151 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api';
-
-interface VoteStats {
-  thumbs_up_count: number;
-  thumbs_down_count: number;
-  total_votes: number;
-  vote_score: number;
-  user_vote?: 'up' | 'down' | null;
-}
+import React, { useState } from 'react';
+import { submitVote, getVoteStats } from '../lib/vote';
+// Using emojis for vote icons per branding (🤘 for upvote)
 
 interface ProductVotingProps {
   productId: number;
-  initialStats?: VoteStats;
-  className?: string;
-  size?: 'small' | 'medium' | 'large';
-  showNumbers?: boolean;
+  initialUpvotes?: number;
+  initialDownvotes?: number;
+  userVote?: 'up' | 'down' | null;
+  onVote?: (productId: number, vote: 'up' | 'down' | null) => void;
+  disabled?: boolean;
 }
 
-export default function ProductVoting({ 
-  productId, 
-  initialStats,
-  className = '',
-  size = 'medium',
-  showNumbers = true
+export default function ProductVoting({
+  productId,
+  initialUpvotes = 0,
+  initialDownvotes = 0,
+  userVote = null,
+  onVote,
+  disabled = false
 }: ProductVotingProps) {
-  const [voteStats, setVoteStats] = useState<VoteStats | null>(initialStats || null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [upvotes, setUpvotes] = useState(initialUpvotes);
+  const [downvotes, setDownvotes] = useState(initialDownvotes);
+  const [currentVote, setCurrentVote] = useState<'up' | 'down' | null>(userVote);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Size variants
-  const sizeClasses = {
-    small: {
-      container: 'gap-1',
-      button: 'w-8 h-8 text-sm',
-      text: 'text-xs',
-      icon: 'text-sm'
-    },
-    medium: {
-      container: 'gap-2',
-      button: 'w-10 h-10 text-base',
-      text: 'text-sm',
-      icon: 'text-base'
-    },
-    large: {
-      container: 'gap-3',
-      button: 'w-12 h-12 text-lg',
-      text: 'text-base',
-      icon: 'text-lg'
-    }
-  };
+  const handleVote = async (vote: 'up' | 'down') => {
+    if (disabled || isSubmitting) return;
 
-  const classes = sizeClasses[size];
-
-  // Load vote stats on mount if not provided
-  useEffect(() => {
-    if (!initialStats) {
-      loadVoteStats();
-    }
-  }, [productId, initialStats]);
-
-  const loadVoteStats = async () => {
+    setIsSubmitting(true);
+    
     try {
-      setIsLoading(true);
-      setError(null);
-      const stats = await apiClient.getProductVoteStats(productId);
-      setVoteStats(stats);
-    } catch (err) {
-      console.error('Failed to load vote stats:', err);
-      setError('Failed to load voting data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      let newUpvotes = upvotes;
+      let newDownvotes = downvotes;
+      let newUserVote: 'up' | 'down' | null = vote;
 
-  const handleVote = async (voteType: 'up' | 'down') => {
-    if (isLoading) return;
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await apiClient.voteOnProduct(productId, voteType);
-      
-      if (response.success) {
-        // Update vote stats based on response
-        setVoteStats({
-          thumbs_up_count: response.vote_counts.thumbs_up,
-          thumbs_down_count: response.vote_counts.thumbs_down,
-          total_votes: response.vote_counts.total,
-          vote_score: response.vote_counts.score,
-          user_vote: response.user_vote
-        });
+      // Handle vote logic
+      if (currentVote === vote) {
+        // User is clicking the same vote - remove it
+        if (vote === 'up') {
+          newUpvotes = Math.max(0, upvotes - 1);
+        } else {
+          newDownvotes = Math.max(0, downvotes - 1);
+        }
+        newUserVote = null;
+      } else if (currentVote === null) {
+        // User is voting for the first time
+        if (vote === 'up') {
+          newUpvotes = upvotes + 1;
+        } else {
+          newDownvotes = downvotes + 1;
+        }
+      } else {
+        // User is changing their vote
+        if (currentVote === 'up') {
+          newUpvotes = Math.max(0, upvotes - 1);
+          newDownvotes = downvotes + 1;
+        } else {
+          newDownvotes = Math.max(0, downvotes - 1);
+          newUpvotes = upvotes + 1;
+        }
       }
-    } catch (err) {
-      console.error('Failed to vote:', err);
-      setError('Failed to record vote');
-      // Reload stats to get current state
-      loadVoteStats();
+
+      // Update local state
+      setUpvotes(newUpvotes);
+      setDownvotes(newDownvotes);
+      setCurrentVote(newUserVote);
+
+      // Call the onVote callback if provided
+      if (onVote) {
+        await onVote(productId, newUserVote);
+      }
+
+      // If no callback, make API call via proxy and then refetch stats
+      if (!onVote) {
+        await submitVote(productId, vote);
+        const stats = await getVoteStats(productId);
+        const up = Number(stats?.thumbs_up_count ?? 0);
+        const down = Number(stats?.thumbs_down_count ?? 0);
+        setUpvotes(up);
+        setDownvotes(down);
+        if (typeof stats?.user_vote === 'string' || stats?.user_vote === null) {
+          setCurrentVote(stats.user_vote);
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting vote:', error);
+      // Revert local state on error
+      setUpvotes(initialUpvotes);
+      setDownvotes(initialDownvotes);
+      setCurrentVote(userVote);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (error && !voteStats) {
-    return (
-      <div className={`text-red-500 ${classes.text} ${className}`}>
-        Unable to load voting
-      </div>
-    );
-  }
-
-  if (!voteStats) {
-    return (
-      <div className={`flex items-center ${classes.container} ${className}`}>
-        <div className={`animate-pulse bg-gray-200 rounded-full ${classes.button}`}></div>
-        <div className="animate-pulse bg-gray-200 h-4 w-8 rounded"></div>
-        <div className={`animate-pulse bg-gray-200 rounded-full ${classes.button}`}></div>
-      </div>
-    );
-  }
+  const totalVotes = upvotes + downvotes;
+  const votePercentage = totalVotes > 0 ? Math.round((upvotes / totalVotes) * 100) : 0;
 
   return (
-    <div className={`flex items-center ${classes.container} ${className}`}>
-      {/* Thumbs Up Button */}
-      <button
-        onClick={() => handleVote('up')}
-        disabled={isLoading}
-        className={`
-          ${classes.button} rounded-full border-2 transition-all duration-200 
-          ${voteStats.user_vote === 'up' 
-            ? 'bg-green-500 border-green-500 text-white' 
-            : 'bg-white border-gray-300 text-gray-600 hover:border-green-500 hover:text-green-500'
-          }
-          ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}
-          flex items-center justify-center shadow-sm hover:shadow-md
-        `}
-        title={voteStats.user_vote === 'up' ? 'Remove thumbs up' : 'Thumbs up'}
-      >
-        <span className={classes.icon}>👍</span>
-      </button>
+    <div className="flex flex-col items-center space-y-3 p-4 bg-gray-50 rounded-lg">
+      <h4 className="text-sm font-medium text-gray-700">Was this helpful?</h4>
+      
+      <div className="flex items-center space-x-4">
+        {/* Upvote Button */}
+        <button
+          onClick={() => handleVote('up')}
+          disabled={disabled || isSubmitting}
+          className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+            currentVote === 'up'
+              ? 'bg-green-100 text-green-700 border border-green-300'
+              : 'bg-white text-gray-600 border border-gray-300 hover:bg-green-50 hover:border-green-300'
+          } ${disabled || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <span className="text-lg">🤘</span>
+          <span className="text-sm font-medium">{upvotes}</span>
+        </button>
 
-      {/* Vote Display */}
-      {showNumbers && (
-        <div className="flex items-center gap-1">
-          <span className={`font-semibold text-green-600 ${classes.text}`}>
-            {voteStats.thumbs_up_count || 0}
-          </span>
-          <span className={`text-gray-400 ${classes.text}`}>|</span>
-          <span className={`font-semibold text-red-600 ${classes.text}`}>
-            {voteStats.thumbs_down_count || 0}
-          </span>
+        {/* Downvote Button */}
+        <button
+          onClick={() => handleVote('down')}
+          disabled={disabled || isSubmitting}
+          className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+            currentVote === 'down'
+              ? 'bg-red-100 text-red-700 border border-red-300'
+              : 'bg-white text-gray-600 border border-gray-300 hover:bg-red-50 hover:border-red-300'
+          } ${disabled || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <span className="text-lg">👎</span>
+          <span className="text-sm font-medium">{downvotes}</span>
+        </button>
+      </div>
+
+      {/* Vote Summary */}
+      {totalVotes > 0 && (
+        <div className="text-center">
+          <div className="text-sm text-gray-600">
+            {votePercentage}% found this helpful
+          </div>
+          <div className="text-xs text-gray-500">
+            {totalVotes} total votes
+          </div>
         </div>
       )}
 
-      {/* Vote Score (optional, for compact display) */}
-      {!showNumbers && (
-        <span className={`font-semibold ${classes.text} ${
-          (voteStats.vote_score || 0) > 0 ? 'text-green-600' : 
-          (voteStats.vote_score || 0) < 0 ? 'text-red-600' : 'text-gray-500'
-        }`}>
-          {(voteStats.vote_score || 0) > 0 ? '+' : ''}{voteStats.vote_score || 0}
-        </span>
-      )}
-
-      {/* Thumbs Down Button */}
-      <button
-        onClick={() => handleVote('down')}
-        disabled={isLoading}
-        className={`
-          ${classes.button} rounded-full border-2 transition-all duration-200 
-          ${voteStats.user_vote === 'down' 
-            ? 'bg-red-500 border-red-500 text-white' 
-            : 'bg-white border-gray-300 text-gray-600 hover:border-red-500 hover:text-red-500'
-          }
-          ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}
-          flex items-center justify-center shadow-sm hover:shadow-md
-        `}
-        title={voteStats.user_vote === 'down' ? 'Remove thumbs down' : 'Thumbs down'}
-      >
-        <span className={classes.icon}>👎</span>
-      </button>
-
-      {/* Error Message */}
-      {error && (
-        <span className={`text-red-500 ${classes.text} ml-2`}>
-          {error}
-        </span>
-      )}
-    </div>
-  );
-}
-
-// Compact voting component for product cards
-export function CompactProductVoting({ productId, initialStats, className = '' }: Pick<ProductVotingProps, 'productId' | 'initialStats' | 'className'>) {
-  return (
-    <ProductVoting 
-      productId={productId}
-      initialStats={initialStats}
-      size="small"
-      showNumbers={false}
-      className={className}
-    />
-  );
-}
-
-// Full voting component for product detail pages
-export function DetailedProductVoting({ productId, initialStats, className = '' }: Pick<ProductVotingProps, 'productId' | 'initialStats' | 'className'>) {
-  return (
-    <div className={`bg-gray-50 rounded-lg p-4 ${className}`}>
-      <div className="text-center mb-3">
-        <h3 className="text-sm font-medium text-gray-700 mb-1">Rate this product</h3>
-        <p className="text-xs text-gray-500">Help other musicians with your opinion</p>
-      </div>
-      <ProductVoting 
-        productId={productId}
-        initialStats={initialStats}
-        size="large"
-        showNumbers={true}
-        className="justify-center"
-      />
-      {initialStats && initialStats.total_votes > 0 && (
-        <div className="text-center mt-3">
-          <p className="text-xs text-gray-500">
-            {initialStats.total_votes} {initialStats.total_votes === 1 ? 'vote' : 'votes'} total
-          </p>
-        </div>
+      {/* Loading State */}
+      {isSubmitting && (
+        <div className="text-xs text-gray-500">Submitting vote...</div>
       )}
     </div>
   );
