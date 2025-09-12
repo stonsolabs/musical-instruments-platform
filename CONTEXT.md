@@ -157,3 +157,27 @@ The platform features an advanced AI-powered blog system for generating engaging
 
 **Database Schema**:
 The blog system uses 9 specialized tables to support AI generation, content structure, product associations, and generation tracking. Key features include AI context fields, relevance scoring, section-based content organization, and comprehensive generation history.
+
+**Azure Batch API Integration**:
+- **Batch Processing**: Efficient bulk blog generation using Azure OpenAI Batch API with 50% cost savings
+- **Azure Storage**: Automatic file management with batch request/response storage in Azure Blob Storage
+- **Workflow Management**: Complete batch lifecycle tracking from creation to post publication
+- **Admin Dashboard**: Secure admin-only access via Azure App Service Authentication
+- **Environment Configuration**: Comprehensive environment variable setup for Azure services
+
+**Batch System Tables**:
+- `blog_batch_jobs`: Tracks batch creation, Azure job status, file paths, and completion metrics
+- `blog_batch_processing_history`: Records batch processing results with success/failure analytics
+
+**Admin Security**:
+- Azure App Service Authentication with Azure AD integration
+- Admin-only routes protected by email verification
+- Comprehensive logging and audit trails
+- Environment-based admin access control
+
+**Protected Documentation**:
+- `/docs` frontend page with Azure AD authentication
+- `/api/v1/docs/` backend endpoints (Swagger UI, ReDoc, OpenAPI schema)
+- Admin-only access with same authentication as admin panel
+- Interactive API testing with full endpoint coverage
+- Complete schema documentation including security schemes and rate limits
