@@ -14,7 +14,7 @@ import json
 
 from app.database import get_db
 from app.api.dependencies import get_api_key, require_admin, optional_admin
-from app.models.blog_ai import (
+from app.blog_ai_schemas import (
     BlogGenerationTemplate, BlogGenerationTemplateCreate, BlogGenerationRequest,
     BlogGenerationResult, AIBlogPost, BlogGenerationHistory, EnhancedBlogPostProduct,
     BlogContentSection
