@@ -109,7 +109,7 @@ class BlogPostCreate(BaseModel):
     category_id: int
     author_name: str = Field(default="GetYourMusicGear Team", max_length=100)
     author_email: Optional[str] = None
-    status: str = Field(default="draft", regex="^(draft|published|archived)$")
+    status: str = Field(default="draft", pattern="^(draft|published|archived)$")
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
     featured: bool = False

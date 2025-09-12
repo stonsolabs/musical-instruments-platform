@@ -18,7 +18,7 @@ import openai
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import AzureError
 
-from app.models.blog_ai import BlogGenerationRequest, BlogGenerationTemplate
+from app.blog_ai_schemas import BlogGenerationRequest, BlogGenerationTemplate
 from app.services.blog_prompt_templates import BlogPromptBuilder
 
 logger = logging.getLogger(__name__)
@@ -363,7 +363,8 @@ class BlogBatchGenerator:
                 "created_at": batch_response.created_at
             })
             
-            logger.info(f"Batch job criado: {batch_response.id}")\n            
+            logger.info(f"Batch job criado: {batch_response.id}")
+            
             return {
                 "success": True,
                 "batch_id": batch_response.id,

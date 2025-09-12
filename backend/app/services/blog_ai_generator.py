@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 import logging
 
-from app.models.blog_ai import (
+from app.blog_ai_schemas import (
     BlogGenerationRequest, BlogGenerationResult, AIProductRecommendation,
     BlogContentSectionCreate, ProductSelectionCriteria, TemplateType
 )
