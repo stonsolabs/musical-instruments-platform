@@ -4,6 +4,13 @@ const PROXY_BASE = '/api/proxy/v1';
 
 function abs(path: string): string {
   if (typeof window !== 'undefined') return path; // client can use relative
+  
+  // For server-side calls, go directly to Azure backend if it's a proxy path
+  if (path.startsWith('/api/proxy/v1/')) {
+    const azureBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+    return azureBase + '/api/v1' + path.replace('/api/proxy/v1', '');
+  }
+  
   const origin = process.env.NEXT_PUBLIC_APP_ORIGIN
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
   return origin.replace(/\/$/, '') + path;
@@ -20,7 +27,10 @@ const getHeaders = () => {
     'Content-Type': 'application/json',
   };
   
-  // Do NOT include API keys on the client. The proxy route adds X-API-Key server-side.
+  // For server-side calls, include the API key directly
+  if (typeof window === 'undefined' && process.env.API_KEY) {
+    headers['X-API-Key'] = process.env.API_KEY;
+  }
   
   return headers;
 };
