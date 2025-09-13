@@ -175,11 +175,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       </Head>
 
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
           {/* Enhanced Page Header */}
           <div className="text-center mb-12">
             <div className="relative">
-              <h1 className="text-5xl font-bold text-gray-900 mb-6">
+              <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-6">
                 Compare Instruments
               </h1>
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-6xl opacity-10">
@@ -224,7 +224,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
             <div className="mb-8">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center space-x-4">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                     Comparing {comparison.products.length} Products
                   </h2>
                   <span className="badge badge-primary">
@@ -287,20 +287,20 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               )}
               
               {/* 1. PRODUCT OVERVIEW - Side by Side */}
-              <div id="overview" className="card p-8">
+              <div id="overview" className="card p-4 sm:p-8">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">🏆 Product Overview</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">🏆 Product Overview</h2>
                   <p className="text-gray-600 max-w-3xl mx-auto">
                     Compare basic information and key details for each instrument
                   </p>
                 </div>
                 
-                <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                   {comparison.products.map((product, index) => {
                     const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                     
                     return (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                         {/* Product Header with Remove Button */}
                         <div className="relative mb-6">
                           <button
@@ -331,7 +331,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                           
                           {/* Product Info */}
                           <div className="text-center">
-                            <h3 className="font-bold text-gray-900 text-lg mb-1 leading-tight">
+                            <h3 className="font-bold text-gray-900 text-sm sm:text-lg mb-1 leading-tight">
                               {product.name}
                             </h3>
                             <p className="text-sm text-gray-600 mb-3">{product.brand.name} • {product.category.name}</p>
@@ -486,7 +486,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
 
               {/* 3. DETAILED SPECIFICATIONS TABLE */}
-              <div id="specifications" className="card p-8">
+              <div id="specifications" className="card p-4 sm:p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 Detailed Specifications</h2>
                   <p className="text-gray-600 max-w-3xl mx-auto">
@@ -499,7 +499,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* 3. PROFESSIONAL ASSESSMENT - Side by Side */}
               {comparison.products.length > 0 && (
-                <div id="analysis" className="card p-8">
+                <div id="analysis" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">🎓 Professional Assessment</h2>
                     <p className="text-gray-600 max-w-3xl mx-auto">
@@ -507,18 +507,18 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                             <p className="text-sm text-gray-600">{product.brand.name}</p>
                           </div>
                           
@@ -547,7 +547,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* 4. USAGE GUIDANCE - Side by Side */}
               {comparison.products.length > 0 && (
-                <div id="usage-guidance" className="card p-8">
+                <div id="usage-guidance" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 Usage Guidance</h2>
                     <p className="text-gray-600 max-w-3xl mx-auto">
@@ -555,18 +555,18 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                             <p className="text-sm text-gray-600">{product.brand.name}</p>
                           </div>
                           
@@ -683,7 +683,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* 5. CATEGORY-SPECIFIC METRICS - Side by Side */}
               {comparison.products.length > 0 && (
-                <div id="category-metrics" className="card p-8">
+                <div id="category-metrics" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 Category-Specific Metrics</h2>
                     <p className="text-gray-600 max-w-3xl mx-auto">
@@ -691,15 +691,15 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                             {index + 1}
                           </div>
-                          <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                           <p className="text-sm text-gray-600">{product.brand.name}</p>
                         </div>
                         
@@ -741,7 +741,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* 6. CUSTOMER FEEDBACK - Side by Side */}
               {comparison.products.length > 0 && (
-                <div id="reviews" className="card p-8">
+                <div id="reviews" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">⭐ Customer Feedback</h2>
                     <p className="text-gray-600 max-w-3xl mx-auto">
@@ -749,18 +749,18 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                           {/* Product Header with Community Votes */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900 mb-2">{product.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-2">{product.name}</h3>
                             
                             {/* Community Votes & Interactive Voting */}
                             {product.vote_stats ? (
@@ -840,7 +840,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* 6. COMPARISON HELPERS - Side by Side */}
               {comparison.products.length > 0 && (
-                <div id="differences" className="card p-8">
+                <div id="differences" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">⚖️ Comparison Guide</h2>
                     <p className="text-gray-600 max-w-3xl mx-auto">
@@ -848,15 +848,15 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                             {index + 1}
                           </div>
-                          <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                           <p className="text-sm text-gray-600">{product.brand.name}</p>
                         </div>
                         
@@ -914,7 +914,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
           {/* 7. ACCESSORY RECOMMENDATIONS - Side by Side */}
           {comparison && comparison.products.length > 0 && (
-            <div id="accessories" className="card p-8">
+            <div id="accessories" className="card p-4 sm:p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 Recommended Accessories</h2>
                 <p className="text-gray-600 max-w-3xl mx-auto">
@@ -924,13 +924,13 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                         {index + 1}
                       </div>
-                      <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                      <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                       <p className="text-sm text-gray-600">{product.brand.name}</p>
                     </div>
                     
@@ -959,7 +959,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
           {/* 8. WARRANTY & PROTECTION - Side by Side */}
           {comparison && comparison.products.length > 0 && (
-            <div id="warranty" className="card p-8">
+            <div id="warranty" className="card p-4 sm:p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">🛡️ Warranty & Protection</h2>
                 <p className="text-gray-600 max-w-3xl mx-auto">
@@ -969,13 +969,13 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                         {index + 1}
                       </div>
-                      <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                      <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                       <p className="text-sm text-gray-600">{product.brand.name}</p>
                     </div>
                     
@@ -1003,7 +1003,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
           {/* QUESTIONS & ANSWERS - Side by Side (at the end) */}
           {comparison && comparison.products.length > 0 && (
-            <div id="qa" className="card p-8">
+            <div id="qa" className="card p-4 sm:p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">❓ Questions & Answers</h2>
                 <p className="text-gray-600 max-w-3xl mx-auto">
@@ -1016,13 +1016,13 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   const qaData = (product as any).qa || product.content?.qa || product.content?.content_metadata?.qa || product.ai_content?.qa;
                   
                   return (
-                    <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
+                    <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
                       {/* Product Header */}
                       <div className="text-center mb-6 pb-4 border-b border-gray-100">
                         <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                           {index + 1}
                         </div>
-                        <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
+                        <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">{product.brand.name}</p>
                       </div>
                       
