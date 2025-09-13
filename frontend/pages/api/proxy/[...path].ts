@@ -6,6 +6,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { path = [] } = req.query as { path: string[] };
     const qs = req.url?.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
     const target = `${base}/api/${path.join('/')}${qs}`;
+    
+    console.log(`[PROXY DEBUG] Base URL: ${base}`);
+    console.log(`[PROXY DEBUG] Target URL: ${target}`);
+    console.log(`[PROXY DEBUG] Method: ${req.method}`);
 
     const headers: Record<string, string> = {
       'Content-Type': req.headers['content-type'] || 'application/json',
