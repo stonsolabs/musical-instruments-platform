@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..models import Product, Brand, Category, AffiliateStore
+from ..utils.vote_utils import get_multiple_products_vote_stats, get_product_vote_stats
 from ..config import settings
 
 
@@ -34,6 +35,9 @@ class TrendingService:
         self.view_count_key = "views:product"
         self.comparison_count_key = "comparisons:pair"
         self.category_trending_key = "trending:category"
+        
+        # Voting influence weight (each net upvote contributes this many points)
+        self.vote_weight = 2.0
     
     async def _get_redis_client(self):
         """Get Redis client with error handling"""
@@ -159,7 +163,7 @@ class TrendingService:
             return json.loads(cached_result)
 
         # Get trending product IDs from Redis analytics
-        trending_ids = await self._calculate_trending_products(limit * 2, category_id)
+        trending_ids = await self._calculate_trending_products(limit * 2, category_id, db)
         
         if not trending_ids or not db:
             return []
@@ -191,8 +195,8 @@ class TrendingService:
             if product_id in product_dict:
                 product = product_dict[product_id]
                 
-                # Get trending score
-                trending_score = await self._get_product_trending_score(product_id)
+                # Get trending score (views + comparisons + votes influence)
+                trending_score = await self._get_product_trending_score(product_id, db)
                 
                 trending_products.append({
                     "id": product.id,
@@ -362,7 +366,8 @@ class TrendingService:
     async def _calculate_trending_products(
         self, 
         limit: int, 
-        category_id: Optional[int] = None
+        category_id: Optional[int] = None,
+        db: AsyncSession = None
     ) -> List[int]:
         """Calculate trending products using weighted scoring"""
         
@@ -407,6 +412,19 @@ class TrendingService:
         except Exception:
             pass
         
+        # Add vote influence (requires DB)
+        try:
+            if db and product_scores:
+                product_ids = list(product_scores.keys())
+                vote_stats = await get_multiple_products_vote_stats(db, product_ids)
+                for pid, stats in vote_stats.items():
+                    score = float(stats.get('vote_score', 0) or 0)
+                    if score:
+                        product_scores[pid] += score * self.vote_weight
+        except Exception:
+            # Do not fail if vote aggregation fails
+            pass
+
         # Sort by score and return top product IDs
         sorted_products = sorted(
             product_scores.items(), 
@@ -416,10 +434,17 @@ class TrendingService:
         
         return [product_id for product_id, score in sorted_products[:limit]]
 
-    async def _get_product_trending_score(self, product_id: int) -> float:
-        """Get trending score for a specific product"""
+    async def _get_product_trending_score(self, product_id: int, db: AsyncSession = None) -> float:
+        """Get trending score for a specific product (views + comparisons + votes influence)"""
         redis_client = await self._get_redis_client()
         if not redis_client:
+            # With no Redis, we can still factor votes if DB available
+            try:
+                if db:
+                    stats = await get_product_vote_stats(db, product_id)
+                    return float(stats.get('vote_score', 0) or 0) * self.vote_weight
+            except Exception:
+                pass
             return 0.0
             
         try:
@@ -441,7 +466,16 @@ class TrendingService:
                 "comparisons:individual", product_id
             ) or 0
             
-            return views_score + (comparison_score * 3)
+            # Vote influence (DB)
+            vote_influence = 0.0
+            if db:
+                try:
+                    stats = await get_product_vote_stats(db, product_id)
+                    vote_influence = float(stats.get('vote_score', 0) or 0) * self.vote_weight
+                except Exception:
+                    vote_influence = 0.0
+            
+            return views_score + (comparison_score * 3) + vote_influence
             
         except Exception:
             return 0.0
