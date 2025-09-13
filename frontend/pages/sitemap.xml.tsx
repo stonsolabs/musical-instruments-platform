@@ -9,24 +9,24 @@ function Sitemap() {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const baseUrl = 'https://www.getyourmusicgear.com';
   
+  // Static pages (define outside try block so it's accessible in catch)
+  const staticPages = [
+    '',
+    '/products',
+    '/compare',
+    '/blog',
+    '/about',
+    '/contact',
+    '/privacy-policy',
+    '/terms-of-service',
+  ];
+  
   try {
     // Fetch data for dynamic pages
     const [productsData, categories] = await Promise.all([
       fetchProducts({ limit: 1000 }), // Get all products
       fetchCategories()
     ]);
-
-    // Static pages
-    const staticPages = [
-      '',
-      '/products',
-      '/compare',
-      '/blog',
-      '/about',
-      '/contact',
-      '/privacy-policy',
-      '/terms-of-service',
-    ];
 
     // Generate sitemap XML
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
