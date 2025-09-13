@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Block access to API routes and internal paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /products
+Allow: /compare
+Allow: /blog
+
+# Sitemap locations
+Sitemap: https://www.getyourmusicgear.com/sitemap-index.xml
+Sitemap: https://www.getyourmusicgear.com/sitemap.xml
+Sitemap: https://www.getyourmusicgear.com/blog-sitemap.xml
+
+# Crawl delay (be respectful to servers)
+Crawl-delay: 1
