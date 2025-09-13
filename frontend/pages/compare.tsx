@@ -175,7 +175,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       </Head>
 
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="w-full max-w-none sm:max-w-7xl mx-auto px-1 sm:px-4 lg:px-8 py-4 sm:py-8">
           {/* Enhanced Page Header */}
           <div className="text-center mb-12">
             <div className="relative">
@@ -295,12 +295,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   </p>
                 </div>
                 
-                <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                   {comparison.products.map((product, index) => {
                     const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                     
                     return (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                         {/* Product Header with Remove Button */}
                         <div className="relative mb-6">
                           <button
@@ -334,7 +334,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                             <h3 className="font-bold text-gray-900 text-sm sm:text-lg mb-1 leading-tight">
                               {product.name}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-3">{product.brand.name} • {product.category.name}</p>
+                            <p className="text-xs sm:text-sm text-gray-600 mb-3">{product.brand.name} • {product.category.name}</p>
                           </div>
                         </div>
 
@@ -507,12 +507,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -555,12 +555,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -691,9 +691,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -749,12 +749,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                           {/* Product Header with Community Votes */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -848,9 +848,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-2 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -924,7 +924,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -969,7 +969,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -1016,7 +1016,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   const qaData = (product as any).qa || product.content?.qa || product.content?.content_metadata?.qa || product.ai_content?.qa;
                   
                   return (
-                    <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-6">
+                    <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                       {/* Product Header */}
                       <div className="text-center mb-6 pb-4 border-b border-gray-100">
                         <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">

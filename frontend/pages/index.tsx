@@ -1,12 +1,18 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 // import Link from 'next/link';
 import { TrendingProduct, Category, Product } from '../src/types';
 import { fetchTrendingProducts, fetchCategories, fetchProducts } from '../src/lib/api';
 import HeroSection from '../src/components/HeroSection';
 import TrendingProducts from '../src/components/TrendingProducts';
 // import SpecialOffers from '../src/components/SpecialOffers';
-import FeaturedComparisons from '../src/components/FeaturedComparisons';
+
+// Lazy load components that are below the fold
+const FeaturedComparisons = dynamic(() => import('../src/components/FeaturedComparisons'), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-96 rounded-lg"></div>,
+  ssr: false
+});
 
 interface HomePageProps {
   trendingProducts: TrendingProduct[];

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { TrendingProduct } from '../types';
 import { getProductImageUrl, formatPrice, getCategoryIcon } from '../lib/utils';
 import { HandThumbDownIcon } from '@heroicons/react/24/outline';
@@ -37,14 +38,14 @@ export default function TrendingProducts({ products }: TrendingProductsProps) {
           >
             {/* Product Image */}
             <div className="aspect-square bg-gray-50 overflow-hidden relative cursor-pointer" onClick={(e)=>openPriorityStore(product, e)} title="View at top store">
-              <img
+              <Image
                 src={imageUrl}
                 alt={product.name}
+                width={300}
+                height={300}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                loading="lazy"
               />
               {/* Trending Badge - cooler style */}
               <div className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-glow">
