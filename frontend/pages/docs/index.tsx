@@ -21,7 +21,8 @@ export default function DocsPage() {
   const checkAuthentication = async () => {
     try {
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-      const response = await fetch(`${apiBase}/api/v1/admin/user-info`, { credentials: 'include' });
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const response = await fetch(`${apiBase}/api/v1/admin/user-info`, { credentials: 'include', headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) } });
       
       if (response.status === 401) {
         // Not authenticated - redirect to our auth proxy

@@ -172,9 +172,11 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                   <td key={`sp-${cat}-${p.id}`} className="p-3"></td>
                 ))}
               </tr>
-              {specs.map((spec) => (
-                <tr key={spec} className="hover:bg-gray-50">
-                  <td className="p-3 font-medium text-gray-900 capitalize sticky left-0 bg-white z-10">
+              {specs.map((spec) => {
+                const rowDiff = hasDiffWithoutNA(spec);
+                return (
+                <tr key={spec} className={`hover:bg-gray-50 ${rowDiff ? 'bg-blue-50' : ''}`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-blue-50' : 'bg-white'}`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
@@ -210,18 +212,17 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
-                    const diff = hasDiffWithoutNA(spec);
                     return (
                       <td
                         key={`${product.id}-${spec}`}
-                        className={`p-3 text-center ${diff ? 'text-gray-900 font-medium border-l-2 border-blue-200' : 'text-gray-600 border-l border-gray-100'}`}
+                        className={"p-3 text-center text-gray-600 border-l border-gray-100"}
                       >
                         <span>{value}</span>
                       </td>
                     );
                   })}
                 </tr>
-              ))}
+              );})}
             </>
           ))}
 
@@ -242,9 +243,11 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                   <td key={`oth-sp-${cat}-${p.id}`} className="p-3"></td>
                 ))}
               </tr>
-              {specs.map((spec) => (
-                <tr key={`oth-${spec}`} className="hover:bg-gray-50">
-                  <td className="p-3 font-medium text-gray-900 capitalize sticky left-0 bg-white z-10">
+              {specs.map((spec) => {
+                const rowDiff = hasDiffWithoutNA(spec);
+                return (
+                <tr key={`oth-${spec}`} className={`hover:bg-gray-50 ${rowDiff ? 'bg-blue-50' : ''}`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-blue-50' : 'bg-white'}`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
@@ -280,18 +283,17 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
-                    const diff = hasDiffWithoutNA(spec);
                     return (
                       <td
                         key={`oth-${product.id}-${spec}`}
-                        className={`p-3 text-center ${diff ? 'text-gray-900 font-medium border-l-2 border-blue-200' : 'text-gray-600 border-l border-gray-100'}`}
+                        className={"p-3 text-center text-gray-600 border-l border-gray-100"}
                       >
                         <span>{value}</span>
                       </td>
                     );
                   })}
                 </tr>
-              ))}
+              );})}
             </>
           ))}
 

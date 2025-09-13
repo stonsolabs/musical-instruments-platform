@@ -54,9 +54,11 @@ export default function BlogManager() {
 
   const fetchGenerationHistory = async () => {
     try {
-      // Call admin endpoint directly on API domain with credentials so Azure auth cookie is sent
+      // Call admin endpoint directly on API domain; include SSO token if available
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
       const response = await fetch(`${ADMIN_API_BASE}/admin/blog/generation-history?limit=20`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) }
       });
       if (response.ok) {
         const data = await response.json();

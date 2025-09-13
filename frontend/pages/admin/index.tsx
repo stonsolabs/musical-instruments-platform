@@ -33,12 +33,14 @@ export default function AdminPage() {
       console.log('[ADMIN] Checking authentication with Azure backend...');
       // Check authentication directly against the API domain so Azure Easy Auth cookies are sent
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
       const response = await fetch(`${apiBase}/api/v1/admin/user-info`, {
         method: 'GET',
         // Include credentials so browser sends Azure App Service auth cookies to the API domain
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
         }
       });
 
@@ -46,6 +48,40 @@ export default function AdminPage() {
 
       if (response.status === 401) {
         // User is not authenticated, redirect to Azure AD login
+        // First try SSO bridge to obtain a short-lived admin token without relying on third-party cookies
+        const bridgeUrl = `${apiBase}/api/v1/admin/sso/bridge?origin=${encodeURIComponent(window.location.origin)}`;
+        const w = 520, h = 600;
+        const y = window.top!.outerHeight / 2 + window.top!.screenY - ( h / 2);
+        const x = window.top!.outerWidth / 2 + window.top!.screenX - ( w / 2);
+        const popup = window.open(bridgeUrl, 'gy-admin-sso', `width=${w},height=${h},left=${x},top=${y}`);
+
+        if (popup) {
+          await new Promise<void>((resolve) => {
+            const handler = (ev: MessageEvent) => {
+              if (ev.origin !== window.location.origin) return;
+              if (ev.data && ev.data.type === 'GYMG_SSO_TOKEN' && ev.data.token) {
+                sessionStorage.setItem('adminToken', ev.data.token);
+                window.removeEventListener('message', handler);
+                resolve();
+              }
+            };
+            window.addEventListener('message', handler);
+          });
+          // Retry with token
+          const retry = await fetch(`${apiBase}/api/v1/admin/user-info`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', 'X-Admin-Token': sessionStorage.getItem('adminToken') || '' }
+          });
+          if (retry.ok) {
+            const data = await retry.json();
+            setUserInfo(data.user);
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // Fallback to direct Azure AD login
         const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
         const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
         console.log('[ADMIN] Redirecting to login:', loginUrl);

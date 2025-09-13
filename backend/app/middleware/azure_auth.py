@@ -8,6 +8,9 @@ import os
 import logging
 import base64
 import json
+import hmac
+import hashlib
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +25,70 @@ class AzureAuthMiddleware:
         self.allowed_admins = os.getenv('ADMIN_EMAILS', self.admin_email).split(',')
         self.allowed_admins = [email.strip().lower() for email in self.allowed_admins]
     
+    def _b64url(self, data: bytes) -> str:
+        return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
+
+    def _sign(self, data: bytes) -> str:
+        secret = os.getenv('SECRET_KEY', 'change-me')
+        sig = hmac.new(secret.encode('utf-8'), data, hashlib.sha256).digest()
+        return self._b64url(sig)
+
+    def issue_admin_token(self, email: str, ttl_seconds: int = 3600) -> dict:
+        header = {"alg": "HS256", "typ": "JWT"}
+        now = int(time.time())
+        payload = {
+            "iss": "getyourmusicgear-admin",
+            "sub": email,
+            "iat": now,
+            "exp": now + ttl_seconds,
+            "scope": "admin"
+        }
+        header_b64 = self._b64url(json.dumps(header, separators=(',', ':')).encode('utf-8'))
+        payload_b64 = self._b64url(json.dumps(payload, separators=(',', ':')).encode('utf-8'))
+        signing_input = f"{header_b64}.{payload_b64}".encode('ascii')
+        signature = self._sign(signing_input)
+        token = f"{header_b64}.{payload_b64}.{signature}"
+        return {"token": token, "expires_at": payload["exp"]}
+
+    def verify_admin_token(self, token: str) -> Optional[dict]:
+        try:
+            parts = token.split('.')
+            if len(parts) != 3:
+                return None
+            header_b64, payload_b64, signature = parts
+            signing_input = f"{header_b64}.{payload_b64}".encode('ascii')
+            expected_sig = self._sign(signing_input)
+            if not hmac.compare_digest(signature, expected_sig):
+                return None
+            # Decode payload
+            padded = payload_b64 + '==='[: (4 - len(payload_b64) % 4) % 4]
+            payload = json.loads(base64.urlsafe_b64decode(padded.encode('ascii')).decode('utf-8'))
+            # Check exp
+            if int(payload.get('exp', 0)) < int(time.time()):
+                return None
+            email = payload.get('sub', '').lower()
+            if not email or email not in self.allowed_admins:
+                return None
+            return {
+                'email': email,
+                'name': email.split('@')[0],
+                'provider': 'token',
+                'is_admin': True
+            }
+        except Exception as e:
+            logger.debug(f"Admin token verification failed: {e}")
+            return None
+
     async def get_user_info(self, request: Request) -> Optional[dict]:
         """
         Extrai informações do usuário dos headers do Azure App Service
         """
+        # 1) Allow header-based admin token (SSO bridge) for cross-site cases
+        auth_token = request.headers.get('X-Admin-Token')
+        if auth_token:
+            token_user = self.verify_admin_token(auth_token)
+            if token_user:
+                return token_user
         if self.is_local_dev:
             # Em desenvolvimento, simula usuário admin
             return {

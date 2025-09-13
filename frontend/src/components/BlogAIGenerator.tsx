@@ -83,7 +83,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/templates`, { credentials: 'include' });
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/templates`, { credentials: 'include', headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) } });
       if (response.ok) {
         const data = await response.json();
         setTemplates(data);
@@ -137,10 +138,12 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
         generation_params: formData.generation_params
       };
 
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
       const response = await fetch(`${ADMIN_API_BASE}/admin/blog/generate`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
         },
         credentials: 'include',
         body: JSON.stringify(requestData),

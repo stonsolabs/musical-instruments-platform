@@ -6,12 +6,13 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from typing import List, Optional
+from fastapi.responses import HTMLResponse
 from datetime import datetime
 import logging
 import json
 
 from app.database import get_db
-from app.middleware.azure_auth import require_azure_admin, get_azure_user
+from app.middleware.azure_auth import require_azure_admin, get_azure_user, azure_auth
 from app.blog_ai_schemas import (
     BlogGenerationTemplate, BlogGenerationTemplateCreate, BlogGenerationRequest,
     BlogGenerationResult, AIBlogPost, BlogGenerationHistory, EnhancedBlogPostProduct,
@@ -38,6 +39,51 @@ async def get_admin_info(
         "login_time": datetime.utcnow().isoformat(),
         "ip_address": request.client.host
     }
+
+@router.get("/sso/token")
+async def get_admin_sso_token(
+    admin: dict = Depends(require_azure_admin)
+):
+    """Issue a short-lived admin token for cross-site frontend usage."""
+    token_info = azure_auth.issue_admin_token(admin['email'], ttl_seconds=3600)
+    return token_info
+
+@router.get("/sso/bridge", response_class=HTMLResponse)
+async def admin_sso_bridge(origin: Optional[str] = None):
+    """
+    Simple HTML page, hosted on API domain, that fetches an admin token using Easy Auth cookie
+    and posts it back to the opener via postMessage, then closes itself.
+    """
+    safe_origin = origin or "*"
+    html = f"""
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=\"utf-8\" />
+    <title>Admin SSO Bridge</title>
+    <meta name=\"robots\" content=\"noindex,nofollow\" />
+  </head>
+  <body>
+    <script>
+      (async function() {{
+        try {{
+          const resp = await fetch('/api/v1/admin/sso/token', {{ credentials: 'include' }});
+          if (!resp.ok) throw new Error('Token request failed: ' + resp.status);
+          const data = await resp.json();
+          if (window.opener) {{
+            window.opener.postMessage({{ type: 'GYMG_SSO_TOKEN', token: data.token, expires_at: data.expires_at }}, '{safe_origin}');
+          }}
+        }} catch (e) {{
+          console.error('SSO bridge error', e);
+        }} finally {{
+          window.close();
+        }}
+      }})();
+    </script>
+  </body>
+</html>
+"""
+    return HTMLResponse(content=html)
 
 @router.get("/stats")
 async def get_admin_stats(
