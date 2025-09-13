@@ -186,13 +186,13 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 🎵
               </div>
             </div>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+            <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 px-4 sm:max-w-4xl sm:mx-auto text-center">
               Make informed decisions with our comprehensive side-by-side instrument comparisons
             </p>
             
             {/* Simplified description */}
-            <div className="max-w-2xl mx-auto text-center">
-              <p className="text-gray-600 mb-6">Compare specifications, features, prices, and community ratings to make informed decisions on your next musical investment.</p>
+            <div className="px-4 sm:max-w-2xl sm:mx-auto text-center">
+              <p className="text-sm sm:text-base text-gray-600 mb-6">Compare specifications, features, prices, and community ratings to make informed decisions on your next musical investment.</p>
             </div>
           </div>
 
@@ -290,7 +290,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               <div id="overview" className="card p-4 sm:p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">🏆 Product Overview</h2>
-                  <p className="text-gray-600 max-w-3xl mx-auto">
+                  <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                     Compare basic information and key details for each instrument
                   </p>
                 </div>
@@ -502,7 +502,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 <div id="analysis" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">🎓 Professional Assessment</h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                       Expert analysis and professional insights for each instrument
                     </p>
                   </div>
@@ -550,7 +550,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 <div id="usage-guidance" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 Usage Guidance</h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                       How to best use each instrument and what to expect
                     </p>
                   </div>
@@ -686,7 +686,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 <div id="category-metrics" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 Category-Specific Metrics</h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                       Specialized performance measurements and ratings for each instrument type
                     </p>
                   </div>
@@ -744,7 +744,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 <div id="reviews" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">⭐ Customer Feedback</h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                       What customers and users are saying about each instrument
                     </p>
                   </div>
@@ -843,7 +843,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 <div id="differences" className="card p-4 sm:p-8">
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">⚖️ Comparison Guide</h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                       Detailed comparison insights to help you make the right choice
                     </p>
                   </div>
@@ -917,12 +917,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
             <div id="accessories" className="card p-4 sm:p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 Recommended Accessories</h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
+                <p className="text-sm sm:text-base text-gray-600 px-4 sm:max-w-3xl sm:mx-auto text-center">
                   Essential accessories to get the most out of each instrument
                 </p>
               </div>
               
-              <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+              <div className={`grid gap-1 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
                   <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                     {/* Product Header */}
@@ -967,7 +967,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 </p>
               </div>
               
-              <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+              <div className={`grid gap-1 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
                   <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
                     {/* Product Header */}
@@ -1011,7 +1011,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 </p>
               </div>
               
-              <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+              <div className={`grid gap-1 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => {
                   const qaData = (product as any).qa || product.content?.qa || product.content?.content_metadata?.qa || product.ai_content?.qa;
                   
@@ -1070,13 +1070,13 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 Start Your Comparison Journey
               </h3>
-              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              <p className="text-sm sm:text-lg text-gray-600 mb-8 px-4 sm:max-w-2xl sm:mx-auto text-center">
                 Use the search above to find instruments and build your comparison. 
                 Compare specifications, features, prices, and community ratings.
               </p>
               
               {/* Quick Action Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 px-4 sm:max-w-4xl sm:mx-auto mb-8">
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                      onClick={() => router.push('/products?category=guitars')}>
                   <div className="text-3xl mb-3">🎸</div>
