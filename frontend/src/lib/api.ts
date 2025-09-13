@@ -11,6 +11,7 @@ function abs(path: string): string {
 
 async function apiFetch(pathWithQuery: string, init?: RequestInit) {
   const url = abs(pathWithQuery);
+  console.log(`[API DEBUG] Server-side fetch URL: ${url}`);
   return fetch(url, init);
 }
 
