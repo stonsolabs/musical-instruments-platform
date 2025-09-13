@@ -23,8 +23,8 @@ export default function DocsPage() {
       const response = await fetch('/api/proxy/v1/admin/user-info');
       
       if (response.status === 401) {
-        // Not authenticated - redirect to Azure AD login
-        window.location.href = '/.auth/login/aad?post_login_redirect_url=' + encodeURIComponent('/docs');
+        // Not authenticated - redirect to our auth proxy
+        window.location.href = '/api/auth/login?redirect_url=/docs';
         return;
       }
       

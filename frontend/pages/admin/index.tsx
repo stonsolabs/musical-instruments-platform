@@ -37,13 +37,13 @@ export default function AdminPage() {
         setUserInfo(data.user);
         setError(null);
       } else if (response.status === 401) {
-        // Não autenticado - redirecionar para Azure AD login
+        // Not authenticated - redirect to our auth proxy
         const errorData = await response.json();
         setError(errorData.detail);
         
-        // Redirecionar para login do Azure AD após um delay
+        // Redirect to our authentication proxy after a delay
         setTimeout(() => {
-          window.location.href = '/.auth/login/aad?post_login_redirect_url=/admin';
+          window.location.href = '/api/auth/login?redirect_url=/admin';
         }, 3000);
       } else if (response.status === 403) {
         // Autenticado mas não é admin
@@ -118,7 +118,7 @@ export default function AdminPage() {
                     Você será redirecionado para o login em alguns segundos...
                   </p>
                   <a
-                    href={error.login_url || '/.auth/login/aad?post_login_redirect_url=/admin'}
+                    href={error.login_url || '/api/auth/login?redirect_url=/admin'}
                     className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     <ShieldCheckIcon className="w-4 h-4 mr-2" />
