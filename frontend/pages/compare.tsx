@@ -22,6 +22,15 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
   const router = useRouter();
   const [comparison, setComparison] = useState<ProductComparison | null>(initialComparison || null);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Track mobile state
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Handle URL query parameters for pre-loaded comparison
   useEffect(() => {
@@ -141,13 +150,20 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       return;
     }
 
-    const newIds = [...currentIds, productId];
-    if (newIds.length > 4) {
-      newIds.shift(); // Remove oldest product if more than 4
+    // Limit to 2 products on mobile, 4 on desktop
+    const maxProducts = isMobile ? 2 : 4;
+    
+    // If we're at the limit, replace the oldest product
+    if (currentIds.length >= maxProducts) {
+      const newIds = [...currentIds.slice(1), productId]; // Remove oldest, add new
+      console.log(`At ${maxProducts} product limit, replacing oldest. New IDs:`, newIds);
+      await loadComparison(newIds);
+    } else {
+      // Add to existing comparison
+      const newIds = [...currentIds, productId];
+      console.log('Loading comparison with new IDs:', newIds);
+      await loadComparison(newIds);
     }
-
-    console.log('Loading comparison with new IDs:', newIds);
-    await loadComparison(newIds);
   };
 
   const removeProductFromComparison = async (productId: number) => {
@@ -204,7 +220,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 {comparison && comparison.products.length > 0 && (
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">
-                      {comparison.products.length}/4
+                      {comparison.products.length}/{isMobile ? 2 : 4}
                     </span>
                     <button
                       onClick={clearComparison}
@@ -295,12 +311,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   </p>
                 </div>
                 
-                <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                   {comparison.products.map((product, index) => {
                     const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                     
                     return (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                         {/* Product Header with Remove Button */}
                         <div className="relative mb-6">
                           <button
@@ -507,12 +523,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -555,12 +571,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                           {/* Product Header */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -691,9 +707,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -749,12 +765,12 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
                       return (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                           {/* Product Header with Community Votes */}
                           <div className="text-center mb-6 pb-4 border-b border-gray-100">
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -848,9 +864,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-1 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
-                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                      <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                         {/* Product Header */}
                         <div className="text-center mb-6 pb-4 border-b border-gray-100">
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -924,7 +940,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-1 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -969,7 +985,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               
               <div className={`grid gap-1 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                 {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                     {/* Product Header */}
                     <div className="text-center mb-6 pb-4 border-b border-gray-100">
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -1016,7 +1032,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   const qaData = (product as any).qa || product.content?.qa || product.content?.content_metadata?.qa || product.ai_content?.qa;
                   
                   return (
-                    <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-2 sm:p-6">
+                    <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
                       {/* Product Header */}
                       <div className="text-center mb-6 pb-4 border-b border-gray-100">
                         <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
