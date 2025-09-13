@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const PROXY_BASE = '/api/proxy/v1';
+const ADMIN_API_BASE = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/api/v1`;
 
 export default function BlogManager() {
   // Assumindo que o usuário já está autenticado quando chega aqui via /admin
@@ -53,7 +54,10 @@ export default function BlogManager() {
 
   const fetchGenerationHistory = async () => {
     try {
-      const response = await fetch(`${PROXY_BASE}/admin/blog/generation-history?limit=20`);
+      // Call admin endpoint directly on API domain with credentials so Azure auth cookie is sent
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/generation-history?limit=20`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setGenerationHistory(data);

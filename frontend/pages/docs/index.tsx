@@ -20,7 +20,8 @@ export default function DocsPage() {
 
   const checkAuthentication = async () => {
     try {
-      const response = await fetch('/api/proxy/v1/admin/user-info');
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+      const response = await fetch(`${apiBase}/api/v1/admin/user-info`, { credentials: 'include' });
       
       if (response.status === 401) {
         // Not authenticated - redirect to our auth proxy
@@ -136,7 +137,7 @@ export default function DocsPage() {
               {/* Swagger UI Container */}
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <iframe
-                  src="/api/proxy/v1/docs/"
+                  src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/api/v1/docs/`}
                   className="w-full h-[800px] border-0"
                   title="API Documentation"
                   sandbox="allow-same-origin allow-scripts allow-forms allow-popups"

@@ -10,6 +10,7 @@ import logging
 import time
 import uuid
 
+import os
 from .config import settings
 from .database import init_db
 from .api import brands, categories, products, search, trending, compare, affiliate_stores, redirect, voting
@@ -43,7 +44,27 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         
         # Add security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
+        # Allow embedding docs only from configured frontend domains; deny everywhere else
+        path = request.url.path or ""
+        if path.startswith("/api/v1/docs"):
+            # Remove X-Frame-Options and set CSP frame-ancestors for allowed domains
+            if "X-Frame-Options" in response.headers:
+                del response.headers["X-Frame-Options"]
+            allowed_ancestors = [
+                f"https://{settings.DOMAIN}",
+                f"https://www.{settings.DOMAIN}"
+            ]
+            # Include known preview domains if present
+            vercel_domains = (os.getenv("ALLOWED_VERCEL_DOMAINS", "").split(","))
+            for d in vercel_domains:
+                d = d.strip()
+                if d:
+                    allowed_ancestors.append(f"https://{d}")
+            response.headers["Content-Security-Policy"] = (
+                "frame-ancestors " + " ".join(allowed_ancestors)
+            )
+        else:
+            response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         
@@ -211,5 +232,3 @@ else:
     app.include_router(blog.router, prefix=settings.API_V1_STR)
     app.include_router(admin.router, prefix=settings.API_V1_STR)
     app.include_router(docs.router, prefix=settings.API_V1_STR)
-
-

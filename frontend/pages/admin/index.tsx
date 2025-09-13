@@ -31,10 +31,11 @@ export default function AdminPage() {
   const checkAdminAuth = async () => {
     try {
       console.log('[ADMIN] Checking authentication with Azure backend...');
-      
-      // Check authentication through our proxy which handles Azure AD cookies
-      const response = await fetch('/api/proxy/v1/admin/user-info', {
+      // Check authentication directly against the API domain so Azure Easy Auth cookies are sent
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+      const response = await fetch(`${apiBase}/api/v1/admin/user-info`, {
         method: 'GET',
+        // Include credentials so browser sends Azure App Service auth cookies to the API domain
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'

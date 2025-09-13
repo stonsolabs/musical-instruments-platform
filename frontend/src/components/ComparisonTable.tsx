@@ -95,8 +95,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">📊 Detailed Specifications</h2>
         </div>
-        <div className="overflow-x-auto -mx-6 px-6">
-          <table className="w-full table-fixed text-sm min-w-[600px]">
+        <div className="overflow-x-auto -mx-3 px-3 sm:-mx-6 sm:px-6">
+          <table className="w-full table-fixed text-sm min-w-[560px] sm:min-w-[600px]">
             <thead>
               <tr className="bg-gray-50">
                 <th className="p-3 text-left font-semibold text-gray-900 border-b border-gray-200 sticky left-0 bg-gray-50 z-10">

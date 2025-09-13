@@ -39,6 +39,7 @@ interface GenerationResult {
 }
 
 const PROXY_BASE = '/api/proxy/v1';
+const ADMIN_API_BASE = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/api/v1`;
 
 export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAIGeneratorProps) {
   const [templates, setTemplates] = useState<BlogGenerationTemplate[]>([]);
@@ -82,7 +83,7 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch(`${PROXY_BASE}/admin/blog/templates`);
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/templates`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setTemplates(data);
@@ -136,11 +137,12 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
         generation_params: formData.generation_params
       };
 
-      const response = await fetch(`${PROXY_BASE}/admin/blog/generate`, {
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(requestData),
       });
 

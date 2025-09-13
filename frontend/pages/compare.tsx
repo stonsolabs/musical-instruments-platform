@@ -191,7 +191,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
         <meta name="description" content="Compare musical instruments side by side. View specifications, prices, and reviews to make informed decisions on your next musical investment." />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 overflow-x-hidden">
         <div className="w-full max-w-none sm:max-w-7xl sm:mx-auto px-0 sm:px-4 lg:px-8 py-4 sm:py-8">
           {/* Enhanced Page Header */}
           <div className="text-center mb-12">
@@ -251,7 +251,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 
                 <div className="flex items-center space-x-4">
                   {/* In-page Goto Buttons */}
-                  <div className="flex bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+                  <div className="flex flex-wrap gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
                     {[
                       { id: 'overview', label: 'Overview' },
                       { id: 'differences', label: 'Differences' },
