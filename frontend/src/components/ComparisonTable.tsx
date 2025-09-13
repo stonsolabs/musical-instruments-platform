@@ -175,8 +175,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
               {specs.map((spec) => {
                 const rowDiff = hasDiffWithoutNA(spec);
                 return (
-                <tr key={spec} className={`hover:bg-gray-50 ${rowDiff ? 'bg-blue-50' : ''}`}>
-                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-blue-50' : 'bg-white'}`}>
+                <tr key={spec} className={`hover:bg-gray-50 ${rowDiff ? 'bg-amber-50' : ''}`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-amber-50' : 'bg-white'}`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
@@ -246,8 +246,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
               {specs.map((spec) => {
                 const rowDiff = hasDiffWithoutNA(spec);
                 return (
-                <tr key={`oth-${spec}`} className={`hover:bg-gray-50 ${rowDiff ? 'bg-blue-50' : ''}`}>
-                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-blue-50' : 'bg-white'}`}>
+                <tr key={`oth-${spec}`} className={`hover:bg-gray-50 ${rowDiff ? 'bg-amber-50' : ''}`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-amber-50' : 'bg-white'}`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
