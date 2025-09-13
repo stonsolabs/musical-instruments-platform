@@ -16,7 +16,7 @@ from app.middleware.azure_auth import require_azure_admin, get_azure_user, azure
 from app.blog_ai_schemas import (
     BlogGenerationTemplate, BlogGenerationTemplateCreate, BlogGenerationRequest,
     BlogGenerationResult, AIBlogPost, BlogGenerationHistory, EnhancedBlogPostProduct,
-    BlogContentSection
+    BlogContentSection, CloneRewriteRequest
 )
 from app.services.blog_ai_generator import BlogAIGenerator
 from app.services.blog_batch_generator import BlogBatchGenerator
@@ -253,6 +253,27 @@ async def generate_ai_blog_post(
     except Exception as e:
         logger.error(f"Failed to generate blog post: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate blog post")
+
+@router.post("/blog/clone-rewrite")
+async def clone_and_rewrite_blog_post(
+    request: CloneRewriteRequest,
+    admin: dict = Depends(require_azure_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Clone content from a source URL and rewrite it with AI (admin only)"""
+    try:
+        import os
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        if not openai_api_key:
+            raise HTTPException(status_code=500, detail="OPENAI_API_KEY not configured")
+        ai_generator = BlogAIGenerator(openai_api_key, db)
+        result = await ai_generator.clone_and_rewrite(request)
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to clone & rewrite blog post: {e}")
+        raise HTTPException(status_code=500, detail="Failed to clone & rewrite blog post")
 
 @router.get("/blog/templates")
 async def get_generation_templates(

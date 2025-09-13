@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Product, ProductComparison, AffiliateStoreWithUrl } from '../src/types';
 import { fetchProductComparison, fetchProduct, fetchProductAffiliateStores } from '../src/lib/api';
@@ -361,7 +362,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                           {/* Product Info */}
                           <div className="text-center">
                             <h3 className="font-bold text-gray-900 text-sm sm:text-lg mb-1 leading-tight">
-                              {product.name}
+                              <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                                {product.name}
+                              </Link>
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-600 mb-3">{product.brand.name} • {product.category.name}</p>
                           </div>
@@ -547,7 +550,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                              <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                                {product.name}
+                              </Link>
+                            </h3>
                             <p className="text-sm text-gray-600">{product.brand.name}</p>
                           </div>
                           
@@ -595,7 +602,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                              <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                                {product.name}
+                              </Link>
+                            </h3>
                             <p className="text-sm text-gray-600">{product.brand.name}</p>
                           </div>
                           
@@ -728,7 +739,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                             {index + 1}
                           </div>
-                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                            <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                              {product.name}
+                            </Link>
+                          </h3>
                           <p className="text-sm text-gray-600">{product.brand.name}</p>
                         </div>
                         
@@ -789,7 +804,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                             <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                               {index + 1}
                             </div>
-                            <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-2">{product.name}</h3>
+                          <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-2">
+                            <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                              {product.name}
+                            </Link>
+                          </h3>
                             
                             {/* Community Votes & Interactive Voting */}
                             {product.vote_stats ? (
@@ -885,7 +904,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                           <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                             {index + 1}
                           </div>
-                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                          <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                            <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                              {product.name}
+                            </Link>
+                          </h3>
                           <p className="text-sm text-gray-600">{product.brand.name}</p>
                         </div>
                         
@@ -959,7 +982,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                       <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                         {index + 1}
                       </div>
-                      <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                      <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                        <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                          {product.name}
+                        </Link>
+                      </h3>
                       <p className="text-sm text-gray-600">{product.brand.name}</p>
                     </div>
                     
@@ -986,49 +1013,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
             </div>
           )}
 
-          {/* 8. WARRANTY & PROTECTION - Side by Side */}
-          {comparison && comparison.products.length > 0 && (
-            <div id="warranty" className="card p-4 sm:p-8">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">🛡️ Warranty & Protection</h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
-                  Warranty information and protection details for each instrument
-                </p>
-              </div>
-              
-              <div className={`grid gap-2 sm:gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
-                {comparison.products.map((product, index) => (
-                  <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
-                    {/* Product Header */}
-                    <div className="text-center mb-6 pb-4 border-b border-gray-100">
-                      <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
-                        {index + 1}
-                      </div>
-                      <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
-                      <p className="text-sm text-gray-600">{product.brand.name}</p>
-                    </div>
-                    
-                    {/* Warranty Information */}
-                    {product.content?.warranty_info ? (
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <h4 className="font-semibold text-blue-900 mb-2 text-sm flex items-center">
-                          <span className="mr-2">🛡️</span>
-                          Warranty Details
-                        </h4>
-                        <p className="text-xs text-blue-800 leading-relaxed">{product.content.warranty_info}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="text-4xl mb-4 opacity-20">🛡️</div>
-                        <h4 className="text-sm font-medium text-gray-900 mb-2">No Warranty Info</h4>
-                        <p className="text-xs text-gray-500">Warranty details for this product are being prepared.</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Warranty & Protection section removed by request */}
 
           {/* QUESTIONS & ANSWERS - Side by Side (at the end) */}
           {comparison && comparison.products.length > 0 && (
@@ -1051,7 +1036,11 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                         <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-2">
                           {index + 1}
                         </div>
-                        <h3 className="font-bold text-sm sm:text-lg text-gray-900">{product.name}</h3>
+                        <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                          <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                            {product.name}
+                          </Link>
+                        </h3>
                         <p className="text-sm text-gray-600">{product.brand.name}</p>
                       </div>
                       

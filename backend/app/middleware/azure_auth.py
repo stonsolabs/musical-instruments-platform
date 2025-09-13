@@ -79,6 +79,55 @@ class AzureAuthMiddleware:
             logger.debug(f"Admin token verification failed: {e}")
             return None
 
+    def _extract_email_from_principal(self, principal_data: dict, fallback: Optional[str]) -> Optional[str]:
+        try:
+            claims = principal_data.get('claims', []) or []
+            # Build a quick lookup for claim types
+            claim_map = {}
+            for c in claims:
+                typ = str(c.get('typ', '')).lower()
+                val = c.get('val')
+                claim_map[typ] = val
+
+            # Common claim keys that may hold an email
+            preferred_keys = [
+                'emails',
+                'email',
+                'preferred_username',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'upn'
+            ]
+            for key in preferred_keys:
+                if key in claim_map and claim_map[key]:
+                    val = claim_map[key]
+                    # Some providers may return JSON array in 'emails'
+                    if isinstance(val, str) and val.strip().startswith('['):
+                        try:
+                            arr = json.loads(val)
+                            if isinstance(arr, list) and arr:
+                                return str(arr[0]).strip().lower()
+                        except Exception:
+                            pass
+                    # Normalize guest UPN pattern user_domain.com#EXT#@tenant.onmicrosoft.com
+                    s = str(val).strip()
+                    if '#ext#' in s.lower() and '@' in s:
+                        # Try to recover original email before #EXT#
+                        before = s.split('#')[0]
+                        # Replace underscores commonly used to encode '@'
+                        if '_' in before and '.' in before:
+                            # Heuristic: last '_' becomes '@'
+                            idx = before.rfind('_')
+                            recovered = before[:idx] + '@' + before[idx+1:]
+                            return recovered.lower()
+                    return s.lower()
+
+            # Fallback to top-level email if present
+            if principal_data.get('email'):
+                return str(principal_data['email']).strip().lower()
+        except Exception as e:
+            logger.debug(f"Failed to extract email from principal claims: {e}")
+        return (fallback or '').strip().lower() if fallback else None
+
     async def get_user_info(self, request: Request) -> Optional[dict]:
         """
         Extrai informações do usuário dos headers do Azure App Service
@@ -120,9 +169,10 @@ class AzureAuthMiddleware:
                 decoded_principal = base64.b64decode(principal_header).decode('utf-8')
                 principal_data = json.loads(decoded_principal)
                 
+                extracted_email = self._extract_email_from_principal(principal_data, principal_name)
                 user_info.update({
                     'name': principal_data.get('name', principal_name),
-                    'email': principal_data.get('email', principal_name),
+                    'email': extracted_email or principal_name,
                     'provider': principal_data.get('typ', 'azure'),
                     'claims': principal_data.get('claims', [])
                 })

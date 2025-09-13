@@ -14,14 +14,38 @@ import logging
 
 from app.blog_ai_schemas import (
     BlogGenerationRequest, BlogGenerationResult, AIProductRecommendation,
-    BlogContentSectionCreate, ProductSelectionCriteria, TemplateType
+    BlogContentSectionCreate, ProductSelectionCriteria, TemplateType,
+    CloneRewriteRequest, AIProvider
 )
 
 logger = logging.getLogger(__name__)
 
 class BlogAIGenerator:
     def __init__(self, openai_api_key: str, db_session: AsyncSession):
+        # OpenAI client (non-Azure)
         self.client = openai.AsyncOpenAI(api_key=openai_api_key)
+        
+        # Azure OpenAI (lazy init)
+        self.azure_endpoint = None
+        self.azure_deployment = None
+        self.azure_api_key = None
+        
+        # Read Azure config if present
+        import os
+        self.azure_endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+        self.azure_deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT')
+        self.azure_api_key = os.getenv('AZURE_OPENAI_API_KEY')
+        self.azure_client = None
+        try:
+            if self.azure_endpoint and self.azure_api_key:
+                # Prefer the new SDK style if available
+                self.azure_client = openai.AsyncAzureOpenAI(
+                    api_key=self.azure_api_key,
+                    azure_endpoint=self.azure_endpoint,
+                    api_version=os.getenv('AZURE_OPENAI_API_VERSION', '2024-02-15-preview')
+                )
+        except Exception:
+            self.azure_client = None
         self.db = db_session
         self.default_model = "gpt-4o"
     
@@ -56,7 +80,8 @@ class BlogAIGenerator:
             generation_response = await self._call_ai_generation(
                 prompt,
                 template.get('system_prompt'),
-                request.generation_params
+                request.generation_params,
+                request.provider
             )
             
             if not generation_response['success']:
@@ -308,43 +333,189 @@ Response format should be JSON:
         self,
         prompt: str,
         system_prompt: Optional[str],
-        generation_params: Dict[str, Any]
+        generation_params: Dict[str, Any],
+        provider: AIProvider
     ) -> Dict[str, Any]:
-        """Call OpenAI API for content generation"""
+        """Call selected AI provider for content generation"""
         
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
         try:
-            messages = []
-            
-            if system_prompt:
-                messages.append({"role": "system", "content": system_prompt})
-            
-            messages.append({"role": "user", "content": prompt})
-            
-            # Set default parameters
-            params = {
-                "model": generation_params.get("model", self.default_model),
-                "messages": messages,
-                "temperature": generation_params.get("temperature", 0.7),
-                "max_tokens": generation_params.get("max_tokens", 3000),
-                "response_format": {"type": "json_object"}
-            }
-            
-            response = await self.client.chat.completions.create(**params)
-            
-            return {
-                "success": True,
-                "content": response.choices[0].message.content,
-                "tokens_used": response.usage.total_tokens,
-                "model": params["model"]
-            }
-            
+            if provider == AIProvider.OPENAI:
+                params = {
+                    "model": generation_params.get("model", self.default_model),
+                    "messages": messages,
+                    "temperature": generation_params.get("temperature", 0.7),
+                    "max_tokens": generation_params.get("max_tokens", 3000),
+                    "response_format": {"type": "json_object"}
+                }
+                response = await self.client.chat.completions.create(**params)
+                return {
+                    "success": True,
+                    "content": response.choices[0].message.content,
+                    "tokens_used": getattr(getattr(response, 'usage', None), 'total_tokens', None),
+                    "model": params["model"],
+                    "provider": provider.value
+                }
+            elif provider == AIProvider.AZURE_OPENAI:
+                if not self.azure_client:
+                    raise RuntimeError("Azure OpenAI not configured")
+                model_or_deployment = generation_params.get("model") or self.azure_deployment
+                if not model_or_deployment:
+                    raise RuntimeError("Azure OpenAI deployment/model not set")
+                params = {
+                    "model": model_or_deployment,
+                    "messages": messages,
+                    "temperature": generation_params.get("temperature", 0.7),
+                    "max_tokens": generation_params.get("max_tokens", 3000),
+                    "response_format": {"type": "json_object"}
+                }
+                response = await self.azure_client.chat.completions.create(**params)
+                return {
+                    "success": True,
+                    "content": response.choices[0].message.content,
+                    "tokens_used": getattr(getattr(response, 'usage', None), 'total_tokens', None),
+                    "model": model_or_deployment,
+                    "provider": provider.value
+                }
+            elif provider == AIProvider.ANTHROPIC:
+                # Placeholder: integrate Anthropic SDK (Claude) here
+                raise RuntimeError("Anthropic (Claude) provider not yet configured. Set CLAUDE_API_KEY and implement client.")
+            elif provider == AIProvider.PERPLEXITY:
+                # Placeholder: integrate Perplexity API here
+                raise RuntimeError("Perplexity provider not yet configured. Set PERPLEXITY_API_KEY and implement client.")
+            else:
+                raise RuntimeError(f"Unsupported provider: {provider}")
         except Exception as e:
-            logger.error(f"OpenAI API error: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "tokens_used": 0
-            }
+            logger.error(f"AI provider error ({provider}): {e}")
+            return {"success": False, "error": str(e), "tokens_used": 0}
+
+    async def clone_and_rewrite(self, request: CloneRewriteRequest) -> BlogGenerationResult:
+        """Clone content from a source URL, rewrite with AI, and create a post."""
+        start_time = datetime.now()
+        try:
+            # 1) Fetch and extract content
+            raw_html = await self._fetch_url(request.source_url)
+            title, content_markdown = await self._extract_main_content(raw_html, request.source_url)
+            
+            # 2) Build rewrite prompt
+            product_context = ""
+            if request.product_ids:
+                prods = await self._select_relevant_products(request.product_ids, {
+                    'min_products': 0,
+                    'max_products': len(request.product_ids),
+                    'required_product_types': [],
+                }, request.category_id)
+                product_info = "\n".join([f"- {p['name']} by {p['brand_name']}" for p in prods])
+                product_context = f"\nAlso, integrate these products naturally where relevant:\n{product_info}\n"
+
+            rewrite_instructions = f"""
+Rewrite the following article in a unique way (no plagiarism), improving clarity, structure, and SEO. Preserve factual accuracy, use an engaging tone, and target about {request.target_word_count} words.
+Include headings and markdown formatting. If applicable, add callouts or tips. Do not reference the source site.
+{product_context}
+{('Additional editor instructions: ' + request.custom_instructions) if request.custom_instructions else ''}
+
+SOURCE TITLE:
+{title}
+
+SOURCE CONTENT (markdown):
+{content_markdown}
+
+Respond in JSON with fields: title, excerpt, content, seo_title, seo_description, sections (array of {{type,title,content}}), product_recommendations ([] if none).
+""".strip()
+
+            system_prompt = "You are an expert content editor and SEO specialist. Output valid JSON only."
+
+            generation_response = await self._call_ai_generation(
+                rewrite_instructions,
+                system_prompt,
+                request.generation_params,
+                request.provider,
+            )
+            if not generation_response.get('success'):
+                return BlogGenerationResult(success=False, error_message=generation_response.get('error', 'AI generation failed'))
+
+            parsed = await self._parse_ai_response(generation_response['content'], [], {'suggested_tags': [], 'content_structure': {}})
+            # Create post
+            blog_post_id = await self._create_blog_post_record(
+                parsed,
+                BlogGenerationRequest(
+                    template_id=0,
+                    title=request.title or parsed.get('title'),
+                    category_id=request.category_id,
+                    product_ids=request.product_ids,
+                    custom_prompt_additions=request.custom_instructions,
+                    target_word_count=request.target_word_count,
+                    include_seo_optimization=request.include_seo_optimization,
+                    auto_publish=request.auto_publish,
+                    generation_params=request.generation_params,
+                    provider=request.provider,
+                ),
+                {'id': 0, 'name': 'Clone & Rewrite', 'suggested_tags': [], 'content_structure': {}},
+                rewrite_instructions,
+                generation_response,
+            )
+
+            history_id = await self._record_generation_history(
+                blog_post_id,
+                0,
+                rewrite_instructions,
+                generation_response,
+                "completed"
+            )
+
+            end_time = datetime.now()
+            generation_time = int((end_time - start_time).total_seconds() * 1000)
+            return BlogGenerationResult(
+                success=True,
+                blog_post_id=blog_post_id,
+                generation_history_id=history_id,
+                generated_content=parsed.get('content'),
+                generated_title=parsed.get('title'),
+                generated_excerpt=parsed.get('excerpt'),
+                seo_title=parsed.get('seo_title'),
+                seo_description=parsed.get('seo_description'),
+                suggested_products=parsed.get('product_recommendations', []),
+                sections=parsed.get('sections', []),
+                tokens_used=generation_response.get('tokens_used'),
+                generation_time_ms=generation_time
+            )
+        except Exception as e:
+            logger.error(f"Clone & rewrite error: {e}")
+            return BlogGenerationResult(success=False, error_message=str(e))
+
+    async def _fetch_url(self, url: str) -> str:
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=20) as resp:
+                resp.raise_for_status()
+                return await resp.text()
+
+    async def _extract_main_content(self, html: str, base_url: str) -> Tuple[str, str]:
+        """Very basic content extraction: get title and main paragraphs, convert to markdown-ish text."""
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, 'html.parser')
+        title = (soup.title.string if soup.title else '') or ''
+        # Prefer article tag
+        container = soup.find('article') or soup.find('main') or soup.body
+        parts = []
+        if container:
+            for el in container.find_all(['h1','h2','h3','p','li'], recursive=True):
+                text = el.get_text(strip=True)
+                if not text:
+                    continue
+                if el.name in ['h1','h2','h3']:
+                    lvl = {'h1':'#','h2':'##','h3':'###'}[el.name]
+                    parts.append(f"{lvl} {text}")
+                elif el.name == 'li':
+                    parts.append(f"- {text}")
+                else:
+                    parts.append(text)
+        content = "\n\n".join(parts)[:20000]
+        return title, content
     
     async def _parse_ai_response(
         self,

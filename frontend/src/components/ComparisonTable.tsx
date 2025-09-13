@@ -106,8 +106,12 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
 
       {/* Specifications Comparison Table */}
       <div className="card">
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900">📊 Detailed Specifications</h2>
+          <div className="flex items-center text-xs text-gray-500">
+            <span className="inline-block w-2 h-2 rounded-full bg-rose-300 mr-2"></span>
+            <span>Values differ between products</span>
+          </div>
         </div>
         <div className="overflow-x-auto -mx-3 px-3 sm:-mx-6 sm:px-6">
           <table className="w-full table-fixed text-sm min-w-[560px] sm:min-w-[600px]">
@@ -175,8 +179,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
               {specs.map((spec) => {
                 const rowDiff = hasDiffWithoutNA(spec);
                 return (
-                <tr key={spec} className={`hover:bg-gray-50 ${rowDiff ? 'bg-amber-50' : ''}`}>
-                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-amber-50' : 'bg-white'}`}>
+                <tr key={spec} className={`hover:bg-gray-50`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 bg-white`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
@@ -212,12 +216,24 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
+                    // Show subtle dot only if the row has differences and no N/A values
+                    let showDot = false;
+                    if (rowDiff) {
+                      const firstRaw = (products[0] as any).specifications?.[spec] ??
+                                      comparison_matrix[spec]?.[String(products[0].id)] ??
+                                      (products[0] as any).content?.specifications?.[spec] ?? '';
+                      const norm = (v: any) => String(v ?? '').toLowerCase();
+                      showDot = norm(rawValue) !== norm(firstRaw);
+                    }
                     return (
                       <td
                         key={`${product.id}-${spec}`}
                         className={"p-3 text-center text-gray-600 border-l border-gray-100"}
                       >
-                        <span>{value}</span>
+                        <div className="inline-flex items-center gap-2 justify-center">
+                          {showDot && <span className="inline-block w-1 h-1 rounded-full bg-rose-300" aria-hidden />}
+                          <span>{value}</span>
+                        </div>
                       </td>
                     );
                   })}
@@ -246,8 +262,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
               {specs.map((spec) => {
                 const rowDiff = hasDiffWithoutNA(spec);
                 return (
-                <tr key={`oth-${spec}`} className={`hover:bg-gray-50 ${rowDiff ? 'bg-amber-50' : ''}`}>
-                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 ${rowDiff ? 'bg-amber-50' : 'bg-white'}`}>
+                <tr key={`oth-${spec}`} className={`hover:bg-gray-50`}>
+                  <td className={`p-3 font-medium text-gray-900 capitalize sticky left-0 z-10 bg-white`}>
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
@@ -283,12 +299,23 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
+                    let showDot = false;
+                    if (rowDiff) {
+                      const firstRaw = (products[0] as any).specifications?.[spec] ??
+                                      comparison_matrix[spec]?.[String(products[0].id)] ??
+                                      (products[0] as any).content?.specifications?.[spec] ?? '';
+                      const norm = (v: any) => String(v ?? '').toLowerCase();
+                      showDot = norm(rawValue) !== norm(firstRaw);
+                    }
                     return (
                       <td
                         key={`oth-${product.id}-${spec}`}
                         className={"p-3 text-center text-gray-600 border-l border-gray-100"}
                       >
-                        <span>{value}</span>
+                        <div className="inline-flex items-center gap-2 justify-center">
+                          {showDot && <span className="inline-block w-1 h-1 rounded-full bg-rose-300" aria-hidden />}
+                          <span>{value}</span>
+                        </div>
                       </td>
                     );
                   })}

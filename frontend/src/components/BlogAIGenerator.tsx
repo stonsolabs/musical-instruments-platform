@@ -57,6 +57,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
     target_word_count: 800,
     include_seo_optimization: true,
     auto_publish: false,
+    provider: 'openai' as 'openai' | 'azure_openai' | 'anthropic' | 'perplexity',
+    source_url: '',
     generation_params: {
       temperature: 0.7,
       model: 'gpt-4o'
@@ -117,8 +119,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
   };
 
   const handleGenerate = async () => {
-    if (!selectedTemplate) {
-      alert('Please select a template');
+    if (!selectedTemplate && !formData.source_url.trim()) {
+      alert('Please select a template or provide a Source URL to clone');
       return;
     }
 
@@ -126,28 +128,53 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
     setGenerationResult(null);
 
     try {
-      const requestData = {
-        template_id: selectedTemplate.id,
-        title: formData.title || undefined,
-        category_id: formData.category_id || undefined,
-        product_ids: selectedProducts.map(p => p.id),
-        custom_prompt_additions: formData.custom_prompt_additions || undefined,
-        target_word_count: formData.target_word_count,
-        include_seo_optimization: formData.include_seo_optimization,
-        auto_publish: formData.auto_publish,
-        generation_params: formData.generation_params
-      };
-
       const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
-      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
-        },
-        credentials: 'include',
-        body: JSON.stringify(requestData),
-      });
+      let response: Response;
+      if (formData.source_url.trim()) {
+        const requestData = {
+          source_url: formData.source_url.trim(),
+          title: formData.title || undefined,
+          category_id: formData.category_id || undefined,
+          product_ids: selectedProducts.map(p => p.id),
+          custom_instructions: formData.custom_prompt_additions || undefined,
+          target_word_count: formData.target_word_count,
+          include_seo_optimization: formData.include_seo_optimization,
+          auto_publish: formData.auto_publish,
+          generation_params: formData.generation_params,
+          provider: formData.provider
+        };
+        response = await fetch(`${ADMIN_API_BASE}/admin/blog/clone-rewrite`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
+          },
+          credentials: 'include',
+          body: JSON.stringify(requestData),
+        });
+      } else {
+        const requestData = {
+          template_id: selectedTemplate!.id,
+          title: formData.title || undefined,
+          category_id: formData.category_id || undefined,
+          product_ids: selectedProducts.map(p => p.id),
+          custom_prompt_additions: formData.custom_prompt_additions || undefined,
+          target_word_count: formData.target_word_count,
+          include_seo_optimization: formData.include_seo_optimization,
+          auto_publish: formData.auto_publish,
+          generation_params: formData.generation_params,
+          provider: formData.provider
+        };
+        response = await fetch(`${ADMIN_API_BASE}/admin/blog/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
+          },
+          credentials: 'include',
+          body: JSON.stringify(requestData),
+        });
+      }
 
       const result = await response.json();
       setGenerationResult(result);
@@ -166,6 +193,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
             target_word_count: 800,
             include_seo_optimization: true,
             auto_publish: false,
+            provider: 'openai',
+            source_url: '',
             generation_params: {
               temperature: 0.7,
               model: 'gpt-4o'
@@ -263,6 +292,23 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
 
           {/* Form */}
           <div className="p-6 space-y-6">
+            {/* Provider and optional source URL */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">AI Provider</label>
+                <select name="provider" value={formData.provider} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-primary focus:border-brand-primary">
+                  <option value="openai">OpenAI</option>
+                  <option value="azure_openai">Azure OpenAI</option>
+                  <option value="anthropic">Claude</option>
+                  <option value="perplexity">Perplexity</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Clone & Rewrite (optional): Source URL</label>
+                <input type="url" name="source_url" value={formData.source_url} onChange={handleChange} placeholder="https://example.com/article-to-clone" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-primary focus:border-brand-primary" />
+                <p className="text-xs text-gray-500 mt-1">If provided, the AI will rewrite the article and integrate selected products.</p>
+              </div>
+            </div>
             {/* Template Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -511,8 +557,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
                 type="button"
                 onClick={handleGenerate}
                 disabled={
-                  !selectedTemplate || 
-                  selectedProducts.length < selectedTemplate.min_products || 
+                  (!formData.source_url.trim() && !selectedTemplate) ||
+                  (!!selectedTemplate && selectedProducts.length < selectedTemplate.min_products) || 
                   isGenerating
                 }
                 className="px-6 py-2 bg-brand-primary text-white rounded-md hover:bg-brand-dark transition-colors disabled:opacity-50 flex items-center space-x-2"

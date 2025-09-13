@@ -22,6 +22,12 @@ class GenerationStatus(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
+class AIProvider(str, Enum):
+    OPENAI = "openai"
+    AZURE_OPENAI = "azure_openai"
+    ANTHROPIC = "anthropic"
+    PERPLEXITY = "perplexity"
+
 class BlogGenerationTemplate(BaseModel):
     id: int
     name: str
@@ -166,6 +172,19 @@ class BlogGenerationRequest(BaseModel):
     include_seo_optimization: bool = True
     auto_publish: bool = False
     generation_params: Dict[str, Any] = {}
+    provider: AIProvider = AIProvider.OPENAI
+
+class CloneRewriteRequest(BaseModel):
+    source_url: str
+    title: Optional[str] = None
+    category_id: Optional[int] = None
+    product_ids: List[int] = []
+    custom_instructions: Optional[str] = None
+    target_word_count: int = Field(800, ge=300, le=3000)
+    include_seo_optimization: bool = True
+    auto_publish: bool = False
+    generation_params: Dict[str, Any] = {}
+    provider: AIProvider = AIProvider.OPENAI
 
 class ProductSelectionCriteria(BaseModel):
     """Criteria for AI to select relevant products"""

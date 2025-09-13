@@ -203,11 +203,18 @@ export async function searchProducts(query: string, limit: number = 10): Promise
 }
 
 export async function fetchProductAffiliateStores(productId: number, storeLinks?: Record<string, { product_url: string }>): Promise<{ affiliate_stores: AffiliateStoreWithUrl[] }> {
-  const response = await apiFetch(`${PROXY_BASE}/products/${productId}/affiliate-stores`, {
+  // When no storeLinks provided, use the GET-friendly endpoint that returns affiliate URLs
+  const endpoint = storeLinks
+    ? `${PROXY_BASE}/products/${productId}/affiliate-stores`
+    : `${PROXY_BASE}/products/${productId}/affiliate-urls`;
+  const init: RequestInit = {
     method: storeLinks ? 'POST' : 'GET',
     headers: getHeaders(),
-    body: storeLinks ? JSON.stringify(storeLinks) : undefined,
-  });
+  };
+  if (storeLinks) {
+    init.body = JSON.stringify(storeLinks);
+  }
+  const response = await apiFetch(endpoint, init);
   
   if (!response.ok) {
     throw new Error(`Failed to fetch affiliate stores: ${response.statusText}`);
