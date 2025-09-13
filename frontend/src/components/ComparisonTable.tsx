@@ -212,15 +212,11 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     const value = formatValue(rawValue);
                     const diff = hasDiffWithoutNA(spec);
                     return (
-                      <td key={`${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
-                        <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                              Diff
-                            </span>
-                          )}
-                          <span>{value}</span>
-                        </div>
+                      <td
+                        key={`${product.id}-${spec}`}
+                        className={`p-3 text-center ${diff ? 'text-gray-900 font-medium border-l-2 border-blue-200' : 'text-gray-600 border-l border-gray-100'}`}
+                      >
+                        <span>{value}</span>
                       </td>
                     );
                   })}
@@ -286,15 +282,11 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     const value = formatValue(rawValue);
                     const diff = hasDiffWithoutNA(spec);
                     return (
-                      <td key={`oth-${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
-                        <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                              Diff
-                            </span>
-                          )}
-                          <span>{value}</span>
-                        </div>
+                      <td
+                        key={`oth-${product.id}-${spec}`}
+                        className={`p-3 text-center ${diff ? 'text-gray-900 font-medium border-l-2 border-blue-200' : 'text-gray-600 border-l border-gray-100'}`}
+                      >
+                        <span>{value}</span>
                       </td>
                     );
                   })}
