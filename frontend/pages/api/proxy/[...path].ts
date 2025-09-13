@@ -17,6 +17,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       'Content-Type': req.headers['content-type'] || 'application/json',
       'X-API-Key': process.env.API_KEY || '',
     };
+    
+    // Forward admin key for authentication
+    if (req.headers['x-admin-key']) {
+      headers['X-Admin-Key'] = String(req.headers['x-admin-key']);
+    }
+    
+    // Forward authentication headers and cookies for Azure AD
+    if (req.headers.authorization) headers['Authorization'] = String(req.headers.authorization);
+    if (req.headers.cookie) headers['Cookie'] = String(req.headers.cookie);
+    
     // Forward user ip if needed
     if (req.headers['x-forwarded-for']) headers['x-forwarded-for'] = String(req.headers['x-forwarded-for']);
 

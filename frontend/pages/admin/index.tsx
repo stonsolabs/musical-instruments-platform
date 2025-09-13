@@ -30,31 +30,12 @@ export default function AdminPage() {
 
   const checkAdminAuth = async () => {
     try {
-      const response = await fetch('/api/proxy/v1/admin/user-info');
+      console.log('[ADMIN] Redirecting to Azure App Service admin panel...');
       
-      if (response.ok) {
-        const data = await response.json();
-        setUserInfo(data.user);
-        setError(null);
-      } else if (response.status === 401) {
-        // Not authenticated - redirect to our auth proxy
-        const errorData = await response.json();
-        setError(errorData.detail);
-        
-        // Redirect to our authentication proxy after a delay
-        setTimeout(() => {
-          window.location.href = '/api/auth/login?redirect_url=/admin';
-        }, 3000);
-      } else if (response.status === 403) {
-        // Autenticado mas não é admin
-        const errorData = await response.json();
-        setError(errorData.detail);
-      } else {
-        setError({
-          error: 'unknown_error',
-          message: 'An unexpected error occurred. Please try again.'
-        });
-      }
+      // Redirect directly to Azure App Service admin panel where authentication works natively
+      const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+      window.location.href = `${azureBackend}/admin`;
+      return;
     } catch (err) {
       console.error('Auth check failed:', err);
       setError({
@@ -67,7 +48,8 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
-    window.location.href = '/.auth/logout?post_logout_redirect_url=/';
+    const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+    window.location.href = `${azureBackend}/.auth/logout?post_logout_redirect_url=${encodeURIComponent(window.location.origin)}`;
   };
 
   if (isLoading) {
@@ -118,7 +100,7 @@ export default function AdminPage() {
                     Você será redirecionado para o login em alguns segundos...
                   </p>
                   <a
-                    href={error.login_url || '/api/auth/login?redirect_url=/admin'}
+                    href={error.login_url || `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.origin + '/admin')}`}
                     className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     <ShieldCheckIcon className="w-4 h-4 mr-2" />
