@@ -30,12 +30,55 @@ export default function AdminPage() {
 
   const checkAdminAuth = async () => {
     try {
-      console.log('[ADMIN] Redirecting to Azure App Service admin panel...');
+      console.log('[ADMIN] Checking authentication with Azure backend...');
       
-      // Redirect directly to Azure App Service admin panel where authentication works natively
-      const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-      window.location.href = `${azureBackend}/admin`;
-      return;
+      // Check authentication through our proxy which handles Azure AD cookies
+      const response = await fetch('/api/proxy/v1/admin/user-info', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log(`[ADMIN] Auth response status: ${response.status}`);
+
+      if (response.status === 401) {
+        // User is not authenticated, redirect to Azure AD login
+        const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+        const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
+        console.log('[ADMIN] Redirecting to login:', loginUrl);
+        window.location.href = loginUrl;
+        return;
+      }
+
+      if (response.status === 403) {
+        // User is authenticated but not an admin
+        setError({
+          error: 'access_denied',
+          message: 'Access denied. Only administrators can access this area.',
+          contact: 'Contact the system administrator if you believe you should have access.'
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[ADMIN] User info received:', data);
+      
+      if (data.user && data.user.is_admin) {
+        setUserInfo(data.user);
+        console.log('[ADMIN] Admin access granted');
+      } else {
+        setError({
+          error: 'access_denied',
+          message: 'Access denied. Only administrators can access this area.',
+          contact: 'Contact the system administrator if you believe you should have access.'
+        });
+      }
     } catch (err) {
       console.error('Auth check failed:', err);
       setError({
@@ -94,17 +137,19 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-4">
-              {error.error === 'authentication_required' ? (
+              {(error.error === 'authentication_required' || error.error === 'network_error') ? (
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
                   <p className="text-sm text-blue-700">
-                    Você será redirecionado para o login em alguns segundos...
+                    {error.error === 'authentication_required' ? 
+                      'Authentication required to access admin panel.' : 
+                      'Please try logging in again.'}
                   </p>
                   <a
-                    href={error.login_url || `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.origin + '/admin')}`}
+                    href={error.login_url || `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net'}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`}
                     className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     <ShieldCheckIcon className="w-4 h-4 mr-2" />
-                    Login com Azure AD
+                    Login with Azure AD
                   </a>
                 </div>
               ) : (

@@ -18,7 +18,7 @@ Implementamos autenticação via **Azure App Service Authentication** para prote
 ADMIN_EMAIL=seu-email@dominio.com
 
 # Múltiplos admins (opcional)
-ADMIN_EMAILS=admin1@dominio.com,admin2@dominio.com
+t s=admin1@dominio.com,admin2@dominio.com
 
 # Ambiente (development para testes locais)
 ENVIRONMENT=production
