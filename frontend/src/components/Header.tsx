@@ -9,17 +9,17 @@ import InstrumentRequestForm from './InstrumentRequestForm';
 const navigation = [
   { 
     name: 'Guitars', 
-    icon: '🎸',
+    icon: '',
     hasDropdown: true,
     items: [
       { name: 'Electric Guitars', href: '/products?category=electric-guitars' },
       { name: 'Acoustic Guitars', href: '/products?category=acoustic-guitars' },
     ]
   },
-  { name: 'Bass', href: '/products?category=electric-basses', icon: '🎸' },
+  { name: 'Bass', href: '/products?category=electric-basses', icon: '' },
   { 
     name: 'Keys', 
-    icon: '🎹',
+    icon: '',
     hasDropdown: true,
     items: [
       // Beginner / Home
@@ -42,10 +42,10 @@ const navigation = [
       { name: 'Workstations', href: '/products?category=workstations' },
     ]
   },
-  { name: 'DJ & Studio', href: '/products?category=turntables', icon: '🎛️' },
-  { name: 'Accessories', href: '/products?category=accessories', icon: '🎤' },
-  { name: 'Blog', href: '/blog', icon: '📚' },
-  { name: 'Top Rated', href: '/products?sort_by=rating&sort_order=desc', icon: '⭐' },
+  { name: 'DJ & Studio', href: '/products?category=turntables', icon: '' },
+  { name: 'Accessories', href: '/products?category=accessories', icon: '' },
+  { name: 'Blog', href: '/blog', icon: '' },
+  { name: 'Top Rated', href: '/products?sort_by=rating&sort_order=desc', icon: '' },
 ];
 
 

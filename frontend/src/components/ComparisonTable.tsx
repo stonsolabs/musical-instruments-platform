@@ -199,10 +199,7 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     const diff = hasDiff(spec);
                     return (
                       <td key={`${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
-                        <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-blue-500" title="Different from other products" aria-hidden />}
-                          <span>{value}</span>
-                        </div>
+                        <span>{value}</span>
                       </td>
                     );
                   })}
