@@ -35,64 +35,76 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
   // Handle URL query parameters for pre-loaded comparison
   useEffect(() => {
     const { products } = router.query;
-    
-    // Only process if we have products query and no current comparison or comparison is different
-    if (products && typeof products === 'string' && router.isReady) {
-      const tokens = products.split(',');
-      const numericIds = tokens.map(t => parseInt(t)).filter(id => !isNaN(id));
-      
-      // Check if this is different from current comparison
-      const currentIds = comparison?.products.map(p => p.id) || [];
-      const isDifferent = numericIds.length !== currentIds.length || 
-                         numericIds.some(id => !currentIds.includes(id));
-      
-      if (isDifferent) {
-        if (numericIds.length > 0 && numericIds.length === tokens.length) {
+
+    if (router.isReady && products && typeof products === 'string') {
+      const tokens = products
+        .split(',')
+        .map((t) => decodeURIComponent(t.trim()))
+        .filter(Boolean);
+
+      const allNumeric = tokens.length > 0 && tokens.every((t) => /^\d+$/.test(t));
+
+      if (allNumeric) {
+        const numericIds = tokens.map((t) => parseInt(t, 10));
+        const currentIds = comparison?.products.map((p) => p.id) || [];
+        const sameIds =
+          numericIds.length === currentIds.length &&
+          numericIds.every((id) => currentIds.includes(id));
+        if (!sameIds) {
           loadComparison(numericIds);
-        } else {
-          // Resolve slugs to ids
-          (async () => {
-            try {
-              console.log('Resolving product slugs:', tokens);
-              const ids: number[] = [];
-              for (const tok of tokens) {
-                try {
-                  const prod = await fetchProduct(tok);
-                  console.log('Resolved slug', tok, 'to product:', prod);
-                  if (prod?.id) ids.push(prod.id);
-                } catch (e) {
-                  console.warn('Failed to resolve product slug:', tok, e);
-                }
-              }
-              console.log('Resolved IDs:', ids);
-              if (ids.length >= 2) {
-                loadComparison(ids);
-              } else if (ids.length === 1) {
-                // Show single product, user can add more
-                try {
-                  const product = await fetchProduct(ids[0]);
-                  setComparison({
-                    products: [product],
-                    common_specs: [],
-                    spec_differences: []
-                  } as any);
-                } catch (error) {
-                  console.error('Failed to load single product:', error);
-                }
-              } else {
-                console.warn('No valid products found from slugs:', tokens);
-              }
-            } catch (error) {
-              console.error('Error resolving slugs:', error);
-            }
-          })();
         }
+        return;
       }
-    } else if (!products && comparison && router.isReady) {
+
+      // Compare slugs with current comparison to avoid refetch loops
+      const currentSlugs = (comparison?.products || []).map((p) => p.slug);
+      const sameSlugs =
+        tokens.length === currentSlugs.length &&
+        tokens.every((s) => currentSlugs.includes(s));
+
+      if (sameSlugs) {
+        // Already showing the requested comparison, nothing to do
+        return;
+      }
+
+      // Resolve slugs to IDs then load
+      (async () => {
+        try {
+          console.log('Resolving product slugs:', tokens);
+          const ids: number[] = [];
+          for (const tok of tokens) {
+            try {
+              const prod = await fetchProduct(tok);
+              if (prod?.id) ids.push(prod.id);
+            } catch (e) {
+              console.warn('Failed to resolve product slug:', tok, e);
+            }
+          }
+          if (ids.length >= 2) {
+            await loadComparison(ids);
+          } else if (ids.length === 1) {
+            try {
+              const product = await fetchProduct(ids[0]);
+              setComparison({
+                products: [product],
+                common_specs: [],
+                spec_differences: []
+              } as any);
+            } catch (error) {
+              console.error('Failed to load single product:', error);
+            }
+          } else {
+            console.warn('No valid products found from slugs:', tokens);
+          }
+        } catch (error) {
+          console.error('Error resolving slugs:', error);
+        }
+      })();
+    } else if (router.isReady && !products && comparison) {
       // Clear comparison if no products in URL
       setComparison(null);
     }
-  }, [router.query, router.isReady]);
+  }, [router.query, router.isReady, comparison]);
 
   const loadComparison = async (productIds: number[]) => {
     if (productIds.length < 2) {
