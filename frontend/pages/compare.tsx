@@ -107,8 +107,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       console.log('Comparison data loaded:', comparisonData);
       setComparison(comparisonData);
       
-      // Update URL without reloading
-      const newQuery = { products: productIds.join(',') };
+      // Update URL with slugs instead of IDs
+      const productSlugs = comparisonData.products.map(p => p.slug).join(',');
+      const newQuery = { products: productSlugs };
       router.push({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true });
     } catch (error) {
       console.error('Error loading comparison:', error);

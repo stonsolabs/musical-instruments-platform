@@ -168,8 +168,34 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                                      comparison_matrix[spec]?.[String(product.id)] ?? 
                                      (product as any).content?.specifications?.[spec] ?? 
                                      'N/A';
-                    // Ensure we display strings/numbers, not objects
-                    const value = typeof rawValue === 'object' && rawValue !== null ? JSON.stringify(rawValue) : String(rawValue);
+                    
+                    // Format arrays and complex objects properly
+                    const formatValue = (val: any): string => {
+                      if (val === null || val === undefined || val === '') return 'N/A';
+                      
+                      // Handle arrays by creating a readable list
+                      if (Array.isArray(val)) {
+                        if (val.length === 0) return 'None';
+                        if (val.length === 1) return String(val[0]);
+                        return val.join(', ');
+                      }
+                      
+                      // Handle objects (but not arrays, which are also objects)
+                      if (typeof val === 'object' && val !== null) {
+                        // If it's a simple key-value object, format it nicely
+                        if (Object.keys(val).length <= 3) {
+                          return Object.entries(val)
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join(', ');
+                        }
+                        // For complex objects, fall back to JSON
+                        return JSON.stringify(val);
+                      }
+                      
+                      return String(val);
+                    };
+                    
+                    const value = formatValue(rawValue);
                     const diff = hasDiff(spec);
                     return (
                       <td key={`${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
@@ -212,8 +238,34 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                                      comparison_matrix[spec]?.[String(product.id)] ?? 
                                      (product as any).content?.specifications?.[spec] ?? 
                                      'N/A';
-                    // Ensure we display strings/numbers, not objects
-                    const value = typeof rawValue === 'object' && rawValue !== null ? JSON.stringify(rawValue) : String(rawValue);
+                    
+                    // Format arrays and complex objects properly
+                    const formatValue = (val: any): string => {
+                      if (val === null || val === undefined || val === '') return 'N/A';
+                      
+                      // Handle arrays by creating a readable list
+                      if (Array.isArray(val)) {
+                        if (val.length === 0) return 'None';
+                        if (val.length === 1) return String(val[0]);
+                        return val.join(', ');
+                      }
+                      
+                      // Handle objects (but not arrays, which are also objects)
+                      if (typeof val === 'object' && val !== null) {
+                        // If it's a simple key-value object, format it nicely
+                        if (Object.keys(val).length <= 3) {
+                          return Object.entries(val)
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join(', ');
+                        }
+                        // For complex objects, fall back to JSON
+                        return JSON.stringify(val);
+                      }
+                      
+                      return String(val);
+                    };
+                    
+                    const value = formatValue(rawValue);
                     const diff = hasDiff(spec);
                     return (
                       <td key={`oth-${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
