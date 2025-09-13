@@ -724,8 +724,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                                   </div>
                                 </div>
                               );
-                            }
-                            ))}
+                            })}
                           </div>
                         ) : (
                           <div className="text-center py-8">
