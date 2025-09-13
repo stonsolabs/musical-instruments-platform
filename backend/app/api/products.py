@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, select, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 
@@ -200,6 +200,24 @@ async def search_products(
     elif sort_by == "popularity":
         # Sort by review count as a proxy for popularity
         base_stmt = base_stmt.order_by(desc(Product.review_count))
+    elif sort_by == "votes":
+        # Sort by net votes (thumbs up - thumbs down), then by total votes
+        from ..models import ProductVote
+        vote_stats_subq = (
+            select(
+                ProductVote.product_id.label('pid'),
+                (func.sum(case((ProductVote.vote_type == 'up', 1), else_=0)) -
+                 func.sum(case((ProductVote.vote_type == 'down', 1), else_=0))).label('vote_score'),
+                func.count().label('total_votes')
+            )
+            .group_by(ProductVote.product_id)
+            .subquery()
+        )
+        base_stmt = (
+            base_stmt
+            .outerjoin(vote_stats_subq, Product.id == vote_stats_subq.c.pid)
+            .order_by(desc(vote_stats_subq.c.vote_score), desc(vote_stats_subq.c.total_votes), asc(Product.name))
+        )
     else:
         base_stmt = base_stmt.order_by(asc(Product.name))
 
@@ -458,7 +476,6 @@ async def get_product_affiliate_urls(
         "affiliate_stores": affiliate_stores,
         "total_stores": len(affiliate_stores)
     }
-
 
 
 

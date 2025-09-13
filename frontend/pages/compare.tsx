@@ -1125,7 +1125,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   🔍 Browse All Products
                 </button>
                 <button
-                  onClick={() => router.push('/products?sort_by=rating&sort_order=desc')}
+                  onClick={() => router.push('/products?sort_by=votes&sort_order=desc')}
                   className="btn-secondary px-8 py-3"
                 >
                   ⭐ View Top Rated

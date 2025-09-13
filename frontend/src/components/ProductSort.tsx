@@ -10,10 +10,9 @@ interface ProductSortProps {
 export default function ProductSort({ sortBy, sortOrder, onSortChange }: ProductSortProps) {
   const sortOptions = [
     { value: 'name', label: 'Name' },
-    { value: 'price', label: 'Price' },
     { value: 'rating', label: 'Rating' },
-    { value: 'review_count', label: 'Reviews' },
-    { value: 'created_at', label: 'Newest' }
+    { value: 'popularity', label: 'Popularity' },
+    { value: 'votes', label: 'Top Voted' }
   ];
 
   const handleSortByChange = (newSortBy: string) => {
