@@ -14,7 +14,7 @@ interface BlogPageProps {
   featuredPosts: BlogPostSummary[];
 }
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000') + '/api/v1';
+const PROXY_BASE = '/api/proxy/v1';
 
 export default function BlogPage({ 
   posts, 
@@ -36,7 +36,7 @@ export default function BlogPage({
 
     setIsSearching(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${PROXY_BASE}/blog/search?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       setSearchResults(data.results || []);
     } catch (error) {
@@ -217,17 +217,17 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     params.append('limit', limit as string);
 
     // Fetch blog posts
-    const postsResponse = await fetch(`${API_BASE_URL}/blog/posts?${params.toString()}`);
+    const postsResponse = await fetch(`${PROXY_BASE}/blog/posts?${params.toString()}`);
     const posts = postsResponse.ok ? await postsResponse.json() : [];
 
     // Fetch categories
-    const categoriesResponse = await fetch(`${API_BASE_URL}/blog/categories`);
+    const categoriesResponse = await fetch(`${PROXY_BASE}/blog/categories`);
     const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 
     // Fetch featured posts (only if on main page)
     let featuredPosts = [];
     if (!category && !tag) {
-      const featuredResponse = await fetch(`${API_BASE_URL}/blog/posts?featured=true&limit=3`);
+      const featuredResponse = await fetch(`${PROXY_BASE}/blog/posts?featured=true&limit=3`);
       featuredPosts = featuredResponse.ok ? await featuredResponse.json() : [];
     }
 

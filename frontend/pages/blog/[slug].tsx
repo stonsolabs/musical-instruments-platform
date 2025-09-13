@@ -10,7 +10,7 @@ interface BlogPostPageProps {
   post: BlogPost;
 }
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000') + '/api/v1';
+const PROXY_BASE = '/api/proxy/v1';
 
 const categoryColors = {
   'buying-guide': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -226,7 +226,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
     const { slug } = params!;
     
-    const response = await fetch(`${API_BASE_URL}/blog/posts/${slug}`);
+    const response = await fetch(`${PROXY_BASE}/blog/posts/${slug}`);
     
     if (!response.ok) {
       if (response.status === 404) {

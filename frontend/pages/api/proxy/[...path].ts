@@ -10,6 +10,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(`[PROXY DEBUG] Base URL: ${base}`);
     console.log(`[PROXY DEBUG] Target URL: ${target}`);
     console.log(`[PROXY DEBUG] Method: ${req.method}`);
+    console.log(`[PROXY DEBUG] API Key present: ${process.env.API_KEY ? 'YES' : 'NO'}`);
+    console.log(`[PROXY DEBUG] API Key length: ${process.env.API_KEY?.length || 0}`);
 
     const headers: Record<string, string> = {
       'Content-Type': req.headers['content-type'] || 'application/json',
