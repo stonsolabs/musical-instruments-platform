@@ -175,7 +175,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       </Head>
 
       <div className="min-h-screen bg-gray-50">
-        <div className="w-full max-w-none sm:max-w-7xl mx-auto px-1 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="w-full max-w-none sm:max-w-7xl sm:mx-auto px-0 sm:px-4 lg:px-8 py-4 sm:py-8">
           {/* Enhanced Page Header */}
           <div className="text-center mb-12">
             <div className="relative">
