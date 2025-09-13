@@ -13,6 +13,23 @@ export default function Document() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" content="Find Your Perfect Musical Instrument - Expert Reviews, Detailed Comparisons, and Trusted Recommendations" />
         <meta name="keywords" content="musical instruments, guitar, bass, piano, keyboard, compare, reviews, music gear" />
+        {/* Site-wide JSON-LD: WebSite with SearchAction */}
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'GetYourMusicGear',
+              url: 'https://www.getyourmusicgear.com',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://www.getyourmusicgear.com/products?search={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
       </Head>
       <body>
         <Main />

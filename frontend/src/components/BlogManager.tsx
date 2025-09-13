@@ -73,17 +73,18 @@ export default function BlogManager() {
 
   const fetchStats = async () => {
     try {
-      // This would need to be implemented in the API
-      const response = await fetch(`${PROXY_BASE}/blog/posts?limit=1000`);
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const response = await fetch(`${ADMIN_API_BASE}/admin/stats`, {
+        credentials: 'include',
+        headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) }
+      });
       if (response.ok) {
         const data = await response.json();
-        const totalViews = data.reduce((sum: number, post: BlogPostSummary) => sum + post.view_count, 0);
-        
         setStats({
-          totalPosts: data.length,
-          publishedPosts: data.filter((p: BlogPostSummary) => p.published_at).length,
-          aiGeneratedPosts: 0, // Would need API support
-          totalViews
+          totalPosts: data.blog?.total_posts || 0,
+          publishedPosts: data.blog?.published_posts || 0,
+          aiGeneratedPosts: data.blog?.ai_generated_posts || 0,
+          totalViews: data.blog?.total_views || 0,
         });
       }
     } catch (error) {

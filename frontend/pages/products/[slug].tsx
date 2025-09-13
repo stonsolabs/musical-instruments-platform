@@ -22,6 +22,8 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ product, affiliateStores = [] }: ProductDetailPageProps) {
   const router = useRouter();
+  const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://www.getyourmusicgear.com');
+  const canonicalUrl = `${origin}/products/${product.slug}`;
 
   if (router.isFallback) {
     return (
@@ -56,13 +58,63 @@ export default function ProductDetailPage({ product, affiliateStores = [] }: Pro
       <Head>
         <title>{product.name} - {product.brand.name} | GetYourMusicGear</title>
         <meta name="description" content={product.description || `Compare prices and read reviews for ${product.name} by ${product.brand.name}. Find the best deals on ${product.category.name}.`} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta property="og:title" content={`${product.name} - ${product.brand.name}`} />
         <meta property="og:description" content={product.description || `Compare prices and read reviews for ${product.name}`} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${product.name} - ${product.brand.name}`} />
+        <meta name="twitter:description" content={product.description || `Compare prices and read reviews for ${product.name}`} />
         <meta property="og:type" content="product" />
         <meta property="og:url" content={`https://getyourmusicgear.com/products/${product.slug}`} />
         {product.images && product.images.length > 0 && (
           <meta property="og:image" content={product.images[0] || ''} />
         )}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Product',
+              name: product.name,
+              brand: { '@type': 'Brand', name: product.brand.name },
+              category: product.category?.name,
+              image: product.images && product.images.length > 0 ? product.images[0] : undefined,
+              description: product.description || undefined,
+              sku: product.sku || undefined,
+              aggregateRating: product.review_count ? {
+                '@type': 'AggregateRating',
+                ratingValue: product.avg_rating || 0,
+                reviewCount: product.review_count,
+              } : undefined,
+              offers: (affiliateStores && affiliateStores.length > 0) ? {
+                '@type': 'AggregateOffer',
+                priceCurrency: (affiliateStores[0].currency || 'USD'),
+                lowPrice: Math.min(...affiliateStores.map((s: any) => s.price || 0).filter((p: number) => p > 0)) || undefined,
+                highPrice: Math.max(...affiliateStores.map((s: any) => s.price || 0).filter((p: number) => p > 0)) || undefined,
+                offerCount: affiliateStores.length,
+                url: canonicalUrl,
+                availability: 'http://schema.org/InStock',
+              } : undefined,
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}` },
+                { '@type': 'ListItem', position: 2, name: product.category.name, item: `${origin}/products?category=${product.category.slug}` },
+                { '@type': 'ListItem', position: 3, name: product.brand.name, item: `${origin}/products?brand=${product.brand.slug}` },
+                { '@type': 'ListItem', position: 4, name: product.name, item: canonicalUrl },
+              ],
+            }),
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-gray-50">

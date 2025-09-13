@@ -26,7 +26,9 @@ const getCategoryColorClass = (categorySlug?: string) => {
 };
 
 export default function BlogPostPage({ post }: BlogPostPageProps) {
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://www.getyourmusicgear.com');
+  const canonicalUrl = `${origin}/blog/${post.slug}`;
+  const shareUrl = canonicalUrl;
   
   const handleShare = async () => {
     if (navigator.share) {
@@ -56,12 +58,19 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
           name="description" 
           content={post.seo_description || post.excerpt || `Read our ${post.category?.name.toLowerCase()} about ${post.title}`}
         />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt || ''} />
         {post.featured_image && (
           <meta property="og:image" content={post.featured_image} />
         )}
         <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt || ''} />
+        {post.featured_image && <meta name="twitter:image" content={post.featured_image} />}
         {post.published_at && (
           <meta property="article:published_time" content={post.published_at} />
         )}
@@ -71,6 +80,39 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
         {post.tags.map((tag) => (
           <meta key={tag.id} property="article:tag" content={tag.name} />
         ))}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BlogPosting',
+              headline: post.seo_title || post.title,
+              description: post.seo_description || post.excerpt || undefined,
+              image: post.featured_image || undefined,
+              author: { '@type': 'Person', name: post.author_name || 'GetYourMusicGear Team' },
+              publisher: { '@type': 'Organization', name: 'GetYourMusicGear', logo: { '@type': 'ImageObject', url: `${origin}/logo.png` } },
+              datePublished: post.published_at || undefined,
+              dateModified: post.updated_at || undefined,
+              mainEntityOfPage: canonicalUrl,
+              keywords: post.tags?.map(t => t.name).join(', '),
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}` },
+                { '@type': 'ListItem', position: 2, name: 'Blog', item: `${origin}/blog` },
+                ...(post.category ? [{ '@type': 'ListItem', position: 3, name: post.category.name, item: `${origin}/blog?category=${post.category.slug}` }] : []),
+                { '@type': 'ListItem', position: post.category ? 4 : 3, name: post.title, item: canonicalUrl },
+              ],
+            }),
+          }}
+        />
       </Head>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

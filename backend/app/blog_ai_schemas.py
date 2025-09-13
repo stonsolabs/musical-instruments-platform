@@ -14,6 +14,9 @@ class TemplateType(str, Enum):
     COMPARISON = "comparison"
     TUTORIAL = "tutorial"
     HISTORY = "history"
+    QUIZ = "quiz"
+    NEW_RELEASE = "new_release"
+    ARTIST_SPOTLIGHT = "artist_spotlight"
 
 class GenerationStatus(str, Enum):
     PENDING = "pending"

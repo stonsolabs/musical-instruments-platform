@@ -627,9 +627,52 @@ Respond in JSON with fields: title, excerpt, content, seo_title, seo_description
         
         blog_post_id = result.scalar()
         
-        # Add product associations
+        # Add product associations from AI recommendations
+        added_ids = set()
         if parsed_content.get('product_recommendations'):
             await self._add_product_associations(blog_post_id, parsed_content['product_recommendations'])
+            try:
+                for rec in parsed_content['product_recommendations']:
+                    pid = rec.get('product_id')
+                    if pid:
+                        added_ids.add(int(pid))
+            except Exception:
+                pass
+
+        # Ensure manually selected products are also attached even if AI omitted them
+        if getattr(request, 'product_ids', None):
+            position_offset = len(added_ids)
+            manual_recs = []
+            for idx, pid in enumerate(request.product_ids):
+                if pid in added_ids:
+                    continue
+                manual_recs.append({
+                    'product_id': pid,
+                    'relevance_score': None,
+                    'reasoning': 'Selected by editor',
+                    'suggested_context': 'featured',
+                    'suggested_sections': []
+                })
+            if manual_recs:
+                # Preserve ordering after AI items
+                for i, rec in enumerate(manual_recs):
+                    await self.db.execute(text("""
+                        INSERT INTO blog_post_products (
+                            blog_post_id, product_id, position, context, ai_context, 
+                            relevance_score, mentioned_in_sections
+                        ) VALUES (
+                            :blog_post_id, :product_id, :position, :context, :ai_context,
+                            :relevance_score, :mentioned_in_sections
+                        )
+                    """), {
+                        'blog_post_id': blog_post_id,
+                        'product_id': rec['product_id'],
+                        'position': position_offset + i,
+                        'context': rec.get('suggested_context', 'featured'),
+                        'ai_context': rec.get('reasoning'),
+                        'relevance_score': rec.get('relevance_score'),
+                        'mentioned_in_sections': json.dumps(rec.get('suggested_sections', []))
+                    })
         
         # Add content sections
         if parsed_content.get('sections'):

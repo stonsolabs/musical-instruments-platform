@@ -8,6 +8,26 @@ Overview
 - Frontend: Next.js + TypeScript + Tailwind in `frontend/`
 - Frontend calls backend via local proxy API: `/api/proxy/v1/...` (no direct Azure calls).
 
+Notable Enhancements (2025-09)
+------------------------------
+
+- Admin Auth & Docs
+  - SSO bridge on API domain issues `X-Admin-Token` to avoid third‑party cookie loops; docs iframe allowed via CSP `frame-ancestors`.
+  - Robust Azure AD claim parsing and `ADMIN_EMAILS` multi-admin support.
+- Compare Page UX
+  - Mobile-fit fixes; subtle difference dots + legend; product names linked; warranty section removed.
+- Trending
+  - Votes influence trending: views + 3×comparisons + 2×vote_score.
+- Affiliate Fetch
+  - Use `GET /products/{id}/affiliate-urls` when no store links are provided (POST only when sending links).
+- AI Blog System
+  - Multi-provider (OpenAI & Azure OpenAI), Clone & Rewrite endpoint, ensures selected products are attached.
+  - New templates/types: Deals, Quiz, New Release, Artist Spotlight (plus existing Roundup/Guide/Review/Comparison/Tutorial/History).
+- Blog Main Page
+  - Added “Most Read” and “Popular Tags” sections for better internal linking and discovery.
+- Technical SEO
+  - Canonicals, OG/Twitter, robots, JSON‑LD (BlogPosting/Product/BreadcrumbList/WebSite SearchAction).
+
 Frontend
 --------
 
@@ -31,7 +51,7 @@ Frontend Data Access
 - `src/lib/api.ts`:
   - `PROXY_BASE = '/api/proxy/v1'`
   - SSR-safe `apiFetch()` builds absolute URLs using `NEXT_PUBLIC_APP_ORIGIN` (or `VERCEL_URL`/`http://localhost:3000`).
-- Endpoints used: `/products`, `/products/{id}`, `/search/autocomplete`, `/compare`, `/trending/instruments`, `/categories`, `/brands`, `/products/{id}/affiliate-stores`, `/instrument-requests`, `/voting/products/{id}/vote`, `/voting/products/{id}/stats`, `/blog/*` (categories, posts, templates, generate, generation-history, ai-posts).
+- Endpoints used: `/products`, `/products/{id}`, `/search/autocomplete`, `/compare`, `/trending/instruments`, `/categories`, `/brands`, `/products/{id}/affiliate-urls` (GET) and `/products/{id}/affiliate-stores` (POST with links), `/instrument-requests`, `/voting/products/{id}/vote`, `/voting/products/{id}/stats`, `/blog/*` (categories, posts, templates, generate, clone-rewrite, generation-history, tags/popular, ai-posts).
   - Voting: submit via `/api/proxy/v1/voting/products/{id}/vote` with `{ vote_type: 'up'|'down' }`; after submit, refetch `/api/proxy/v1/voting/products/{id}/stats` and update UI live.
   - `fetchProduct(slugOrId)`: tries `/products?slugs=<slug>`, then `/search/autocomplete` match, then `/products/{id}` if numeric.
   - `fetchProducts(...)` normalizes backend pagination into SearchResult: `{ products, total, page, per_page, total_pages }`.
@@ -39,7 +59,7 @@ Frontend Data Access
 Backend
 -------
 
-- API routers (prefix `/api/v1`): products, compare, trending, search, voting, affiliate_stores, instrument_requests, blog (with AI generation).
+- API routers (prefix `/api/v1`): products, compare, trending, search, voting, affiliate_stores, instrument_requests, blog (AI), admin (protected), docs (protected).
 - Business logic:
   - EnhancedAffiliateService: 
     * Brand exclusivity rules: If a brand has an exclusive store relationship, only that store is shown for products of that brand
@@ -47,10 +67,10 @@ Backend
     * Priority scoring: Combines store priority, regional boosts, brand exclusivity boosts, and store link availability
     * Affiliate URL generation: Automatically adds affiliate parameters and handles domain-specific affiliate IDs
     * Store filtering: Only shows active stores with affiliate programs and visible buttons
-  - TrendingService: trending instruments and comparisons.
+  - TrendingService: trending instruments and comparisons (views + comparisons + votes).
   - Vote utils: aggregates thumbs_up_count, thumbs_down_count, total_votes, vote_score.
   - Content enrichment: Backend returns all rich content fields (qa, setup_tips, audience_fit, professional_ratings, etc.) via get_clean_content() function
-  - BlogAIGenerator: AI-powered blog generation service with OpenAI integration, specialized prompt templates, smart product selection, and comprehensive generation tracking
+  - BlogAIGenerator: AI-powered blog generation with provider routing (OpenAI/Azure), specialized templates, clone & rewrite flow, guaranteed attachment of selected products, and tracking
 
 Database (Key Tables)
 ---------------------
@@ -129,17 +149,17 @@ AI Blog System
 The platform features an advanced AI-powered blog system for generating engaging, SEO-optimized content:
 
 **Core Features**:
-- AI-generated blog posts using OpenAI GPT models with specialized prompts
-- Smart product integration based on relevance scoring and context analysis
-- Multiple content templates: Buying Guides, Product Reviews, Comparisons, Tutorials, Historical Articles
+- AI-generated blog posts using OpenAI/Azure OpenAI with specialized prompts
+- Smart product integration based on relevance scoring and editor-selected products (always attached)
+- Multiple content templates: Buying Guides, Product Reviews, Comparisons, Tutorials, History, Deals, Quiz, New Release, Artist Spotlight
 - Structured content sections with AI-generated product recommendations
 - SEO optimization with auto-generated titles, descriptions, and meta tags
 - Generation history tracking with performance metrics
 
 **Architecture**:
-- **Templates**: Pre-built prompt templates for different blog types with customizable parameters
-- **AI Service**: BlogAIGenerator handles OpenAI API integration, prompt building, and response parsing
-- **Product Association**: Smart product selection based on categories, ratings, and relevance scores
+- **Templates**: Pre-built prompt templates for different blog types with customizable parameters (seed script: `backend/scripts/data/seed_blog_generation_templates.py`)
+- **AI Service**: BlogAIGenerator handles provider routing, prompt building, and response parsing
+- **Product Association**: Smart selection + guaranteed attachment of selected products
 - **Content Sections**: Structured content with sections that can reference specific products
 - **Generation Tracking**: Complete audit trail of AI generations with token usage and performance metrics
 
@@ -151,8 +171,10 @@ The platform features an advanced AI-powered blog system for generating engaging
 
 **API Endpoints**:
 - `/blog/templates` - Manage generation templates
-- `/blog/generate` - Trigger AI blog generation
+- `/blog/generate` - Trigger AI blog generation (provider-aware)
+- `/blog/clone-rewrite` - Clone & rewrite content from a source URL
 - `/blog/generation-history` - View generation audit trail
+- `/blog/tags/popular` - Popular tags for internal linking
 - `/blog/ai-posts/{id}` - Fetch AI-generated posts with enhanced metadata
 
 **Database Schema**:

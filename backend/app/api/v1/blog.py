@@ -170,6 +170,7 @@ async def get_blog_posts(
     featured: Optional[bool] = None,
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
+    sort_by: Optional[str] = Query(None, description="Optional sort: 'views' for most read, otherwise latest"),
     db: AsyncSession = Depends(get_db)
 ):
     """Get blog posts with filtering and pagination"""
@@ -192,6 +193,10 @@ async def get_blog_posts(
         
         where_clause = "WHERE " + " AND ".join(where_clauses)
         
+        order_clause = "ORDER BY bp.featured DESC, bp.published_at DESC, bp.created_at DESC"
+        if sort_by == 'views':
+            order_clause = "ORDER BY bp.view_count DESC, bp.published_at DESC"
+
         query = f"""
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
@@ -204,7 +209,7 @@ async def get_blog_posts(
         FROM blog_posts bp
         LEFT JOIN blog_categories bc ON bp.category_id = bc.id
         {where_clause}
-        ORDER BY bp.featured DESC, bp.published_at DESC, bp.created_at DESC
+        {order_clause}
         LIMIT :limit OFFSET :offset
         """
         
@@ -263,10 +268,34 @@ async def get_blog_posts(
             )
             for row in posts
         ]
-        
+
     except Exception as e:
         logger.error(f"Failed to fetch blog posts: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch blog posts")
+
+@router.get("/blog/tags/popular", response_model=List[BlogTag])
+async def get_popular_tags(
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get most-used tags across published posts"""
+    try:
+        query = """
+        SELECT bt.id, bt.name, bt.slug, COUNT(*) as usage
+        FROM blog_post_tags bpt
+        JOIN blog_tags bt ON bpt.tag_id = bt.id
+        JOIN blog_posts bp ON bpt.blog_post_id = bp.id
+        WHERE bp.status = 'published'
+        GROUP BY bt.id, bt.name, bt.slug
+        ORDER BY usage DESC
+        LIMIT :limit
+        """
+        result = await db.execute(text(query), {"limit": limit})
+        rows = result.fetchall()
+        return [BlogTag(id=r[0], name=r[1], slug=r[2]) for r in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch popular tags: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch popular tags")
 
 @router.get("/blog/posts/{slug}", response_model=BlogPost)
 async def get_blog_post(

@@ -12,6 +12,8 @@ interface BlogPageProps {
   currentCategory?: string;
   currentTag?: string;
   featuredPosts: BlogPostSummary[];
+  mostRead: BlogPostSummary[];
+  popularTags: { id: number; name: string; slug: string }[];
 }
 
 const PROXY_BASE = '/api/proxy/v1';
@@ -22,7 +24,9 @@ export default function BlogPage({
   totalPosts, 
   currentCategory, 
   currentTag,
-  featuredPosts 
+  featuredPosts,
+  mostRead,
+  popularTags,
 }: BlogPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<BlogPostSummary[]>([]);
@@ -156,6 +160,35 @@ export default function BlogPage({
           </div>
         )}
 
+        {/* Most Read + Popular Tags (main page only) */}
+        {!currentCategory && !currentTag && !searchQuery && (
+          <div className="mb-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Most Read</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {mostRead.slice(0, 4).map((post) => (
+                  <BlogPostCard
+                    key={post.id}
+                    post={post}
+                    size="small"
+                    showExcerpt={false}
+                    showCategory={true}
+                    showMeta={true}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Tags</h2>
+              <div className="flex flex-wrap gap-2">
+                {popularTags.map((tag) => (
+                  <a key={tag.id} href={`/blog?tag=${tag.slug}`} className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm">#{tag.name}</a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Search Results Info */}
         {searchQuery && (
           <div className="mb-8 text-center">
@@ -224,11 +257,19 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     const categoriesResponse = await fetch(`${PROXY_BASE}/blog/categories`);
     const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 
-    // Fetch featured posts (only if on main page)
+    // Fetch featured, most read, and popular tags (only on main page)
     let featuredPosts = [];
+    let mostRead = [];
+    let popularTags = [];
     if (!category && !tag) {
-      const featuredResponse = await fetch(`${PROXY_BASE}/blog/posts?featured=true&limit=3`);
+      const [featuredResponse, mostReadResponse, tagsResponse] = await Promise.all([
+        fetch(`${PROXY_BASE}/blog/posts?featured=true&limit=3`),
+        fetch(`${PROXY_BASE}/blog/posts?sort_by=views&limit=6`),
+        fetch(`${PROXY_BASE}/blog/tags/popular?limit=20`),
+      ]);
       featuredPosts = featuredResponse.ok ? await featuredResponse.json() : [];
+      mostRead = mostReadResponse.ok ? await mostReadResponse.json() : [];
+      popularTags = tagsResponse.ok ? await tagsResponse.json() : [];
     }
 
     return {
@@ -239,6 +280,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         currentCategory: category || null,
         currentTag: tag || null,
         featuredPosts,
+        mostRead,
+        popularTags,
       },
     };
   } catch (error) {
@@ -249,6 +292,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         categories: [],
         totalPosts: 0,
         featuredPosts: [],
+        mostRead: [],
+        popularTags: [],
       },
     };
   }
