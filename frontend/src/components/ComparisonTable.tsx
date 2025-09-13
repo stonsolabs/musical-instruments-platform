@@ -54,6 +54,20 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
     return values.some((v) => norm(v) !== first);
   };
 
+  const hasDiffWithoutNA = (spec: string) => {
+    const rawValues = products.map((p) =>
+      (p as any).specifications?.[spec] ??
+      comparison_matrix[spec]?.[String(p.id)] ??
+      (p as any).content?.specifications?.[spec] ??
+      (p as any)[spec]
+    );
+    const isNA = (v: any) => v === null || v === undefined || v === '' || (Array.isArray(v) && v.length === 0);
+    if (rawValues.some(isNA)) return false;
+    const norm = (v: any) => String(v ?? '').toLowerCase();
+    const first = norm(rawValues[0]);
+    return rawValues.some((v) => norm(v) !== first);
+  };
+
   return (
     <div className="space-y-6">
       {/* Product Overview Comparison */}
@@ -196,10 +210,17 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
-                    const diff = hasDiff(spec);
+                    const diff = hasDiffWithoutNA(spec);
                     return (
                       <td key={`${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
-                        <span>{value}</span>
+                        <div className="inline-flex items-center gap-2 justify-center">
+                          {diff && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                              Diff
+                            </span>
+                          )}
+                          <span>{value}</span>
+                        </div>
                       </td>
                     );
                   })}
@@ -263,11 +284,15 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     };
                     
                     const value = formatValue(rawValue);
-                    const diff = hasDiff(spec);
+                    const diff = hasDiffWithoutNA(spec);
                     return (
                       <td key={`oth-${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
                         <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-blue-500" title="Different from other products" aria-hidden />}
+                          {diff && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                              Diff
+                            </span>
+                          )}
                           <span>{value}</span>
                         </div>
                       </td>
