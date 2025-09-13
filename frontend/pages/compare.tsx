@@ -295,7 +295,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   </p>
                 </div>
                 
-                <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                   {comparison.products.map((product, index) => {
                     const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                     
@@ -507,7 +507,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
@@ -555,7 +555,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
@@ -691,7 +691,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
                       <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
                         {/* Product Header */}
@@ -706,17 +706,25 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                         {/* Category-Specific Metrics */}
                         {product.content?.category_specific?.metrics ? (
                           <div className="grid grid-cols-1 gap-3">
-                            {Object.entries(product.content.category_specific.metrics).map(([metric, value]) => (
-                              <div key={metric} className="text-center bg-gray-50 rounded-lg p-3">
-                                <div className="text-lg font-bold text-purple-700 mb-1">{value}</div>
-                                <div className="text-xs text-gray-600 capitalize">{metric.replace(/_/g, ' ')}</div>
-                                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                                  <div 
-                                    className="bg-gradient-to-r from-purple-400 to-purple-600 h-1.5 rounded-full" 
-                                    style={{ width: `${Math.min(value, 100)}%` }}
-                                  />
+                            {Object.entries(product.content.category_specific.metrics).map(([metric, value]) => {
+                              // Handle case where value might be an object
+                              const displayValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                              const numericValue = typeof value === 'number' ? value : 
+                                                   typeof value === 'string' && !isNaN(Number(value)) ? Number(value) : 0;
+                              
+                              return (
+                                <div key={metric} className="text-center bg-gray-50 rounded-lg p-3">
+                                  <div className="text-lg font-bold text-purple-700 mb-1">{displayValue}</div>
+                                  <div className="text-xs text-gray-600 capitalize">{metric.replace(/_/g, ' ')}</div>
+                                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                    <div 
+                                      className="bg-gradient-to-r from-purple-400 to-purple-600 h-1.5 rounded-full" 
+                                      style={{ width: `${Math.min(numericValue, 100)}%` }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
+                              );
+                            }
                             ))}
                           </div>
                         ) : (
@@ -742,7 +750,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
                       const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
                       
@@ -841,7 +849,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     </p>
                   </div>
                   
-                  <div className={`grid gap-8 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
+                  <div className={`grid gap-4 grid-cols-1 ${comparison.products.length === 2 ? 'sm:grid-cols-2' : comparison.products.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => (
                       <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-6">
                         {/* Product Header */}

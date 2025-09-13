@@ -134,26 +134,7 @@ export async function fetchProductComparison(productIds: number[]): Promise<Prod
 }
 
 export async function fetchTrendingProducts(limit: number = 10): Promise<TrendingProduct[]> {
-  try {
-    // First try the dedicated trending endpoint
-    const response = await apiFetch(`${PROXY_BASE}/trending/instruments?limit=${limit}`, {
-      headers: getHeaders(),
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      const trendingInstruments = data.trending_instruments || [];
-      
-      // If we have trending data, return it
-      if (trendingInstruments.length > 0) {
-        return trendingInstruments;
-      }
-    }
-  } catch (error) {
-    console.warn('Trending endpoint failed, falling back to products:', error);
-  }
-
-  // Fallback to products endpoint with high ratings
+  // Use products endpoint with high ratings (simpler, faster)
   const response = await apiFetch(`${PROXY_BASE}/products?limit=${limit}&sort_by=rating&sort_order=desc`, {
     headers: getHeaders(),
   });

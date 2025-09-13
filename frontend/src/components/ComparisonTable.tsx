@@ -95,8 +95,8 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">📊 Detailed Specifications</h2>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full table-fixed text-sm">
+        <div className="overflow-x-auto -mx-6 px-6">
+          <table className="w-full table-fixed text-sm min-w-[600px]">
             <thead>
               <tr className="bg-gray-50">
                 <th className="p-3 text-left font-semibold text-gray-900 border-b border-gray-200 sticky left-0 bg-gray-50 z-10">
@@ -164,15 +164,17 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
-                    const value = (product as any).specifications?.[spec] ?? 
-                                  comparison_matrix[spec]?.[String(product.id)] ?? 
-                                  (product as any).content?.specifications?.[spec] ?? 
-                                  'N/A';
+                    const rawValue = (product as any).specifications?.[spec] ?? 
+                                     comparison_matrix[spec]?.[String(product.id)] ?? 
+                                     (product as any).content?.specifications?.[spec] ?? 
+                                     'N/A';
+                    // Ensure we display strings/numbers, not objects
+                    const value = typeof rawValue === 'object' && rawValue !== null ? JSON.stringify(rawValue) : String(rawValue);
                     const diff = hasDiff(spec);
                     return (
                       <td key={`${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
                         <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-yellow-400" aria-hidden />}
+                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-blue-500" title="Different from other products" aria-hidden />}
                           <span>{value}</span>
                         </div>
                       </td>
@@ -206,15 +208,17 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                     {spec.replace(/_/g, ' ')}
                   </td>
                   {products.map((product) => {
-                    const value = (product as any).specifications?.[spec] ?? 
-                                  comparison_matrix[spec]?.[String(product.id)] ?? 
-                                  (product as any).content?.specifications?.[spec] ?? 
-                                  'N/A';
+                    const rawValue = (product as any).specifications?.[spec] ?? 
+                                     comparison_matrix[spec]?.[String(product.id)] ?? 
+                                     (product as any).content?.specifications?.[spec] ?? 
+                                     'N/A';
+                    // Ensure we display strings/numbers, not objects
+                    const value = typeof rawValue === 'object' && rawValue !== null ? JSON.stringify(rawValue) : String(rawValue);
                     const diff = hasDiff(spec);
                     return (
                       <td key={`oth-${product.id}-${spec}`} className={`p-3 text-center ${diff ? 'text-gray-900 font-medium' : 'text-gray-600'} border-l border-gray-100`}>
                         <div className="inline-flex items-center gap-2 justify-center">
-                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-yellow-400" aria-hidden />}
+                          {diff && <span className="inline-block w-2 h-2 rounded-full bg-blue-500" title="Different from other products" aria-hidden />}
                           <span>{value}</span>
                         </div>
                       </td>
