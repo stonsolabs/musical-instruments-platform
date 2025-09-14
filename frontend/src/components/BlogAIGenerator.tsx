@@ -89,7 +89,8 @@ export default function BlogAIGenerator({ isOpen, onClose, onGenerated }: BlogAI
       const response = await fetch(`${ADMIN_API_BASE}/admin/blog/templates`, { credentials: 'include', headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) } });
       if (response.ok) {
         const data = await response.json();
-        setTemplates(data);
+        const list = Array.isArray(data) ? data : (Array.isArray(data?.templates) ? data.templates : []);
+        setTemplates(list);
       }
     } catch (error) {
       console.error('Failed to fetch templates:', error);

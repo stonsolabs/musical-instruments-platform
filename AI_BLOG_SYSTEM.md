@@ -2,18 +2,18 @@
 
 ## Overview
 
-The GetYourMusicGear platform features an advanced AI-powered blog system that generates high-quality, SEO-optimized content about musical instruments and gear. The system intelligently integrates products from the database, creates structured content, and maintains comprehensive generation tracking.
+The GetYourMusicGear platform features an advanced AI-powered blog system that generates high-quality, SEO-optimized content about musical instruments and gear. The system integrates products from the catalog, produces structured content, supports a secure admin workflow, and maintains comprehensive generation tracking. It also includes a Clone & Rewrite tool and optional Azure OpenAI Batch processing for scale.
 
 ## Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend       │    │   OpenAI API    │
-│                 │    │                  │    │                 │
-│ BlogManager     │◄──►│ BlogAIGenerator  │◄──►│ GPT-4o/4-turbo  │
-│ BlogAIGenerator │    │                  │    │                 │
-│ BlogPostEditor  │    │ Prompt Templates │    │                 │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌──────────────────┐    ┌────────────────────────┐
+│   Frontend      │    │    Backend       │    │   AI Providers         │
+│                 │    │                  │    │                        │
+│ BlogManager     │◄──►│ BlogAIGenerator  │◄──►│ OpenAI / Azure OpenAI  │
+│ BlogAIGenerator │    │ BlogBatchGenerator│   │ (Batch optional)       │
+│ BlogPostEditor  │    │ Prompt Templates │    │                        │
+└─────────────────┘    └──────────────────┘    └────────────────────────┘
           │                       │
           │                       │
           ▼                       ▼
@@ -25,8 +25,18 @@ The GetYourMusicGear platform features an advanced AI-powered blog system that g
 │ • blog_post_products (with AI context & relevance)     │
 │ • blog_content_sections (structured content)           │
 │ • blog_generation_history (audit trail)                │
+│ • blog_batch_jobs + blog_batch_processing_history      │
 └─────────────────────────────────────────────────────────┘
 ```
+
+## Security & Access
+
+- Admin-only generation endpoints are protected. Two auth modes exist:
+  - Azure App Service Authentication (production): endpoints in `backend/app/api/v1/admin.py` use `require_azure_admin`.
+  - Admin API key (dev/local or generic admin mode): endpoints in `backend/app/api/v1/blog.py` use `require_admin` and accept `X-Admin-Key`.
+- Frontend admin UI stores a short-lived token in `sessionStorage` and calls the admin endpoints.
+
+See `ADMIN_SETUP.md` and `AZURE_APP_SERVICE_SETUP.md` for environment-specific configuration.
 
 ## Core Components
 
@@ -77,6 +87,9 @@ Core functionality:
 - `_build_generation_prompt()` - Dynamic prompt construction
 - `_call_ai_generation()` - OpenAI API interaction
 - `_parse_ai_response()` - JSON parsing and validation
+
+Also available:
+- `clone_and_rewrite()` - Fetch a source article, extract content, then rewrite with AI and optional product integration.
 
 ### 3. Specialized Prompt Templates
 
@@ -220,21 +233,38 @@ Supports both manual and AI-assisted creation:
 
 ## API Endpoints
 
-### Blog Templates
-- `GET /blog/templates` - List generation templates
-- `POST /blog/templates` - Create new template (admin)
+The platform exposes read endpoints for all users and protected admin endpoints for generation and management. Both variants exist to support different deployments.
 
-### AI Generation
-- `POST /blog/generate` - Generate blog post with AI
-- `GET /blog/generation-history` - View generation audit trail
-- `GET /blog/ai-posts/{id}` - Fetch AI post with enhanced metadata
-
-### Standard Blog Operations
+### Public Read Endpoints
 - `GET /blog/categories` - List blog categories
 - `GET /blog/posts` - List blog posts (with filtering)
 - `GET /blog/posts/{slug}` - Get single blog post
-- `POST /blog/posts` - Create blog post manually
 - `GET /blog/search` - Search blog posts
+- `GET /blog/ai-posts/{id}` - Fetch AI post with enhanced metadata
+
+### Admin Endpoints (Admin key mode)
+- `GET /blog/templates` - List generation templates
+- `POST /blog/templates` - Create new template
+- `POST /blog/generate` - Generate blog post with AI
+- `GET /blog/generation-history` - View generation audit trail
+
+Authentication: send `X-Admin-Key` header. See ADMIN_SETUP.md.
+
+### Admin Endpoints (Azure App Service auth)
+- `GET /admin/blog/templates`
+- `POST /admin/blog/generate`
+- `POST /admin/blog/clone-rewrite`
+- `GET /admin/blog/generation-history`
+- Batch generation flow:
+  - `POST /admin/blog/batch/create`
+  - `POST /admin/blog/batch/{batch_id}/upload`
+  - `POST /admin/blog/batch/{file_id}/start`
+  - `GET  /admin/blog/batch/{azure_batch_id}/status`
+  - `POST /admin/blog/batch/{azure_batch_id}/download`
+  - `POST /admin/blog/batch/process`
+  - `GET  /admin/blog/batches`
+
+Authentication: Azure App Service injected headers; see AZURE_APP_SERVICE_AUTH.md.
 
 ## Installation & Setup
 
@@ -248,33 +278,58 @@ python scripts/migrations/enhance_blog_for_ai.py
 
 ### 2. Environment Configuration
 
-Add OpenAI API key to backend:
+Minimum for OpenAI:
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
+Optional Azure OpenAI (for provider=azure_openai and/or Batch):
+```env
+# Core
+AZURE_OPENAI_ENDPOINT=https://<resource-name>.openai.azure.com
+AZURE_OPENAI_API_KEY=your_azure_openai_key
+AZURE_OPENAI_API_VERSION=2024-07-01-preview
+AZURE_OPENAI_DEPLOYMENT=<chat-model-deployment>
+AZURE_OPENAI_DEPLOYMENT_NAME=<chat-model-deployment>
+
+# Azure Storage for Batch (optional, recommended)
+AZURE_STORAGE_CONNECTION_STRING=...
+# or
+AZURE_STORAGE_ACCOUNT_NAME=...
+AZURE_STORAGE_ACCOUNT_KEY=...
+AZURE_STORAGE_CONTAINER=blog-batch-files
+```
+
+Admin auth:
+```env
+# For admin key mode
+ADMIN_API_KEY=your-super-secret-admin-key
+# For Azure App Service admin mode
+ADMIN_EMAIL=admin@getyourmusicgear.com
+```
+
 ### 3. Install Dependencies
 
-Backend already includes OpenAI client:
-```python
-# requirements.txt includes:
-openai>=1.0.0
-```
+Backend includes the OpenAI SDK and Azure dependencies in `requirements.txt`. Ensure your environment has them installed via your normal setup flow.
 
 ### 4. Template Setup
 
-The migration script automatically creates 5 default templates:
-- Buying Guide Template
-- Product Review Template  
-- Comparison Guide Template
-- Tutorial Guide Template
-- Historical Article Template
+- Run the migration script above to create the schema.
+- Optionally seed additional templates oriented for affiliate conversions:
+
+```bash
+# from repo root
+ENVIRONMENT=production python -m backend.scripts.data.seed_blog_generation_templates
+```
+
+This upserts several practical templates such as Roundups, Deals, Quiz, New Release, and Artist Spotlight.
 
 ## Usage Examples
 
 ### Generate a Buying Guide
 
 ```typescript
+// Admin-key mode (frontend proxy) example
 const request: BlogGenerationRequest = {
   template_id: 1, // Buying Guide template
   category_id: 5, // Electric Guitars
@@ -293,6 +348,20 @@ const result = await fetch('/api/proxy/v1/blog/generate', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(request)
 });
+```
+
+Admin endpoints with Azure auth (direct):
+```bash
+curl -X POST "https://<api>/api/v1/admin/blog/generate" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "template_id": 1,
+        "category_id": 5,
+        "product_ids": [123,456,789],
+        "target_word_count": 1200,
+        "generation_params": {"model": "gpt-4o", "temperature": 0.7},
+        "provider": "openai"
+      }'
 ```
 
 ### Create Custom Template
@@ -389,4 +458,51 @@ Products are described with:
 - Generation quotas per user/time period
 - Model selection based on complexity needs
 
-This AI blog system provides a robust foundation for generating high-quality, engaging content that drives traffic and showcases your musical instrument expertise while maintaining full control and tracking capabilities.
+## Clone & Rewrite
+
+Endpoint: `POST /admin/blog/clone-rewrite` (Azure admin). Admin-key mode does not include this route by default.
+
+Payload fields:
+- `source_url` (string, required) — URL to fetch and rewrite
+- `title` (optional) — Override generated title
+- `category_id` (optional)
+- `product_ids` (optional list[int]) — Products to integrate
+- `custom_instructions` (optional)
+- `target_word_count` (int)
+- `include_seo_optimization` (bool)
+- `auto_publish` (bool)
+- `generation_params` (object)
+- `provider` — `openai` | `azure_openai`
+
+Notes:
+- Fetching uses `aiohttp`; extraction uses `BeautifulSoup` with a simple heuristic (`article/main/body`).
+- The output goes through the same JSON parse/validation and DB persistence paths as standard generation.
+
+## Azure Batch Generation (optional)
+
+Use when generating many posts at once. Flow:
+- Build a `.jsonl` with chat completions requests using your templates and products
+- Upload to Azure OpenAI Files API
+- Start Batch job, poll status, download results, and process into posts
+
+Key endpoints: see Admin Endpoints (Azure) above.
+
+Environment variables: see Installation step 2 for Azure and Storage settings.
+
+Outputs:
+- Batch job records in `blog_batch_jobs`
+- Result processing summary in `blog_batch_processing_history`
+
+## Providers & Models
+
+Supported provider enum: `openai`, `azure_openai`, `anthropic`, `perplexity`.
+- Current implementation focuses on OpenAI and Azure OpenAI. Other providers may require additional wiring.
+- Models: defaults to `gpt-4o` with JSON response formatting. You can override in `generation_params.model`.
+
+## Troubleshooting
+
+- JSON parse errors: generator falls back to a lenient parser and will still save a draft; check `generation_history.error_message`.
+- Missing templates: ensure migrations ran and/or run the seed script.
+- Auth failures: for admin-key mode, verify `X-Admin-Key`; for Azure mode, verify authenticated admin email matches `ADMIN_EMAIL`.
+
+This AI blog system provides a robust foundation for generating high-quality, engaging content that drives traffic and showcases your musical instrument expertise while maintaining full control, security, and tracking capabilities.
