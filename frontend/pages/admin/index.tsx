@@ -25,6 +25,14 @@ export default function AdminPage() {
   const [error, setError] = useState<AuthError | null>(null);
 
   useEffect(() => {
+    // Clear stale token after logout redirect
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('logged_out') === '1') {
+        sessionStorage.removeItem('adminToken');
+        sessionStorage.removeItem('adminKey');
+      }
+    } catch {}
     checkAdminAuth();
   }, []);
 
@@ -51,22 +59,49 @@ export default function AdminPage() {
         // First try SSO bridge to obtain a short-lived admin token without relying on third-party cookies
         const bridgeUrl = `${apiBase}/api/v1/admin/sso/bridge?origin=${encodeURIComponent(window.location.origin)}`;
         const w = 520, h = 600;
-        const y = window.top!.outerHeight / 2 + window.top!.screenY - ( h / 2);
-        const x = window.top!.outerWidth / 2 + window.top!.screenX - ( w / 2);
+        const y = window.outerHeight / 2 + window.screenY - (h / 2);
+        const x = window.outerWidth / 2 + window.screenX - (w / 2);
         const popup = window.open(bridgeUrl, 'gy-admin-sso', `width=${w},height=${h},left=${x},top=${y}`);
 
-        if (popup) {
-          await new Promise<void>((resolve) => {
-            const handler = (ev: MessageEvent) => {
-              if (ev.origin !== window.location.origin) return;
-              if (ev.data && ev.data.type === 'GYMG_SSO_TOKEN' && ev.data.token) {
-                sessionStorage.setItem('adminToken', ev.data.token);
-                window.removeEventListener('message', handler);
-                resolve();
+        const waitForToken = () => new Promise<void>((resolve, reject) => {
+          let resolved = false;
+          const timeout = window.setTimeout(() => {
+            if (!resolved) {
+              window.removeEventListener('message', handler as any);
+              reject(new Error('sso_timeout'));
+            }
+          }, 8000);
+
+          const closePoll = window.setInterval(() => {
+            if (popup && popup.closed) {
+              window.clearInterval(closePoll);
+              window.clearTimeout(timeout);
+              if (!resolved) {
+                window.removeEventListener('message', handler as any);
+                reject(new Error('sso_closed'));
               }
-            };
-            window.addEventListener('message', handler);
-          });
+            }
+          }, 300);
+
+          const handler = (ev: MessageEvent) => {
+            if (ev.origin !== window.location.origin) return;
+            if (ev.data && ev.data.type === 'GYMG_SSO_TOKEN' && ev.data.token) {
+              try {
+                sessionStorage.setItem('adminToken', ev.data.token);
+              } catch {}
+              resolved = true;
+              window.clearTimeout(timeout);
+              window.clearInterval(closePoll);
+              window.removeEventListener('message', handler as any);
+              resolve();
+            }
+          };
+          window.addEventListener('message', handler as any);
+        });
+
+        try {
+          if (!popup) throw new Error('popup_blocked');
+          await waitForToken();
           // Retry with token
           const retry = await fetch(`${apiBase}/api/v1/admin/user-info`, {
             method: 'GET',
@@ -79,14 +114,15 @@ export default function AdminPage() {
             setIsLoading(false);
             return;
           }
+          throw new Error(`retry_failed_${retry.status}`);
+        } catch (e) {
+          // Fallback to direct Azure AD login
+          const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+          const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
+          console.log('[ADMIN] SSO bridge failed, redirecting to login:', String(e));
+          window.location.href = loginUrl;
+          return;
         }
-
-        // Fallback to direct Azure AD login
-        const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-        const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
-        console.log('[ADMIN] Redirecting to login:', loginUrl);
-        window.location.href = loginUrl;
-        return;
       }
 
       if (response.status === 403) {
