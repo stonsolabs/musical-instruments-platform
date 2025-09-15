@@ -29,6 +29,8 @@ export default function BlogManager() {
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'ai-history'>('posts');
+  const [statusFilter, setStatusFilter] = useState<'all'|'draft'|'published'>('all');
+  const [aiFilter, setAiFilter] = useState<'all'|'ai'|'manual'>('all');
   const [stats, setStats] = useState({
     totalPosts: 0,
     publishedPosts: 0,
@@ -40,12 +42,15 @@ export default function BlogManager() {
     fetchBlogPosts();
     fetchGenerationHistory();
     fetchStats();
-  }, []);
+  }, [statusFilter, aiFilter]);
 
   const fetchBlogPosts = async () => {
     try {
       const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
-      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/posts?limit=50`, {
+      const qs = new URLSearchParams({ limit: '50' });
+      if (statusFilter !== 'all') qs.set('status', statusFilter);
+      if (aiFilter !== 'all') qs.set('ai_generated', aiFilter === 'ai' ? 'true' : 'false');
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/posts?${qs.toString()}`, {
         credentials: 'include',
         headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) }
       });
@@ -211,8 +216,35 @@ export default function BlogManager() {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-between items-center mb-8">
+      {/* Filters + Actions */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        {/* Filters */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Status:</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="px-2 py-1 border rounded text-sm"
+            >
+              <option value="all">All</option>
+              <option value="draft">Drafts</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Origin:</span>
+            <select
+              value={aiFilter}
+              onChange={(e) => setAiFilter(e.target.value as any)}
+              className="px-2 py-1 border rounded text-sm"
+            >
+              <option value="all">All</option>
+              <option value="ai">AI</option>
+              <option value="manual">Manual</option>
+            </select>
+          </div>
+        </div>
         {/* Bulk bar */}
         {selected.size > 0 ? (
           <div className="flex items-center space-x-3">
@@ -347,6 +379,9 @@ export default function BlogManager() {
                       className="h-4 w-4"
                       title="Select for bulk publish"
                     />
+                  </div>
+                  <div className={`absolute top-3 right-3 z-10 px-2 py-1 rounded text-xs font-medium ${isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {isPublished ? 'Published' : 'Draft'}
                   </div>
                   <BlogPostCard
                     post={post}
