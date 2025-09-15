@@ -367,7 +367,7 @@ export default function BlogManager() {
           {blogPosts.length > 0 ? (
             blogPosts.map((post) => {
               const isSelected = selected.has(post.id);
-              const isPublished = post.status === 'published' || !!post.published_at;
+              const isPublished = post.status === 'published';
               const hrefOverride = isPublished ? `/blog/${post.slug}` : `/admin/blog/preview/${post.id}`;
               return (
                 <div key={post.id} className="relative">
