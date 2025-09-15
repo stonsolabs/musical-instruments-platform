@@ -128,8 +128,17 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
+    try {
+      // Clear any client-side tokens/flags first to avoid stale auth on reload
+      sessionStorage.removeItem('adminToken');
+      sessionStorage.removeItem('adminKey');
+      // Also clear common localStorage fallbacks if ever used
+      try { localStorage.removeItem('adminToken'); } catch {}
+      try { localStorage.removeItem('adminKey'); } catch {}
+    } catch {}
     const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-    window.location.href = `${azureBackend}/.auth/logout?post_logout_redirect_url=${encodeURIComponent(window.location.origin)}`;
+    const redirect = `${window.location.origin}/admin?logged_out=1&ts=${Date.now()}`;
+    window.location.href = `${azureBackend}/.auth/logout?post_logout_redirect_url=${encodeURIComponent(redirect)}`;
   };
 
   if (isLoading) {
