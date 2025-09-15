@@ -355,6 +355,24 @@ export default function BlogManager() {
                     showExcerpt={true}
                     hrefOverride={hrefOverride}
                   />
+                  {/* Explicit action bar below each card */}
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    {!isPublished ? (
+                      <a
+                        href={`/admin/blog/preview/${post.id}`}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        Preview (draft)
+                      </a>
+                    ) : (
+                      <a
+                        href={`/blog/${post.slug}`}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        View public page
+                      </a>
+                    )}
+                  </div>
                 </div>
               );
             })
