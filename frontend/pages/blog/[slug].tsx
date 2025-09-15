@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 // @ts-ignore - optional plugin, ensure it's installed in the app
 import remarkGfm from 'remark-gfm';
 import ProsCons from '../../src/components/ProsCons';
-import ComparisonTable from '../../src/components/ComparisonTable';
+import BlogComparisonTable from '../../src/components/BlogComparisonTable';
 import SpecsList from '../../src/components/SpecsList';
 import { ClockIcon, EyeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { ShareIcon } from '@heroicons/react/24/solid';
@@ -257,7 +257,7 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
                     {type.includes('pros') && (sec.pros || sec.cons) ? (
                       <ProsCons pros={sec.pros || []} cons={sec.cons || []} />
                     ) : type.includes('comparison') && (sec.headers && sec.rows) ? (
-                      <ComparisonTable headers={sec.headers} rows={sec.rows} />
+                      <BlogComparisonTable headers={sec.headers} rows={sec.rows} />
                     ) : (type.includes('spec') && (sec.specs && sec.specs.length)) ? (
                       <SpecsList specs={sec.specs} />
                     ) : (

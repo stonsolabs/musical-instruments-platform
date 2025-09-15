@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { Product, ProductComparison, AffiliateStoreWithUrl } from '../src/types';
 import { fetchProductComparison, fetchProduct, fetchProductAffiliateStores } from '../src/lib/api';
 import CompareSearch from '../src/components/CompareSearch';
-import ComparisonTable from '../src/components/ComparisonTable';
+import ComparisonGrid from '../src/components/ComparisonGrid';
 import { ComparisonButtons } from '../src/components/AffiliateButtons';
 import ProductContentSections from '../src/components/ProductContentSections';
 import ComparisonGrid from '../src/components/ComparisonGrid';
@@ -464,7 +464,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
 
               {/* Specs Table (always rendered) */}
               <div id="specs" className="bg-white rounded-xl shadow-sm border p-4">
-                <ComparisonTable comparison={comparison} />
+                <ComparisonGrid comparison={comparison} />
               </div>
               
               {/* Content & Analysis (always rendered) */}

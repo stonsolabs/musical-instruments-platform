@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { Product, ProductComparison, AffiliateStoreWithUrl } from '../src/types';
 import { fetchProductComparison, fetchProduct, fetchProductAffiliateStores } from '../src/lib/api';
 import CompareSearch from '../src/components/CompareSearch';
-import ComparisonTable from '../src/components/ComparisonTable';
+import ComparisonGrid from '../src/components/ComparisonGrid';
 import { ComparisonButtons } from '../src/components/AffiliateButtons';
 import ProductContentSections from '../src/components/ProductContentSections';
 import ComparisonGrid from '../src/components/ComparisonGrid';
@@ -525,7 +525,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                     Comprehensive side-by-side comparison of all technical specifications and features
                   </p>
                 </div>
-                <ComparisonTable comparison={comparison} />
+                <ComparisonGrid comparison={comparison} />
               </div>
 
 
