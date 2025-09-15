@@ -190,6 +190,7 @@ async def get_admin_blog_posts(
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
             bp.author_name, bp.status, bp.reading_time, bp.view_count, 
             bp.featured, bp.published_at, bp.created_at, bp.updated_at,
+            bp.noindex,
             bp.generated_by_ai, bp.generation_model,
             bc.name as category_name, bc.slug as category_slug,
             bc.color as category_color,
@@ -218,6 +219,108 @@ async def get_admin_blog_posts(
     except Exception as e:
         logger.error(f"Failed to fetch admin blog posts: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch blog posts")
+
+# === TEMPLATES (ADMIN) ===
+
+class TemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category_id: Optional[int] = None
+    template_type: Optional[str] = None
+    base_prompt: Optional[str] = None
+    system_prompt: Optional[str] = None
+    product_context_prompt: Optional[str] = None
+    required_product_types: Optional[List[str]] = None
+    min_products: Optional[int] = Field(None, ge=0, le=50)
+    max_products: Optional[int] = Field(None, ge=1, le=50)
+    suggested_tags: Optional[List[str]] = None
+    seo_title_template: Optional[str] = None
+    seo_description_template: Optional[str] = None
+    content_structure: Optional[dict] = None
+    is_active: Optional[bool] = None
+
+@router.get("/blog/templates")
+async def get_admin_blog_templates(
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_azure_admin)
+):
+    try:
+        query = """
+        SELECT id, name, description, category_id, template_type, base_prompt,
+               system_prompt, product_context_prompt, required_product_types,
+               min_products, max_products, suggested_tags, seo_title_template,
+               seo_description_template, content_structure, is_active,
+               created_at, updated_at
+        FROM blog_generation_templates
+        ORDER BY template_type, name
+        """
+        res = await db.execute(text(query))
+        rows = res.fetchall()
+        templates = []
+        for r in rows:
+            templates.append({
+                "id": r[0], "name": r[1], "description": r[2], "category_id": r[3],
+                "template_type": r[4], "base_prompt": r[5], "system_prompt": r[6],
+                "product_context_prompt": r[7], "required_product_types": r[8] or [],
+                "min_products": r[9], "max_products": r[10], "suggested_tags": r[11] or [],
+                "seo_title_template": r[12], "seo_description_template": r[13],
+                "content_structure": r[14] or {}, "is_active": r[15],
+                "created_at": r[16], "updated_at": r[17]
+            })
+        return templates
+    except Exception as e:
+        logger.error(f"Failed to fetch admin templates: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch templates")
+
+@router.put("/blog/templates/{template_id}")
+async def update_admin_blog_template(
+    template_id: int,
+    payload: TemplateUpdate,
+    db: AsyncSession = Depends(get_db),
+    admin: dict = Depends(require_azure_admin)
+):
+    try:
+        mapping = {
+            "name": "name",
+            "description": "description",
+            "category_id": "category_id",
+            "template_type": "template_type",
+            "base_prompt": "base_prompt",
+            "system_prompt": "system_prompt",
+            "product_context_prompt": "product_context_prompt",
+            "required_product_types": "required_product_types",
+            "min_products": "min_products",
+            "max_products": "max_products",
+            "suggested_tags": "suggested_tags",
+            "seo_title_template": "seo_title_template",
+            "seo_description_template": "seo_description_template",
+            "content_structure": "content_structure",
+            "is_active": "is_active",
+        }
+        data = payload.model_dump(exclude_unset=True)
+        if not data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        fields = []
+        params = {"id": template_id}
+        import json as _json
+        for k, col in mapping.items():
+            if k in data:
+                v = data[k]
+                if k in ("required_product_types", "suggested_tags", "content_structure"):
+                    v = _json.dumps(v)
+                fields.append(f"{col} = :{k}")
+                params[k] = v
+        fields.append("updated_at = CURRENT_TIMESTAMP")
+        q = f"UPDATE blog_generation_templates SET {', '.join(fields)} WHERE id = :id"
+        await db.execute(text(q), params)
+        await db.commit()
+        return {"id": template_id, "updated": list(data.keys())}
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Failed to update template {template_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update template")
 
 # === BULK PUBLISH ===
 
@@ -288,6 +391,90 @@ async def publish_blog_posts_batch(
     except Exception as e:
         logger.error(f"Failed bulk publish: {e}")
         raise HTTPException(status_code=500, detail="Failed to bulk publish posts")
+
+# === BULK STATUS UPDATE (draft/archive) ===
+
+class StatusBatchRequest(BaseModel):
+    ids: List[int] = Field(default_factory=list)
+    status: str = Field(..., pattern=r"^(draft|archived)$")
+
+
+@router.post("/blog/posts/status-batch")
+async def set_status_blog_posts_batch(
+    payload: StatusBatchRequest,
+    admin: dict = Depends(require_azure_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Set status for multiple posts to 'draft' or 'archived'"""
+    try:
+        if not payload.ids:
+            raise HTTPException(status_code=400, detail="No IDs provided")
+
+        result = await db.execute(
+            text("SELECT id FROM blog_posts WHERE id = ANY(:ids)"),
+            {"ids": payload.ids},
+        )
+        existing_ids = {row[0] for row in result.fetchall()}
+        missing = [i for i in payload.ids if i not in existing_ids]
+        if missing:
+            raise HTTPException(status_code=404, detail=f"Posts not found: {missing}")
+
+        for pid in payload.ids:
+            await db.execute(
+                text(
+                    "UPDATE blog_posts SET status = :status, published_at = CASE WHEN :status='draft' THEN NULL ELSE published_at END WHERE id = :id"
+                ),
+                {"status": payload.status, "id": pid},
+            )
+        await db.commit()
+        return {"updated": len(payload.ids), "status": payload.status, "ids": payload.ids}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed bulk status update: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update post statuses")
+
+# === BULK SEO (noindex) ===
+
+class SeoBatchRequest(BaseModel):
+    ids: List[int] = Field(default_factory=list)
+    noindex: bool = False
+
+
+@router.post("/blog/posts/seo-batch")
+async def set_seo_flags_blog_posts_batch(
+    payload: SeoBatchRequest,
+    admin: dict = Depends(require_azure_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Set SEO flags (e.g., noindex) for multiple posts"""
+    try:
+        if not payload.ids:
+            raise HTTPException(status_code=400, detail="No IDs provided")
+
+        result = await db.execute(
+            text("SELECT id FROM blog_posts WHERE id = ANY(:ids)"),
+            {"ids": payload.ids},
+        )
+        existing_ids = {row[0] for row in result.fetchall()}
+        missing = [i for i in payload.ids if i not in existing_ids]
+        if missing:
+            raise HTTPException(status_code=404, detail=f"Posts not found: {missing}")
+
+        for pid in payload.ids:
+            await db.execute(
+                text("UPDATE blog_posts SET noindex = :noindex WHERE id = :id"),
+                {"noindex": payload.noindex, "id": pid},
+            )
+        await db.commit()
+        return {"updated": len(payload.ids), "noindex": payload.noindex, "ids": payload.ids}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed bulk SEO update: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update SEO flags")
 
 # === AI GENERATION ===
 

@@ -3,11 +3,18 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../src/components/BlogProductShowcase';
 import { BlogPost } from '../../src/types/blog';
+import ReactMarkdown from 'react-markdown';
+// @ts-ignore - optional plugin, ensure it's installed in the app
+import remarkGfm from 'remark-gfm';
+import ProsCons from '../../src/components/ProsCons';
+import ComparisonTable from '../../src/components/ComparisonTable';
+import SpecsList from '../../src/components/SpecsList';
 import { ClockIcon, EyeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { ShareIcon } from '@heroicons/react/24/solid';
 
 interface BlogPostPageProps {
   post: BlogPost;
+  relatedPosts?: any[];
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
@@ -25,7 +32,7 @@ const getCategoryColorClass = (categorySlug?: string) => {
   return categoryColors[categorySlug as keyof typeof categoryColors] || categoryColors.default;
 };
 
-export default function BlogPostPage({ post }: BlogPostPageProps) {
+export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPageProps) {
   const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://www.getyourmusicgear.com');
   const canonicalUrl = `${origin}/blog/${post.slug}`;
   const shareUrl = canonicalUrl;
@@ -59,7 +66,8 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
           content={post.seo_description || post.excerpt || `Read our ${post.category?.name.toLowerCase()} about ${post.title}`}
         />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="robots" content={post.noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'} />
+        <meta property="og:site_name" content="GetYourMusicGear" />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt || ''} />
         {post.featured_image && (
@@ -89,15 +97,38 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
               headline: post.seo_title || post.title,
               description: post.seo_description || post.excerpt || undefined,
               image: post.featured_image || undefined,
-              author: { '@type': 'Person', name: post.author_name || 'GetYourMusicGear Team' },
+              author: { '@type': 'Person', name: post.author_name || 'GetYourMusicGear Team', url: `${origin}/about`, image: `${origin}/logo.png` },
               publisher: { '@type': 'Organization', name: 'GetYourMusicGear', logo: { '@type': 'ImageObject', url: `${origin}/logo.png` } },
               datePublished: post.published_at || undefined,
               dateModified: post.updated_at || undefined,
               mainEntityOfPage: canonicalUrl,
               keywords: post.tags?.map(t => t.name).join(', '),
+              articleSection: post.category?.name || undefined,
+              wordCount: (() => {
+                try {
+                  const text = (post as any).structured_content?.sections?.map((s:any)=>s.content||'').join(' ') || post.content || '';
+                  return String(text.split(/\s+/).filter(Boolean).length);
+                } catch { return undefined; }
+              })(),
             }),
           }}
         />
+        {(post as any).structured_content?.faqs && Array.isArray((post as any).structured_content.faqs) && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: (post as any).structured_content.faqs.map((f:any)=>({
+                  '@type': 'Question',
+                  name: f.q || f.question,
+                  acceptedAnswer: { '@type': 'Answer', text: f.a || f.answer }
+                }))
+              })
+            }}
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -135,9 +166,15 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
             {post.title}
           </h1>
 
-          {/* Meta Information */}
+          {/* Author Box */}
           <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
-            <span className="font-medium">{post.author_name}</span>
+            <div className="flex items-center gap-3">
+              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name)}&background=0D8ABC&color=fff`} alt={post.author_name} className="w-8 h-8 rounded-full" />
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{post.author_name}</span>
+                <span className="inline-flex items-center text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded">Verified</span>
+              </div>
+            </div>
             
             {post.published_at && (
               <div className="flex items-center space-x-1">
@@ -207,27 +244,46 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 
         {/* Article Content */}
         {Array.isArray((post as any).structured_content?.sections) && (post as any).structured_content.sections.length > 0 ? (
-          <div className="space-y-10 mb-12">
-            {(post as any).structured_content.sections.map((sec: any, idx: number) => (
-              <section key={idx} className="prose prose-lg max-w-none">
-                {sec.title && (
-                  <h2 className="mt-0">{sec.title}</h2>
-                )}
-                {sec.content && (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: String(sec.content).replace(/\n/g, '<br />') }}
-                    className="text-gray-800 leading-relaxed"
-                  />
-                )}
-              </section>
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
+            {/* Main content */}
+            <div className="lg:col-span-8 space-y-10">
+              {(post as any).structured_content.sections.map((sec: any, idx: number) => {
+                const type = (sec.type || sec.section_type || '').toString();
+                return (
+                  <section key={idx} className="prose prose-lg lg:prose-xl max-w-none">
+                    {sec.title && (
+                      <h2 id={`sec-${idx}`} className="mt-0 scroll-mt-24">{sec.title}</h2>
+                    )}
+                    {type.includes('pros') && (sec.pros || sec.cons) ? (
+                      <ProsCons pros={sec.pros || []} cons={sec.cons || []} />
+                    ) : type.includes('comparison') && (sec.headers && sec.rows) ? (
+                      <ComparisonTable headers={sec.headers} rows={sec.rows} />
+                    ) : (type.includes('spec') && (sec.specs && sec.specs.length)) ? (
+                      <SpecsList specs={sec.specs} />
+                    ) : (
+                      sec.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(sec.content)}</ReactMarkdown> : null
+                    )}
+                  </section>
+                );
+              })}
+            </div>
+            {/* Side rail TOC */}
+            <aside className="lg:col-span-4 lg:sticky lg:top-24 h-max">
+              <div className="rounded-lg border bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">On this page</h3>
+                <ul className="space-y-2 text-sm">
+                  {(post as any).structured_content.sections.map((sec: any, idx: number) => (
+                    <li key={idx}>
+                      <a href={`#sec-${idx}`} className="text-gray-600 hover:text-gray-900">{sec.title || `Section ${idx+1}`}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
           </div>
         ) : (
-          <div className="prose prose-lg max-w-none mb-12">
-            <div 
-              dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }}
-              className="text-gray-800 leading-relaxed"
-            />
+          <div className="prose prose-lg lg:prose-xl max-w-none mb-12">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
           </div>
         )}
 
@@ -242,6 +298,61 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
             />
           </div>
         )}
+
+        {/* Key Takeaways */}
+        {(post as any).structured_content?.key_takeaways && (
+          <div className="mb-12 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="text-xl font-semibold mb-3">Key Takeaways</h3>
+            <ReactMarkdown>{String((post as any).structured_content.key_takeaways)}</ReactMarkdown>
+          </div>
+        )}
+
+        {/* FAQs */}
+        {Array.isArray((post as any).structured_content?.faqs) && (post as any).structured_content.faqs.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+            <div className="space-y-3">
+              {(post as any).structured_content.faqs.map((f: any, idx: number) => (
+                <details key={idx} className="group border rounded-md p-4 bg-white">
+                  <summary className="cursor-pointer font-medium text-gray-800 group-open:text-brand-primary">{f.q || f.question}</summary>
+                  <div className="mt-2 text-gray-700">
+                    <ReactMarkdown>{String(f.a || f.answer || '')}</ReactMarkdown>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Related Posts */}
+        {relatedPosts && relatedPosts.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Posts</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedPosts.map((p) => (
+                <a key={p.id} href={`/blog/${p.slug}`} className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
+                  {p.featured_image && (
+                    <img src={p.featured_image} alt={p.title} className="w-full h-40 object-cover" />
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 line-clamp-2">{p.title}</h3>
+                    {p.excerpt && <p className="text-gray-600 text-sm line-clamp-3 mt-2">{p.excerpt}</p>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Newsletter CTA */}
+        <div className="mb-12 p-6 bg-gray-50 border rounded-lg">
+          <h3 className="text-xl font-semibold mb-2">Get the best music gear guides in your inbox</h3>
+          <p className="text-gray-600 mb-3">No spam. Just practical buying advice, tutorials, and deals.</p>
+          <form action="#" onSubmit={(e)=>e.preventDefault()} className="flex gap-2">
+            <input type="email" required placeholder="you@example.com" className="flex-1 px-3 py-2 border rounded" />
+            <button className="px-4 py-2 bg-brand-primary text-white rounded">Subscribe</button>
+          </form>
+        </div>
 
         {/* Article Footer */}
         <footer className="border-t border-gray-200 pt-8">
@@ -298,10 +409,21 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     }
     
     const post = await response.json();
+    let relatedPosts: any[] = [];
+    try {
+      if ((post as any).category?.slug) {
+        const relRes = await fetch(`${API_BASE}/api/v1/blog/posts?category=${encodeURIComponent((post as any).category.slug)}&limit=6`);
+        if (relRes.ok) {
+          const rel = await relRes.json();
+          relatedPosts = (rel || []).filter((p: any) => p.slug !== slug).slice(0, 6);
+        }
+      }
+    } catch {}
     
     return {
       props: {
         post,
+        relatedPosts,
       },
     };
   } catch (error) {

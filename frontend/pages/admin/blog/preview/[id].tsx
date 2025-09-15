@@ -3,6 +3,9 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../../../src/components/BlogProductShowcase';
 import { AIBlogPost } from '../../../../src/types/blog';
+import ReactMarkdown from 'react-markdown';
+// @ts-ignore - optional plugin, ensure it's installed
+import remarkGfm from 'remark-gfm';
 
 interface PreviewProps {
   post: AIBlogPost;
@@ -38,23 +41,17 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
         {Array.isArray((post as any).structured_content?.sections) && (post as any).structured_content.sections.length > 0 ? (
           <div className="space-y-10 mb-12">
             {(post as any).structured_content.sections.map((sec: any, idx: number) => (
-              <section key={idx} className="prose prose-lg max-w-none">
+              <section key={idx} className="prose prose-lg lg:prose-xl max-w-none">
                 {sec.title && <h2 className="mt-0">{sec.title}</h2>}
                 {sec.content && (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: String(sec.content).replace(/\n/g, '<br />') }}
-                    className="text-gray-800 leading-relaxed"
-                  />
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(sec.content)}</ReactMarkdown>
                 )}
               </section>
             ))}
           </div>
         ) : (
-          <div className="prose prose-lg max-w-none mb-12">
-            <div
-              dangerouslySetInnerHTML={{ __html: (post.content || '').replace(/\n/g, '<br />') }}
-              className="text-gray-800 leading-relaxed"
-            />
+          <div className="prose prose-lg lg:prose-xl max-w-none mb-12">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content || ''}</ReactMarkdown>
           </div>
         )}
 

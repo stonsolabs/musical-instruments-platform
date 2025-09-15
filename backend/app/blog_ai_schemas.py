@@ -172,7 +172,7 @@ class BlogGenerationRequest(BaseModel):
     category_id: Optional[int] = None
     product_ids: List[int] = []
     custom_prompt_additions: Optional[str] = None
-    target_word_count: int = Field(800, ge=300, le=3000)
+    target_word_count: int = Field(2000, ge=300, le=4000)
     include_seo_optimization: bool = True
     auto_publish: bool = False
     generation_params: Dict[str, Any] = {}

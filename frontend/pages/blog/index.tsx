@@ -16,7 +16,7 @@ interface BlogPageProps {
   popularTags: { id: number; name: string; slug: string }[];
 }
 
-const PROXY_BASE = '/api/proxy/v1';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 
 export default function BlogPage({ 
   posts, 
@@ -77,20 +77,40 @@ export default function BlogPage({
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {currentCategory 
-              ? categories.find(c => c.slug === currentCategory)?.name
-              : currentTag
-                ? `Posts tagged with #${currentTag}`
-                : 'Blog'
-            }
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Expert insights, buying guides, and tutorials to help you make the best music gear decisions.
-          </p>
-        </div>
+        {/* Hero Featured */}
+        {!currentCategory && !currentTag && featuredPosts && featuredPosts.length > 0 && (
+          <section className="mb-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Hero main */}
+            <a href={`/blog/${featuredPosts[0].slug}`} className="lg:col-span-2 group block bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow">
+              {featuredPosts[0].featured_image && (
+                <div className="h-72 w-full overflow-hidden">
+                  <img src={featuredPosts[0].featured_image} alt={featuredPosts[0].title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                </div>
+              )}
+              <div className="p-6">
+                <div className="text-sm text-brand-primary font-semibold mb-2">Featured</div>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-2 line-clamp-2">{featuredPosts[0].title}</h2>
+                {featuredPosts[0].excerpt && <p className="text-gray-600 line-clamp-3">{featuredPosts[0].excerpt}</p>}
+              </div>
+            </a>
+            {/* Secondary featured */}
+            <div className="space-y-6">
+              {featuredPosts.slice(1,3).map((fp) => (
+                <a key={fp.id} href={`/blog/${fp.slug}`} className="group block bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow">
+                  {fp.featured_image && (
+                    <div className="h-32 w-full overflow-hidden">
+                      <img src={fp.featured_image} alt={fp.title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-gray-900 line-clamp-2">{fp.title}</h3>
+                    {fp.excerpt && <p className="text-gray-600 text-sm line-clamp-2 mt-1">{fp.excerpt}</p>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Search Bar */}
         <div className="max-w-md mx-auto mb-8">
@@ -113,7 +133,7 @@ export default function BlogPage({
 
         {/* Category Filter */}
         {!searchQuery && (
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <div className="flex flex-wrap justify-center gap-3 mb-12 sticky top-16 bg-white/80 backdrop-blur z-10 py-3">
             <a
               href="/blog"
               className={`px-6 py-3 rounded-full font-medium transition-colors ${
@@ -203,7 +223,9 @@ export default function BlogPage({
 
         {/* Blog Posts Grid */}
         {displayPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            {/* Main grid */}
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             {displayPosts.map((post) => (
               <BlogPostCard
                 key={post.id}
@@ -214,6 +236,29 @@ export default function BlogPage({
                 showMeta={true}
               />
             ))}
+            </div>
+            {/* Sidebar */}
+            <aside className="lg:col-span-4 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Most Read</h2>
+                <div className="space-y-4">
+                  {mostRead.map((p) => (
+                    <a key={p.id} href={`/blog/${p.slug}`} className="block group">
+                      <h3 className="font-medium text-gray-900 group-hover:text-brand-primary line-clamp-2">{p.title}</h3>
+                      {p.excerpt && <p className="text-gray-600 text-sm line-clamp-2">{p.excerpt}</p>}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Tags</h2>
+                <div className="flex flex-wrap gap-2">
+                  {popularTags.map((tag) => (
+                    <a key={tag.id} href={`/blog?tag=${tag.slug}`} className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm">#{tag.name}</a>
+                  ))}
+                </div>
+              </div>
+            </aside>
           </div>
         ) : (
           <div className="text-center py-12">
@@ -250,11 +295,11 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     params.append('limit', limit as string);
 
     // Fetch blog posts
-    const postsResponse = await fetch(`${PROXY_BASE}/blog/posts?${params.toString()}`);
+    const postsResponse = await fetch(`${API_BASE}/api/v1/blog/posts?${params.toString()}`);
     const posts = postsResponse.ok ? await postsResponse.json() : [];
 
     // Fetch categories
-    const categoriesResponse = await fetch(`${PROXY_BASE}/blog/categories`);
+    const categoriesResponse = await fetch(`${API_BASE}/api/v1/blog/categories`);
     const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 
     // Fetch featured, most read, and popular tags (only on main page)
@@ -263,9 +308,9 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     let popularTags = [];
     if (!category && !tag) {
       const [featuredResponse, mostReadResponse, tagsResponse] = await Promise.all([
-        fetch(`${PROXY_BASE}/blog/posts?featured=true&limit=3`),
-        fetch(`${PROXY_BASE}/blog/posts?sort_by=views&limit=6`),
-        fetch(`${PROXY_BASE}/blog/tags/popular?limit=20`),
+        fetch(`${API_BASE}/api/v1/blog/posts?featured=true&limit=3`),
+        fetch(`${API_BASE}/api/v1/blog/posts?sort_by=views&limit=6`),
+        fetch(`${API_BASE}/api/v1/blog/tags/popular?limit=20`),
       ]);
       featuredPosts = featuredResponse.ok ? await featuredResponse.json() : [];
       mostRead = mostReadResponse.ok ? await mostReadResponse.json() : [];

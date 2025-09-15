@@ -56,12 +56,12 @@ export default function BlogManager() {
       });
       if (response.ok) {
         const data = await response.json();
-        const mapped: any[] = (data.posts || []).map((p: any) => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          excerpt: p.excerpt,
-          featured_image: p.featured_image,
+          const mapped: any[] = (data.posts || []).map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            excerpt: p.excerpt,
+            featured_image: p.featured_image,
           category: p.category_slug ? {
             id: 0,
             name: p.category_name,
@@ -70,13 +70,14 @@ export default function BlogManager() {
             sort_order: 0,
             is_active: true,
           } as any : undefined,
-          author_name: p.author_name,
-          status: p.status,
-          reading_time: p.reading_time,
-          view_count: p.view_count || 0,
-          featured: p.featured || false,
-          published_at: p.published_at,
-          tags: [],
+            author_name: p.author_name,
+            status: p.status,
+            noindex: !!p.noindex,
+            reading_time: p.reading_time,
+            view_count: p.view_count || 0,
+            featured: p.featured || false,
+            published_at: p.published_at,
+            tags: [],
         }));
         setBlogPosts(mapped);
       }
@@ -170,6 +171,29 @@ export default function BlogManager() {
     } catch (e) {
       console.error(e);
       alert('Failed to bulk publish');
+    }
+  };
+
+  const bulkSetStatus = async (status: 'draft' | 'archived') => {
+    if (selected.size === 0) return;
+    try {
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const resp = await fetch(`${ADMIN_API_BASE}/admin/blog/posts/status-batch`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
+        },
+        body: JSON.stringify({ ids: Array.from(selected), status })
+      });
+      if (!resp.ok) throw new Error('Bulk status update failed');
+      clearSelection();
+      fetchBlogPosts();
+      fetchStats();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to update status');
     }
   };
 
@@ -273,6 +297,58 @@ export default function BlogManager() {
               </button>
               <button onClick={clearSelection} className="px-3 py-2 text-sm border rounded text-gray-700 hover:bg-gray-50">Clear</button>
             </div>
+            <div className="flex items-center space-x-2 ml-4">
+              <button
+                onClick={() => bulkSetStatus('draft')}
+                className="px-3 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                title="Move selected to Draft"
+              >
+                Move to Draft
+              </button>
+              <button
+                onClick={() => bulkSetStatus('archived')}
+                className="px-3 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                title="Archive selected"
+              >
+                Archive
+              </button>
+              <button
+                onClick={async () => {
+                  if (selected.size === 0) return;
+                  try {
+                    const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+                    const resp = await fetch(`${ADMIN_API_BASE}/admin/blog/posts/seo-batch`, {
+                      method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) },
+                      body: JSON.stringify({ ids: Array.from(selected), noindex: true })
+                    });
+                    if (!resp.ok) throw new Error('Failed');
+                    clearSelection(); fetchBlogPosts();
+                  } catch (e) { alert('Failed to set noindex'); }
+                }}
+                className="px-3 py-2 text-sm bg-white border rounded text-gray-700 hover:bg-gray-50"
+                title="Mark selected as noindex"
+              >
+                Set noindex
+              </button>
+              <button
+                onClick={async () => {
+                  if (selected.size === 0) return;
+                  try {
+                    const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+                    const resp = await fetch(`${ADMIN_API_BASE}/admin/blog/posts/seo-batch`, {
+                      method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) },
+                      body: JSON.stringify({ ids: Array.from(selected), noindex: false })
+                    });
+                    if (!resp.ok) throw new Error('Failed');
+                    clearSelection(); fetchBlogPosts();
+                  } catch (e) { alert('Failed to clear noindex'); }
+                }}
+                className="px-3 py-2 text-sm bg-white border rounded text-gray-700 hover:bg-gray-50"
+                title="Remove noindex from selected"
+              >
+                Clear noindex
+              </button>
+            </div>
           </div>
         ) : <div />}
 
@@ -358,6 +434,16 @@ export default function BlogManager() {
           >
             AI Generation History ({generationHistory.length})
           </button>
+          <button
+            onClick={() => setActiveTab('ai-batch' as any)}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === ('ai-batch' as any)
+                ? 'border-brand-primary text-brand-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            AI Batch
+          </button>
         </nav>
       </div>
 
@@ -380,8 +466,13 @@ export default function BlogManager() {
                       title="Select for bulk publish"
                     />
                   </div>
-                  <div className={`absolute top-3 right-3 z-10 px-2 py-1 rounded text-xs font-medium ${isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {isPublished ? 'Published' : 'Draft'}
+                  <div className="absolute top-3 right-3 z-10 flex gap-2">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {isPublished ? 'Published' : 'Draft'}
+                    </span>
+                    {post.noindex && (
+                      <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 border">noindex</span>
+                    )}
                   </div>
                   <BlogPostCard
                     post={post}
@@ -442,7 +533,7 @@ export default function BlogManager() {
             </div>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'ai-history' ? (
         <div className="space-y-4">
           {generationHistory.length > 0 ? (
             generationHistory.map((history) => (
@@ -521,6 +612,8 @@ export default function BlogManager() {
             </div>
           )}
         </div>
+      ) : (
+        <BlogBatchManager />
       )}
 
       {/* Modals */}

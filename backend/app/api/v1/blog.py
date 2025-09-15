@@ -75,6 +75,7 @@ class BlogPost(BaseModel):
     reading_time: Optional[int]
     view_count: int
     featured: bool
+    noindex: bool = False
     published_at: Optional[datetime]
     created_at: datetime
     updated_at: datetime
@@ -313,6 +314,7 @@ async def get_blog_post(
             bp.author_name, bp.status, bp.seo_title, bp.seo_description,
             bp.reading_time, bp.view_count, bp.featured, bp.published_at,
             bp.created_at, bp.updated_at,
+            bp.noindex,
             bc.id as category_id, bc.name as category_name, bc.slug as category_slug,
             bc.description as category_description, bc.icon as category_icon, 
             bc.color as category_color, bc.sort_order as category_sort_order,
@@ -393,16 +395,17 @@ async def get_blog_post(
             published_at=row[14],
             created_at=row[15],
             updated_at=row[16],
+            noindex=row[17] or False,
             category=BlogCategory(
-                id=row[17],
-                name=row[18],
-                slug=row[19],
-                description=row[20],
-                icon=row[21],
-                color=row[22],
-                sort_order=row[23],
-                is_active=row[24]
-            ) if row[17] else None,
+                id=row[18],
+                name=row[19],
+                slug=row[20],
+                description=row[21],
+                icon=row[22],
+                color=row[23],
+                sort_order=row[24],
+                is_active=row[25]
+            ) if row[18] else None,
             tags=tags,
             products=products
         )

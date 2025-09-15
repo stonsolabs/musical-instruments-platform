@@ -15,6 +15,13 @@ from sqlalchemy import text
 
 from backend.app.database import async_session_factory
 
+# Shared human-style guardrails appended to each template's system prompt
+STYLE_SUFFIX = (
+    " Write as an experienced human editor. Use contractions, vary sentence length, avoid generic AI phrasing "
+    "(no 'in this article', 'overall', 'delve', 'utilize'). Show, don't tell; include concrete, scenario-based examples. "
+    "No meta commentary; output STRICT JSON only."
+)
+
 
 TEMPLATES: List[Dict[str, Any]] = [
     {
@@ -30,7 +37,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         ),
         "system_prompt": (
             "You are a senior editor specializing in music gear affiliate content. "
-            "Be trustworthy, specific, and practical. Output STRICT JSON only."
+            "Be trustworthy, specific, and practical." 
         ),
         "product_context_prompt": (
             "Use the product list below. Avoid making up specs. When recommending, explain WHY with concrete traits."
@@ -44,7 +51,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Discover the best {category} this year with pros/cons, use-cases, and buying tips."
         ),
         "content_structure": {"sections": [
-            "introduction", "comparison_table", "top_picks", "use_cases", "faqs", "conclusion"
+            "introduction", "comparison_table", "top_picks", "use_cases", "key_takeaways", "faqs", "conclusion"
         ]},
         "is_active": True,
     },
@@ -56,7 +63,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Write a comprehensive buying guide for the category. Cover key specs, tradeoffs, and pitfalls. "
             "Include product picks aligned to use-cases (beginner, intermediate, pro)."
         ),
-        "system_prompt": "You are a music tech educator. Output strict JSON only.",
+        "system_prompt": "You are a music tech educator.",
         "product_context_prompt": "Map each product to skill levels and styles where it shines.",
         "required_product_types": [],
         "min_products": 3,
@@ -65,7 +72,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "{category} Buying Guide ({year}): How to Choose",
         "seo_description_template": "Everything you need to choose the right {category}, plus recommended picks.",
         "content_structure": {"sections": [
-            "introduction", "how_to_choose", "recommendations", "faqs", "conclusion"
+            "introduction", "how_to_choose", "who_its_for", "recommendations", "key_takeaways", "faqs", "conclusion"
         ]},
         "is_active": True,
     },
@@ -77,7 +84,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Write a hands-on style review. Include overview, build, sound/feel, strengths, limitations, and verdict. "
             "Keep it honest and practical with clear takeaways."
         ),
-        "system_prompt": "You are an unbiased reviewer. Output strict JSON only.",
+        "system_prompt": "You are an unbiased reviewer.",
         "product_context_prompt": "Use only the supplied product details; avoid inventing specs.",
         "required_product_types": [],
         "min_products": 1,
@@ -86,7 +93,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "{brand} {name} Review: Is It Worth It in {year}?",
         "seo_description_template": "In-depth review of the {brand} {name}: strengths, drawbacks, and who it’s for.",
         "content_structure": {"sections": [
-            "introduction", "build_quality", "sound_playability", "pros_cons", "verdict"
+            "introduction", "build_quality", "sound_playability", "pros_cons", "who_its_for", "key_takeaways", "faqs", "verdict"
         ]},
         "is_active": True,
     },
@@ -98,7 +105,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Compare the products directly. Emphasize key differences by spec and use-case. "
             "Include a comparison table and quick recommendations by user type."
         ),
-        "system_prompt": "You are a product analyst. Output strict JSON only.",
+        "system_prompt": "You are a product analyst.",
         "product_context_prompt": "Explain differences with concrete attributes; avoid generic statements.",
         "required_product_types": [],
         "min_products": 2,
@@ -107,7 +114,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "{name} vs {name}: Which Should You Buy in {year}?",
         "seo_description_template": "We compare top {category} picks by features, tone, and value to help you decide.",
         "content_structure": {"sections": [
-            "introduction", "comparison_table", "differences", "recommendations", "conclusion"
+            "introduction", "comparison_table", "differences", "recommendations", "key_takeaways", "faqs", "conclusion"
         ]},
         "is_active": True,
     },
@@ -119,7 +126,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Write a practical tutorial. Include steps, tips, and common mistakes. "
             "Suggest relevant products where appropriate without being pushy."
         ),
-        "system_prompt": "You are a patient instructor. Output strict JSON only.",
+        "system_prompt": "You are a patient instructor.",
         "product_context_prompt": "Reference products as tools within steps, with brief justification.",
         "required_product_types": [],
         "min_products": 2,
@@ -128,7 +135,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "How to {topic} ({year}): Step-by-Step with Recommended Gear",
         "seo_description_template": "A step-by-step guide to {topic}, plus recommended gear for each step.",
         "content_structure": {"sections": [
-            "introduction", "steps", "tips_tricks", "recommended_gear", "faqs", "conclusion"
+            "introduction", "steps", "tips_tricks", "common_mistakes", "recommended_gear", "key_takeaways", "faqs", "conclusion"
         ]},
         "is_active": True,
     },
@@ -140,7 +147,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Write an engaging history of the topic with key eras and influencers. "
             "Conclude with modern applications and relevant gear."
         ),
-        "system_prompt": "You are a music historian. Output strict JSON only.",
+        "system_prompt": "You are a music historian.",
         "product_context_prompt": "Tie modern products to historical evolutions and use-cases.",
         "required_product_types": [],
         "min_products": 2,
@@ -149,7 +156,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "The History of {topic}: From Origins to Modern Era",
         "seo_description_template": "Explore the history of {topic}, key milestones, and today’s relevant gear.",
         "content_structure": {"sections": [
-            "introduction", "origins", "key_periods", "influential_figures", "modern_legacy", "conclusion"
+            "introduction", "origins", "key_periods", "influential_figures", "modern_legacy", "key_takeaways", "conclusion"
         ]},
         "is_active": True,
     },
@@ -160,7 +167,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "base_prompt": (
             "Identify the best value picks across price tiers. Provide reasons and who each is best for."
         ),
-        "system_prompt": "You are a practical bargain hunter. Output strict JSON only.",
+        "system_prompt": "You are a practical bargain hunter.",
         "product_context_prompt": "Group products by value tier (budget/mid/high) and justify choices.",
         "required_product_types": [],
         "min_products": 3,
@@ -169,7 +176,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "Best Value {category} ({year}): Top Deals & Picks",
         "seo_description_template": "Best value {category} picks with clear reasons and who they suit.",
         "content_structure": {"sections": [
-            "introduction", "by_budget", "top_values", "faqs", "conclusion"
+            "introduction", "by_budget", "top_values", "upgrade_paths", "key_takeaways", "faqs", "conclusion"
         ]},
         "is_active": True,
     },
@@ -185,7 +192,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Keep it helpful and honest."
         ),
         "system_prompt": (
-            "You are a product recommender building an interactive quiz. Output strict JSON. "
+            "You are a product recommender building an interactive quiz. "
             "For quiz content, include a 'sections' array with a 'quiz' section containing the questions and choices. "
             "Also include 'product_recommendations' matching the inferred profile."
         ),
@@ -212,7 +219,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "(2) key specs/features; (3) how it differs from the previous model; (4) early verdict; (5) alternatives."
         ),
         "system_prompt": (
-            "You are a music tech reporter. Be factual, concise, and helpful. Output strict JSON only."
+            "You are a music tech reporter. Be factual, concise, and helpful."
         ),
         "product_context_prompt": (
             "Use the supplied product(s). If a previous model is relevant, explain differences with concrete attributes."
@@ -237,7 +244,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "(3) gear breakdown; (4) budget-friendly alternatives; (5) how to get the sound; (6) listening recommendations."
         ),
         "system_prompt": (
-            "You are a music journalist and educator. Be engaging and accurate. Output strict JSON only."
+            "You are a music journalist and educator. Be engaging and accurate."
         ),
         "product_context_prompt": (
             "Use the supplied products as primary or alternative gear. Provide practical justification for each pick."
@@ -262,7 +269,7 @@ TEMPLATES: List[Dict[str, Any]] = [
             "Cover initial setup, common problems, diagnostic steps, and fixes. Include a gear checklist and accessory recommendations."
         ),
         "system_prompt": (
-            "You are a patient technician and musician. Be precise, safe, and practical. Output strict JSON only."
+            "You are a patient technician and musician. Be precise, safe, and practical."
         ),
         "product_context_prompt": (
             "Recommend tools and accessories that genuinely help with setup and troubleshooting. Explain why and how to use them."
@@ -285,7 +292,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "base_prompt": (
             "Write a maintenance and care guide for {category}. Provide routine schedules (daily/weekly/monthly), cleaning steps, and longevity tips."
         ),
-        "system_prompt": "You are a luthier/technician and educator. Output strict JSON only.",
+        "system_prompt": "You are a luthier/technician and educator.",
         "product_context_prompt": "Suggest safe cleaners, tools, and accessories with clear usage guidance.",
         "required_product_types": [],
         "min_products": 2,
@@ -305,7 +312,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "base_prompt": (
             "Create a value-focused roundup across price tiers. Explain price-to-performance, smart compromises, and upgrade paths."
         ),
-        "system_prompt": "You are a budget-savvy reviewer. Output strict JSON only.",
+        "system_prompt": "You are a budget-savvy reviewer.",
         "product_context_prompt": "Group by tier (budget/mid/premium) and justify each selection clearly.",
         "required_product_types": [],
         "min_products": 3,
@@ -325,7 +332,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "base_prompt": (
             "Compare 3–4 popular models head-to-head with a quick verdict grid, then detailed differences that matter in real use, finishing with clear buying scenarios."
         ),
-        "system_prompt": "You are an analytical reviewer. Output strict JSON only.",
+        "system_prompt": "You are an analytical reviewer.",
         "product_context_prompt": "Explain differences with concrete specs and real-world implications (feel, tone, workflow).",
         "required_product_types": [],
         "min_products": 3,
@@ -334,7 +341,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "seo_title_template": "{name} vs {name} vs {name} ({year}) — Which to Buy?",
         "seo_description_template": "Head-to-head {category} comparison with verdicts by use-case and budget.",
         "content_structure": {"sections": [
-            "introduction", "quick_verdict", "specs", "sound_performance", "build_quality", "value", "recommendations", "faqs"
+            "introduction", "quick_verdict", "specs", "sound_performance", "build_quality", "value", "recommendations", "key_takeaways", "faqs"
         ]},
         "is_active": True,
     },
@@ -343,15 +350,60 @@ TEMPLATES: List[Dict[str, Any]] = [
 
 async def upsert_templates() -> None:
     async with async_session_factory() as session:
+        # Append style suffix to every template's system prompt
+        for t in TEMPLATES:
+            base_sys = t.get("system_prompt", "").strip()
+            t["system_prompt"] = (base_sys + " " + STYLE_SUFFIX).strip()
         for tpl in TEMPLATES:
             # Check by name
             exists = await session.execute(
                 text("SELECT id FROM blog_generation_templates WHERE name = :name"),
                 {"name": tpl["name"]},
             )
-            if exists.scalar() is not None:
+            row = exists.fetchone()
+            if row is not None:
+                # Update existing template to latest definition
+                await session.execute(
+                    text(
+                        """
+                        UPDATE blog_generation_templates SET 
+                            description = :description,
+                            template_type = :template_type,
+                            base_prompt = :base_prompt,
+                            system_prompt = :system_prompt,
+                            product_context_prompt = :product_context_prompt,
+                            required_product_types = :required_product_types,
+                            min_products = :min_products,
+                            max_products = :max_products,
+                            suggested_tags = :suggested_tags,
+                            seo_title_template = :seo_title_template,
+                            seo_description_template = :seo_description_template,
+                            content_structure = :content_structure,
+                            is_active = :is_active,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE name = :name
+                        """
+                    ),
+                    {
+                        "name": tpl["name"],
+                        "description": tpl.get("description"),
+                        "template_type": tpl["template_type"],
+                        "base_prompt": tpl["base_prompt"],
+                        "system_prompt": tpl.get("system_prompt"),
+                        "product_context_prompt": tpl.get("product_context_prompt"),
+                        "required_product_types": json.dumps(tpl.get("required_product_types", [])),
+                        "min_products": tpl.get("min_products", 0),
+                        "max_products": tpl.get("max_products", 10),
+                        "suggested_tags": json.dumps(tpl.get("suggested_tags", [])),
+                        "seo_title_template": tpl.get("seo_title_template"),
+                        "seo_description_template": tpl.get("seo_description_template"),
+                        "content_structure": json.dumps(tpl.get("content_structure", {})),
+                        "is_active": tpl.get("is_active", True),
+                    },
+                )
                 continue
 
+            # Insert new
             await session.execute(
                 text(
                     """

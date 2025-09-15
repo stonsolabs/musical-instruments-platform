@@ -302,7 +302,7 @@ class BlogAIGenerator:
         
         # Add formatting requirements
         prompt_parts.append(f"""
-        
+
 IMPORTANT FORMATTING REQUIREMENTS:
 - Target word count: {request.target_word_count} words
 - Use markdown formatting for structure
@@ -310,7 +310,34 @@ IMPORTANT FORMATTING REQUIREMENTS:
 - Write in an engaging, informative tone
 - Include specific product recommendations with detailed explanations
 - Make sure content is SEO-friendly and valuable to readers
-        
+ 
+DEPTH AND COMPLETENESS REQUIREMENTS:
+- Be comprehensive and practical; prefer 1,900–2,300 words for guides/reviews.
+- For each recommended product: include who it fits, why, key specs, pros/cons, and realistic trade-offs.
+- Include a comparison table (markdown) when multiple products are covered.
+- Include a short specs list (bullet points) for each main product.
+- Add a 'Who It's For' subsection per product or category segment.
+- Add a 'Setup & Tips' or 'Common Mistakes' section where relevant.
+- End with a concise 'Key Takeaways' and a 'Next Steps' section.
+- Include an FAQ section with 6–10 specific questions and concise, helpful answers.
+ 
+HUMAN EDITORIAL STYLE (avoid AI telltales):
+- Write as an experienced musician/reviewer. Use conversational, precise language and contractions (doesn't, it's, you'll).
+- Vary sentence length and structure; avoid repetitive cadences and templates.
+- Prefer concrete, sensory specifics over vague generalities (e.g., "snappy attack on funk stabs", "weighted keys feel closer to GHS").
+- Show, don't tell: include short, realistic scenarios (studio, small club, apartment practice) and trade‑off explanations.
+- Be opinionated but fair; back claims with reasons or specs provided.
+- Do NOT use filler phrases like: "in this article", "overall", "comprehensive", "delve", "utilize", "cutting-edge", "must-have".
+- NEVER mention being an AI, never include meta commentary or section labels like "Introduction:" in text.
+- No hallucinations: use only supplied product data and generic domain knowledge; if unknown, omit rather than invent.
+ 
+STRUCTURED JSON REQUIREMENTS (for flexible rendering):
+- Use sections with explicit section_type. Allowed types: introduction, comparison_table, pros_cons, specs, who_its_for, tips_tricks, common_mistakes, recommendations, quick_verdict, key_takeaways, faqs, verdict, conclusion.
+- For pros_cons sections, include arrays: pros: string[], cons: string[].
+- For comparison_table sections, include headers: string[] and rows: string[][] (same length as headers).
+- For specs sections, include specs: Array of objects with label and value fields.
+- Add a top-level best_features: string[] summarizing standout features readers care about.
+ 
 Response format should be JSON:
 {{
     "title": "Generated blog post title",
@@ -319,8 +346,15 @@ Response format should be JSON:
     "seo_title": "SEO optimized title",
     "seo_description": "SEO meta description",
     "sections": [
-        {{"type": "introduction", "title": "Introduction", "content": "Section content"}},
-        {{"type": "main", "title": "Main Content", "content": "Section content"}}
+        {{"type": "introduction", "title": "Introduction", "content": "markdown content"}},
+        {{"type": "pros_cons", "title": "Pros & Cons", "pros": ["..."], "cons": ["..."]}},
+        {{"type": "comparison_table", "title": "Comparison", "headers": ["Model","Key Feature","Best For"], "rows": [["..."]]}},
+        {{"type": "specs", "title": "Key Specs", "specs": [{{"label": "Scale Length", "value": "25.5\""}}]}},
+        {{"type": "key_takeaways", "title": "Key Takeaways", "content": "bullet list in markdown"}}
+    ],
+    "best_features": ["feature A", "feature B"],
+    "faqs": [
+        {{"q": "Question?", "a": "Answer in 2-4 sentences with specifics."}}
     ],
     "product_recommendations": [
         {{"product_id": 123, "relevance_score": 0.95, "reasoning": "Why this product fits", "suggested_context": "recommended", "suggested_sections": ["introduction", "recommendations"]}}
