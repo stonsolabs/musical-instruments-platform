@@ -137,6 +137,7 @@ class AIBlogPost(BaseModel):
     slug: str
     excerpt: Optional[str]
     content: str
+    structured_content: Optional[Dict[str, Any]] = None
     featured_image: Optional[str]
     category_id: Optional[int]
     author_name: str
@@ -217,6 +218,7 @@ class BlogGenerationResult(BaseModel):
     generated_excerpt: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    structured_content: Optional[Dict[str, Any]] = None
     suggested_products: List[AIProductRecommendation] = []
     sections: List[BlogContentSectionCreate] = []
     tokens_used: Optional[int] = None

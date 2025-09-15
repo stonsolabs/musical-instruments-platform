@@ -9,6 +9,7 @@ interface BlogPostCardProps {
   showExcerpt?: boolean;
   showCategory?: boolean;
   showMeta?: boolean;
+  hrefOverride?: string;
 }
 
 const categoryColors = {
@@ -29,7 +30,8 @@ export default function BlogPostCard({
   size = 'medium', 
   showExcerpt = true, 
   showCategory = true,
-  showMeta = true 
+  showMeta = true,
+  hrefOverride,
 }: BlogPostCardProps) {
   const sizeClasses = {
     small: 'max-w-sm',
@@ -55,13 +57,14 @@ export default function BlogPostCard({
     tags: post.tags || [],
     view_count: post.view_count || 0,
   };
+  const href = hrefOverride || `/blog/${safePost.slug}`;
 
   return (
     <article className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${sizeClasses[size]}`}>
       {/* Featured Image */}
       {safePost.featured_image && (
         <div className={`relative ${imageClasses[size]} overflow-hidden`}>
-          <Link href={`/blog/${safePost.slug}`}>
+          <Link href={href}>
             <img
               src={safePost.featured_image}
               alt={safePost.title}
@@ -108,7 +111,7 @@ export default function BlogPostCard({
 
         {/* Title */}
         <h3 className={`font-bold text-gray-900 mb-3 line-clamp-2 hover:text-brand-primary transition-colors ${titleClasses[size]}`}>
-          <Link href={`/blog/${safePost.slug}`}>
+          <Link href={href}>
             {safePost.title}
           </Link>
         </h3>
@@ -168,7 +171,7 @@ export default function BlogPostCard({
         {/* Read More Link */}
         <div className="mt-4 pt-4 border-t border-gray-100">
           <Link
-            href={`/blog/${safePost.slug}`}
+            href={href}
             className="inline-flex items-center text-brand-primary hover:text-brand-dark font-medium transition-colors"
           >
             Read More

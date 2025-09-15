@@ -31,6 +31,7 @@ export interface BlogPost {
   slug: string;
   excerpt?: string;
   content: string;
+  structured_content?: any;
   featured_image?: string;
   category?: BlogCategory;
   author_name: string;
@@ -152,6 +153,7 @@ export interface BlogGenerationResult {
   generated_excerpt?: string;
   seo_title?: string;
   seo_description?: string;
+  structured_content?: any;
   tokens_used?: number;
   generation_time_ms?: number;
   error_message?: string;

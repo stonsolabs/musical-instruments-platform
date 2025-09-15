@@ -21,7 +21,9 @@ const ADMIN_API_BASE = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyo
 
 export default function BlogManager() {
   // Assumindo que o usuário já está autenticado quando chega aqui via /admin
-  const [blogPosts, setBlogPosts] = useState<BlogPostSummary[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [backfillDays, setBackfillDays] = useState<number>(14);
   const [generationHistory, setGenerationHistory] = useState<BlogGenerationHistory[]>([]);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
@@ -42,10 +44,36 @@ export default function BlogManager() {
 
   const fetchBlogPosts = async () => {
     try {
-      const response = await fetch(`${PROXY_BASE}/blog/posts?limit=50`);
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const response = await fetch(`${ADMIN_API_BASE}/admin/blog/posts?limit=50`, {
+        credentials: 'include',
+        headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) }
+      });
       if (response.ok) {
         const data = await response.json();
-        setBlogPosts(data);
+        const mapped: any[] = (data.posts || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          excerpt: p.excerpt,
+          featured_image: p.featured_image,
+          category: p.category_slug ? {
+            id: 0,
+            name: p.category_name,
+            slug: p.category_slug,
+            color: p.category_color,
+            sort_order: 0,
+            is_active: true,
+          } as any : undefined,
+          author_name: p.author_name,
+          status: p.status,
+          reading_time: p.reading_time,
+          view_count: p.view_count || 0,
+          featured: p.featured || false,
+          published_at: p.published_at,
+          tags: [],
+        }));
+        setBlogPosts(mapped);
       }
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
@@ -103,6 +131,43 @@ export default function BlogManager() {
     fetchStats();
   };
 
+  const toggleSelect = (id: number) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelected(new Set());
+
+  const bulkPublish = async (strategy: 'now' | 'backfill') => {
+    if (selected.size === 0) return;
+    try {
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const resp = await fetch(`${ADMIN_API_BASE}/admin/blog/posts/publish-batch`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
+        },
+        body: JSON.stringify({
+          ids: Array.from(selected),
+          strategy,
+          backfill_days: strategy === 'backfill' ? backfillDays : undefined
+        })
+      });
+      if (!resp.ok) throw new Error('Bulk publish failed');
+      clearSelection();
+      fetchBlogPosts();
+      fetchStats();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to bulk publish');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'text-green-600 bg-green-100';
@@ -147,7 +212,38 @@ export default function BlogManager() {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-end space-x-3 mb-8">
+      <div className="flex justify-between items-center mb-8">
+        {/* Bulk bar */}
+        {selected.size > 0 ? (
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-700">Selected: {selected.size}</span>
+            <button
+              onClick={() => bulkPublish('now')}
+              className="px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Publish Now
+            </button>
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                min={1}
+                max={90}
+                value={backfillDays}
+                onChange={(e) => setBackfillDays(parseInt(e.target.value || '14', 10))}
+                className="w-16 px-2 py-1 border rounded"
+                title="Distribute dates across past N days"
+              />
+              <button
+                onClick={() => bulkPublish('backfill')}
+                className="px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Publish Spread
+              </button>
+              <button onClick={clearSelection} className="px-3 py-2 text-sm border rounded text-gray-700 hover:bg-gray-50">Clear</button>
+            </div>
+          </div>
+        ) : <div />}
+
         <button
             onClick={() => setIsAIGeneratorOpen(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all shadow-lg"
@@ -237,15 +333,31 @@ export default function BlogManager() {
       {activeTab === 'posts' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogPosts.length > 0 ? (
-            blogPosts.map((post) => (
-              <BlogPostCard 
-                key={post.id} 
-                post={post}
-                showMeta={true}
-                showCategory={true}
-                showExcerpt={true}
-              />
-            ))
+            blogPosts.map((post) => {
+              const isSelected = selected.has(post.id);
+              const isPublished = post.status === 'published' || !!post.published_at;
+              const hrefOverride = isPublished ? `/blog/${post.slug}` : `/admin/blog/preview/${post.id}`;
+              return (
+                <div key={post.id} className="relative">
+                  <div className="absolute top-3 left-3 z-10 bg-white/90 rounded-md p-1 shadow">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelect(post.id)}
+                      className="h-4 w-4"
+                      title="Select for bulk publish"
+                    />
+                  </div>
+                  <BlogPostCard
+                    post={post}
+                    showMeta={true}
+                    showCategory={true}
+                    showExcerpt={true}
+                    hrefOverride={hrefOverride}
+                  />
+                </div>
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-12">
               <DocumentTextIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />

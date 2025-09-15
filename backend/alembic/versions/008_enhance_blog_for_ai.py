@@ -2,7 +2,7 @@
 
 Revision ID: 008_enhance_blog_for_ai
 Revises: 007_create_blog_system
-Create Date: 2024-01-21 10:00:00.000000
+Create Date: 2025-09-15 00:00:00.000000
 
 """
 from alembic import op
@@ -17,14 +17,21 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Add AI generation fields to blog_posts
-    op.add_column('blog_posts', sa.Column('generated_by_ai', sa.Boolean(), server_default='false'))
-    op.add_column('blog_posts', sa.Column('generation_prompt', sa.Text(), nullable=True))
-    op.add_column('blog_posts', sa.Column('generation_model', sa.String(length=100), nullable=True))
-    op.add_column('blog_posts', sa.Column('generation_params', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-    op.add_column('blog_posts', sa.Column('ai_notes', sa.Text(), nullable=True))
+    # Add AI fields to blog_posts
+    with op.batch_alter_table('blog_posts') as batch_op:
+        batch_op.add_column(sa.Column('generated_by_ai', sa.Boolean(), server_default='false'))
+        batch_op.add_column(sa.Column('generation_prompt', sa.Text(), nullable=True))
+        batch_op.add_column(sa.Column('generation_model', sa.String(length=100), nullable=True))
+        batch_op.add_column(sa.Column('generation_params', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
+        batch_op.add_column(sa.Column('ai_notes', sa.Text(), nullable=True))
 
-    # Create blog generation templates table
+    # Enhance blog_post_products columns for AI context
+    with op.batch_alter_table('blog_post_products') as batch_op:
+        batch_op.add_column(sa.Column('ai_context', sa.Text(), nullable=True))
+        batch_op.add_column(sa.Column('relevance_score', sa.Numeric(3, 2), nullable=True))
+        batch_op.add_column(sa.Column('mentioned_in_sections', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
+
+    # Create blog_generation_templates table
     op.create_table(
         'blog_generation_templates',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -45,17 +52,16 @@ def upgrade() -> None:
         sa.Column('is_active', sa.Boolean(), server_default='true'),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP')),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.CheckConstraint("template_type IN ('general', 'buying_guide', 'review', 'comparison', 'tutorial', 'history')", name='blog_templates_type_check'),
-        sa.ForeignKeyConstraint(['category_id'], ['blog_categories.id']),
         sa.PrimaryKeyConstraint('id'),
-        sa.UniqueConstraint('name')
+        sa.UniqueConstraint('name'),
+        sa.ForeignKeyConstraint(['category_id'], ['blog_categories.id'], ondelete='SET NULL')
     )
 
-    # Create blog generation history table
+    # Create blog_generation_history table
     op.create_table(
         'blog_generation_history',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('blog_post_id', sa.Integer(), nullable=False),
+        sa.Column('blog_post_id', sa.Integer(), nullable=True),
         sa.Column('template_id', sa.Integer(), nullable=True),
         sa.Column('generation_status', sa.String(length=50), server_default='pending'),
         sa.Column('prompt_used', sa.Text(), nullable=True),
@@ -65,13 +71,12 @@ def upgrade() -> None:
         sa.Column('error_message', sa.Text(), nullable=True),
         sa.Column('generation_metadata', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.CheckConstraint("generation_status IN ('pending', 'generating', 'completed', 'failed', 'cancelled')", name='blog_generation_status_check'),
+        sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['blog_post_id'], ['blog_posts.id'], ondelete='CASCADE'),
-        sa.ForeignKeyConstraint(['template_id'], ['blog_generation_templates.id']),
-        sa.PrimaryKeyConstraint('id')
+        sa.ForeignKeyConstraint(['template_id'], ['blog_generation_templates.id'], ondelete='SET NULL')
     )
 
-    # Create blog content sections table
+    # Create blog_content_sections table
     op.create_table(
         'blog_content_sections',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -83,26 +88,22 @@ def upgrade() -> None:
         sa.Column('products_featured', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column('ai_generated', sa.Boolean(), server_default='false'),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.ForeignKeyConstraint(['blog_post_id'], ['blog_posts.id'], ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('id')
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['blog_post_id'], ['blog_posts.id'], ondelete='CASCADE')
     )
 
-    # Enhanced product association columns
-    op.add_column('blog_post_products', sa.Column('ai_context', sa.Text(), nullable=True))
-    op.add_column('blog_post_products', sa.Column('relevance_score', sa.Numeric(precision=3, scale=2), nullable=True))
-    op.add_column('blog_post_products', sa.Column('mentioned_in_sections', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-
-    # Create indexes
+    # Indexes
     op.create_index('idx_blog_posts_generated_by_ai', 'blog_posts', ['generated_by_ai'])
     op.create_index('idx_blog_generation_templates_type', 'blog_generation_templates', ['template_type'])
     op.create_index('idx_blog_generation_templates_category', 'blog_generation_templates', ['category_id'])
     op.create_index('idx_blog_generation_history_status', 'blog_generation_history', ['generation_status'])
     op.create_index('idx_blog_content_sections_post_id', 'blog_content_sections', ['blog_post_id'])
     op.create_index('idx_blog_content_sections_type', 'blog_content_sections', ['section_type'])
-    op.create_index('idx_blog_post_products_relevance', 'blog_post_products', [sa.text('relevance_score DESC')])
+    op.create_index('idx_blog_post_products_relevance', 'blog_post_products', ['relevance_score'])
 
-    # Create update trigger for blog_generation_templates
-    op.execute("""
+    # Trigger for updated_at on blog_generation_templates
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION update_blog_generation_templates_updated_at()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -110,43 +111,48 @@ def upgrade() -> None:
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    """)
-
-    op.execute("""
+        """
+    )
+    op.execute(
+        """
         CREATE TRIGGER blog_generation_templates_updated_at_trigger
             BEFORE UPDATE ON blog_generation_templates
             FOR EACH ROW
             EXECUTE FUNCTION update_blog_generation_templates_updated_at();
-    """)
+        """
+    )
 
 
 def downgrade() -> None:
-    # Drop trigger
+    # Drop trigger and function
     op.execute("DROP TRIGGER IF EXISTS blog_generation_templates_updated_at_trigger ON blog_generation_templates;")
     op.execute("DROP FUNCTION IF EXISTS update_blog_generation_templates_updated_at();")
-    
+
     # Drop indexes
-    op.drop_index('idx_blog_post_products_relevance')
-    op.drop_index('idx_blog_content_sections_type')
-    op.drop_index('idx_blog_content_sections_post_id')
-    op.drop_index('idx_blog_generation_history_status')
-    op.drop_index('idx_blog_generation_templates_category')
-    op.drop_index('idx_blog_generation_templates_type')
-    op.drop_index('idx_blog_posts_generated_by_ai')
-    
-    # Remove columns from blog_post_products
-    op.drop_column('blog_post_products', 'mentioned_in_sections')
-    op.drop_column('blog_post_products', 'relevance_score')
-    op.drop_column('blog_post_products', 'ai_context')
-    
-    # Drop tables
+    op.drop_index('idx_blog_post_products_relevance', table_name='blog_post_products')
+    op.drop_index('idx_blog_content_sections_type', table_name='blog_content_sections')
+    op.drop_index('idx_blog_content_sections_post_id', table_name='blog_content_sections')
+    op.drop_index('idx_blog_generation_history_status', table_name='blog_generation_history')
+    op.drop_index('idx_blog_generation_templates_category', table_name='blog_generation_templates')
+    op.drop_index('idx_blog_generation_templates_type', table_name='blog_generation_templates')
+    op.drop_index('idx_blog_posts_generated_by_ai', table_name='blog_posts')
+
+    # Drop new tables
     op.drop_table('blog_content_sections')
     op.drop_table('blog_generation_history')
     op.drop_table('blog_generation_templates')
-    
+
+    # Remove columns from blog_post_products
+    with op.batch_alter_table('blog_post_products') as batch_op:
+        batch_op.drop_column('mentioned_in_sections')
+        batch_op.drop_column('relevance_score')
+        batch_op.drop_column('ai_context')
+
     # Remove columns from blog_posts
-    op.drop_column('blog_posts', 'ai_notes')
-    op.drop_column('blog_posts', 'generation_params')
-    op.drop_column('blog_posts', 'generation_model')
-    op.drop_column('blog_posts', 'generation_prompt')
-    op.drop_column('blog_posts', 'generated_by_ai')
+    with op.batch_alter_table('blog_posts') as batch_op:
+        batch_op.drop_column('ai_notes')
+        batch_op.drop_column('generation_params')
+        batch_op.drop_column('generation_model')
+        batch_op.drop_column('generation_prompt')
+        batch_op.drop_column('generated_by_ai')
+

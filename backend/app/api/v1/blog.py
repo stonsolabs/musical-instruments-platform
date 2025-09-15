@@ -65,6 +65,7 @@ class BlogPost(BaseModel):
     slug: str
     excerpt: Optional[str]
     content: str
+    structured_content: Optional[dict] = None
     featured_image: Optional[str]
     category: Optional[BlogCategory]
     author_name: str
@@ -308,7 +309,7 @@ async def get_blog_post(
         # Get the main post data
         query = """
         SELECT 
-            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.featured_image,
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.structured_content, bp.featured_image,
             bp.author_name, bp.status, bp.seo_title, bp.seo_description,
             bp.reading_time, bp.view_count, bp.featured, bp.published_at,
             bp.created_at, bp.updated_at,
@@ -380,27 +381,28 @@ async def get_blog_post(
             slug=row[2],
             excerpt=row[3],
             content=row[4],
-            featured_image=row[5],
-            author_name=row[6],
-            status=row[7],
-            seo_title=row[8],
-            seo_description=row[9],
-            reading_time=row[10],
-            view_count=row[11] + 1,  # +1 for the current view
-            featured=row[12],
-            published_at=row[13],
-            created_at=row[14],
-            updated_at=row[15],
+            structured_content=row[5],
+            featured_image=row[6],
+            author_name=row[7],
+            status=row[8],
+            seo_title=row[9],
+            seo_description=row[10],
+            reading_time=row[11],
+            view_count=row[12] + 1,  # +1 for the current view
+            featured=row[13],
+            published_at=row[14],
+            created_at=row[15],
+            updated_at=row[16],
             category=BlogCategory(
-                id=row[16],
-                name=row[17],
-                slug=row[18],
-                description=row[19],
-                icon=row[20],
-                color=row[21],
-                sort_order=row[22],
-                is_active=row[23]
-            ) if row[16] else None,
+                id=row[17],
+                name=row[18],
+                slug=row[19],
+                description=row[20],
+                icon=row[21],
+                color=row[22],
+                sort_order=row[23],
+                is_active=row[24]
+            ) if row[17] else None,
             tags=tags,
             products=products
         )
@@ -783,7 +785,7 @@ async def get_ai_blog_post(
         # Get the main post data with AI fields
         query = """
         SELECT 
-            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.featured_image,
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.structured_content, bp.featured_image,
             bp.author_name, bp.status, bp.seo_title, bp.seo_description,
             bp.reading_time, bp.view_count, bp.featured, bp.published_at,
             bp.created_at, bp.updated_at, bp.category_id,
@@ -847,23 +849,24 @@ async def get_ai_blog_post(
             slug=row[2],
             excerpt=row[3],
             content=row[4],
-            featured_image=row[5],
-            author_name=row[6],
-            status=row[7],
-            seo_title=row[8],
-            seo_description=row[9],
-            reading_time=row[10],
-            view_count=row[11],
-            featured=row[12],
-            published_at=row[13],
-            created_at=row[14],
-            updated_at=row[15],
-            category_id=row[16],
-            generated_by_ai=row[17],
-            generation_prompt=row[18],
-            generation_model=row[19],
-            generation_params=row[20] or {},
-            ai_notes=row[21],
+            structured_content=row[5],
+            featured_image=row[6],
+            author_name=row[7],
+            status=row[8],
+            seo_title=row[9],
+            seo_description=row[10],
+            reading_time=row[11],
+            view_count=row[12],
+            featured=row[13],
+            published_at=row[14],
+            created_at=row[15],
+            updated_at=row[16],
+            category_id=row[17],
+            generated_by_ai=row[18],
+            generation_prompt=row[19],
+            generation_model=row[20],
+            generation_params=row[21] or {},
+            ai_notes=row[22],
             products=[
                 EnhancedBlogPostProduct(
                     id=prod[0],

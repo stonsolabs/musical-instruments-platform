@@ -253,6 +253,91 @@ TEMPLATES: List[Dict[str, Any]] = [
         ]},
         "is_active": True,
     },
+    {
+        "name": "Setup & Troubleshooting Guide",
+        "description": "Practical setup steps and fixes with gear recommendations",
+        "template_type": "tutorial",
+        "base_prompt": (
+            "Create a step-by-step setup and troubleshooting guide for the topic or category. "
+            "Cover initial setup, common problems, diagnostic steps, and fixes. Include a gear checklist and accessory recommendations."
+        ),
+        "system_prompt": (
+            "You are a patient technician and musician. Be precise, safe, and practical. Output strict JSON only."
+        ),
+        "product_context_prompt": (
+            "Recommend tools and accessories that genuinely help with setup and troubleshooting. Explain why and how to use them."
+        ),
+        "required_product_types": [],
+        "min_products": 2,
+        "max_products": 6,
+        "suggested_tags": ["setup", "troubleshooting", "tutorial"],
+        "seo_title_template": "{topic} Setup & Troubleshooting Guide ({year})",
+        "seo_description_template": "Step-by-step {topic} setup and fixes with essential gear recommendations.",
+        "content_structure": {"sections": [
+            "introduction", "gear_checklist", "setup_steps", "common_issues", "diagnostics", "fixes", "best_accessories", "conclusion"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Maintenance & Care Checklist",
+        "description": "Keep your instrument in top shape with actionable care steps",
+        "template_type": "tutorial",
+        "base_prompt": (
+            "Write a maintenance and care guide for {category}. Provide routine schedules (daily/weekly/monthly), cleaning steps, and longevity tips."
+        ),
+        "system_prompt": "You are a luthier/technician and educator. Output strict JSON only.",
+        "product_context_prompt": "Suggest safe cleaners, tools, and accessories with clear usage guidance.",
+        "required_product_types": [],
+        "min_products": 2,
+        "max_products": 6,
+        "suggested_tags": ["maintenance", "care", "tutorial"],
+        "seo_title_template": "{category} Maintenance Checklist ({year})",
+        "seo_description_template": "Essential {category} maintenance steps, schedules, and tools for long life.",
+        "content_structure": {"sections": [
+            "introduction", "care_schedule", "cleaning_steps", "pro_tips", "toolkit", "faqs", "conclusion"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Price Watch & Value Picks",
+        "description": "Value-focused picks with price context and alternatives",
+        "template_type": "general",
+        "base_prompt": (
+            "Create a value-focused roundup across price tiers. Explain price-to-performance, smart compromises, and upgrade paths."
+        ),
+        "system_prompt": "You are a budget-savvy reviewer. Output strict JSON only.",
+        "product_context_prompt": "Group by tier (budget/mid/premium) and justify each selection clearly.",
+        "required_product_types": [],
+        "min_products": 3,
+        "max_products": 9,
+        "suggested_tags": ["value", "deals", "roundup"],
+        "seo_title_template": "Best {category} by Budget ({year}) — Smart Value Picks",
+        "seo_description_template": "Smart {category} picks by budget with clear value analysis and alternatives.",
+        "content_structure": {"sections": [
+            "introduction", "by_budget", "top_values", "upgrade_paths", "faqs", "conclusion"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Comparison Mega-Roundup",
+        "description": "Direct differences plus use-case recommendations",
+        "template_type": "comparison",
+        "base_prompt": (
+            "Compare 3–4 popular models head-to-head with a quick verdict grid, then detailed differences that matter in real use, finishing with clear buying scenarios."
+        ),
+        "system_prompt": "You are an analytical reviewer. Output strict JSON only.",
+        "product_context_prompt": "Explain differences with concrete specs and real-world implications (feel, tone, workflow).",
+        "required_product_types": [],
+        "min_products": 3,
+        "max_products": 4,
+        "suggested_tags": ["comparison", "roundup", "vs"],
+        "seo_title_template": "{name} vs {name} vs {name} ({year}) — Which to Buy?",
+        "seo_description_template": "Head-to-head {category} comparison with verdicts by use-case and budget.",
+        "content_structure": {"sections": [
+            "introduction", "quick_verdict", "specs", "sound_performance", "build_quality", "value", "recommendations", "faqs"
+        ]},
+        "is_active": True,
+    },
 ]
 
 

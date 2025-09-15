@@ -128,6 +128,7 @@ class BlogAIGenerator:
                 generated_excerpt=parsed_content['excerpt'],
                 seo_title=parsed_content.get('seo_title'),
                 seo_description=parsed_content.get('seo_description'),
+                structured_content=parsed_content,
                 suggested_products=parsed_content.get('product_recommendations', []),
                 sections=parsed_content.get('sections', []),
                 tokens_used=generation_response.get('tokens_used'),
@@ -589,15 +590,15 @@ Respond in JSON with fields: title, excerpt, content, seo_title, seo_description
         slug = re.sub(r'[^\w\s-]', '', parsed_content['title'].lower())
         slug = re.sub(r'[\s_-]+', '-', slug).strip('-')
         
-        # Insert blog post
+        # Insert blog post (store structured JSON for flexible layouts)
         insert_query = """
         INSERT INTO blog_posts (
-            title, slug, excerpt, content, category_id, author_name,
+            title, slug, excerpt, content, structured_content, category_id, author_name,
             status, seo_title, seo_description, reading_time, featured,
             generated_by_ai, generation_prompt, generation_model, generation_params,
             published_at
         ) VALUES (
-            :title, :slug, :excerpt, :content, :category_id, :author_name,
+            :title, :slug, :excerpt, :content, :structured_content, :category_id, :author_name,
             :status, :seo_title, :seo_description, :reading_time, :featured,
             :generated_by_ai, :generation_prompt, :generation_model, :generation_params,
             :published_at
@@ -611,6 +612,7 @@ Respond in JSON with fields: title, excerpt, content, seo_title, seo_description
             'slug': slug,
             'excerpt': parsed_content.get('excerpt'),
             'content': parsed_content['content'],
+            'structured_content': json.dumps(parsed_content),
             'category_id': request.category_id or template.get('category_id'),
             'author_name': 'AI Assistant',
             'status': 'published' if request.auto_publish else 'draft',

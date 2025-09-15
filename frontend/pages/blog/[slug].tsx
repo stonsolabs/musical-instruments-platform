@@ -206,12 +206,30 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
         </header>
 
         {/* Article Content */}
-        <div className="prose prose-lg max-w-none mb-12">
-          <div 
-            dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }}
-            className="text-gray-800 leading-relaxed"
-          />
-        </div>
+        {Array.isArray((post as any).structured_content?.sections) && (post as any).structured_content.sections.length > 0 ? (
+          <div className="space-y-10 mb-12">
+            {(post as any).structured_content.sections.map((sec: any, idx: number) => (
+              <section key={idx} className="prose prose-lg max-w-none">
+                {sec.title && (
+                  <h2 className="mt-0">{sec.title}</h2>
+                )}
+                {sec.content && (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: String(sec.content).replace(/\n/g, '<br />') }}
+                    className="text-gray-800 leading-relaxed"
+                  />
+                )}
+              </section>
+            ))}
+          </div>
+        ) : (
+          <div className="prose prose-lg max-w-none mb-12">
+            <div 
+              dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }}
+              className="text-gray-800 leading-relaxed"
+            />
+          </div>
+        )}
 
         {/* Featured Products */}
         {post.products && post.products.length > 0 && (

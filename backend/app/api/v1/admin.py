@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from typing import List, Optional
 from fastapi.responses import HTMLResponse
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import json
 
@@ -218,6 +218,76 @@ async def get_admin_blog_posts(
     except Exception as e:
         logger.error(f"Failed to fetch admin blog posts: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch blog posts")
+
+# === BULK PUBLISH ===
+
+from pydantic import BaseModel, Field
+
+class PublishBatchRequest(BaseModel):
+    ids: List[int] = Field(default_factory=list)
+    strategy: str = Field(default="now", pattern="^(now|backfill)$")
+    backfill_days: Optional[int] = Field(default=None, ge=1, le=90)
+
+
+@router.post("/blog/posts/publish-batch")
+async def publish_blog_posts_batch(
+    payload: PublishBatchRequest,
+    admin: dict = Depends(require_azure_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Publish multiple posts at once. Strategy:
+    - now: set status=published and published_at=now for all ids
+    - backfill: distribute published_at randomly over the past N days
+    """
+    try:
+        if not payload.ids:
+            raise HTTPException(status_code=400, detail="No IDs provided")
+
+        # Ensure IDs exist
+        result = await db.execute(
+            text("SELECT id FROM blog_posts WHERE id = ANY(:ids)"),
+            {"ids": payload.ids},
+        )
+        existing_ids = {row[0] for row in result.fetchall()}
+        missing = [i for i in payload.ids if i not in existing_ids]
+        if missing:
+            raise HTTPException(status_code=404, detail=f"Posts not found: {missing}")
+
+        updates = []
+        if payload.strategy == "now":
+            pub_at = datetime.utcnow()
+            for pid in payload.ids:
+                updates.append({"id": pid, "published_at": pub_at})
+        else:
+            # backfill
+            from random import randint, choice
+            now = datetime.utcnow()
+            days = max(1, int(payload.backfill_days or 7))
+            for pid in payload.ids:
+                delta_days = randint(0, days)
+                dt = now - timedelta(days=delta_days)
+                hour = randint(9, 21)
+                minute = choice([0, 15, 30, 45])
+                dt = dt.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                updates.append({"id": pid, "published_at": dt})
+
+        # Apply updates
+        for u in updates:
+            await db.execute(
+                text(
+                    "UPDATE blog_posts SET status = 'published', published_at = :published_at WHERE id = :id"
+                ),
+                {"published_at": u["published_at"], "id": u["id"]},
+            )
+        await db.commit()
+
+        return {"updated": len(updates), "ids": [u["id"] for u in updates]}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed bulk publish: {e}")
+        raise HTTPException(status_code=500, detail="Failed to bulk publish posts")
 
 # === AI GENERATION ===
 

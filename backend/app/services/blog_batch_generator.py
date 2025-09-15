@@ -659,12 +659,12 @@ class BlogBatchGenerator:
         # Inserir blog post
         insert_query = """
         INSERT INTO blog_posts (
-            title, slug, excerpt, content, category_id, author_name,
+            title, slug, excerpt, content, structured_content, category_id, author_name,
             status, seo_title, seo_description, reading_time, featured,
             generated_by_ai, generation_model, generation_params, ai_notes,
             published_at
         ) VALUES (
-            :title, :slug, :excerpt, :content, :category_id, :author_name,
+            :title, :slug, :excerpt, :content, :structured_content, :category_id, :author_name,
             :status, :seo_title, :seo_description, :reading_time, :featured,
             :generated_by_ai, :generation_model, :generation_params, :ai_notes,
             :published_at
@@ -678,6 +678,7 @@ class BlogBatchGenerator:
             'slug': slug,
             'excerpt': parsed_content.get('excerpt'),
             'content': parsed_content['content'],
+            'structured_content': json.dumps(parsed_content),
             'category_id': gen_metadata.get('category_id'),
             'author_name': 'AI Assistant (Batch)',
             'status': 'published' if auto_publish else 'draft',
