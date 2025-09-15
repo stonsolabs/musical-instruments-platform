@@ -17,6 +17,7 @@ interface BlogPageProps {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+const PROXY_BASE = '/api/proxy/v1';
 
 export default function BlogPage({ 
   posts, 
