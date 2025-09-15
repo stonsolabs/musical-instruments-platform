@@ -32,6 +32,7 @@ export interface BlogPost {
   excerpt?: string;
   content: string;
   structured_content?: any;
+  noindex?: boolean;
   featured_image?: string;
   category?: BlogCategory;
   author_name: string;
