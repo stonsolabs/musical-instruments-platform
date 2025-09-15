@@ -68,6 +68,16 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
             />
           </div>
         )}
+
+        {/* Inspector */}
+        {(post as any).structured_content && (
+          <details className="mt-6 mb-12">
+            <summary className="cursor-pointer text-sm text-gray-600">View structured JSON</summary>
+            <pre className="mt-3 p-3 bg-gray-50 text-xs overflow-auto rounded border">
+              {JSON.stringify((post as any).structured_content, null, 2)}
+            </pre>
+          </details>
+        )}
       </article>
     </>
   );
@@ -86,12 +96,3 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     return { notFound: true };
   }
 };
-        {/* Inspector */}
-        {(post as any).structured_content && (
-          <details className="mt-6 mb-12">
-            <summary className="cursor-pointer text-sm text-gray-600">View structured JSON</summary>
-            <pre className="mt-3 p-3 bg-gray-50 text-xs overflow-auto rounded border">
-              {JSON.stringify((post as any).structured_content, null, 2)}
-            </pre>
-          </details>
-        )}
