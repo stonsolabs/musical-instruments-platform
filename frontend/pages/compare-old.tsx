@@ -8,7 +8,6 @@ import CompareSearch from '../src/components/CompareSearch';
 import ComparisonGrid from '../src/components/ComparisonGrid';
 import { ComparisonButtons } from '../src/components/AffiliateButtons';
 import ProductContentSections from '../src/components/ProductContentSections';
-import ComparisonGrid from '../src/components/ComparisonGrid';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { getProductImageUrl } from '../src/lib/utils';
 
