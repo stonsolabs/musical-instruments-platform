@@ -396,6 +396,7 @@ async def publish_blog_posts_batch(
 class StatusBatchRequest(BaseModel):
     ids: List[int] = Field(default_factory=list)
     status: str = Field(..., pattern=r"^(draft|archived)$")
+    all: bool = False
 
 
 @router.post("/blog/posts/status-batch")
@@ -406,9 +407,25 @@ async def set_status_blog_posts_batch(
 ):
     """Set status for multiple posts to 'draft' or 'archived'"""
     try:
-        if not payload.ids:
-            raise HTTPException(status_code=400, detail="No IDs provided")
+        if not payload.ids and not payload.all:
+            raise HTTPException(status_code=400, detail="No IDs provided and 'all' flag not set")
 
+        if payload.all:
+            # Update all posts
+            result = await db.execute(
+                text(
+                    "UPDATE blog_posts "
+                    "SET status = :status, "
+                    "    published_at = CASE WHEN CAST(:status AS VARCHAR)='draft' THEN NULL ELSE published_at END "
+                    "RETURNING id"
+                ),
+                {"status": payload.status},
+            )
+            updated_ids = [row[0] for row in result.fetchall()]
+            await db.commit()
+            return {"updated": len(updated_ids), "status": payload.status, "ids": updated_ids, "all": True}
+
+        # Validate IDs exist
         result = await db.execute(
             text("SELECT id FROM blog_posts WHERE id = ANY(:ids)"),
             {"ids": payload.ids},
@@ -418,15 +435,20 @@ async def set_status_blog_posts_batch(
         if missing:
             raise HTTPException(status_code=404, detail=f"Posts not found: {missing}")
 
-        for pid in payload.ids:
-            await db.execute(
-                text(
-                    "UPDATE blog_posts SET status = :status, published_at = CASE WHEN :status='draft' THEN NULL ELSE published_at END WHERE id = :id"
-                ),
-                {"status": payload.status, "id": pid},
-            )
+        # Update selected posts in a single statement
+        result = await db.execute(
+            text(
+                "UPDATE blog_posts "
+                "SET status = :status, "
+                "    published_at = CASE WHEN CAST(:status AS VARCHAR)='draft' THEN NULL ELSE published_at END "
+                "WHERE id = ANY(:ids) "
+                "RETURNING id"
+            ),
+            {"status": payload.status, "ids": payload.ids},
+        )
+        updated_ids = [row[0] for row in result.fetchall()]
         await db.commit()
-        return {"updated": len(payload.ids), "status": payload.status, "ids": payload.ids}
+        return {"updated": len(updated_ids), "status": payload.status, "ids": updated_ids}
 
     except HTTPException:
         raise

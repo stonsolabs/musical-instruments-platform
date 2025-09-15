@@ -149,6 +149,14 @@ export default function BlogManager() {
 
   const clearSelection = () => setSelected(new Set());
 
+  const selectAllOnPage = (checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(blogPosts.map(p => p.id)));
+    } else {
+      clearSelection();
+    }
+  };
+
   const bulkPublish = async (strategy: 'now' | 'backfill') => {
     if (selected.size === 0) return;
     try {
@@ -196,6 +204,28 @@ export default function BlogManager() {
     } catch (e) {
       console.error(e);
       alert('Failed to update status');
+    }
+  };
+
+  const bulkSetStatusAll = async (status: 'draft' | 'archived') => {
+    try {
+      const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
+      const resp = await fetch(`${ADMIN_API_BASE}/admin/blog/posts/status-batch`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(adminToken ? { 'X-Admin-Token': adminToken } : {})
+        },
+        body: JSON.stringify({ all: true, status })
+      });
+      if (!resp.ok) throw new Error('Bulk status update failed');
+      clearSelection();
+      fetchBlogPosts();
+      fetchStats();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to update status for all');
     }
   };
 
@@ -270,6 +300,14 @@ export default function BlogManager() {
               <option value="manual">Manual</option>
             </select>
           </div>
+          <label className="flex items-center gap-2 ml-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={selected.size > 0 && selected.size === blogPosts.length && blogPosts.length > 0}
+              onChange={(e) => selectAllOnPage(e.target.checked)}
+            />
+            Select all on page
+          </label>
         </div>
         {/* Bulk bar */}
         {selected.size > 0 ? (
@@ -352,7 +390,24 @@ export default function BlogManager() {
               </button>
             </div>
           </div>
-        ) : <div />}
+        ) : (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => bulkSetStatusAll('draft')}
+              className="px-3 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+              title="Move ALL posts to Draft"
+            >
+              Move ALL to Draft
+            </button>
+            <button
+              onClick={() => bulkSetStatusAll('archived')}
+              className="px-3 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+              title="Archive ALL posts"
+            >
+              Archive ALL
+            </button>
+          </div>
+        )}
 
         <button
             onClick={() => setIsAIGeneratorOpen(true)}
