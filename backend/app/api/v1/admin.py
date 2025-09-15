@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from typing import List, Optional
+from pydantic import BaseModel, Field
 from fastapi.responses import HTMLResponse
 from datetime import datetime, timedelta
 import logging
@@ -323,8 +324,6 @@ async def update_admin_blog_template(
         raise HTTPException(status_code=500, detail="Failed to update template")
 
 # === BULK PUBLISH ===
-
-from pydantic import BaseModel, Field
 
 class PublishBatchRequest(BaseModel):
     ids: List[int] = Field(default_factory=list)

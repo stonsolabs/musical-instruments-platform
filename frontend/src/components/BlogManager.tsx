@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import BlogPostEditor from './BlogPostEditor';
 import BlogAIGenerator from './BlogAIGenerator';
+import BlogBatchManager from './BlogBatchManager';
+import BlogTemplatesManager from './BlogTemplatesManager';
 import BlogPostCard from './BlogPostCard';
 import { 
   BlogPostSummary, 
@@ -28,7 +30,7 @@ export default function BlogManager() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'posts' | 'ai-history'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'ai-history' | 'ai-batch' | 'templates'>('posts');
   const [statusFilter, setStatusFilter] = useState<'all'|'draft'|'published'>('all');
   const [aiFilter, setAiFilter] = useState<'all'|'ai'|'manual'>('all');
   const [stats, setStats] = useState({
@@ -444,6 +446,16 @@ export default function BlogManager() {
           >
             AI Batch
           </button>
+          <button
+            onClick={() => setActiveTab('templates')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'templates'
+                ? 'border-brand-primary text-brand-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Templates
+          </button>
         </nav>
       </div>
 
@@ -612,8 +624,10 @@ export default function BlogManager() {
             </div>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'ai-batch' ? (
         <BlogBatchManager />
+      ) : (
+        <BlogTemplatesManager />
       )}
 
       {/* Modals */}
