@@ -407,6 +407,13 @@ export default function BlogManager() {
                         View public page
                       </a>
                     )}
+                    <a
+                      href={`/_next/data/${process.env.__NEXT_BUILD_ID || 'dev'}/blog/${post.slug}.json?slug=${post.slug}`}
+                      className="text-gray-500 hover:text-gray-700"
+                      title="Check SSR data fetch for this slug (Next.js)"
+                    >
+                      SSR JSON
+                    </a>
                   </div>
                 </div>
               );

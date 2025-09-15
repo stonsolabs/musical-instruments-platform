@@ -8,7 +8,7 @@ interface PreviewProps {
   post: AIBlogPost;
 }
 
-const PROXY_BASE = '/api/proxy/v1';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 
 export default function BlogPreviewPage({ post }: PreviewProps) {
   const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://www.getyourmusicgear.com');
@@ -86,7 +86,7 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
     const { id } = params!;
-    const response = await fetch(`${PROXY_BASE}/blog/ai-posts/${id}`);
+    const response = await fetch(`${API_BASE}/api/v1/blog/ai-posts/${id}`);
     if (!response.ok) {
       return { notFound: true };
     }
