@@ -146,60 +146,58 @@ Extending Safely
 AI Blog System
 --------------
 
-The platform features an advanced AI-powered blog system for generating engaging, SEO-optimized content:
+The platform features an advanced, human‑tone AI-powered blog system with rich structure, admin controls, and SEO‑first presentation.
 
-**Core Features**:
-- AI-generated blog posts using OpenAI/Azure OpenAI with specialized prompts
-- Smart product integration based on relevance scoring and editor-selected products (always attached)
-- Multiple content templates: Buying Guides, Product Reviews, Comparisons, Tutorials, History, Deals, Quiz, New Release, Artist Spotlight
-- Structured content sections with AI-generated product recommendations
-- SEO optimization with auto-generated titles, descriptions, and meta tags
-- Generation history tracking with performance metrics
+Core features
+- Human editorial style: prompts enforce natural tone (contractions, varied sentences), concrete scenarios, no “AI” telltales.
+- Structured JSON output (stored in `blog_posts.structured_content`) drives flexible rendering and components.
+- Templates for multiple formats: Buying Guide, Review, Comparison, Tutorial, History, Deals/Value, Quiz, New Release, Artist Spotlight.
+- Product integration: AI recommendations with context + guaranteed attachment of editor‑selected products.
+- Draft preview: `/admin/blog/preview/{id}` renders full post (markdown + components) before publish.
+- SEO: BlogPosting + FAQPage JSON‑LD, conditional `noindex`, internal linking, Related Posts.
 
-**Architecture**:
-- **Templates**: Pre-built prompt templates for different blog types with customizable parameters (seed script: `backend/scripts/data/seed_blog_generation_templates.py`)
-- **AI Service**: BlogAIGenerator handles provider routing, prompt building, and response parsing
-- **Product Association**: Smart selection + guaranteed attachment of selected products
-- **Content Sections**: Structured content with sections that can reference specific products
-- **Generation Tracking**: Complete audit trail of AI generations with token usage and performance metrics
+Architecture
+- Templates: DB‑backed (`blog_generation_templates`) with UI editor; seed script updates or inserts if new.
+- AI Service: BlogAIGenerator builds prompts (with human style + schema), calls providers, validates JSON, saves posts.
+- Content Structure: `structured_content.sections` with `section_type` powering components (pros/cons, specs, comparison).
+- Tracking: Full generation history + batch jobs (Azure OpenAI batch supported).
 
-**Frontend Components**:
-- `BlogAIGenerator`: Full-featured AI generation interface with template selection and customization
-- `BlogManager`: Admin dashboard for managing posts and viewing generation history
-- `BlogPostEditor`: Manual blog creation with product integration
-- Enhanced `BlogPostCard` and `BlogProductShowcase` for displaying AI-generated content
+Frontend (blog)
+- Post page: markdown rendering (ReactMarkdown + GFM), sticky TOC, Pros/Cons, Specs, Comparison Table, Key Takeaways, FAQs, Related Posts, author box, newsletter CTA.
+- Blog index: hero featured + two secondary; sticky category chips; Most Read + Popular Tags sidebar; paginated grid.
+- Admin: BlogManager (filters, badges Draft/Published/noindex, bulk Publish/Draft/Archive/Noindex), AI Generator, AI Batch, Templates Manager (view/edit prompts and structure).
 
-**API Endpoints**:
-- `/blog/templates` - Manage generation templates
-- `/blog/generate` - Trigger AI blog generation (provider-aware)
-- `/blog/clone-rewrite` - Clone & rewrite content from a source URL
-- `/blog/generation-history` - View generation audit trail
-- `/blog/tags/popular` - Popular tags for internal linking
-- `/blog/ai-posts/{id}` - Fetch AI-generated posts with enhanced metadata
+Key endpoints
+- Public: `/blog/posts`, `/blog/posts/{slug}`, `/blog/categories`, `/blog/tags/popular`, `/blog/search`, `/blog/ai-posts/{id}` (rich AI details).
+- Admin (protected):
+  - Templates: `GET /admin/blog/templates`, `PUT /admin/blog/templates/{id}`
+  - Generate: `POST /admin/blog/generate`, `POST /admin/blog/clone-rewrite`
+  - Batch: `POST /admin/blog/batch/create`, `POST /admin/blog/batch/{batch_id}/upload`, `POST /admin/blog/batch/{file_id}/start`, `GET /admin/blog/batch/{azure_batch_id}/status`, `POST /admin/blog/batch/{azure_batch_id}/download`, `POST /admin/blog/batch/process`
+  - Bulk ops: `POST /admin/blog/posts/publish-batch`, `POST /admin/blog/posts/status-batch` (draft/archive), `POST /admin/blog/posts/seo-batch` (noindex)
 
-**Database Schema**:
-The blog system uses 9 specialized tables to support AI generation, content structure, product associations, and generation tracking. Key features include AI context fields, relevance scoring, section-based content organization, and comprehensive generation history.
+DB highlights
+- `blog_posts`: enhanced with AI fields, `structured_content JSONB`, `noindex BOOLEAN`.
+- `blog_post_products`: `ai_context`, `relevance_score`, `mentioned_in_sections`.
+- `blog_content_sections`: section metadata (type/title/content/order), section‑level product references.
+- `blog_generation_history`: prompt, model, tokens, timing, metadata.
+- `blog_batch_jobs`, `blog_batch_processing_history`: Azure/OpenAI batch tracking, results import.
 
-**Azure Batch API Integration**:
-- **Batch Processing**: Efficient bulk blog generation using Azure OpenAI Batch API with 50% cost savings
-- **Azure Storage**: Automatic file management with batch request/response storage in Azure Blob Storage
-- **Workflow Management**: Complete batch lifecycle tracking from creation to post publication
-- **Admin Dashboard**: Secure admin-only access via Azure App Service Authentication
-- **Environment Configuration**: Comprehensive environment variable setup for Azure services
+Rendering contract (selected section types)
+- `pros_cons`: `{ pros: string[], cons: string[] }` → ProsCons component.
+- `comparison_table`: `{ headers: string[], rows: string[][] }` → ComparisonTable.
+- `specs`: `{ specs: [{ label, value }, ...] }` → SpecsList.
+- Fallback: `{ content: markdown }` rendered via ReactMarkdown.
+- Top-level extras: `best_features: string[]`, `faqs: [{ q, a }]`, `key_takeaways: markdown`.
 
-**Batch System Tables**:
-- `blog_batch_jobs`: Tracks batch creation, Azure job status, file paths, and completion metrics
-- `blog_batch_processing_history`: Records batch processing results with success/failure analytics
+Generation defaults and style
+- Target 2000 words by default; prompt enforces deep sections (pros/cons, specs, who‑it’s‑for, tips/mistakes, comparison, key takeaways, FAQs).
+- Human‑style guardrails: contractions, varied sentences, concrete claims, banned generic AI phrases, no hallucinated specs.
 
-**Admin Security**:
-- Azure App Service Authentication with Azure AD integration
-- Admin-only routes protected by email verification
-- Comprehensive logging and audit trails
-- Environment-based admin access control
+Admin UX
+- Draft preview route for safe review.
+- Templates Manager: edit prompts, structure, min/max products, tags/types.
+- Batch Manager: build, upload, start, check status, download, process Azure/OpenAI batch jobs.
 
-**Protected Documentation**:
-- `/docs` frontend page with Azure AD authentication
-- `/api/v1/docs/` backend endpoints (Swagger UI, ReDoc, OpenAPI schema)
-- Admin-only access with same authentication as admin panel
-- Interactive API testing with full endpoint coverage
-- Complete schema documentation including security schemes and rate limits
+SEO
+- JSON‑LD: BlogPosting + FAQPage; canonical + OG/Twitter; conditional `noindex` per post.
+- Related Posts and Popular Tags improve internal linking.

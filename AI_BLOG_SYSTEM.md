@@ -91,6 +91,15 @@ Core functionality:
 Also available:
 - `clone_and_rewrite()` - Fetch a source article, extract content, then rewrite with AI and optional product integration.
 
+Human style & schema
+- Prompts enforce human editorial style (contractions, varied sentences, concrete specifics; no generic AI phrasing).
+- Structured JSON output with section types powering components:
+  - `pros_cons`: pros[], cons[] → ProsCons
+  - `comparison_table`: headers[], rows[][] → ComparisonTable
+  - `specs`: specs[{label, value}] → SpecsList
+  - Fallback sections render markdown via ReactMarkdown + GFM.
+  - Top-level: `best_features: string[]`, `faqs: [{q, a}]`, optional `key_takeaways`.
+
 ### 3. Specialized Prompt Templates
 
 **File**: `backend/app/services/blog_prompt_templates.py`
@@ -117,6 +126,12 @@ Each template includes:
     }
 }
 ```
+
+### 3. Templates Manager (Admin)
+
+UI to browse and edit templates (system_prompt, base_prompt, product_context_prompt, min/max products, tags, content_structure). Backed by:
+- `GET /api/v1/admin/blog/templates`
+- `PUT /api/v1/admin/blog/templates/{id}`
 
 ### 4. Enhanced Product Association
 
@@ -215,9 +230,25 @@ Features:
 **File**: `frontend/src/components/BlogManager.tsx`
 
 Admin interface featuring:
-- **Statistics**: Total posts, published count, AI-generated count, total views
-- **Dual Tabs**: Blog posts grid + Generation history timeline
-- **Quick Actions**: Launch AI generator or manual editor
+- Statistics: total/published/AI posts, total views
+- Tabs: Posts, AI Generation History, AI Batch, Templates
+- Bulk actions: Publish Now/Spread, Move to Draft/Archive, Set/Clear noindex
+- Draft preview links for unreleased posts
+
+### 3. BlogBatchManager (Admin)
+
+Builds Azure/OpenAI batch requests from templates and optional product IDs, and runs the full lifecycle:
+- Create → Upload → Start → Status → Download → Process
+- Endpoints: `/api/v1/admin/blog/batch/*`
+
+### 4. Post Presentation
+
+- Markdown rendering with ReactMarkdown + GFM
+- Components powered by structured sections: ProsCons, SpecsList, ComparisonTable
+- Sticky table of contents for structured posts
+- Key Takeaways and FAQ accordion rendering
+- Related Posts by category, author box, newsletter CTA
+- SEO: BlogPosting JSON-LD (articleSection, wordCount) and FAQPage JSON-LD; canonical/OG/Twitter; conditional noindex
 - **Generation History**: Status tracking, error details, prompt viewing
 
 ### 3. Enhanced BlogPostEditor
