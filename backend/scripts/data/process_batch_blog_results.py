@@ -156,11 +156,12 @@ async def create_tags(tag_names: List[str]) -> List[int]:
             if existing:
                 tag_ids.append(existing[0])
             else:
-                # Create new tag
+                # Create new tag (handle duplicates)
                 result = await session.execute(
                     text("""
                         INSERT INTO blog_tags (name, slug) 
                         VALUES (:name, :slug) 
+                        ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
                         RETURNING id
                     """),
                     {
@@ -197,8 +198,19 @@ async def insert_blog_post(blog_data: Dict[Any, Any], custom_id: str) -> Optiona
         # Get random author from database
         author_name = await get_random_author()
         
-        # Convert structured content to HTML
-        content = convert_structured_to_html(blog_data)
+        # Create simple content from sections for search/preview purposes
+        content_parts = []
+        if 'sections' in blog_data:
+            for section in blog_data['sections']:
+                if section.get('title'):
+                    content_parts.append(f"## {section['title']}")
+                if section.get('content'):
+                    # Strip HTML tags for clean text content
+                    import re
+                    clean_content = re.sub(r'<[^>]+>', '', str(section['content']))
+                    content_parts.append(clean_content)
+        
+        content = '\n\n'.join(content_parts) if content_parts else blog_data.get('excerpt', '')
         structured_content = json.dumps(blog_data)
         
         # Create slug
@@ -264,7 +276,7 @@ async def insert_blog_post(blog_data: Dict[Any, Any], custom_id: str) -> Optiona
             for tag_id in tag_ids:
                 await session.execute(
                     text("""
-                        INSERT INTO blog_post_tags (blog_post_id, blog_tag_id) 
+                        INSERT INTO blog_post_tags (blog_post_id, tag_id) 
                         VALUES (:blog_post_id, :tag_id)
                         ON CONFLICT DO NOTHING
                     """),
@@ -278,6 +290,9 @@ async def insert_blog_post(blog_data: Dict[Any, Any], custom_id: str) -> Optiona
                         INSERT INTO blog_post_products (
                             blog_post_id, product_id, position, context
                         ) VALUES (:blog_post_id, :product_id, :position, :context)
+                        ON CONFLICT (blog_post_id, product_id) DO UPDATE SET
+                            position = EXCLUDED.position,
+                            context = EXCLUDED.context
                     """),
                     {
                         "blog_post_id": blog_post_id,

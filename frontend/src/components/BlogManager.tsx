@@ -33,6 +33,14 @@ export default function BlogManager() {
   const [activeTab, setActiveTab] = useState<'posts' | 'ai-history' | 'ai-batch' | 'templates'>('posts');
   const [statusFilter, setStatusFilter] = useState<'all'|'draft'|'published'>('all');
   const [aiFilter, setAiFilter] = useState<'all'|'ai'|'manual'>('all');
+  const [contentTypeFilter, setContentTypeFilter] = useState<'all'|'review'|'buying_guide'|'comparison'|'tutorial'|'roundup'|'seasonal'|'artist'|'historical'|'quiz'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 50,
+    total: 0,
+    total_pages: 0
+  });
   const [stats, setStats] = useState({
     totalPosts: 0,
     publishedPosts: 0,
@@ -44,26 +52,33 @@ export default function BlogManager() {
     fetchBlogPosts();
     fetchGenerationHistory();
     fetchStats();
-  }, [statusFilter, aiFilter]);
+  }, [statusFilter, aiFilter, contentTypeFilter, searchQuery, pagination.page]);
 
   const fetchBlogPosts = async () => {
     try {
       const adminToken = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
-      const qs = new URLSearchParams({ limit: '50' });
+      const qs = new URLSearchParams({ 
+        limit: pagination.limit.toString(),
+        offset: ((pagination.page - 1) * pagination.limit).toString()
+      });
+      
       if (statusFilter !== 'all') qs.set('status', statusFilter);
       if (aiFilter !== 'all') qs.set('ai_generated', aiFilter === 'ai' ? 'true' : 'false');
+      if (contentTypeFilter !== 'all') qs.set('content_type', contentTypeFilter);
+      if (searchQuery.trim()) qs.set('search', searchQuery.trim());
+      
       const response = await fetch(`${ADMIN_API_BASE}/admin/blog/posts?${qs.toString()}`, {
         credentials: 'include',
         headers: { ...(adminToken ? { 'X-Admin-Token': adminToken } : {}) }
       });
       if (response.ok) {
         const data = await response.json();
-          const mapped: any[] = (data.posts || []).map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            slug: p.slug,
-            excerpt: p.excerpt,
-            featured_image: p.featured_image,
+        const mapped: any[] = (data.posts || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          excerpt: p.excerpt,
+          featured_image: p.featured_image,
           category: p.category_slug ? {
             id: 0,
             name: p.category_name,
@@ -72,16 +87,27 @@ export default function BlogManager() {
             sort_order: 0,
             is_active: true,
           } as any : undefined,
-            author_name: p.author_name,
-            status: p.status,
-            noindex: !!p.noindex,
-            reading_time: p.reading_time,
-            view_count: p.view_count || 0,
-            featured: p.featured || false,
-            published_at: p.published_at,
-            tags: [],
+          author_name: p.author_name,
+          status: p.status,
+          noindex: !!p.noindex,
+          reading_time: p.reading_time,
+          view_count: p.view_count || 0,
+          featured: p.featured || false,
+          published_at: p.published_at,
+          generated_by_ai: p.generated_by_ai,
+          generation_model: p.generation_model,
+          tags: [],
         }));
         setBlogPosts(mapped);
+        
+        // Update pagination info
+        if (data.pagination) {
+          setPagination(prev => ({
+            ...prev,
+            total: data.pagination.total,
+            total_pages: data.pagination.total_pages
+          }));
+        }
       }
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
@@ -273,14 +299,17 @@ export default function BlogManager() {
       </div>
 
       {/* Filters + Actions */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        {/* Filters */}
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-4 mb-8">
+        {/* First row - Filters */}
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Status:</span>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as any);
+                setPagination(prev => ({ ...prev, page: 1 }));
+              }}
               className="px-2 py-1 border rounded text-sm"
             >
               <option value="all">All</option>
@@ -292,13 +321,64 @@ export default function BlogManager() {
             <span className="text-sm text-gray-600">Origin:</span>
             <select
               value={aiFilter}
-              onChange={(e) => setAiFilter(e.target.value as any)}
+              onChange={(e) => {
+                setAiFilter(e.target.value as any);
+                setPagination(prev => ({ ...prev, page: 1 }));
+              }}
               className="px-2 py-1 border rounded text-sm"
             >
               <option value="all">All</option>
               <option value="ai">AI</option>
               <option value="manual">Manual</option>
             </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Content Type:</span>
+            <select
+              value={contentTypeFilter}
+              onChange={(e) => {
+                setContentTypeFilter(e.target.value as any);
+                setPagination(prev => ({ ...prev, page: 1 }));
+              }}
+              className="px-2 py-1 border rounded text-sm"
+            >
+              <option value="all">All Types</option>
+              <option value="review">Reviews</option>
+              <option value="buying_guide">Buying Guides</option>
+              <option value="comparison">Comparisons</option>
+              <option value="tutorial">Tutorials</option>
+              <option value="roundup">Roundups</option>
+              <option value="seasonal">Seasonal/Deals</option>
+              <option value="artist">Artist Spotlights</option>
+              <option value="historical">Historical</option>
+              <option value="quiz">Quizzes</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Search:</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setPagination(prev => ({ ...prev, page: 1 }));
+                }
+              }}
+              placeholder="Search titles..."
+              className="px-2 py-1 border rounded text-sm w-40"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setPagination(prev => ({ ...prev, page: 1 }));
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            )}
           </div>
           <label className="flex items-center gap-2 ml-2 text-sm text-gray-700">
             <input
@@ -309,6 +389,9 @@ export default function BlogManager() {
             Select all on page
           </label>
         </div>
+        
+        {/* Second row - Actions */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Bulk bar */}
         {selected.size > 0 ? (
           <div className="flex items-center space-x-3">
@@ -516,86 +599,193 @@ export default function BlogManager() {
 
       {/* Content */}
       {activeTab === 'posts' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogPosts.length > 0 ? (
-            blogPosts.map((post) => {
-              const isSelected = selected.has(post.id);
-              const isPublished = post.status === 'published';
-              const hrefOverride = isPublished ? `/blog/${post.slug}` : `/admin/blog/preview/${post.id}`;
-              return (
-                <div key={post.id} className="relative">
-                  <div className="absolute top-3 left-3 z-10 bg-white/90 rounded-md p-1 shadow">
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => toggleSelect(post.id)}
-                      className="h-4 w-4"
-                      title="Select for bulk publish"
+        <div>
+          {/* Posts grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {blogPosts.length > 0 ? (
+              blogPosts.map((post) => {
+                const isSelected = selected.has(post.id);
+                const isPublished = post.status === 'published';
+                const hrefOverride = isPublished ? `/blog/${post.slug}` : `/admin/blog/preview/${post.id}`;
+                return (
+                  <div key={post.id} className="relative">
+                    <div className="absolute top-3 left-3 z-10 bg-white/90 rounded-md p-1 shadow">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(post.id)}
+                        className="h-4 w-4"
+                        title="Select for bulk publish"
+                      />
+                    </div>
+                    <div className="absolute top-3 right-3 z-10 flex gap-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {isPublished ? 'Published' : 'Draft'}
+                      </span>
+                      {post.generated_by_ai && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">AI</span>
+                      )}
+                      {post.noindex && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 border">noindex</span>
+                      )}
+                    </div>
+                    <BlogPostCard
+                      post={post}
+                      showMeta={true}
+                      showCategory={true}
+                      showExcerpt={true}
+                      hrefOverride={hrefOverride}
                     />
+                    {/* Explicit action bar below each card */}
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      {!isPublished ? (
+                        <a
+                          href={`/admin/blog/preview/${post.id}`}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Preview (draft)
+                        </a>
+                      ) : (
+                        <a
+                          href={`/blog/${post.slug}`}
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          View public page
+                        </a>
+                      )}
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        {post.generation_model && (
+                          <span title={`Generated using: ${post.generation_model}`}>
+                            {post.generation_model.length > 20 ? 
+                              post.generation_model.substring(0, 20) + '...' : 
+                              post.generation_model
+                            }
+                          </span>
+                        )}
+                        <a
+                          href={`/_next/data/${process.env.__NEXT_BUILD_ID || 'dev'}/blog/${post.slug}.json?slug=${post.slug}`}
+                          className="text-gray-500 hover:text-gray-700"
+                          title="Check SSR data fetch for this slug (Next.js)"
+                        >
+                          SSR JSON
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                  <div className="absolute top-3 right-3 z-10 flex gap-2">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                      {isPublished ? 'Published' : 'Draft'}
-                    </span>
-                    {post.noindex && (
-                      <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 border">noindex</span>
-                    )}
-                  </div>
-                  <BlogPostCard
-                    post={post}
-                    showMeta={true}
-                    showCategory={true}
-                    showExcerpt={true}
-                    hrefOverride={hrefOverride}
-                  />
-                  {/* Explicit action bar below each card */}
-                  <div className="mt-2 flex items-center justify-between text-sm">
-                    {!isPublished ? (
-                      <a
-                        href={`/admin/blog/preview/${post.id}`}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Preview (draft)
-                      </a>
-                    ) : (
-                      <a
-                        href={`/blog/${post.slug}`}
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        View public page
-                      </a>
-                    )}
-                    <a
-                      href={`/_next/data/${process.env.__NEXT_BUILD_ID || 'dev'}/blog/${post.slug}.json?slug=${post.slug}`}
-                      className="text-gray-500 hover:text-gray-700"
-                      title="Check SSR data fetch for this slug (Next.js)"
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <DocumentTextIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No blog posts found</h3>
+                <p className="text-gray-500 mb-6">
+                  {statusFilter !== 'all' || aiFilter !== 'all' || contentTypeFilter !== 'all' || searchQuery ? 
+                    'Try adjusting your filters or search terms' : 
+                    'Get started by creating your first blog post'
+                  }
+                </p>
+                {(!statusFilter || statusFilter === 'all') && (!aiFilter || aiFilter === 'all') && (!contentTypeFilter || contentTypeFilter === 'all') && !searchQuery && (
+                  <div className="space-x-3">
+                    <button
+                      onClick={() => setIsAIGeneratorOpen(true)}
+                      className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all"
                     >
-                      SSR JSON
-                    </a>
+                      <SparklesIcon className="w-5 h-5" />
+                      <span>Generate with AI</span>
+                    </button>
+                    <button
+                      onClick={() => setIsEditorOpen(true)}
+                      className="inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <PlusIcon className="w-5 h-5" />
+                      <span>Create Manually</span>
+                    </button>
                   </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {blogPosts.length > 0 && pagination.total_pages > 1 && (
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+              <div className="flex flex-1 justify-between sm:hidden">
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                  disabled={pagination.page <= 1}
+                  className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.total_pages, prev.page + 1) }))}
+                  disabled={pagination.page >= pagination.total_pages}
+                  className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Showing{' '}
+                    <span className="font-medium">{((pagination.page - 1) * pagination.limit) + 1}</span>
+                    {' '}to{' '}
+                    <span className="font-medium">
+                      {Math.min(pagination.page * pagination.limit, pagination.total)}
+                    </span>
+                    {' '}of{' '}
+                    <span className="font-medium">{pagination.total}</span>
+                    {' '}results
+                  </p>
                 </div>
-              );
-            })
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <DocumentTextIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No blog posts yet</h3>
-              <p className="text-gray-500 mb-6">Get started by creating your first blog post</p>
-              <div className="space-x-3">
-                <button
-                  onClick={() => setIsAIGeneratorOpen(true)}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all"
-                >
-                  <SparklesIcon className="w-5 h-5" />
-                  <span>Generate with AI</span>
-                </button>
-                <button
-                  onClick={() => setIsEditorOpen(true)}
-                  className="inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <PlusIcon className="w-5 h-5" />
-                  <span>Create Manually</span>
-                </button>
+                <div>
+                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                    <button
+                      onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                      disabled={pagination.page <= 1}
+                      className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Previous</span>
+                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    
+                    {/* Page numbers */}
+                    {Array.from({ length: Math.min(10, pagination.total_pages) }, (_, i) => {
+                      const page = i + 1;
+                      if (pagination.total_pages <= 10) {
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => setPagination(prev => ({ ...prev, page }))}
+                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                              pagination.page === page
+                                ? 'z-10 bg-brand-primary text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary'
+                                : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                      // Handle pagination with ellipsis for large page counts
+                      return null;
+                    })}
+                    
+                    <button
+                      onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.total_pages, prev.page + 1) }))}
+                      disabled={pagination.page >= pagination.total_pages}
+                      className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Next</span>
+                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </nav>
+                </div>
               </div>
             </div>
           )}

@@ -168,10 +168,13 @@ async def get_admin_blog_posts(
     offset: int = Query(0, ge=0),
     status: Optional[str] = Query(None),
     ai_generated: Optional[bool] = Query(None),
+    category: Optional[str] = Query(None),
+    content_type: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
     admin: dict = Depends(require_azure_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get blog posts for admin management"""
+    """Get blog posts for admin management with enhanced filtering"""
     try:
         where_clauses = []
         params = {'limit': limit, 'offset': offset}
@@ -184,8 +187,50 @@ async def get_admin_blog_posts(
             where_clauses.append("bp.generated_by_ai = :ai_generated")
             params['ai_generated'] = ai_generated
         
+        if category:
+            where_clauses.append("bc.slug = :category")
+            params['category'] = category
+        
+        if content_type:
+            # Map content types to template patterns
+            content_type_mapping = {
+                'review': ['review', 'hands-on', 'deep dive'],
+                'buying_guide': ['buying guide', 'guide template', 'what to look for'],
+                'comparison': ['comparison', 'battle', 'showdown', 'vs'],
+                'tutorial': ['tutorial', 'how-to', 'setup', 'maintenance'],
+                'roundup': ['roundup', 'best picks', 'top'],
+                'seasonal': ['seasonal', 'deals', 'black friday', 'holiday'],
+                'artist': ['artist spotlight', 'rig'],
+                'historical': ['history', 'evolution'],
+                'quiz': ['quiz', 'interactive']
+            }
+            
+            if content_type in content_type_mapping:
+                patterns = content_type_mapping[content_type]
+                # Search in generation_model field which stores template name
+                pattern_conditions = " OR ".join([f"bp.generation_model ILIKE :pattern_{i}" for i in range(len(patterns))])
+                where_clauses.append(f"({pattern_conditions})")
+                for i, pattern in enumerate(patterns):
+                    params[f'pattern_{i}'] = f'%{pattern}%'
+        
+        if search:
+            where_clauses.append("(bp.title ILIKE :search OR bp.excerpt ILIKE :search)")
+            params['search'] = f'%{search}%'
+        
         where_clause = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
         
+        # Get total count for pagination
+        count_query = f"""
+        SELECT COUNT(DISTINCT bp.id)
+        FROM blog_posts bp
+        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
+        {where_clause}
+        """
+        
+        count_result = await db.execute(text(count_query), params)
+        total_count = count_result.scalar()
+        
+        # Get posts
         query = f"""
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
@@ -213,7 +258,9 @@ async def get_admin_blog_posts(
             "pagination": {
                 "limit": limit,
                 "offset": offset,
-                "total": len(posts)  # In a real app, you'd do a separate COUNT query
+                "total": total_count,
+                "page": (offset // limit) + 1,
+                "total_pages": (total_count + limit - 1) // limit
             }
         }
         
