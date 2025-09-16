@@ -1074,10 +1074,6 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
           {/* Enhanced Empty State */}
           {!comparison && !loading && (
             <div className="text-center py-16">
-              <p className="text-sm sm:text-lg text-gray-600 mb-8 px-2 sm:px-4 sm:max-w-2xl sm:mx-auto text-center">
-                Use the search above to find instruments and build your comparison. 
-                Compare specifications, features, prices, and community ratings.
-              </p>
               
               {/* Quick Action Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4 sm:max-w-4xl sm:mx-auto mb-8">

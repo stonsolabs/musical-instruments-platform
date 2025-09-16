@@ -198,7 +198,10 @@ export default function HeroSection() {
                 type="submit"
                 className="btn-primary w-full py-4 text-lg"
               >
-                Compare {searchQueries.filter(q => q.trim()).length || 0} Instruments
+                {searchQueries.filter(q => q.trim()).length === 1 
+                  ? 'View Instrument' 
+                  : `Compare ${searchQueries.filter(q => q.trim()).length || 0} Instruments`
+                }
               </button>
             </form>
           </div>
