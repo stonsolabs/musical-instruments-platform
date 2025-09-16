@@ -1,5 +1,5 @@
-GetYourMusicGear – Architecture & Context (Summary)
-==================================================
+GetYourMusicGear – Architecture & Context (Summary) (moved to docs/)
+===================================================================
 
 Overview
 --------
@@ -21,8 +21,10 @@ Notable Enhancements (2025-09)
 - Affiliate Fetch
   - Use `GET /products/{id}/affiliate-urls` when no store links are provided (POST only when sending links).
 - AI Blog System
-  - Multi-provider (OpenAI & Azure OpenAI), Clone & Rewrite endpoint, ensures selected products are attached.
-  - New templates/types: Deals, Quiz, New Release, Artist Spotlight (plus existing Roundup/Guide/Review/Comparison/Tutorial/History).
+  - **Structured JSON Generation**: All 24 templates now generate structured JSON format with sections, headers, and product integration
+  - **Professional Content**: Removed all AI mentions and emoticons, content appears completely human-written
+  - **Enhanced Templates**: 24 active templates covering all content types (reviews, guides, comparisons, tutorials, seasonal, artist spotlights, etc.)
+  - **Batch Processing**: Comprehensive batch generation system for 86+ posts using OpenAI batch API (50% cost savings)
 - Blog Main Page
   - Added “Most Read” and “Popular Tags” sections for better internal linking and discovery.
 - Technical SEO

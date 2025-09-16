@@ -119,6 +119,15 @@ setup_repo.sh
 .cursor/
 .claude/
 
+# Generated reports and plans
+image_validation_*.json
+image_validation_*.csv
+image_validation_*_redownload_ids.txt
+reconcile_*_actions.json
+reconcile_*_delete_plan.txt
+reconcile_*_orphans.txt
+crawler/crawler_locks/
+
 # Azure deployment scripts with credentials
 crawler/deploy-azure.sh
 crawler/start-all-replicas.sh
