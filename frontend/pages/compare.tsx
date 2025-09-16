@@ -1074,19 +1074,6 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
           {/* Enhanced Empty State */}
           {!comparison && !loading && (
             <div className="text-center py-16">
-              <div className="relative">
-                <div className="text-8xl mb-6 opacity-20">🎸</div>
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 translate-y-4 text-4xl">
-                  🥁
-                </div>
-                <div className="absolute top-8 right-1/2 transform translate-x-16 text-3xl">
-                  🎹
-                </div>
-              </div>
-              
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Start Your Comparison Journey
-              </h3>
               <p className="text-sm sm:text-lg text-gray-600 mb-8 px-2 sm:px-4 sm:max-w-2xl sm:mx-auto text-center">
                 Use the search above to find instruments and build your comparison. 
                 Compare specifications, features, prices, and community ratings.
@@ -1096,23 +1083,20 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4 sm:max-w-4xl sm:mx-auto mb-8">
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                      onClick={() => router.push('/products?category=guitars')}>
-                  <div className="text-3xl mb-3">🎸</div>
                   <h4 className="font-semibold text-gray-900 mb-2">Compare Guitars</h4>
                   <p className="text-sm text-gray-600">Electric, acoustic, bass guitars and more</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                      onClick={() => router.push('/products?category=pianos')}>
-                  <div className="text-3xl mb-3">🎹</div>
                   <h4 className="font-semibold text-gray-900 mb-2">Compare Keyboards</h4>
                   <p className="text-sm text-gray-600">Digital pianos, synthesizers, MIDI controllers</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
-                     onClick={() => router.push('/products?category=drums')}>
-                  <div className="text-3xl mb-3">🥁</div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Compare Drums</h4>
-                  <p className="text-sm text-gray-600">Acoustic kits, electronic drums, percussion</p>
+                     onClick={() => router.push('/products?category=electric-basses')}>
+                  <h4 className="font-semibold text-gray-900 mb-2">Compare Electric Basses</h4>
+                  <p className="text-sm text-gray-600">4-string, 5-string, fretless, and extended range basses</p>
                 </div>
               </div>
               

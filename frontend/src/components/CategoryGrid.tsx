@@ -26,42 +26,42 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
     'acoustic-guitars': {
       color: 'from-amber-500 to-orange-500',
       description: 'Acoustic guitars for folk, country, and unplugged performances',
-      icon: '🎸'
+      icon: ''
     },
     'electric-basses': {
       color: 'from-blue-500 to-indigo-500',
       description: 'Electric bass guitars for rhythm and groove',
-      icon: '🎸'
+      icon: ''
     },
     'acoustic-basses': {
       color: 'from-green-500 to-teal-500',
       description: 'Acoustic bass guitars for unplugged sessions',
-      icon: '🎸'
+      icon: ''
     },
     'digital-pianos': {
       color: 'from-purple-500 to-pink-500',
       description: 'Digital pianos and keyboards for home and studio',
-      icon: '🎹'
+      icon: ''
     },
     'acoustic-pianos': {
       color: 'from-yellow-500 to-orange-500',
       description: 'Acoustic pianos for classical and jazz performance',
-      icon: '🎹'
+      icon: ''
     },
     'drums': {
       color: 'from-red-600 to-orange-600',
       description: 'Drum kits and percussion instruments',
-      icon: '🥁'
+      icon: ''
     },
     'studio-monitors': {
       color: 'from-gray-600 to-blue-600',
       description: 'Studio monitors and professional audio equipment',
-      icon: '🎧'
+      icon: ''
     },
     'accessories': {
       color: 'from-gray-500 to-purple-500',
       description: 'Cables, stands, cases, and other accessories',
-      icon: '🎵'
+      icon: ''
     }
   };
 
@@ -71,7 +71,7 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
         const config = categoryConfig[category.slug] || {
           color: 'from-gray-500 to-gray-600',
           description: 'Musical instruments and equipment',
-          icon: '🎵'
+          icon: ''
         };
 
         return (
