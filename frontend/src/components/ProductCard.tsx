@@ -119,10 +119,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="text-center">
               <Link
               href={`/products/${product?.slug}`}
-              className="inline-flex items-center text-brand-primary hover:text-brand-dark font-medium transition-colors"
+              className="inline-flex items-center text-brand-primary hover:text-brand-orange font-medium transition-colors"
             >
               View Details
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="ml-2 w-4 h-4 transform hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>

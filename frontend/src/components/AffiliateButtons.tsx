@@ -235,7 +235,7 @@ export default function AffiliateButtons({
         >
           <span className="uppercase tracking-wide text-xs">View at</span>
           {storeConfig.logo && (
-            <Image src={storeConfig.logo} alt={store.name} width={20} height={20} className="w-5 h-5 object-contain" />
+            <Image src={storeConfig.logo} alt={store.name} width={28} height={28} className="w-7 h-7 object-contain" />
           )}
         </a>
       );
@@ -252,7 +252,7 @@ export default function AffiliateButtons({
         >
           <span className="uppercase tracking-wide text-sm">View at</span>
           {storeConfig.logo && (
-            <Image src={storeConfig.logo} alt={store.name} width={32} height={32} className="w-8 h-8 object-contain" />
+            <Image src={storeConfig.logo} alt={store.name} width={48} height={48} className="w-12 h-12 object-contain" />
           )}
         </a>
       );
@@ -269,7 +269,7 @@ export default function AffiliateButtons({
       >
         <div className="flex items-center gap-3">
           {storeConfig.logo && (
-            <Image src={storeConfig.logo} alt={store.name} width={40} height={40} className="w-10 h-10 object-contain" />
+            <Image src={storeConfig.logo} alt={store.name} width={56} height={56} className="w-14 h-14 object-contain" />
           )}
           <div className="flex flex-col items-start">
             <span className="uppercase tracking-wide text-sm">{storeConfig.name}</span>

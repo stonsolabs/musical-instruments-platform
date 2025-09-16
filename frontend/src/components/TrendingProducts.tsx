@@ -31,9 +31,8 @@ export default function TrendingProducts({ products }: TrendingProductsProps) {
         const imageUrl = getProductImageUrl(product);
         
         return (
-          <Link
+          <div
             key={product.id}
-            href={`/products/${product.slug}`}
             className="group bg-white border border-gray-200 rounded-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
           >
             {/* Product Image */}
@@ -56,8 +55,10 @@ export default function TrendingProducts({ products }: TrendingProductsProps) {
             {/* Product Info */}
             <div className="p-4">
               {/* Product Name - Make it more prominent */}
-              <h3 className="font-display font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-brand-primary transition-colors uppercase tracking-wide">
-                {product.name}
+              <h3 className="font-display font-bold text-lg text-gray-900 mb-2 line-clamp-2 transition-colors uppercase tracking-wide">
+                <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                  {product.name}
+                </Link>
               </h3>
 
               {/* Category and Brand */}
@@ -108,6 +109,19 @@ export default function TrendingProducts({ products }: TrendingProductsProps) {
                 <ProductCardButtons product={product} />
               </div>
 
+              {/* View Details Link */}
+              <div className="text-center">
+                <Link
+                  href={`/products/${product.slug}`}
+                  className="inline-flex items-center text-brand-primary hover:text-brand-orange font-medium transition-colors"
+                >
+                  View Details
+                  <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+
               {/* Trending Score */}
               {/* {trendingProduct.trending_score && (
                 <div className="mt-2 text-xs text-gray-500">
@@ -115,7 +129,7 @@ export default function TrendingProducts({ products }: TrendingProductsProps) {
                 </div>
               )} */}
             </div>
-          </Link>
+          </div>
         );
       })}
     </div>

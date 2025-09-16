@@ -16,9 +16,16 @@ from typing import Dict, List, Set, Optional
 from pathlib import Path
 import sys
 
-# Add crawler directory to path
-crawler_dir = Path(__file__).parent.parent / "crawler"
-sys.path.append(str(crawler_dir))
+# Add crawler directory to path robustly (walk up to repo root)
+def _ensure_crawler_on_path():
+    here = Path(__file__).resolve()
+    for base in here.parents:
+        candidate = base / "crawler"
+        if candidate.exists():
+            sys.path.append(str(candidate))
+            return
+
+_ensure_crawler_on_path()
 
 from thomann_image_downloader import ThomannImageDownloader
 

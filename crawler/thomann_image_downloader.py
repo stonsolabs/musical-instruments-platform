@@ -19,7 +19,6 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import logging
-from loguru import logger
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 
@@ -28,6 +27,7 @@ from database_manager import DatabaseManager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class ThomannImageDownloader:
     """Downloads product images from Thomann and uploads to Azure Storage"""

@@ -1,150 +1,211 @@
-# Simple Product Crawler
+# Thomann Image Downloader Service (docs moved from crawler/)
 
-A simplified crawler that works with pre-filtered Thomann URLs to crawl products and download images.
+This service automatically downloads product images from Thomann product pages and stores them in Azure Blob Storage, then updates the database with the image paths for display in the UI.
 
-## 🚀 Quick Start
+## Features
 
-### 1. Setup Environment
+- 🖼️ **Automatic Image Download**: Downloads main product images from Thomann product pages
+- ☁️ **Azure Storage Integration**: Stores images in Azure Blob Storage under `product-images` container
+- 🗄️ **Database Updates**: Updates the `images` column in the products table with proper paths
+- 🛡️ **Anti-Blocking**: Uses proxies, random delays, and realistic browser simulation
+- 📊 **Concurrent Processing**: Processes multiple products simultaneously (configurable)
+- 🚀 **Container Apps Deployment**: Runs on Azure Container Apps for scalability
 
-Copy the environment template and configure your settings:
+## How It Works
 
-```bash
-cp env.example .env
+1. **Product Discovery**: Queries the database for products with Thomann links in `store_links`
+2. **Image Extraction**: Visits each Thomann product page and extracts the main product image
+3. **Azure Upload**: Uploads images to Azure Blob Storage with organized naming
+4. **Database Update**: Updates the `images` column with structured JSON containing image metadata
+5. **UI Integration**: Images are automatically available in the frontend through the database
+
+## Database Schema
+
+The service updates the `images` column in the products table with this structure:
+
+```json
+{
+  "thomann_main": {
+    "url": "https://yourstorage.blob.core.windows.net/product-images/thomann/product-name_20241201_143022.jpg",
+    "source": "thomann",
+    "source_url": "https://www.thomann.co.uk/product_page.htm",
+    "downloaded_at": "2024-12-01T14:30:22.123456",
+    "type": "main"
+  }
+}
 ```
 
-Edit `.env` and set your configuration:
-- `IPROYAL_PROXY_URL` - Your iProyal proxy URL (required)
-- `DATABASE_URL` - PostgreSQL database connection
-- `AZURE_STORAGE_CONNECTION_STRING` - Azure Blob Storage for images
+## Azure Storage Structure
 
-### 2. Test Mode (Recommended First)
-
-Test with just 5 products to make sure everything works:
-
-```bash
-export TEST_MODE=true
-export MAX_TEST_PRODUCTS=5
-python run_simple_crawler.py
+Images are stored in the `product-images` container with this path structure:
+```
+product-images/
+└── thomann/
+    ├── product-name-1_20241201_143022.jpg
+    ├── product-name-2_20241201_143156.jpg
+    └── ...
 ```
 
-### 3. Full Crawl
+## Anti-Blocking Measures
 
-Run the full crawler on all your pre-filtered URLs:
+- **Proxy Rotation**: Uses IPRoyal proxy service
+- **Random Delays**: 2-5 second delays between requests
+- **Realistic Headers**: Simulates real browser behavior
+- **Referer Simulation**: Appears to come from Thomann homepage
+- **User Agent Rotation**: Randomly selects from multiple browser user agents
 
-```bash
-export TEST_MODE=false
-python run_simple_crawler.py
-```
-
-## 📁 File Structure
-
-```
-crawler/
-├── simple_product_crawler.py    # Main crawler logic
-├── run_simple_crawler.py        # Runner script
-├── database_manager.py          # Database operations
-├── image_manager.py             # Image downloading
-├── thomann_urls.txt            # Your pre-filtered URLs
-├── .env                        # Environment configuration
-├── env.example                 # Environment template
-├── requirements.txt            # Python dependencies
-├── Dockerfile                  # Container configuration
-├── deploy.sh                   # Azure deployment script
-└── README.md                   # This file
-```
-
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `IPROYAL_PROXY_URL` | iProyal proxy URL | ✅ |
-| `DATABASE_URL` | PostgreSQL connection string | ✅ |
-| `AZURE_STORAGE_CONNECTION_STRING` | Azure Blob Storage | ✅ |
-| `TEST_MODE` | Enable test mode (true/false) | ❌ |
-| `MAX_TEST_PRODUCTS` | Max products in test mode | ❌ |
-
-### Test Mode
-
-Set these environment variables to test with limited products:
-
 ```bash
-export TEST_MODE=true
-export MAX_TEST_PRODUCTS=5
+# Database
+DATABASE_URL=postgresql://user:pass@host:port/db
+
+# Proxy
+IPROYAL_PROXY_URL=http://username:password@proxy.iproyal.com:port
+
+# Azure Storage
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
+AZURE_STORAGE_CONTAINER=product-images
+
+# Performance
+MAX_CONCURRENT_DOWNLOADS=20
+TEST_MODE=false
 ```
 
-## 🐳 Docker Deployment
+### Performance Settings
 
-### Local Docker
+- **MAX_CONCURRENT_DOWNLOADS**: Number of simultaneous downloads (default: 20)
+- **Delays**: 2-5 seconds between requests to avoid rate limiting
+- **Resource Limits**: 1 CPU, 2GB RAM per container instance
+
+## Deployment
+
+### 1. Build and Deploy
 
 ```bash
-docker build -t simple-crawler .
-docker run --env-file .env simple-crawler
+# Deploy to Azure Container Apps
+./deploy-image-downloader.sh
 ```
+
+### 2. Start/Stop Service
+
+```bash
+# Start the service
+./start-image-downloader.sh start
+
+# Stop the service
+./start-image-downloader.sh stop
+
+# Check status
+./start-image-downloader.sh status
+
+# View logs
+./start-image-downloader.sh logs
+
+# Scale to specific replicas
+./start-image-downloader.sh scale 3
+```
+
+### 3. Local Testing
+
+```bash
+# Test with limited products
+python run_image_downloader.py --max-products 5 --test-mode
+
+# Dry run to see what would be processed
+python run_image_downloader.py --dry-run
+
+# Run with verbose logging
+python run_image_downloader.py --verbose
+```
+
+## Monitoring
 
 ### Azure Container Apps
 
 ```bash
-./deploy.sh
+# View logs
+az containerapp logs show --name thomann-image-downloader --resource-group getyourmusicgear-rg --follow
+
+# Check status
+az containerapp show --name thomann-image-downloader --resource-group getyourmusicgear-rg
+
+# Scale manually
+az containerapp update --name thomann-image-downloader --resource-group getyourmusicgear-rg --min-replicas 5
 ```
 
-## 📊 What It Does
+### Database Monitoring
 
-1. **Reads URLs** from `thomann_urls.txt`
-2. **Crawls products** from each category URL
-3. **Handles pagination** automatically
-4. **Downloads images** to Azure Blob Storage
-5. **Saves data** to PostgreSQL database
-6. **Avoids duplicates** by checking existing products
+```sql
+-- Check products with images
+SELECT COUNT(*) FROM products WHERE images IS NOT NULL AND images != '{}';
 
-## 🧪 Testing
+-- Check products without images
+SELECT COUNT(*) FROM products WHERE images IS NULL OR images = '{}';
 
-Always test with a small number of products first:
-
-```bash
-# Test with 5 products
-export TEST_MODE=true
-export MAX_TEST_PRODUCTS=5
-python run_simple_crawler.py
-
-# Test with 10 products
-export TEST_MODE=true
-export MAX_TEST_PRODUCTS=10
-python run_simple_crawler.py
+-- View image metadata for a specific product
+SELECT name, images FROM products WHERE sku = 'your-sku-here';
 ```
 
-## 🔍 Troubleshooting
+## Cost Estimation
+
+- **Storage**: ~€0.02 per GB per month
+- **Container Apps**: ~€0.50-1.00 per day when running
+- **Data Transfer**: Minimal (images are typically 20-50KB each)
+- **Total**: ~€15-30 per month for continuous operation
+
+## Troubleshooting
 
 ### Common Issues
 
-1. **Proxy not working**: Check `IPROYAL_PROXY_URL` in `.env`
-2. **Database connection failed**: Verify `DATABASE_URL` format
-3. **Images not downloading**: Check `AZURE_STORAGE_CONNECTION_STRING`
-4. **No products found**: Verify URLs in `thomann_urls.txt`
+1. **Proxy Connection Failed**
+   - Check IPRoyal proxy credentials
+   - Verify proxy service is active
 
-### Logs
+2. **Azure Storage Upload Failed**
+   - Verify connection string
+   - Check container exists and is accessible
 
-The crawler provides detailed logging:
-- ✅ Success messages
-- ⚠️ Warnings
-- ❌ Errors
-- 🧪 Test mode indicators
+3. **Database Connection Failed**
+   - Verify DATABASE_URL
+   - Check firewall rules for Azure PostgreSQL
 
-## 📝 URL Format
+4. **Rate Limiting**
+   - Reduce MAX_CONCURRENT_DOWNLOADS
+   - Increase delay ranges
 
-Your `thomann_urls.txt` should contain one URL per line:
+### Log Analysis
 
+```bash
+# Filter for errors
+az containerapp logs show --name thomann-image-downloader --resource-group getyourmusicgear-rg | grep "❌"
+
+# Filter for successful downloads
+az containerapp logs show --name thomann-image-downloader --resource-group getyourmusicgear-rg | grep "✅"
 ```
-https://www.thomann.co.uk/all-products-from-the-category-electric-guitars.html?marketingAttributes%5B%5D=EXCLUDE_BUNDLE&manufacturer%5B%5D=Fender&gk=GIEG&sp=solr&cme=true&filter=true
-https://www.thomann.co.uk/all-products-from-the-category-digital-pianos.html?marketingAttributes%5B%5D=EXCLUDE_BUNDLE&gk=TADP&sp=solr&cme=true&filter=true
+
+## Integration with Frontend
+
+The frontend automatically displays images from the `images` column:
+
+```typescript
+// Frontend automatically uses the thomann_main image
+const productImage = product.images?.thomann_main?.url || defaultImage;
 ```
 
-## 🚀 Production
+## Security Considerations
 
-For production deployment:
+- **Proxy Authentication**: Stored as Azure Container App secrets
+- **Database Access**: Uses connection string with minimal required permissions
+- **Storage Access**: Uses connection string with container-level access
+- **No Image Processing**: Downloads images as-is without modification
 
-1. Set `TEST_MODE=false`
-2. Ensure all environment variables are configured
-3. Deploy to Azure Container Apps using `./deploy.sh`
-4. Monitor logs for any issues
+## Future Enhancements
+
+- **Image Optimization**: Compress and resize images for web
+- **Multiple Sources**: Download from other affiliate stores
+- **Image Validation**: Verify downloaded images are valid
+- **Retry Logic**: Automatic retry for failed downloads
+- **Batch Processing**: Process images in larger batches

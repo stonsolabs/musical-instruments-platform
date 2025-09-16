@@ -24,6 +24,166 @@ STYLE_SUFFIX = (
 
 
 TEMPLATES: List[Dict[str, Any]] = [
+    # === HIGH-CONVERTING AFFILIATE TEMPLATES ===
+    {
+        "name": "Ultimate 2025 Buying Guide",
+        "description": "Comprehensive 3000+ word buying guides with detailed product analysis and strong CTAs",
+        "template_type": "buying_guide",
+        "base_prompt": (
+            "Create the definitive buying guide for {category} in 2025. This should be THE resource people bookmark. "
+            "Structure: (1) Hook intro addressing the #1 pain point; (2) Quick recommendation summary with price ranges; "
+            "(3) Complete buying criteria breakdown; (4) Detailed product analysis with pros/cons, who it's for, and current pricing; "
+            "(5) Budget breakdowns ($300-500, $500-1000, $1000+); (6) Common mistakes to avoid; (7) Setup/accessories guide; "
+            "(8) Expert verdict with clear recommendations by use case. Include comparison tables, real-world scenarios, "
+            "and compelling calls-to-action throughout. Target 3000+ words with deep value and strong affiliate integration."
+        ),
+        "system_prompt": (
+            "You are a music gear expert with 20+ years experience. Write with authority and deep knowledge. "
+            "Include specific technical details, real-world insights, and honest assessments. Focus on helping readers make confident purchase decisions."
+        ),
+        "product_context_prompt": (
+            "For each product, provide: brand reputation context, key differentiators, sound characteristics, build quality assessment, "
+            "ideal use cases, skill level fit, value proposition, and honest pros/cons. Include realistic price context and availability notes."
+        ),
+        "required_product_types": [],
+        "min_products": 5,
+        "max_products": 10,
+        "suggested_tags": ["buying_guide", "2025", "ultimate", "comprehensive", "best"],
+        "seo_title_template": "Best {category} 2025: Ultimate Buying Guide + Top Picks",
+        "seo_description_template": "The complete 2025 {category} buying guide. Expert picks, detailed reviews, budget breakdowns, and everything you need to choose the perfect {category}.",
+        "content_structure": {"sections": [
+            "introduction", "quick_picks", "buying_criteria", "detailed_reviews", "budget_breakdown", 
+            "common_mistakes", "setup_guide", "comparison_table", "expert_verdict", "faqs"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Head-to-Head Battle: Product Showdown",
+        "description": "High-converting direct comparisons with clear winners",
+        "template_type": "comparison",
+        "base_prompt": (
+            "Create an epic head-to-head comparison between {product_count} competing products. "
+            "Structure: (1) Fight card style intro; (2) Quick verdict summary; (3) Round-by-round analysis "
+            "(build quality, sound/performance, features, value); (4) Detailed comparison table; "
+            "(5) Real-world use case scenarios; (6) Clear winner by category (beginner, pro, budget, etc.); "
+            "(7) Alternative recommendations. Make it engaging like a sports match but informative and helpful. "
+            "Include strong affiliate CTAs and clear purchase guidance."
+        ),
+        "system_prompt": (
+            "You are a music gear reviewer who makes complex comparisons easy to understand. "
+            "Be analytical but engaging, with clear verdicts and practical advice."
+        ),
+        "product_context_prompt": (
+            "Compare products on concrete attributes: build materials, sound characteristics, feature sets, "
+            "reliability, brand support, resale value, and real-world performance. Declare clear winners with solid reasoning."
+        ),
+        "required_product_types": [],
+        "min_products": 2,
+        "max_products": 4,
+        "suggested_tags": ["comparison", "vs", "battle", "showdown", "head_to_head"],
+        "seo_title_template": "{product1} vs {product2} (2025): Which Wins?",
+        "seo_description_template": "Epic {category} comparison: {product1} vs {product2}. Detailed analysis, clear winner, and expert recommendations for your needs.",
+        "content_structure": {"sections": [
+            "fight_card", "quick_verdict", "round_by_round", "comparison_table", 
+            "use_cases", "winner_by_category", "alternatives", "final_verdict"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Budget Heroes: Best Bang for Buck",
+        "description": "Value-focused roundups that convert budget-conscious buyers",
+        "template_type": "general",
+        "base_prompt": (
+            "Find the absolute best value {category} that punch above their price point. "
+            "Structure: (1) Value proposition intro; (2) Our top 3 budget heroes; (3) Price-to-performance analysis; "
+            "(4) What you're NOT sacrificing; (5) Smart upgrade paths; (6) Accessories that maximize value; "
+            "(7) Red flags to avoid in budget options. Focus on genuine value, not just cheap prices. "
+            "Include real pricing data and strong purchase urgency."
+        ),
+        "system_prompt": (
+            "You are a value-hunting expert who finds diamonds in the rough. "
+            "Emphasize smart spending and genuine value over pure cheapness."
+        ),
+        "product_context_prompt": (
+            "For each product, explain the value proposition: where it excels despite lower price, "
+            "what corners were cut (and why they don't matter), competitive advantages, and upgrade potential."
+        ),
+        "required_product_types": [],
+        "min_products": 3,
+        "max_products": 7,
+        "suggested_tags": ["budget", "value", "bang_for_buck", "affordable", "deals"],
+        "seo_title_template": "Best Budget {category} 2025: Incredible Value Under ${budget}",
+        "seo_description_template": "Top budget {category} that deliver incredible value. Expert picks under ${budget} with performance that rivals expensive models.",
+        "content_structure": {"sections": [
+            "value_intro", "budget_heroes", "price_performance", "smart_compromises", 
+            "upgrade_paths", "value_accessories", "avoid_these", "best_deals"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Professional Deep Dive Review",
+        "description": "Comprehensive single-product reviews with technical depth",
+        "template_type": "review",
+        "base_prompt": (
+            "Write the definitive review of this {category}. Go beyond surface specs to real-world performance. "
+            "Structure: (1) First impressions and unboxing; (2) Build quality and design analysis; "
+            "(3) Sound/performance testing in multiple scenarios; (4) Comparison with key competitors; "
+            "(5) Long-term ownership perspective; (6) Detailed pros and cons; (7) Who should (and shouldn't) buy; "
+            "(8) Final verdict with score. Include technical measurements, user experience insights, and honest assessment."
+        ),
+        "system_prompt": (
+            "You are a professional reviewer with technical expertise and real-world experience. "
+            "Provide deep insights that help readers understand not just what this product does, but how it feels to own and use it."
+        ),
+        "product_context_prompt": (
+            "Cover every aspect: unboxing experience, build quality, performance in different contexts, "
+            "reliability over time, customer support, resale value, and competitive positioning."
+        ),
+        "required_product_types": [],
+        "min_products": 1,
+        "max_products": 1,
+        "suggested_tags": ["review", "deep_dive", "professional", "detailed", "expert"],
+        "seo_title_template": "{brand} {model} Review (2025): Professional Analysis",
+        "seo_description_template": "In-depth {brand} {model} review with professional testing, real-world performance analysis, pros/cons, and final verdict.",
+        "content_structure": {"sections": [
+            "first_impressions", "build_analysis", "performance_testing", "competitive_comparison", 
+            "ownership_experience", "detailed_pros_cons", "buyer_guidance", "final_verdict"
+        ]},
+        "is_active": True,
+    },
+    {
+        "name": "Seasonal Deal Hunter",
+        "description": "Time-sensitive deal roundups with urgency and scarcity",
+        "template_type": "general",
+        "base_prompt": (
+            "Create an urgent, time-sensitive deal roundup for {season} {year}. "
+            "Structure: (1) Deal alert intro with savings highlights; (2) Best overall deals ranked; "
+            "(3) Lightning deals to grab NOW; (4) Upcoming sales to watch; (5) Price history context; "
+            "(6) Deal stacking strategies; (7) What to avoid during sales. Create genuine urgency while providing value. "
+            "Include real discount percentages and limited-time warnings."
+        ),
+        "system_prompt": (
+            "You are a deal hunter who tracks prices and knows when to buy. "
+            "Create urgency without being pushy, and always provide genuine value."
+        ),
+        "product_context_prompt": (
+            "For each deal, include: normal price, current deal price, savings amount/percentage, "
+            "deal duration, why it's a good value, and competitive pricing context."
+        ),
+        "required_product_types": [],
+        "min_products": 5,
+        "max_products": 12,
+        "suggested_tags": ["deals", "sale", "discount", "limited_time", "urgent"],
+        "seo_title_template": "{season} {category} Deals 2025: Save Up to {discount}%",
+        "seo_description_template": "Hot {season} deals on {category}! Limited-time discounts up to {discount}% off. Don't miss these expert-picked bargains.",
+        "content_structure": {"sections": [
+            "deal_alert", "top_deals", "lightning_deals", "upcoming_sales", 
+            "price_history", "stacking_tips", "deal_warnings", "last_chance"
+        ]},
+        "is_active": True,
+    },
+    
+    # === EVERGREEN CONTENT TEMPLATES ===
     {
         "name": "Affiliate Roundup: Best Picks",
         "description": "Conversion-focused roundup with comparison and CTAs",
@@ -112,7 +272,7 @@ TEMPLATES: List[Dict[str, Any]] = [
         "max_products": 4,
         "suggested_tags": ["comparison", "vs", "differences"],
         "seo_title_template": "{name} vs {name}: Which Should You Buy in {year}?",
-        "seo_description_template": "We compare top {category} picks by features, tone, and value to help you decide.",
+        "seo_description_template": "We compar  e top {category} picks by features, tone, and value to help you decide.",
         "content_structure": {"sections": [
             "introduction", "comparison_table", "differences", "recommendations", "key_takeaways", "faqs", "conclusion"
         ]},

@@ -14,17 +14,153 @@ export default function ComparisonGrid({ comparison }: ComparisonGridProps) {
 
   if (products.length === 0) return null;
 
+  // Get all specifications from all products (not just common ones)
+  const allSpecs = new Set<string>();
+  products.forEach(product => {
+    if (product.specifications) {
+      Object.keys(product.specifications).forEach(spec => allSpecs.add(spec));
+    }
+  });
+  
+  // Also add specs from comparison_matrix
+  if (comparison_matrix) {
+    Object.keys(comparison_matrix).forEach(spec => allSpecs.add(spec));
+  }
+  
+  const sortedSpecs = Array.from(allSpecs).sort();
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => {
-        const { full, half, empty } = getRatingStars(product.avg_rating || 0);
+    <>
+      {/* Desktop Table View */}
+      <div className="hidden lg:block overflow-x-auto">
+        <table className="w-full divide-y divide-gray-200 table-fixed">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Specification
+            </th>
+            {products.map((product) => (
+              <th key={product.id} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{width: `${75 / products.length}%`}}>
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      src={getProductImageUrl(product)}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                      <div className="font-semibold text-gray-900 text-sm leading-tight">
+                        {product.name}
+                      </div>
+                    </Link>
+                    <div className="text-xs text-gray-500">{product.brand.name}</div>
+                  </div>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {sortedSpecs.map((spec) => {
+            // Check if this row has any values
+            const hasValues = products.some(product => {
+              const value = product.specifications?.[spec] || comparison_matrix?.[spec]?.[product.id];
+              return value && value !== 'N/A' && value !== '';
+            });
+            
+            if (!hasValues) return null;
+            
+            return (
+              <tr key={spec} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900 capitalize bg-gray-50 break-words">
+                  {spec.replace(/_/g, ' ')}
+                </td>
+                {products.map((product) => {
+                  const value = product.specifications?.[spec] || comparison_matrix?.[spec]?.[product.id];
+                  
+                  const formatValue = (val: any) => {
+                    if (!val || val === 'N/A' || val === '') return 'N/A';
+                    
+                    // Handle arrays (lists)
+                    if (Array.isArray(val)) {
+                      return (
+                        <ul className="text-left space-y-1">
+                          {val.map((item, idx) => (
+                            <li key={idx} className="break-words">• {String(item)}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    
+                    // Handle objects
+                    if (typeof val === 'object' && val !== null) {
+                      return JSON.stringify(val);
+                    }
+                    
+                    // Handle long strings (split by common delimiters)
+                    const strVal = String(val);
+                    if (strVal.length > 50 && (strVal.includes(',') || strVal.includes(';') || strVal.includes('|'))) {
+                      const delimiter = strVal.includes(',') ? ',' : strVal.includes(';') ? ';' : '|';
+                      const items = strVal.split(delimiter).map(item => item.trim()).filter(Boolean);
+                      return (
+                        <ul className="text-left space-y-1">
+                          {items.map((item, idx) => (
+                            <li key={idx} className="break-words">• {item}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    
+                    return <span className="break-words">{strVal}</span>;
+                  };
+                  
+                  const displayValue = formatValue(value);
+                  const isNA = !value || value === 'N/A' || value === '';
+                  
+                  return (
+                    <td key={`${product.id}-${spec}`} className="px-4 py-4 text-sm text-gray-900 text-center max-w-xs">
+                      <div className={isNA ? 'text-gray-400 italic' : 'font-medium'}>
+                        {displayValue}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+        </table>
         
-        const badges = (product as any).content?.quick_badges as undefined | Record<string, boolean>;
-        return (
-          <div key={product.id} className="card hover:shadow-lg transition-shadow">
+        {sortedSpecs.filter(spec => {
+          const hasValues = products.some(product => {
+            const value = product.specifications?.[spec] || comparison_matrix?.[spec]?.[product.id];
+            return value && value !== 'N/A' && value !== '';
+          });
+          return hasValues;
+        }).length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-4 opacity-20">📊</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Specifications Available</h3>
+            <p className="text-sm text-gray-500">
+              Specifications for these products are being prepared or are not available in a comparable format.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-6">
+        {products.map((product, productIndex) => (
+          <div key={product.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
             {/* Product Header */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center space-x-3 mb-3">
+            <div className="bg-gray-50 p-4 border-b border-gray-200">
+              <div className="flex items-center space-y-2">
                 <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
                   <img
                     src={getProductImageUrl(product)}
@@ -36,75 +172,82 @@ export default function ComparisonGrid({ comparison }: ComparisonGridProps) {
                     }}
                   />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm leading-tight">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-gray-500">{product.brand.name}</p>
-                  <p className="text-xs text-gray-400">{product.category.name}</p>
+                <div className="ml-4">
+                  <Link href={`/products/${product.slug}`} className="hover:text-brand-primary">
+                    <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                      {product.name}
+                    </h3>
+                  </Link>
+                  <p className="text-sm text-gray-500">{product.brand.name}</p>
                 </div>
               </div>
-              
-              {/* Rating */}
-              <div className="flex items-center space-x-1 mb-2">
-                {[...Array(full)].map((_, i) => (
-                  <StarIcon key={`full-${i}`} className="w-4 h-4 text-yellow-400" />
-                ))}
-                {[...Array(half)].map((_, i) => (
-                  <StarIcon key={`half-${i}`} className="w-4 h-4 text-yellow-400" />
-                ))}
-                {[...Array(empty)].map((_, i) => (
-                  <StarOutlineIcon key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
-                ))}
-                <span className="ml-2 text-xs text-gray-600">
-                  {product.avg_rating?.toFixed(1) || '0.0'} ({product.review_count})
-                </span>
-              </div>
-              
-              {/* Price hidden (not focusing on prices now) */}
             </div>
-
+            
             {/* Specifications */}
             <div className="p-4">
-              <h4 className="font-medium text-gray-900 mb-3">Key Specifications</h4>
-              <div className="space-y-2">
-                {common_specs.slice(0, 4).map((spec) => (
-                  <div key={spec} className="flex justify-between text-sm">
-                    <span className="text-gray-600 capitalize">
-                      {spec.replace(/_/g, ' ')}:
-                    </span>
-                    <span className="font-medium text-gray-900">
-                      {product.content?.specifications?.[spec] || 'N/A'}
-                    </span>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                {sortedSpecs.filter(spec => {
+                  const value = product.specifications?.[spec] || comparison_matrix?.[spec]?.[product.id];
+                  return value && value !== 'N/A' && value !== '';
+                }).map((spec) => {
+                  const value = product.specifications?.[spec] || comparison_matrix?.[spec]?.[product.id];
+                  
+                  const formatValue = (val: any) => {
+                    if (!val || val === 'N/A' || val === '') return 'N/A';
+                    
+                    // Handle arrays (lists)
+                    if (Array.isArray(val)) {
+                      return (
+                        <ul className="space-y-1 mt-1">
+                          {val.map((item, idx) => (
+                            <li key={idx} className="break-words">• {String(item)}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    
+                    // Handle objects
+                    if (typeof val === 'object' && val !== null) {
+                      return JSON.stringify(val);
+                    }
+                    
+                    // Handle long strings (split by common delimiters)
+                    const strVal = String(val);
+                    if (strVal.length > 50 && (strVal.includes(',') || strVal.includes(';') || strVal.includes('|'))) {
+                      const delimiter = strVal.includes(',') ? ',' : strVal.includes(';') ? ';' : '|';
+                      const items = strVal.split(delimiter).map(item => item.trim()).filter(Boolean);
+                      return (
+                        <ul className="space-y-1 mt-1">
+                          {items.map((item, idx) => (
+                            <li key={idx} className="break-words">• {item}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    
+                    return <span className="break-words">{strVal}</span>;
+                  };
+                  
+                  const displayValue = formatValue(value);
+                  
+                  return (
+                    <div key={spec} className="border-b border-gray-100 pb-2 last:border-b-0">
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-sm font-medium text-gray-700 capitalize">
+                          {spec.replace(/_/g, ' ')}
+                        </span>
+                        <div className="text-sm text-gray-900">
+                          {displayValue}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              {badges && Object.values(badges).some(Boolean) && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {Object.entries(badges).filter(([,v]) => !!v).map(([k]) => (
-                    <span key={k} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 capitalize">
-                      {k.replace(/_/g,' ')}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="p-4 border-t border-gray-200 space-y-2">
-              <Link
-                href={`/products/${product.slug}`}
-                className="btn-primary w-full text-center text-sm"
-              >
-                View Details
-              </Link>
-              <button className="btn-secondary w-full text-sm">
-                Remove from Compare
-              </button>
             </div>
           </div>
-        );
-      })}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }
