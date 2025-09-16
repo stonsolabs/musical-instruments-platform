@@ -506,6 +506,7 @@ export default function BlogManager() {
             <PlusIcon className="w-5 h-5" />
             <span>New Post</span>
           </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
