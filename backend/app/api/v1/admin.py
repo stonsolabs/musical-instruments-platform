@@ -299,6 +299,7 @@ async def get_admin_blog_templates(
                seo_description_template, content_structure, is_active,
                created_at, updated_at
         FROM blog_generation_templates
+        WHERE is_active = true
         ORDER BY template_type, name
         """
         res = await db.execute(text(query))
@@ -599,29 +600,7 @@ async def clone_and_rewrite_blog_post(
         logger.error(f"Failed to clone & rewrite blog post: {e}")
         raise HTTPException(status_code=500, detail="Failed to clone & rewrite blog post")
 
-@router.get("/blog/templates")
-async def get_generation_templates(
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get blog generation templates"""
-    try:
-        query = """
-        SELECT id, name, description, template_type, min_products, max_products,
-               suggested_tags, is_active, created_at
-        FROM blog_generation_templates
-        WHERE is_active = true
-        ORDER BY template_type, name
-        """
-        
-        result = await db.execute(text(query))
-        templates = [dict(row._mapping) for row in result.fetchall()]
-        
-        return {"templates": templates}
-        
-    except Exception as e:
-        logger.error(f"Failed to fetch templates: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch templates")
+# Duplicate endpoint removed - using the main /blog/templates endpoint above
 
 @router.get("/blog/generation-history")
 async def get_generation_history(
