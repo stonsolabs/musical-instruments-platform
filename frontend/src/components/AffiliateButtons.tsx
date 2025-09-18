@@ -273,7 +273,7 @@ export default function AffiliateButtons({
           )}
           <div className="flex flex-col items-start">
             <span className="uppercase tracking-wide text-sm">{storeConfig.name}</span>
-            <span className="text-xs opacity-90">Check price & availability</span>
+            <span className="text-xs opacity-90">Check availability</span>
           </div>
         </div>
         <div className="flex items-center">

@@ -75,20 +75,17 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
       <section key="quick_picks" className="mb-8">
         <h2 id="quick_picks" className="text-2xl font-bold mb-4">{quickPicks.title || 'Quick Picks'}</h2>
         {quickPicks.products && Array.isArray(quickPicks.products) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {quickPicks.products.map((product: any, index: number) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
-                  <div className="text-2xl font-bold text-green-600 mb-2">{product.price}</div>
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                <div className="mb-4 flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 break-words">{product.name}</h3>
                   {product.rating && (
                     <div className="flex items-center mb-2">
                       <span className="text-yellow-400">★</span>
                       <span className="ml-1 text-sm text-gray-600">{product.rating}/10</span>
                     </div>
                   )}
-                </div>
-                <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-2"><strong>Best for:</strong> {product.best_for}</p>
                   {product.why_we_love_it && (
                     <p className="text-sm text-gray-700">{product.why_we_love_it}</p>
@@ -100,7 +97,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                       productId={parseInt(product.product_id)}
                       context={product.affiliate_cta || "Featured in this guide"}
                       position={index + 1}
-                      ctaText="Check Latest Price"
+                      ctaText="View Product"
                       layout="compact"
                       showFullDetails={false}
                     />
@@ -154,17 +151,14 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
           <div className="space-y-8">
             {reviews.map((review: any, index: number) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{review.name}</h3>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">{review.price}</div>
-                    {review.rating && (
-                      <div className="flex items-center justify-end mt-1">
-                        <span className="text-yellow-400">★</span>
-                        <span className="ml-1 text-sm text-gray-600">{review.rating}/10</span>
-                      </div>
-                    )}
-                  </div>
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{review.name}</h3>
+                  {review.rating && (
+                    <div className="flex items-center">
+                      <span className="text-yellow-400">★</span>
+                      <span className="ml-1 text-sm text-gray-600">{review.rating}/10</span>
+                    </div>
+                  )}
                 </div>
                 
                 {review.overview && (
@@ -196,7 +190,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                   </div>
                 )}
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                   {review.pros && Array.isArray(review.pros) && review.pros.length > 0 && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <h4 className="font-semibold text-green-800 mb-2">Pros:</h4>
@@ -233,7 +227,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                       productId={parseInt(review.product_id)}
                       context={review.affiliate_cta || "Featured in this review"}
                       position={index + 1}
-                      ctaText="Check Latest Price"
+                      ctaText="View Product"
                       layout="horizontal"
                       showFullDetails={true}
                     />
@@ -272,11 +266,9 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
           <div className="space-y-6">
             {breakdown.tiers.map((tier: any, index: number) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">{tier.tier}</h3>
-                  <div className="text-right">
-                    <div className="text-lg font-semibold text-gray-900">{tier.recommendation}</div>
-                  </div>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{tier.tier}</h3>
+                  <div className="text-lg font-semibold text-gray-900">{tier.recommendation}</div>
                 </div>
                 <p className="text-gray-700 mb-4">{tier.reasoning}</p>
                 {showInlineProducts && tier.product_id && (
@@ -285,7 +277,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                       productId={parseInt(tier.product_id)}
                       context="Recommended for this budget tier"
                       position={index + 1}
-                      ctaText="Check Latest Price"
+                      ctaText="View Product"
                       layout="compact"
                       showFullDetails={false}
                     />
@@ -324,7 +316,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                     {step.required_products && Array.isArray(step.required_products) && step.required_products.length > 0 && showInlineProducts && (
                       <div className="mt-4">
                         <h4 className="font-semibold text-blue-900 mb-2">Required Products:</h4>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 sm:gap-4">
                           {step.required_products.map((productId: string, idx: number) => (
                             <InlineProductShowcase
                               key={idx}
@@ -486,7 +478,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
     );
   }
   
-  return <div className="space-y-8">{sections}</div>;
+  return <div className="space-y-6 sm:space-y-8">{sections}</div>;
 }
 
 export default function EnhancedBlogRenderer({ 
@@ -556,7 +548,7 @@ export default function EnhancedBlogRenderer({
               productId={product.product_id}
               context={product.context}
               position={product.position}
-              ctaText={product.cta_text || "Check Latest Price"}
+              ctaText={product.cta_text || "View Product"}
               layout="horizontal"
               showFullDetails={true}
             />
@@ -601,7 +593,7 @@ export default function EnhancedBlogRenderer({
               <p className="text-blue-800 mb-4">
                 Check out the products mentioned in this comparison and find the best deals.
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 sm:gap-4">
                 {section.products_mentioned.map((productId, idx) => (
                   <InlineProductShowcase
                     key={`table-${idx}`}
@@ -677,7 +669,7 @@ export default function EnhancedBlogRenderer({
           {section.products_mentioned && section.products_mentioned.length > 0 && showInlineProducts && (
             <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-3">Mentioned Products</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {section.products_mentioned.map((productId, idx) => (
                   <InlineProductShowcase
                     key={`mentioned-${idx}`}
@@ -700,7 +692,7 @@ export default function EnhancedBlogRenderer({
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 sm:space-y-10">
       {structuredContent.sections.map((section: BlogSection, index: number) => 
         renderSection(section, index)
       )}

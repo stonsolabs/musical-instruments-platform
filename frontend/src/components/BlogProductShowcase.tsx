@@ -196,7 +196,7 @@ export default function BlogProductShowcase({
                       onClick={openPriorityStore}
                       className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
-                      🛒 Check Latest Price
+                      🛒 View Product
                     </button>
                   </div>
                 )}

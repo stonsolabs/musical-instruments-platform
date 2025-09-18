@@ -21,7 +21,7 @@ export default function InlineProductShowcase({
   productId, 
   context, 
   position, 
-  ctaText = "Check Latest Price",
+  ctaText = "View Product",
   layout = 'horizontal',
   showFullDetails = true
 }: InlineProductShowcaseProps) {
@@ -75,19 +75,19 @@ export default function InlineProductShowcase({
   const openPriorityStore = (e: React.MouseEvent) => openTopAffiliate(product as any, e);
 
   const layoutClasses = {
-    horizontal: 'flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6',
-    vertical: 'flex flex-col space-y-4',
-    compact: 'flex items-center space-x-4'
+    horizontal: 'flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6',
+    vertical: 'flex flex-col gap-4',
+    compact: 'flex items-center gap-4'
   };
 
   const imageClasses = {
-    horizontal: 'w-full md:w-48 h-48 md:h-32 flex-shrink-0',
+    horizontal: 'w-full lg:w-48 h-48 lg:h-32 flex-shrink-0',
     vertical: 'w-full h-48',
     compact: 'w-20 h-20 flex-shrink-0'
   };
 
   return (
-    <div className={`my-8 p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ${layoutClasses[layout]}`}>
+      <div className={`my-6 p-4 sm:p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ${layoutClasses[layout]}`}>
       {/* Product Image */}
       <div className={`${imageClasses[layout]} bg-gray-100 rounded-lg overflow-hidden cursor-pointer relative group`} onClick={openPriorityStore}>
         <img
@@ -109,7 +109,7 @@ export default function InlineProductShowcase({
       </div>
 
       {/* Product Details */}
-      <div className="flex-1 space-y-3">
+      <div className="flex-1 min-w-0 space-y-3">
         {/* Brand and Category */}
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-500">{product.category.name}</span>
@@ -119,7 +119,7 @@ export default function InlineProductShowcase({
         </div>
 
         {/* Product Name */}
-        <h3 className="text-xl font-bold text-gray-900 leading-tight">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight break-words">
           {product.name}
         </h3>
 
@@ -162,7 +162,7 @@ export default function InlineProductShowcase({
         )}
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full">
           <button
             onClick={openPriorityStore}
             className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
