@@ -170,9 +170,9 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
           {/* Author Box */}
           <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
             <div className="flex items-center gap-3">
-              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name)}&background=0D8ABC&color=fff`} alt={post.author_name} className="w-8 h-8 rounded-full" />
+              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name || 'GetYourMusicGear Team')}&background=0D8ABC&color=fff`} alt={post.author_name || 'GetYourMusicGear Team'} className="w-8 h-8 rounded-full" />
               <div className="flex items-center gap-2">
-                <span className="font-medium">{post.author_name}</span>
+                <span className="font-medium">{post.author_name || 'GetYourMusicGear Team'}</span>
                 <span className="inline-flex items-center text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded">Verified</span>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">About the Author</h3>
               <p className="text-gray-600">
-                Written by {post.author_name}, part of the GetYourMusicGear expert team.
+                Written by {post.author_name || 'GetYourMusicGear Team'}, part of the GetYourMusicGear expert team.
               </p>
             </div>
             

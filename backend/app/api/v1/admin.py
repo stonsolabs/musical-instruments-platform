@@ -20,7 +20,6 @@ from app.blog_ai_schemas import (
     BlogContentSection, CloneRewriteRequest
 )
 from app.services.blog_ai_generator import BlogAIGenerator
-from app.services.blog_batch_generator import BlogBatchGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -723,142 +722,9 @@ async def admin_system_health(
         }
 
 # === BATCH GENERATION ===
-
-@router.post("/blog/batch/create")
-async def create_batch_generation(
-    generation_requests: List[BlogGenerationRequest],
-    batch_name: Optional[str] = None,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Create a batch generation request"""
-    try:
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        result = await batch_generator.create_batch_generation_request(
-            generation_requests, batch_name
-        )
-        
-        if result["success"]:
-            logger.info(f"Batch created by admin {admin['email']}: {result['batch_name']}")
-        
-        return result
-        
-    except Exception as e:
-        logger.error(f"Failed to create batch: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create batch")
-
-@router.post("/blog/batch/{batch_id}/upload")
-async def upload_batch_to_azure(
-    batch_id: str,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Upload batch file to Azure OpenAI"""
-    try:
-        # Get batch info from database
-        query = "SELECT batch_file_path FROM blog_batch_jobs WHERE batch_id = :batch_id"
-        result = await db.execute(text(query), {'batch_id': batch_id})
-        batch_info = result.fetchone()
-        
-        if not batch_info:
-            raise HTTPException(status_code=404, detail="Batch not found")
-        
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        upload_result = await batch_generator.upload_batch_to_azure(batch_info[0])
-        
-        if upload_result["success"]:
-            logger.info(f"Batch uploaded by admin {admin['email']}: {batch_id}")
-        
-        return upload_result
-        
-    except Exception as e:
-        logger.error(f"Failed to upload batch: {e}")
-        raise HTTPException(status_code=500, detail="Failed to upload batch")
-
-@router.post("/blog/batch/{file_id}/start")
-async def start_batch_job(
-    file_id: str,
-    batch_name: str,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Start a batch job in Azure OpenAI"""
-    try:
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        job_result = await batch_generator.create_azure_batch_job(file_id, batch_name)
-        
-        if job_result["success"]:
-            logger.info(f"Batch job started by admin {admin['email']}: {job_result['batch_id']}")
-        
-        return job_result
-        
-    except Exception as e:
-        logger.error(f"Failed to start batch job: {e}")
-        raise HTTPException(status_code=500, detail="Failed to start batch job")
-
-@router.get("/blog/batch/{azure_batch_id}/status")
-async def check_batch_status(
-    azure_batch_id: str,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Check batch job status"""
-    try:
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        status_result = await batch_generator.check_batch_status(azure_batch_id)
-        
-        return status_result
-        
-    except Exception as e:
-        logger.error(f"Failed to check batch status: {e}")
-        raise HTTPException(status_code=500, detail="Failed to check batch status")
-
-@router.post("/blog/batch/{azure_batch_id}/download")
-async def download_batch_results(
-    azure_batch_id: str,
-    output_file_id: str,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Download batch results"""
-    try:
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        download_result = await batch_generator.download_batch_results(
-            azure_batch_id, output_file_id
-        )
-        
-        if download_result["success"]:
-            logger.info(f"Batch results downloaded by admin {admin['email']}: {azure_batch_id}")
-        
-        return download_result
-        
-    except Exception as e:
-        logger.error(f"Failed to download batch results: {e}")
-        raise HTTPException(status_code=500, detail="Failed to download batch results")
-
-@router.post("/blog/batch/process")
-async def process_batch_results(
-    results_file_path: str,
-    metadata_file_path: str,
-    auto_publish: bool = False,
-    admin: dict = Depends(require_azure_admin),
-    db: AsyncSession = Depends(get_db)
-):
-    """Process batch results and create blog posts"""
-    try:
-        batch_generator = BlogBatchGenerator(db, admin['email'])
-        process_result = await batch_generator.process_batch_results(
-            results_file_path, metadata_file_path, auto_publish
-        )
-        
-        if process_result["success"]:
-            logger.info(f"Batch processed by admin {admin['email']}: {process_result['batch_id']} - {process_result['total_processed']} posts")
-        
-        return process_result
-        
-    except Exception as e:
-        logger.error(f"Failed to process batch results: {e}")
-        raise HTTPException(status_code=500, detail="Failed to process batch results")
+# Batch processing is now handled by the CLI system
+# Use: python3.11 blog_generator_cli.py generate --posts 50
+# Then: python3.11 blog_generator_cli.py process --file results.jsonl
 
 @router.get("/blog/batches")
 async def get_batch_jobs(
