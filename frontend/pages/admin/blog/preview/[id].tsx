@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../../../src/components/BlogProductShowcase';
+import EnhancedBlogRenderer from '../../../../src/components/EnhancedBlogRenderer';
 import { AIBlogPost } from '../../../../src/types/blog';
 import ReactMarkdown from 'react-markdown';
 // @ts-ignore - optional plugin, ensure it's installed
@@ -37,17 +38,10 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
           </div>
         )}
 
-        {/* Structured sections if present */}
-        {Array.isArray((post as any).structured_content?.sections) && (post as any).structured_content.sections.length > 0 ? (
-          <div className="space-y-10 mb-12">
-            {(post as any).structured_content.sections.map((sec: any, idx: number) => (
-              <section key={idx} className="prose prose-lg lg:prose-xl max-w-none">
-                {sec.title && <h2 className="mt-0">{sec.title}</h2>}
-                {sec.content && (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(sec.content)}</ReactMarkdown>
-                )}
-              </section>
-            ))}
+        {/* Render using the enhanced structured renderer when available */}
+        {Boolean((post as any).structured_content) ? (
+          <div className="mb-12">
+            <EnhancedBlogRenderer post={post} showInlineProducts={true} />
           </div>
         ) : (
           <div className="prose prose-lg lg:prose-xl max-w-none mb-12">

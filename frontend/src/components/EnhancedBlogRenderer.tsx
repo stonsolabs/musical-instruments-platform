@@ -37,6 +37,19 @@ interface BlogSection {
 function renderStructuredContent(structuredContent: any, showInlineProducts: boolean) {
   const sections = [];
   
+  // Render main content markdown if provided (generic fallback)
+  if (structuredContent.content && typeof structuredContent.content === 'string') {
+    sections.push(
+      <section key="main_content" className="mb-8">
+        <div className="prose prose-lg max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {structuredContent.content}
+          </ReactMarkdown>
+        </div>
+      </section>
+    );
+  }
+  
   // Render introduction
   if (structuredContent.introduction) {
     const intro = structuredContent.introduction;
@@ -76,26 +89,30 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
         <h2 id="quick_picks" className="text-2xl font-bold mb-4">{quickPicks.title || 'Quick Picks'}</h2>
         {quickPicks.products && Array.isArray(quickPicks.products) && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {quickPicks.products.map((product: any, index: number) => (
+            {quickPicks.products.map((product: any, index: number) => {
+              const p = typeof product === 'string' ? { name: product } : product;
+              return (
               <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
                 <div className="mb-4 flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 break-words">{product.name}</h3>
-                  {product.rating && (
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 break-words">{p.name}</h3>
+                  {p.rating && (
                     <div className="flex items-center mb-2">
                       <span className="text-yellow-400">★</span>
-                      <span className="ml-1 text-sm text-gray-600">{product.rating}/10</span>
+                      <span className="ml-1 text-sm text-gray-600">{p.rating}/10</span>
                     </div>
                   )}
-                  <p className="text-sm text-gray-600 mb-2"><strong>Best for:</strong> {product.best_for}</p>
-                  {product.why_we_love_it && (
-                    <p className="text-sm text-gray-700">{product.why_we_love_it}</p>
+                  {p.best_for && (
+                    <p className="text-sm text-gray-600 mb-2"><strong>Best for:</strong> {p.best_for}</p>
+                  )}
+                  {p.why_we_love_it && (
+                    <p className="text-sm text-gray-700">{p.why_we_love_it}</p>
                   )}
                 </div>
-                {showInlineProducts && product.product_id && (
+                {showInlineProducts && p.product_id && (
                   <div className="mt-4">
                     <InlineProductShowcase
-                      productId={parseInt(product.product_id)}
-                      context={product.affiliate_cta || "Featured in this guide"}
+                      productId={parseInt(p.product_id)}
+                      context={p.affiliate_cta || "Featured in this guide"}
                       position={index + 1}
                       ctaText="View Product"
                       layout="compact"
@@ -104,7 +121,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                   </div>
                 )}
               </div>
-            ))}
+            );})}
           </div>
         )}
       </section>
@@ -478,6 +495,18 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
     );
   }
   
+  // If nothing was rendered, fall back to any content/excerpt or show a placeholder
+  if (sections.length === 0) {
+    return (
+      <div className="prose prose-lg max-w-none">
+        {structuredContent.excerpt ? (
+          <p>{structuredContent.excerpt}</p>
+        ) : (
+          <p>No content available</p>
+        )}
+      </div>
+    );
+  }
   return <div className="space-y-6 sm:space-y-8">{sections}</div>;
 }
 

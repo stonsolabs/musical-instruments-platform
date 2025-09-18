@@ -273,6 +273,7 @@ class BlogBatchGeneratorService:
                             "content": full_prompt
                         }
                     ],
+                    "response_format": {"type": "json_object"},
                     "max_tokens": 32768,
                     "temperature": 0.7,
                     "top_p": 1.0,

@@ -401,8 +401,38 @@ class BlogBatchProcessorService:
                     if isinstance(item, str):
                         parts.append(f"- {item}")
                     elif isinstance(item, dict):
-                        parts.append(f"- {item.get('name', str(item))}")
-        
+                        # Render common dict-shaped items in readable markdown instead of raw dicts
+                        if 'criterion' in item:
+                            parts.append(f"- {item.get('criterion')}: {item.get('description', '')}")
+                            if item.get('why_matters'):
+                                parts.append(f"  - Why it matters: {item['why_matters']}")
+                            if item.get('red_flags'):
+                                parts.append(f"  - Red flags: {item['red_flags']}")
+                        elif 'tier' in item and 'recommendation' in item:
+                            parts.append(f"- {item.get('tier')}: {item.get('recommendation')}" + (f" — {item.get('reasoning')}" if item.get('reasoning') else ""))
+                        elif 'mistake' in item:
+                            parts.append(f"- Mistake: {item.get('mistake')}")
+                            if item.get('why_happens'):
+                                parts.append(f"  - Why it happens: {item['why_happens']}")
+                            if item.get('how_to_avoid'):
+                                parts.append(f"  - How to avoid: {item['how_to_avoid']}")
+                            if item.get('better_alternative'):
+                                parts.append(f"  - Better alternative: {item['better_alternative']}")
+                        elif 'step' in item and 'title' in item:
+                            parts.append(f"- Step {item.get('step')}: {item.get('title')}")
+                            if item.get('description'):
+                                parts.append(f"  - {item['description']}")
+                        else:
+                            # Generic pretty-print: key: value pairs on one bullet
+                            kv = []
+                            for k, v in item.items():
+                                if isinstance(v, (str, int, float)) and v is not None:
+                                    kv.append(f"{k.replace('_',' ').title()}: {v}")
+                            if kv:
+                                parts.append(f"- {'; '.join(kv)}")
+                            else:
+                                parts.append(f"- {item.get('name', '')}".strip())
+
         return "\n\n".join(parts)
     
     def _extract_all_product_ids(self, parsed: Dict[str, Any]) -> List[str]:
