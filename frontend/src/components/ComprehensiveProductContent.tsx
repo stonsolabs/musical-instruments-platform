@@ -26,10 +26,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '📋',
       priority: 1,
       render: () => {
-        const overview = content?.localized_content?.['en-US']?.basic_info || 
-                        content?.localized_content?.['en-GB']?.basic_info ||
-                        aiContent?.localized_content?.['en-US']?.basic_info ||
-                        aiContent?.localized_content?.['en-GB']?.basic_info;
+        const overview = content?.basic_info || aiContent?.basic_info;
         
         if (!overview) return null;
         
@@ -46,10 +43,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '🎯',
       priority: 2,
       render: () => {
-        const guidance = content?.localized_content?.['en-US']?.usage_guidance || 
-                        content?.localized_content?.['en-GB']?.usage_guidance ||
-                        aiContent?.localized_content?.['en-US']?.usage_guidance ||
-                        aiContent?.localized_content?.['en-GB']?.usage_guidance;
+        const guidance = content?.usage_guidance || aiContent?.usage_guidance;
         
         if (!guidance) return null;
         
@@ -109,10 +103,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '🔬',
       priority: 10,
       render: () => {
-        const analysis = content?.localized_content?.['en-US']?.technical_analysis || 
-                        content?.localized_content?.['en-GB']?.technical_analysis ||
-                        aiContent?.localized_content?.['en-US']?.technical_analysis ||
-                        aiContent?.localized_content?.['en-GB']?.technical_analysis;
+        const analysis = content?.technical_analysis || aiContent?.technical_analysis;
         
         if (!analysis) return null;
         
@@ -129,10 +120,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '👨‍🔬',
       priority: 11,
       render: () => {
-        const assessment = content?.localized_content?.['en-US']?.professional_assessment || 
-                          content?.localized_content?.['en-GB']?.professional_assessment ||
-                          aiContent?.localized_content?.['en-US']?.professional_assessment ||
-                          aiContent?.localized_content?.['en-GB']?.professional_assessment;
+        const assessment = content?.professional_assessment || aiContent?.professional_assessment;
         
         if (!assessment) return null;
         
@@ -150,10 +138,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '⭐',
       priority: 20,
       render: () => {
-        const reviews = content?.localized_content?.['en-US']?.customer_reviews || 
-                       content?.localized_content?.['en-GB']?.customer_reviews ||
-                       aiContent?.localized_content?.['en-US']?.customer_reviews ||
-                       aiContent?.localized_content?.['en-GB']?.customer_reviews;
+        const reviews = content?.customer_reviews || aiContent?.customer_reviews;
         
         if (!reviews) return null;
         
@@ -170,10 +155,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '🔧',
       priority: 21,
       render: () => {
-        const maintenance = content?.localized_content?.['en-US']?.maintenance_care || 
-                           content?.localized_content?.['en-GB']?.maintenance_care ||
-                           aiContent?.localized_content?.['en-US']?.maintenance_care ||
-                           aiContent?.localized_content?.['en-GB']?.maintenance_care;
+        const maintenance = content?.maintenance_care || aiContent?.maintenance_care;
         
         if (!maintenance) return null;
         
@@ -190,10 +172,7 @@ export default function ComprehensiveProductContent({ product }: ComprehensivePr
       icon: '🛒',
       priority: 22,
       render: () => {
-        const decision = content?.localized_content?.['en-US']?.purchase_decision || 
-                        content?.localized_content?.['en-GB']?.purchase_decision ||
-                        aiContent?.localized_content?.['en-US']?.purchase_decision ||
-                        aiContent?.localized_content?.['en-GB']?.purchase_decision;
+        const decision = content?.purchase_decision || aiContent?.purchase_decision;
         
         if (!decision) return null;
         

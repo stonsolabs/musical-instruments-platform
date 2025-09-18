@@ -65,8 +65,8 @@ TASKS:
    - Describe what each image should show
    - Include key features and angles
 
-5. LOCALIZED CONTENT:
-   Create content for en-US, en-GB, es-ES, fr-FR, de-DE, it-IT, pt-PT including:
+5. CONTENT GENERATION:
+   Create comprehensive English content including:
    - basic_info: Concise product overview
    - technical_analysis: Detailed technical breakdown
    - purchase_decision: Buying guidance
@@ -74,6 +74,8 @@ TASKS:
    - maintenance_care: Care and maintenance tips
    - professional_assessment: Expert evaluation
    - customer_reviews: Realistic customer feedback
+   - notes: Additional insights and observations
+   - suitable_genres: Musical genres this instrument is best suited for
 
 6. PRODUCT IDENTIFIERS:
    Generate or extract: sku, gtin12, gtin13, gtin14, upc, ean, mpn, isbn
@@ -90,7 +92,7 @@ STRICT REQUIREMENTS:
 - All content must be accurate and realistic
 - Technical specifications must be plausible for the product type
 - Store links must follow real e-commerce URL patterns
-- Localized content must be culturally appropriate
+- All content must be in English (no localization needed)
 - Product identifiers must follow standard formats
 - All dates must be current
 - Content must be comprehensive but not repetitive

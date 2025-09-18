@@ -321,7 +321,7 @@ async def get_blog_post(
             bc.is_active as category_is_active
         FROM blog_posts bp
         LEFT JOIN blog_categories bc ON bp.category_id = bc.id
-        WHERE bp.slug = :slug AND bp.status = 'published'
+        WHERE bp.slug = :slug AND bp.status IN ('published', 'draft')
         """
         
         result = await db.execute(text(query), {'slug': slug})

@@ -489,7 +489,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   <h3 className="text-2xl font-bold text-gray-900 mb-6">Professional Assessment</h3>
                   <div className={`grid ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-3' : 'grid-cols-4'} gap-6`}>
                     {comparison.products.map((product) => {
-                      const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'];
+                      const englishContent = product.ai_content || product.content;
                       
                       return (
                         <div key={product.id} className="space-y-4">

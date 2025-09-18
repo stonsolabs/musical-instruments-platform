@@ -76,15 +76,7 @@ class Category(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-class Locale(Base):
-    __tablename__ = "locales"
-    
-    id = Column(Integer, primary_key=True)
-    code = Column(String(10), unique=True, nullable=False)
-    name = Column(String(255), nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+# Locale table removed - no longer needed with English-only content
 
 class Product(Base):
     __tablename__ = "products"
@@ -118,11 +110,12 @@ class Product(Base):
     category = relationship("Category", backref="products")
 
 # Removed unnecessary tables:
-# - ProductTranslation (replaced by products.content.localized_content)
+# - ProductTranslation (replaced by products.content - now English-only)
 # - AffiliateStore (replaced by products.content.store_links)
 # - ProductStoreLink (replaced by products.content.store_links)
-# - CustomerReview (replaced by products.content.localized_content[locale].customer_reviews)
+# - CustomerReview (replaced by products.content.customer_reviews)
 # - ProductImage (replaced by products.images)
+# - Locale (removed - no longer needed with English-only content)
 
 # Database session management
 async def get_async_session() -> AsyncSession:

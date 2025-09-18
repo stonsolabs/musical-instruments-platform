@@ -44,7 +44,18 @@ export interface ProductContent {
   dates?: Record<string, string>;
   content_metadata?: Record<string, any>;
   related_products?: any[];
-  localized_content?: Record<string, any>;
+  
+  // Content fields (now at root level, no localization)
+  basic_info?: string;
+  usage_guidance?: string;
+  customer_reviews?: string;
+  maintenance_care?: string;
+  purchase_decision?: string;
+  technical_analysis?: string;
+  professional_assessment?: string;
+  notes?: string;
+  suitable_genres?: string[];
+  
   // Enrichment fields (optional)
   professional_ratings?: {
     playability?: number;
@@ -102,15 +113,17 @@ export interface Product {
     specifications?: ProductSpecifications;
     content_metadata?: Record<string, any>;
     related_products?: any[];
-    localized_content?: Record<string, {
-      basic_info?: string;
-      usage_guidance?: string;
-      customer_reviews?: string;
-      maintenance_care?: string;
-      purchase_decision?: string;
-      technical_analysis?: string;
-      professional_assessment?: string;
-    }>;
+    
+    // Content fields (now at root level, no localization)
+    basic_info?: string;
+    usage_guidance?: string;
+    customer_reviews?: string;
+    maintenance_care?: string;
+    purchase_decision?: string;
+    technical_analysis?: string;
+    professional_assessment?: string;
+    notes?: string;
+    suitable_genres?: string[];
   };
   avg_rating?: number;
   review_count: number;

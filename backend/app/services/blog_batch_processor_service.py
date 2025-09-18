@@ -143,8 +143,10 @@ class BlogBatchProcessorService:
                         else:
                             self.error_count += 1
                             print(f"❌ Line {line_num}: Failed to create blog post")
-                            # Rollback on failure
+                            # Rollback on failure and start fresh transaction
                             await session.rollback()
+                            # Start a new transaction for the next iteration
+                            await session.begin()
                             
                     except Exception as e:
                         self.error_count += 1
@@ -576,15 +578,17 @@ class BlogBatchProcessorService:
             now = datetime.utcnow()
             await session.execute(text(insert_query), {
                 'blog_post_id': blog_post_id,
-                'section_type': section['section_type'],
-                'section_title': section['section_title'],
-                'section_content': section['section_content'],
-                'section_order': section['section_order'],
+                'section_type': section.get('section_type', section.get('type', 'general')),
+                'section_title': section.get('section_title', section.get('title', '')),
+                'section_content': section.get('section_content', json.dumps(section)),
+                'section_order': section.get('section_order', section.get('order', 1)),
                 'created_at': now,
                 'updated_at': now
             })
         except Exception as e:
             print(f"Error creating content section: {e}")
+            # Don't re-raise - continue with other sections
+            # This prevents transaction abortion
     
     async def _create_product_association(self, session: AsyncSession, blog_post_id: int, product_id: str):
         """Create product association in database"""
@@ -606,6 +610,8 @@ class BlogBatchProcessorService:
             })
         except Exception as e:
             print(f"Error creating product association: {e}")
+            # Don't re-raise - continue with other products
+            # This prevents transaction abortion
     
     async def get_processing_stats(self) -> Dict[str, Any]:
         """Get statistics about processed blog posts"""

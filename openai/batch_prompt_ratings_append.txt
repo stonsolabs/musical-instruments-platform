@@ -54,42 +54,20 @@ Output: Return a single JSON object with exactly this top-level structure (and n
       "studio_ready": true/false,
       "gig_ready": true/false
     },
-    "localized_content": {
-      // Mirror the human-readable parts in multiple locales.
-      // Locales: en-US, en-GB, es-ES, fr-FR, de-DE, it-IT, pt-PT
-      // Keep numbers in top-level sections; translate text-only fields here.
-      "en-US": {
-        "notes": "Translate professional_ratings.notes",
-        "comparison_helpers": {
-          "standout_strengths": ["localized bullets"],
-          "key_tradeoffs": ["localized bullets"],
-          "best_for": ["localized bullets"],
-          "not_ideal_for": ["localized bullets"]
-        },
-        "setup_tips": ["localized tips"],
-        "audience_fit": {
-          "learning_curve": "very easy | easy | moderate | steep"
-        },
-        "suitable_genres": ["localized genres"]
-      },
-      "en-GB": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]},
-      "es-ES": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]},
-      "fr-FR": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]},
-      "de-DE": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]},
-      "it-IT": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]},
-      "pt-PT": {"notes": "...", "comparison_helpers": {"standout_strengths": ["..."], "key_tradeoffs": ["..."], "best_for": ["..."], "not_ideal_for": ["..."]}, "setup_tips": ["..."], "audience_fit": {"learning_curve": "..."}, "suitable_genres": ["..."]}
-    }
+    // All content is now in English only (no localization needed)
+    "notes": "Additional insights and observations about this product",
+    "suitable_genres": ["Musical genres this instrument is best suited for"]
   }
 }
 
 Strict requirements:
 - JSON only. Do not include markdown, prose, or explanations outside the JSON.
-- Do NOT repeat or regenerate existing first-pass sections; only include keys under `content_append` and `content_append.localized_content` described above. Never include other keys like specifications, store_links, images, product_identifiers, metadata, qa, dates, or sources.
+- Do NOT repeat or regenerate existing first-pass sections; only include keys under `content_append` described above. Never include other keys like specifications, store_links, images, product_identifiers, metadata, qa, dates, or sources.
 - Scores must be integers (0-100). Use realistic ranges for the category and price tier.
 - Bullets must be short, scannable phrases (max ~8 words each).
 - Tailor metrics and tips to the exact category (e.g., guitars vs. keyboards, etc.).
 - If uncertain on a metric due to limited context, still provide a plausible, conservative estimate.
-- For `localized_content`, translate only text fields; keep numbers in the top-level sections.
+- All content is now in English only (no localization needed).
 - Set `identifiers.id/sku/slug` by echoing any fields provided in the product input; use null if unknown.
 - Do NOT rewrite existing content fields on re-run: your output will be merged by only filling missing subkeys; avoid paraphrasing or restating parts already present in the product content.
 

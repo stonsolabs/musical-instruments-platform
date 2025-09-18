@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_async_session, ProductsFilled, Product, Brand, Category, Locale
+from database import get_async_session, ProductsFilled, Product, Brand, Category
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +55,18 @@ class ProductsFilledParser:
             images = product_data.get('images', {})
             warranty_info = product_data.get('warranty_info')
             related_products = product_data.get('related_products', [])
-            localized_content = product_data.get('localization', {}) or product_data.get('localized_content', {})
+            # Content fields are now at root level (no localization)
+            content_fields = {
+                'basic_info': product_data.get('basic_info'),
+                'usage_guidance': product_data.get('usage_guidance'),
+                'customer_reviews': product_data.get('customer_reviews'),
+                'maintenance_care': product_data.get('maintenance_care'),
+                'purchase_decision': product_data.get('purchase_decision'),
+                'technical_analysis': product_data.get('technical_analysis'),
+                'professional_assessment': product_data.get('professional_assessment'),
+                'notes': product_data.get('notes'),
+                'suitable_genres': product_data.get('suitable_genres'),
+            }
             content_metadata = product_data.get('metadata', {}) or product_data.get('content_metadata', {})
             qa = product_data.get('qa', {})
             dates = product_data.get('dates', {})
@@ -98,14 +109,14 @@ class ProductsFilledParser:
                 'images': images,  # Separate JSONB column for images
                 'content': {  # Single content JSONB column for everything else
                     'specifications': specifications,  # Now inside content
-                    'localized_content': localized_content,
                     'warranty_info': warranty_info,
                     'related_products': related_products,
                     'content_metadata': content_metadata,
                     'qa': qa,
                     'dates': dates,
                     'sources': sources,
-                    'store_links': store_links  # Store links in content
+                    'store_links': store_links,  # Store links in content
+                    **content_fields  # Add all content fields at root level
                 },
                 # Product identifiers
                 'sku': sku,
@@ -253,17 +264,10 @@ async def test_parser():
                 "alt_text": "Fender Stratocaster Official"
             }
         },
-        "localized_content": {
-            "en-US": {
-                "customer_reviews": {
-                    "average_rating": 4.5,
-                    "rating_scale": 5,
-                    "review_count": 1250,
-                    "per_category_ratings": {"build_quality": 4.7, "sound_quality": 4.3},
-                    "review_highlights": ["Great tone", "Excellent build quality", "Classic sound"]
-                }
-            }
-        }
+        "customer_reviews": "Customer reviews summary: Great tone, excellent build quality, classic sound. Average rating 4.5/5 based on 1250 reviews.",
+        "basic_info": "The Fender Stratocaster is a legendary electric guitar known for its versatile tone and comfortable playability.",
+        "technical_analysis": "Features three single-coil pickups, 5-way selector switch, and classic tremolo bridge system.",
+        "purchase_decision": "Ideal for players seeking versatility across multiple genres, from rock to blues to country."
     }
     
     success = await parser.parse_and_insert(sample_response, "test_sku_123")

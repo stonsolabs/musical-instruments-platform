@@ -81,7 +81,7 @@ Database (Key Tables)
 - brands: id, name (unique), slug (unique), logo_url, website_url, description, created_at
   - Unknown brand entries (`name='Unknown Brand'` or `slug='unknown-brand'`) are filtered out server-side and hidden from the Brand filter UI.
 - categories: id, name, slug (unique), parent_id (self FK), description, image_url, is_active, created_at
-- products: id, sku (unique), name, slug (unique), brand_id (FK), category_id (FK), description, images (JSON), content (JSON; narratives/specs/store_links/QA/localized), avg_rating, review_count, is_active, category_attributes (JSON), last_crawled, OpenAI fields, created_at, updated_at
+- products: id, sku (unique), name, slug (unique), brand_id (FK), category_id (FK), description, images (JSON), content (JSON; English-only content with basic_info, technical_analysis, purchase_decision, etc.), avg_rating, review_count, is_active, category_attributes (JSON), last_crawled, OpenAI fields, created_at, updated_at
 - affiliate_stores: id, name, slug (unique), website_url, logo_url, affiliate settings (has_affiliate_program, affiliate_id, affiliate_parameters, domain_affiliate_ids), priority, show_affiliate_buttons, regional settings (available_regions, regional_priority, primary_region), fallbacks, created_at, updated_at
 - product_prices: id, product_id (FK), store_id (FK), price, currency, affiliate_url, is_available, last_checked, created_at, updated_at, unique(product_id, store_id)
 - brand_exclusivities: id, brand_name, store_id (FK to affiliate_stores), is_exclusive (boolean), regions (JSON), priority_boost, created_at, updated_at

@@ -38,24 +38,32 @@ def _extract_image_urls(images_dict: Dict[str, Any]) -> List[str]:
 
 
 
-def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[str, Any]:
+def get_clean_content(content: Dict[str, Any]) -> Dict[str, Any]:
     """
     Extract content for frontend, including all rich product information.
+    Now works with flattened content structure (no localization).
     """
     if not content:
         return {}
     
     result = {}
     
-    # Include all top-level content fields that the frontend expects
-    top_level_fields = [
+    # Include all content fields that the frontend expects
+    # All content is now at root level (no localization wrapper)
+    all_content_fields = [
+        # Core content fields (previously in localized_content)
+        'basic_info', 'usage_guidance', 'customer_reviews', 
+        'maintenance_care', 'purchase_decision', 'technical_analysis', 
+        'professional_assessment', 'notes', 'suitable_genres',
+        
+        # Metadata and other fields
         'qa', 'dates', 'sources', 'setup_tips', 'audience_fit', 
         'quick_badges', 'warranty_info', 'specifications', 
         'category_specific', 'comparison_helpers', 'professional_ratings',
         'accessory_recommendations', 'store_links'
     ]
     
-    for field in top_level_fields:
+    for field in all_content_fields:
         if field in content:
             result[field] = content[field]
     
@@ -101,40 +109,6 @@ def get_clean_content(content: Dict[str, Any], language: str = "en-GB") -> Dict[
     # Handle dates from content_metadata if not found at top level
     if 'dates' not in result and content.get('content_metadata', {}).get('dates'):
         result['dates'] = content['content_metadata']['dates']
-    
-    # Get localized content for the requested language
-    localized_content = content.get('localized_content', {})
-    if localized_content:
-        # Include the full localized_content structure for frontend to access
-        result['localized_content'] = localized_content
-        
-        # Also merge selected language content at root level for backward compatibility
-        selected_content = None
-        if language in localized_content:
-            selected_content = localized_content[language]
-        else:
-            # Fallback to English variants
-            english_variants = ['en-GB', 'en-US', 'en']
-            for variant in english_variants:
-                if variant in localized_content:
-                    selected_content = localized_content[variant]
-                    break
-        
-        # If no English found, use first available
-        if not selected_content and localized_content:
-            first_language = next(iter(localized_content.keys()))
-            selected_content = localized_content[first_language]
-        
-        # Merge user-facing content at root level
-        if selected_content:
-            content_fields = [
-                'basic_info', 'usage_guidance', 'customer_reviews', 
-                'maintenance_care', 'purchase_decision', 'technical_analysis', 
-                'professional_assessment'
-            ]
-            for field in content_fields:
-                if field in selected_content:
-                    result[field] = selected_content[field]
     
     return result
 

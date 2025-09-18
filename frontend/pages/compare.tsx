@@ -326,7 +326,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                 
                 <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                   {comparison.products.map((product, index) => {
-                    const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
+                    const englishContent = product.ai_content || product.content;
                     
                     return (
                       <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
@@ -540,7 +540,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   
                   <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
-                      const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
+                      const englishContent = product.ai_content || product.content;
                       
                       return (
                         <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
@@ -592,7 +592,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   
                   <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
-                      const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
+                      const englishContent = product.ai_content || product.content;
                       
                       return (
                         <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
@@ -794,7 +794,7 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
                   
                   <div className={`grid gap-2 sm:gap-4 ${comparison.products.length === 2 ? 'grid-cols-2' : comparison.products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : comparison.products.length === 4 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 max-w-md mx-auto'}`}>
                     {comparison.products.map((product, index) => {
-                      const englishContent = product.ai_content?.localized_content?.['en-US'] || product.ai_content?.localized_content?.['en-GB'] || product.content?.localized_content?.['en-US'] || product.content?.localized_content?.['en-GB'];
+                      const englishContent = product.ai_content || product.content;
                       
                       return (
                         <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3 sm:p-6">
