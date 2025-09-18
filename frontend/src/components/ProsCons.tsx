@@ -1,6 +1,11 @@
 import React from 'react';
 
-export default function ProsCons({ pros = [], cons = [] as string[] }) {
+interface ProsConsProps {
+  pros?: string[];
+  cons?: string[];
+}
+
+export default function ProsCons({ pros = [], cons = [] }: ProsConsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="p-5 rounded-lg bg-green-50 border border-green-200">

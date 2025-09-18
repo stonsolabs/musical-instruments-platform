@@ -6,7 +6,7 @@ import { ProductCardButtons } from './AffiliateButtons';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import { getRatingStars, getProductImageUrl } from '../lib/utils';
-import { ShoppingCartIcon, ExternalLinkIcon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
 interface InlineProductShowcaseProps {
   productId: number;
@@ -147,11 +147,11 @@ export default function InlineProductShowcase({
         </div>
 
         {/* Key Features (if showFullDetails) */}
-        {showFullDetails && product.content?.basic_info?.key_features && (
+        {showFullDetails && product.content?.comparison_helpers?.standout_strengths && (
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-gray-900">Key Features:</h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              {product.content.basic_info.key_features.slice(0, 3).map((feature: string, index: number) => (
+              {product.content.comparison_helpers.standout_strengths.slice(0, 3).map((feature: string, index: number) => (
                 <li key={index} className="flex items-center">
                   <span className="w-1.5 h-1.5 bg-brand-primary rounded-full mr-2"></span>
                   {feature}
@@ -177,7 +177,7 @@ export default function InlineProductShowcase({
             rel="noopener noreferrer"
             className="flex items-center justify-center space-x-2 py-3 px-6 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <ExternalLinkIcon className="w-4 h-4" />
+            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
             <span>Full Review</span>
           </a>
         </div>
