@@ -437,11 +437,19 @@ async def get_product_affiliate_urls(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Build store links from product content (same logic as /affiliate-stores endpoint)
+    store_links = {}
+    if product.content and 'store_links' in product.content:
+        for store_name, url in product.content['store_links'].items():
+            if isinstance(url, str) and url:
+                store_links[store_name.lower()] = {'product_url': url}
+    
     # Get affiliate stores for this product using enhanced service
     affiliate_service = EnhancedAffiliateService(db)
     affiliate_stores = await affiliate_service.get_affiliate_stores_for_product(
         product=product,
-        user_region=user_region
+        user_region=user_region,
+        store_links=store_links
     )
     
     return {

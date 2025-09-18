@@ -377,13 +377,21 @@ async def get_blog_post(
         await db.execute(text("UPDATE blog_posts SET view_count = view_count + 1 WHERE id = :post_id"), {'post_id': post_id})
         await db.commit()
         
+        # Parse structured_content if it's a JSON string
+        structured_content = row[5]
+        if isinstance(structured_content, str):
+            try:
+                structured_content = json.loads(structured_content)
+            except (json.JSONDecodeError, TypeError):
+                structured_content = None
+        
         return BlogPost(
             id=row[0],
             title=row[1],
             slug=row[2],
             excerpt=row[3],
             content=row[4],
-            structured_content=row[5],
+            structured_content=structured_content,
             featured_image=row[6],
             author_name=row[7],
             status=row[8],
@@ -846,13 +854,21 @@ async def get_ai_blog_post(
         history_result = await db.execute(text(history_query), {'post_id': post_id})
         history_data = history_result.fetchall()
         
+        # Parse structured_content if it's a JSON string
+        structured_content = row[5]
+        if isinstance(structured_content, str):
+            try:
+                structured_content = json.loads(structured_content)
+            except (json.JSONDecodeError, TypeError):
+                structured_content = None
+        
         return AIBlogPost(
             id=row[0],
             title=row[1],
             slug=row[2],
             excerpt=row[3],
             content=row[4],
-            structured_content=row[5],
+            structured_content=structured_content,
             featured_image=row[6],
             author_name=row[7],
             status=row[8],
