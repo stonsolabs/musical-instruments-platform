@@ -183,7 +183,25 @@ class BlogBatchProcessorService:
             
             # Extract basic information
             title = parsed.get('title', parsed.get('sub_header', 'Generated Blog Post'))
-            excerpt = parsed.get('excerpt', parsed.get('bold_paragraph_text', ''))[:200] + "..." if parsed.get('excerpt') or parsed.get('bold_paragraph_text') else ""
+            def _smart_excerpt(text: str, limit: int = 200) -> str:
+                import re
+                if not text:
+                    return ""
+                clean = re.sub(r"[#*`\[\]()]", "", text).strip()
+                if len(clean) <= limit:
+                    return clean
+                window = clean[: limit + 20]
+                half = max(1, limit // 2)
+                punct_idx = max(window.rfind('.'), window.rfind('!'), window.rfind('?'))
+                if punct_idx >= half:
+                    return window[: punct_idx + 1].strip()
+                space_idx = clean.rfind(' ', 0, limit)
+                if space_idx > 0:
+                    return (clean[:space_idx] + '…').strip()
+                return (clean[:limit] + '…').strip()
+
+            base_excerpt = parsed.get('excerpt') or parsed.get('bold_paragraph_text') or ''
+            excerpt = _smart_excerpt(base_excerpt or parsed.get('content',''), 200) if (base_excerpt or parsed.get('content')) else ""
             
             # Build the full content with proper product integration
             full_content = self._build_rich_content(parsed)

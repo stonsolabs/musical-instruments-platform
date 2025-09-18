@@ -58,19 +58,15 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
         <h2 id="introduction" className="text-2xl font-bold mb-4">Introduction</h2>
         <div className="prose prose-lg max-w-none">
           {intro.hook && (
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-              <p className="text-lg font-medium text-blue-800">{intro.hook}</p>
-            </div>
+            <p className="text-lg text-gray-900 mb-3">{intro.hook}</p>
           )}
           {intro.problem_statement && (
-            <div className="mb-4">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {intro.problem_statement}
-              </ReactMarkdown>
-            </div>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {intro.problem_statement}
+            </ReactMarkdown>
           )}
           {intro.solution_preview && (
-            <div className="bg-green-50 border-l-4 border-green-400 p-4">
+            <div className="mt-3">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {intro.solution_preview}
               </ReactMarkdown>
@@ -117,6 +113,7 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                       ctaText="View Product"
                       layout="compact"
                       showFullDetails={false}
+                      minimal={true}
                     />
                   </div>
                 )}
@@ -137,18 +134,14 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
         {criteria.criteria && Array.isArray(criteria.criteria) && (
           <div className="space-y-6">
             {criteria.criteria.map((criterion: any, index: number) => (
-              <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <div key={index} className="border border-gray-200 rounded-lg p-6 bg-white">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{criterion.criterion}</h3>
                 <p className="text-gray-700 mb-3">{criterion.description}</p>
                 {criterion.why_matters && (
-                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3">
-                    <p className="text-sm text-blue-800"><strong>Why it matters:</strong> {criterion.why_matters}</p>
-                  </div>
+                  <p className="text-sm text-gray-700"><strong>Why it matters:</strong> {criterion.why_matters}</p>
                 )}
                 {criterion.red_flags && (
-                  <div className="bg-red-50 border-l-4 border-red-400 p-3">
-                    <p className="text-sm text-red-800"><strong>Red flags:</strong> {criterion.red_flags}</p>
-                  </div>
+                  <p className="text-sm text-gray-700 mt-2"><strong>Red flags:</strong> {criterion.red_flags}</p>
                 )}
               </div>
             ))}
@@ -209,9 +202,9 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                   {review.pros && Array.isArray(review.pros) && review.pros.length > 0 && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-800 mb-2">Pros:</h4>
-                      <ul className="list-disc list-inside text-green-700 space-y-1">
+                    <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                      <h4 className="font-semibold text-gray-900 mb-2">Pros:</h4>
+                      <ul className="list-disc list-inside text-gray-800 space-y-1">
                         {review.pros.map((pro: string, idx: number) => (
                           <li key={idx}>{pro}</li>
                         ))}
@@ -220,9 +213,9 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                   )}
                   
                   {review.cons && Array.isArray(review.cons) && review.cons.length > 0 && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-red-800 mb-2">Cons:</h4>
-                      <ul className="list-disc list-inside text-red-700 space-y-1">
+                    <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                      <h4 className="font-semibold text-gray-900 mb-2">Cons:</h4>
+                      <ul className="list-disc list-inside text-gray-800 space-y-1">
                         {review.cons.map((con: string, idx: number) => (
                           <li key={idx}>{con}</li>
                         ))}
@@ -232,9 +225,9 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
                 </div>
                 
                 {review.current_deals && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                    <h4 className="font-semibold text-yellow-800 mb-2">Current Deals:</h4>
-                    <p className="text-yellow-700">{review.current_deals}</p>
+                  <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-white">
+                    <h4 className="font-semibold text-gray-900 mb-2">Current Deals</h4>
+                    <p className="text-gray-800">{review.current_deals}</p>
                   </div>
                 )}
                 
@@ -317,22 +310,20 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
         {guide.steps && Array.isArray(guide.steps) && (
           <div className="space-y-6">
             {guide.steps.map((step: any, index: number) => (
-              <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div key={index} className="border border-gray-200 rounded-lg p-6 bg-white">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-semibold mr-4">
                     {step.step || index + 1}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">{step.title}</h3>
-                    <p className="text-blue-800 mb-3">{step.description}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
+                    <p className="text-gray-800 mb-3">{step.description}</p>
                     {step.tips && (
-                      <div className="bg-blue-100 border-l-4 border-blue-400 p-3">
-                        <p className="text-sm text-blue-800"><strong>Pro tip:</strong> {step.tips}</p>
-                      </div>
+                      <p className="text-sm text-gray-700"><strong>Pro tip:</strong> {step.tips}</p>
                     )}
                     {step.required_products && Array.isArray(step.required_products) && step.required_products.length > 0 && showInlineProducts && (
                       <div className="mt-4">
-                        <h4 className="font-semibold text-blue-900 mb-2">Required Products:</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">Required Products:</h4>
                         <div className="flex flex-wrap gap-2 sm:gap-4">
                           {step.required_products.map((productId: string, idx: number) => (
                             <InlineProductShowcase
@@ -401,13 +392,9 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
     sections.push(
       <section key="expert_verdict" className="mb-8">
         <h2 id="expert_verdict" className="text-2xl font-bold mb-4">{verdict.title || 'Expert Verdict'}</h2>
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-6">
+        <div className="border border-gray-200 rounded-lg p-6 bg-white">
           {verdict.winner && (
-            <div className="text-center mb-4">
-              <div className="inline-block bg-green-600 text-white px-4 py-2 rounded-full text-lg font-semibold">
-                🏆 Winner: {verdict.winner}
-              </div>
-            </div>
+            <p className="font-semibold text-gray-900 mb-3">Winner: {verdict.winner}</p>
           )}
           {verdict.reasoning && (
             <div className="mb-4">
@@ -447,25 +434,23 @@ function renderStructuredContent(structuredContent: any, showInlineProducts: boo
             </div>
           )}
           {conclusion.next_steps && (
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Next Steps:</h3>
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 mb-2">Next Steps</h3>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {conclusion.next_steps}
               </ReactMarkdown>
             </div>
           )}
           {conclusion.final_recommendation && (
-            <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
-              <h3 className="font-semibold text-green-900 mb-2">Final Recommendation:</h3>
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 mb-2">Final Recommendation</h3>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {conclusion.final_recommendation}
               </ReactMarkdown>
             </div>
           )}
           {conclusion.affiliate_cta && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-              <p className="text-lg font-semibold text-yellow-800">{conclusion.affiliate_cta}</p>
-            </div>
+            <p className="text-gray-900 font-medium">{conclusion.affiliate_cta}</p>
           )}
         </div>
       </section>
@@ -617,9 +602,9 @@ export default function EnhancedBlogRenderer({
           
           {/* Add affiliate placement below table if specified */}
           {section.affiliate_placement === 'below_table' && section.products_mentioned && showInlineProducts && (
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="text-lg font-semibold text-blue-900 mb-3">Ready to Buy?</h4>
-              <p className="text-blue-800 mb-4">
+            <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-white">
+              <h4 className="text-lg font-semibold text-gray-900 mb-3">Ready to Buy?</h4>
+              <p className="text-gray-800 mb-4">
                 Check out the products mentioned in this comparison and find the best deals.
               </p>
               <div className="flex flex-wrap gap-2 sm:gap-4">

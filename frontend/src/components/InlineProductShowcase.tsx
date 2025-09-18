@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { fetchProduct } from '../lib/api';
-import { openTopAffiliate } from '../lib/affiliate';
-import { ProductCardButtons } from './AffiliateButtons';
+import AffiliateButtons from './AffiliateButtons';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import { getRatingStars, getProductImageUrl } from '../lib/utils';
-import { ShoppingCartIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
 interface InlineProductShowcaseProps {
   productId: number;
@@ -15,6 +14,7 @@ interface InlineProductShowcaseProps {
   ctaText?: string;
   layout?: 'horizontal' | 'vertical' | 'compact';
   showFullDetails?: boolean;
+  minimal?: boolean;
 }
 
 export default function InlineProductShowcase({ 
@@ -23,7 +23,8 @@ export default function InlineProductShowcase({
   position, 
   ctaText = "View Product",
   layout = 'horizontal',
-  showFullDetails = true
+  showFullDetails = true,
+  minimal = false
 }: InlineProductShowcaseProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +73,7 @@ export default function InlineProductShowcase({
   const { full, half, empty } = getRatingStars(product.avg_rating || 0);
   const imageUrl = getProductImageUrl(product);
   
-  const openPriorityStore = (e: React.MouseEvent) => openTopAffiliate(product as any, e);
+  // Store opening handled via AffiliateButtons
 
   const layoutClasses = {
     horizontal: 'flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6',
@@ -86,26 +87,46 @@ export default function InlineProductShowcase({
     compact: 'w-20 h-20 flex-shrink-0'
   };
 
+  // Minimal presentation: name + single store button + optional full review link
+  if (minimal) {
+    return (
+      <div className="my-4 p-4 bg-white rounded-lg border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
+            <h4 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{product.name}</h4>
+            {context && (
+              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{context}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 sm:min-w-[180px]">
+            <AffiliateButtons product={product} variant="compact" maxButtons={1} />
+            <a
+              href={`/products/${product.slug}`}
+              className="hidden sm:inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm"
+              title="Full Review"
+            >
+              <ArrowTopRightOnSquareIcon className="w-4 h-4 mr-1" />
+              Full Review
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-      <div className={`my-6 p-4 sm:p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ${layoutClasses[layout]}`}>
+      <div className={`my-6 p-4 sm:p-6 bg-white rounded-xl border border-gray-200 ${layoutClasses[layout]}`}>
       {/* Product Image */}
-      <div className={`${imageClasses[layout]} bg-gray-100 rounded-lg overflow-hidden cursor-pointer relative group`} onClick={openPriorityStore}>
+      <div className={`${imageClasses[layout]} bg-gray-100 rounded-lg overflow-hidden`}>
         <img
           src={imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
           }}
         />
-        
-        {/* Quick Action Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 text-sm font-medium text-gray-900">
-            Quick View
-          </div>
-        </div>
       </div>
 
       {/* Product Details */}
@@ -161,33 +182,21 @@ export default function InlineProductShowcase({
           </div>
         )}
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons (streamlined) */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full">
-          <button
-            onClick={openPriorityStore}
-            className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            <ShoppingCartIcon className="w-5 h-5" />
-            <span>{ctaText}</span>
-          </button>
-          
+          {/* Primary: top affiliate/store button (compact) */}
+          <div className="flex-1">
+            <AffiliateButtons product={product} variant="compact" maxButtons={1} />
+          </div>
+          {/* Secondary: full review link */}
           <a
             href={`/products/${product.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center space-x-2 py-3 px-6 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
           >
-            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-            <span>Full Review</span>
+            <ArrowTopRightOnSquareIcon className="w-4 h-4 mr-2" />
+            Full Review
           </a>
         </div>
-
-        {/* Affiliate Buttons (if showFullDetails) */}
-        {showFullDetails && (
-          <div className="pt-2">
-            <ProductCardButtons product={product} />
-          </div>
-        )}
       </div>
     </div>
   );

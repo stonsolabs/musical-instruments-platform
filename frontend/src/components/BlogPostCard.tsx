@@ -123,7 +123,7 @@ export default function BlogPostCard({
         )}
 
         {/* Title */}
-        <h3 className={`font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-brand-primary transition-colors leading-tight ${titleClasses[size]}`}>
+        <h3 className={`font-bold text-gray-900 mb-4 group-hover:text-brand-primary transition-colors leading-tight ${titleClasses[size]}`}>
           <Link href={href}>
             {safePost.title}
           </Link>
@@ -131,7 +131,7 @@ export default function BlogPostCard({
 
         {/* Excerpt */}
         {showExcerpt && safePost.excerpt && (
-          <p className="text-gray-600 mb-5 line-clamp-3 leading-relaxed">
+          <p className="text-gray-600 mb-5 leading-relaxed">
             {safePost.excerpt}
           </p>
         )}

@@ -48,6 +48,27 @@ class BlogAIGenerator:
             self.azure_client = None
         self.db = db_session
         self.default_model = "gpt-4o"
+
+    def _smart_excerpt(self, text: str, limit: int = 200) -> str:
+        """Create an excerpt without mid-word cuts; prefer sentence boundary.
+        - Strips simple markdown symbols
+        - Tries to end on ., !, ? within limit+20; otherwise last whitespace within limit
+        """
+        import re as _re
+        if not text:
+            return ""
+        clean = _re.sub(r"[#*`\[\]()]", "", text).strip()
+        if len(clean) <= limit:
+            return clean
+        window = clean[: limit + 20]
+        half = max(1, limit // 2)
+        punct_idx = max(window.rfind("."), window.rfind("!"), window.rfind("?"))
+        if punct_idx >= half:
+            return window[: punct_idx + 1].strip()
+        space_idx = clean.rfind(" ", 0, limit)
+        if space_idx > 0:
+            return (clean[:space_idx] + "…").strip()
+        return (clean[:limit] + "…").strip()
     
     async def generate_blog_post(self, request: BlogGenerationRequest) -> BlogGenerationResult:
         """Generate a complete blog post using AI"""
@@ -571,9 +592,7 @@ Respond in JSON with fields: title, excerpt, content, seo_title, seo_description
             
             # Generate excerpt if not provided
             if not parsed.get('excerpt'):
-                # Extract first 200 characters from content, clean markdown
-                content_clean = re.sub(r'[#*`\[\]()]', '', parsed['content'])
-                parsed['excerpt'] = content_clean[:200].strip() + "..."
+                parsed['excerpt'] = self._smart_excerpt(parsed['content'], 200)
             
             # Validate product recommendations
             if 'product_recommendations' in parsed:
@@ -606,7 +625,7 @@ Respond in JSON with fields: title, excerpt, content, seo_title, seo_description
         return {
             'title': title,
             'content': ai_response,
-            'excerpt': ai_response[:200] + "..." if len(ai_response) > 200 else ai_response,
+            'excerpt': self._smart_excerpt(ai_response, 200),
             'reading_time': max(1, round(len(ai_response.split()) / 200))
         }
     

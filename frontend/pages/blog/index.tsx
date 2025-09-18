@@ -123,7 +123,7 @@ export default function BlogPage({
                     {featuredPosts[0].title}
                   </h1>
                   {featuredPosts[0].excerpt && (
-                    <p className="text-xl text-gray-300 leading-relaxed mb-8 line-clamp-3">
+                    <p className="text-xl text-gray-300 leading-relaxed mb-8">
                       {featuredPosts[0].excerpt}
                     </p>
                   )}

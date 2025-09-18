@@ -320,8 +320,8 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
                     <img src={p.featured_image} alt={p.title} className="w-full h-40 object-cover" />
                   )}
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2">{p.title}</h3>
-                    {p.excerpt && <p className="text-gray-600 text-sm line-clamp-3 mt-2">{p.excerpt}</p>}
+                    <h3 className="font-semibold text-gray-900">{p.title}</h3>
+                    {p.excerpt && <p className="text-gray-600 text-sm mt-2">{p.excerpt}</p>}
                   </div>
                 </a>
               ))}
