@@ -168,6 +168,10 @@ class EnhancedAffiliateService:
     
     def _add_affiliate_parameters(self, store: AffiliateStore, url: str) -> str:
         """Add affiliate parameters to URL with domain-specific affiliate IDs"""
+        # Special handling for Thomann URLs to use /intl/ path for better international compatibility
+        if store.slug == "thomann":
+            url = self._normalize_thomann_url(url)
+        
         parsed = urlparse(url)
         query_params = parse_qs(parsed.query)
         
@@ -205,6 +209,46 @@ class EnhancedAffiliateService:
         ))
         
         return affiliate_url
+    
+    def _normalize_thomann_url(self, url: str) -> str:
+        """Normalize Thomann URLs to use /intl/ path for better international compatibility"""
+        parsed = urlparse(url)
+        
+        # Only process thomann.de URLs
+        if not parsed.netloc or 'thomann.de' not in parsed.netloc:
+            return url
+        
+        # Convert regional paths to /intl/ for better international compatibility
+        # Examples:
+        # /gb/product/123 -> /intl/product/123
+        # /de/product/456 -> /intl/product/456
+        # /fr/product/789 -> /intl/product/789
+        path = parsed.path
+        
+        # Replace regional paths with /intl/
+        regional_patterns = ['/gb/', '/de/', '/fr/', '/it/', '/es/', '/nl/', '/be/', '/at/', '/ch/', '/us/']
+        for pattern in regional_patterns:
+            if path.startswith(pattern):
+                path = path.replace(pattern, '/intl/', 1)
+                break
+        
+        # If it's already /intl/ or doesn't have a regional prefix, keep as is
+        if not path.startswith('/intl/') and not any(path.startswith(p) for p in regional_patterns):
+            # For root paths or other paths, ensure they use /intl/
+            if path == '/' or path == '':
+                path = '/intl/'
+            elif not path.startswith('/intl/'):
+                path = '/intl' + path
+        
+        # Reconstruct URL
+        return urlunparse((
+            parsed.scheme,
+            parsed.netloc,
+            path,
+            parsed.params,
+            parsed.query,
+            parsed.fragment
+        ))
     
     def _get_domain_specific_affiliate_id(self, store: AffiliateStore, domain: str) -> Optional[str]:
         """Get domain-specific affiliate ID based on the URL domain"""

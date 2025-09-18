@@ -4,21 +4,22 @@ import sys
 import os
 sys.path.append('.')
 
-from app.database import get_async_session
+from app.database import async_session_factory
 from app.models import AffiliateStore, BrandExclusivity
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 
 async def setup_enhanced_affiliate_stores():
     """Set up enhanced affiliate stores with regional preferences and brand exclusivity"""
     
-    async for session in get_async_session():
+    async with async_session_factory() as session:
         try:
             print("Setting up Enhanced Affiliate Stores...")
             print("=" * 50)
             
             # Clear existing stores
-            await session.execute("DELETE FROM brand_exclusivities")
-            await session.execute("DELETE FROM affiliate_stores")
+            await session.execute(text("DELETE FROM brand_exclusivities"))
+            await session.execute(text("DELETE FROM affiliate_stores"))
             await session.commit()
             
             # Create enhanced affiliate stores
@@ -26,23 +27,24 @@ async def setup_enhanced_affiliate_stores():
                 {
                     "name": "Thomann",
                     "slug": "thomann",
-                    "website_url": "https://www.thomann.de",
+                    "website_url": "https://www.thomann.de/intl",
                     "logo_url": "https://thumbs.static-thomann.de/thumb/original/pics/bdb/_58/585150/19376401_800.jpg",
                     "description": "Europe's largest online music store (uses RediR™ for regional redirects)",
                     "commission_rate": 5.0,
                     "has_affiliate_program": True,
-                    "affiliate_id": "your-thomann-default-affiliate-id",
+                    "affiliate_id": "4419",
                     "domain_affiliate_ids": {
-                        "DE": "your-thomann-de-affiliate-id",
-                        "UK": "your-thomann-uk-affiliate-id",
-                        "FR": "your-thomann-fr-affiliate-id",
-                        "IT": "your-thomann-it-affiliate-id",
-                        "ES": "your-thomann-es-affiliate-id",
-                        "US": "your-thomann-us-affiliate-id"
+                        "DE": "4419",
+                        "UK": "4419",
+                        "FR": "4419",
+                        "IT": "4419",
+                        "ES": "4419",
+                        "US": "4419"
                     },
                     "affiliate_parameters": {
-                        "partner": "your-thomann-partner-id",
-                        "redir": "1"  # Enable RediR™ redirect system
+                        "offid": "1",
+                        "affid": "4419"
+                        # Note: "redir": "1" will be added when RediR is enabled
                     },
                     "show_affiliate_buttons": True,
                     "priority": 10,
@@ -50,7 +52,7 @@ async def setup_enhanced_affiliate_stores():
                     "primary_region": "EU",
                     "regional_priority": {"EU": 10, "DE": 15, "UK": 8, "FR": 7, "IT": 6},
                     "use_store_fallback": True,
-                    "store_fallback_url": "https://www.thomann.de/gb/search.html?sw=",
+                    "store_fallback_url": "https://www.thomann.de/intl/search_dir.html?sw=",
                 },
                 {
                     "name": "Amazon",
@@ -254,8 +256,6 @@ async def setup_enhanced_affiliate_stores():
             print(f"❌ Error setting up enhanced affiliate stores: {e}")
             await session.rollback()
             raise
-        finally:
-            await session.close()
 
 if __name__ == "__main__":
     asyncio.run(setup_enhanced_affiliate_stores())

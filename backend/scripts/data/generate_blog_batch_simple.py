@@ -118,55 +118,103 @@ EXTENDED_BLOG_IDEAS = [
 
 async def get_structured_prompt(blog_idea):
     """Get the structured JSON prompt for a blog idea"""
-    return f"""Write a comprehensive blog post using structured JSON format.
+    return f"""You are an expert blog post writer with a deep knowledge of the {blog_idea['category']} space, specializing in writing high quality SEO optimized content.
 
-Title: {blog_idea['title']}
+Write a comprehensive 2500-3000 word blog post using the title "{blog_idea['title']}" in structured JSON format.
+
 Template Style: {blog_idea['template']}
 Category: {blog_idea['category']}
 Product IDs to feature: {blog_idea['product_ids']}
 Tags: {', '.join(blog_idea['tags'])}
 
+Content Quality Rules:
+1. Less than 25% of all sentences must be longer than 20 words
+2. Do not use passive voice
+3. Include unique insights or data not commonly found on similar pages
+4. Conduct original research or provide unique analysis to enhance originality
+5. Add deeper insights or lesser-known facts about the main topics
+6. Enhance depth and quality suitable for print or reference
+7. Include engaging and unique content that's shareable and recommendable
+8. Differentiate content with unique perspectives or exclusive information
+9. Provide personal experiences or case studies to showcase expertise
+10. Expand on practical steps and detailed guidance to ensure readers can achieve their goals
+
+Ensure the tone is formal and professional, written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). Incorporate a balance of perplexity and burstiness to make the article sound humanlike. The aim is to educate readers with hyper-specific/detailed content that goes beyond the obvious to resolve specific issues.
+
+Your output must be in JSON format using these elements:
+
+Sub-header (use as often as needed):
+{{
+    "sub_header": "...",
+    "paragraph_text": "..."
+}}
+
+Sub-sub-header (hierarchical under sub-headers):
+{{
+    "sub_sub_header": "...",
+    "paragraph_text": "..."
+}}
+
+Bolded text:
+{{ 
+    "bold_paragraph_text": "...", 
+}}
+
+Normal text:
+{{
+    "paragraph_text": "..."
+}}
+
+Helpful tip (max once):
+{{ 
+    "article_tip": {{
+    "tip_title": "...",
+    "tip_text": "..."
+       }}
+}}
+
+Quick Guide (max once, near beginning):
+{{
+    "quick_guide": {{
+    "guide_title": "...: …",
+    "guide_text": ["1. ...", "2. ...", "3. ..."]
+    }}
+}}
+
+Table:
+{{
+ "simple_table": {{
+"Headers": ["...", "..."], 
+    "Rows": [
+      {{
+        "...": "...",
+        "...": "..."
+      }}
+    ]  
+  }}
+}}
+
+Additional notes:
+- Do not mention any year in the slug
+- Capitalize all major words in headers and subheaders
+
 RESPOND ONLY WITH VALID JSON IN THIS EXACT FORMAT:
 {{
   "title": "{blog_idea['title']}",
-  "excerpt": "Brief 1-2 sentence summary for previews",
-  "seo_title": "SEO-optimized title (60 chars max)",
-  "seo_description": "SEO meta description (155 chars max)",
-  "reading_time": 8,
-  "sections": [
-    {{
-      "type": "introduction",
-      "title": null,
-      "content": "Full HTML content for introduction"
-    }},
-    {{
-      "type": "product_showcase",
-      "title": "Top Picks",
-      "content": "Content introducing the products",
-      "products": [
-        {{
-          "product_id": {blog_idea['product_ids'][0] if blog_idea['product_ids'] else 1},
-          "context": "Why this product was selected and what makes it special",
-          "position": 1
-        }}
-      ]
-    }},
-    {{
-      "type": "buying_guide",
-      "title": "What to Look For",
-      "content": "Educational content about choosing products"
-    }},
-    {{
-      "type": "conclusion",
-      "title": "Final Thoughts",
-      "content": "Wrap-up content with key takeaways"
-    }}
+  "slug": "seo-friendly-slug-without-years",
+  "seo_title": "SEO-optimized title (50-60 chars)",
+  "seo_description": "SEO meta description (110-160 chars)",
+  "primary_keyword": "main keyword for SEO",
+  "reading_time": 12,
+  "content": [
+    // Use the JSON elements above to structure your content
   ],
   "tags": {json.dumps(blog_idea['tags'])},
   "meta": {{
     "content_type": "{blog_idea['template'].lower().replace(' ', '_')}",
     "target_audience": ["beginners", "enthusiasts"],
-    "key_benefits": ["save_money", "make_informed_decisions"]
+    "key_benefits": ["save_money", "make_informed_decisions"],
+    "word_count": 2500
   }}
 }}
 
@@ -207,7 +255,7 @@ async def create_batch_file():
             "method": "POST",
             "url": "/v1/chat/completions",
             "body": {
-                "model": "gpt-4-1106-preview",
+                "model": "gpt-4o",
                 "messages": [
                     {
                         "role": "system",
@@ -218,7 +266,7 @@ async def create_batch_file():
                         "content": prompt
                     }
                 ],
-                "max_tokens": 4000,
+                "max_tokens": 8000,
                 "temperature": 0.7
             }
         }

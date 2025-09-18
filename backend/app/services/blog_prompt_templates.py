@@ -40,7 +40,21 @@ Always provide practical, actionable advice that helps musicians make informed d
         return {
             "name": "Comprehensive Buying Guide",
             "template_type": "buying_guide",
-            "base_prompt": """Write a comprehensive buying guide for {category} instruments. Your guide should help both beginners and experienced players choose the right instrument for their needs and budget.
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized guides.
+
+Write a comprehensive {word_count} word buying guide for {category} instruments using a formal, professional tone written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). This guide should help both beginners and experienced players choose the right instrument for their needs and budget.
+
+Content Quality Rules:
+1. Less than 25% of all sentences must be longer than 20 words
+2. Do not use passive voice
+3. Include unique insights or data not commonly found on similar pages
+4. Conduct original research or provide unique analysis to enhance originality
+5. Add deeper insights or lesser-known facts about the main topics
+6. Enhance depth and quality suitable for print or reference
+7. Include engaging and unique content that's shareable and recommendable
+8. Differentiate content with unique perspectives or exclusive information
+9. Provide personal experiences or case studies to showcase expertise
+10. Expand on practical steps and detailed guidance to ensure readers can achieve their goals
 
 Structure your guide with these sections:
 1. **Introduction** - Why choosing the right {category} matters
@@ -58,6 +72,8 @@ For each recommended product, explain:
 - Who it's best suited for (beginner, intermediate, professional)
 - Value proposition at its price point
 - Any notable pros/cons
+
+Incorporate a balance of perplexity and burstiness to make the article sound humanlike. The aim is to educate readers with hyper-specific/detailed content that goes beyond the obvious to resolve specific issues.
 
 Target audience: Musicians of all skill levels looking to purchase {category} instruments
 Word count: {word_count} words
@@ -97,26 +113,34 @@ Use your expertise to explain technical aspects in an accessible way.""",
         return {
             "name": "In-Depth Product Review",
             "template_type": "review",
-            "base_prompt": """Write a comprehensive, hands-on review of the {product_name}. This should be an authoritative review that helps potential buyers understand exactly what they're getting.
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized reviews.
 
-Structure your review with these sections:
-1. **Overview** - First impressions and key specifications
-2. **Build Quality & Design** - Materials, construction, aesthetics
-3. **Sound & Performance** - Detailed sound analysis across different contexts
-4. **Features & Functionality** - All features and how they perform in practice
-5. **Playability & Comfort** - User experience and ergonomics
-6. **Value Analysis** - Price vs. performance assessment
-7. **Pros & Cons** - Honest breakdown of strengths and weaknesses
-8. **Final Verdict** - Who should buy this and why
+Write a comprehensive {word_count} word review of the {product_name}. Ensure the tone is formal and professional, written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). This should be an authoritative review that helps potential buyers understand exactly what they're getting.
 
-Your review should be:
-- Based on extensive hands-on experience
+Structure your review following this mandatory sequence:
+1. **Opening (3 paragraphs)** - Hook the reader immediately, demonstrate expertise with phrases like "We performed extensive tests..." or "Our team has thoroughly assessed..." Format this in bold. End with mini summary praising positive aspects.
+2. **"Short on Time? Here are Our Key Findings"** - Pros vs cons section with detailed explanations
+3. **Features Table** - Generate features with accurate statistics/numbers
+4. **Quality & Performance Analysis (2 paragraphs)** - Include anecdotal evidence demonstrating product engagement
+5. **Article Tip** - Most vital information or warnings for readers
+6. **3 Relevant Subheaders** - Each with 2 paragraphs of 5 sentences, include list formatting in last paragraph
+7. **Setup/Installation Guide** - Include 3-step quick guide
+8. **Pricing** - Comprehensive pricing analysis
+9. **Reliability & Support** - Include anecdotal response times (5 sentences per paragraph)
+10. **Summary** - Standout features with subtle drawbacks as hidden advantages
+11. **Secret Tip** - 2-3 sentences of beyond-obvious advice
+12. **FAQ** - Frequently asked questions (5+ sentences per answer)
+13. **Comparison Footer** - "Compare {product_name} With Top Alternatives"
+
+Content Requirements:
+- Based on extensive hands-on experience with anecdotal evidence
 - Honest about both strengths and limitations
-- Comparative (how it stacks up against competitors)
-- Practical (real-world usage scenarios)
-- Detailed enough to help buying decisions
+- Include specific testing scenarios with detailed results
+- Provide accurate statistics and technical specifications
+- Comparative analysis with direct competitors
+- Educational focus about the brand and product
 
-Include specific technical details, sound characteristics, and usage examples.
+Incorporate a balance of perplexity and burstiness to make the review sound humanlike.
 Target word count: {word_count} words""",
             
             "product_context_prompt": """Focus primarily on the main product being reviewed. Include 1-2 direct competitors for comparison context. For each product mentioned:
@@ -153,26 +177,35 @@ Your comparisons should help readers understand where this product fits in the m
         return {
             "name": "Product Comparison Guide", 
             "template_type": "comparison",
-            "base_prompt": """Write a detailed comparison of {product_count} popular {category} instruments. Help readers choose between these specific models by highlighting their unique strengths and ideal use cases.
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized listicles. A listicle is a structured list-format article that presents information in numbered format for easy digestion.
 
-Structure your comparison with these sections:
-1. **Introduction** - Why these products were chosen for comparison
+Write a detailed {word_count} word comparison listicle of {product_count} popular {category} instruments. Use an informal, down-to-earth tone written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). Help readers choose between these specific models by highlighting their unique strengths and ideal use cases.
+
+Content Quality Rules:
+1. Minimum {word_count} words total
+2. Each section must have at least 150 words minimum
+3. Integrate relevant statistics in at least 5 instances across the listicle
+4. Demonstrate expertise with specific hard facts, examples, numbers/data
+5. Solve specific problems readers may have
+6. Provide hands-on, practical, creative tips/ideas/facts
+7. Include unique insights beyond obvious information
+
+Structure your comparison with numbered sub-headers:
+1. **Introduction** - Why these products were chosen, demonstrate expertise
 2. **Quick Comparison Table** - Side-by-side specs and key features
-3. **Detailed Analysis** - Deep dive into each product
+3. **Detailed Analysis** - Deep dive into each product (numbered sub-sections)
 4. **Head-to-Head Comparisons** - Direct comparisons in key areas
 5. **Use Case Recommendations** - Which product for which scenario
 6. **Price & Value Analysis** - Bang for buck assessment
 7. **Final Recommendations** - Clear winner in different categories
 
-For each product, cover:
-- Key specifications and features
-- Sound characteristics and tonal qualities
-- Build quality and materials
-- Target audience and ideal use cases
-- Strengths and weaknesses
-- Value proposition at its price point
+For each product section, include:
+- "sub_header" (numbered starting with "1.", "2.", etc.)
+- "bold_paragraph_text" 
+- "paragraph_text" (use multiple times, more in first sections than last)
+- "article_tip" with unique tip_title per section
 
-Make clear recommendations for different budgets, skill levels, and musical styles.
+Make clear recommendations for different budgets, skill levels, and musical styles. Incorporate balance of perplexity and burstiness for human-like content.
 Target word count: {word_count} words""",
             
             "product_context_prompt": """For each product in the comparison:
@@ -209,7 +242,19 @@ Focus on practical differences that matter to buyers.""",
         return {
             "name": "Tutorial & Educational Guide",
             "template_type": "tutorial", 
-            "base_prompt": """Create a comprehensive tutorial about {topic} for {skill_level} musicians. This should be educational content that teaches practical skills and knowledge.
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized guides.
+
+Create a comprehensive {word_count} word tutorial about {topic} for {skill_level} musicians using a formal, professional tone written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). This should be educational content that teaches practical skills and knowledge.
+
+Content Quality Rules:
+1. Less than 25% of all sentences must be longer than 20 words
+2. Do not use passive voice
+3. Include unique insights or data not commonly found on similar pages
+4. Add deeper insights or lesser-known facts about main topics
+5. Provide personal experiences or case studies to showcase expertise
+6. Expand on practical steps and detailed guidance
+7. Include engaging and unique content that's shareable
+8. Differentiate content with unique perspectives
 
 Structure your tutorial with these sections:
 1. **Introduction** - What you'll learn and why it matters
@@ -221,13 +266,13 @@ Structure your tutorial with these sections:
 7. **Next Steps** - How to continue developing these skills
 
 Your tutorial should be:
-- Clear and easy to follow
-- Practical with actionable advice
+- Clear and easy to follow with hyper-specific details
+- Practical with actionable advice beyond the obvious
 - Progressive (building complexity appropriately)
 - Encouraging for learners
-- Based on proven teaching methods
+- Based on proven teaching methods and expertise
 
-Include specific examples, exercises, and real-world applications.
+Incorporate balance of perplexity and burstiness to make content humanlike. Include specific examples, exercises, and real-world applications.
 Target word count: {word_count} words""",
             
             "product_context_prompt": """Recommend specific products that are ideal for learning or implementing the tutorial topic:
@@ -263,7 +308,19 @@ Focus on products that genuinely enhance the learning experience.""",
         return {
             "name": "Historical & Cultural Article",
             "template_type": "history",
-            "base_prompt": """Write about the history and cultural significance of {topic}. This should be an engaging historical narrative that connects past to present.
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized guides.
+
+Write a comprehensive {word_count} word article about the history and cultural significance of {topic} using a formal, professional tone written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). This should be an engaging historical narrative that connects past to present.
+
+Content Quality Rules:
+1. Less than 25% of all sentences must be longer than 20 words
+2. Do not use passive voice
+3. Include unique insights or data not commonly found on similar pages
+4. Conduct original research or provide unique analysis
+5. Add deeper insights or lesser-known facts about main topics
+6. Enhance depth and quality suitable for print or reference
+7. Include engaging and unique content that's shareable
+8. Provide personal experiences or case studies to showcase expertise
 
 Structure your article with these sections:
 1. **Origins** - How and where {topic} began
@@ -275,13 +332,13 @@ Structure your article with these sections:
 7. **Conclusion** - The lasting significance and future outlook
 
 Your article should be:
-- Historically accurate and well-researched
+- Historically accurate and well-researched with unique perspectives
 - Engaging storytelling that brings history to life
-- Educational without being academic
-- Connected to modern relevance
+- Educational without being academic, hyper-specific and detailed
+- Connected to modern relevance beyond obvious connections
 - Culturally sensitive and inclusive
 
-Include interesting anecdotes, lesser-known facts, and clear connections between historical developments and modern music.
+Incorporate balance of perplexity and burstiness for humanlike content. Include interesting anecdotes, lesser-known facts, and clear connections between historical developments and modern music.
 Target word count: {word_count} words""",
             
             "product_context_prompt": """Feature instruments or gear that have historical significance or modern relevance to the topic:
@@ -311,6 +368,132 @@ Focus on products that genuinely connect to and illustrate the historical narrat
             "meta_description_template": "Explore the fascinating history of {topic}. Key moments, influential musicians, and evolution from historical origins to modern instruments and techniques."
         }
 
+    @staticmethod
+    def get_listicle_template() -> Dict[str, Any]:
+        """Template for listicle blog posts"""
+        return {
+            "name": "SEO Optimized Listicle",
+            "template_type": "listicle",
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized listicles. A listicle is a type of online content that is structured primarily as a list, presenting information in a numbered format for easy reader digestion.
+
+Write a {word_count} word listicle using the title "{title}". Use an informal, down-to-earth tone written in 1st person plural ("We", "Our team" - but do not reference a specific company). The aim is to solve a specific problem readers may have or provide hands-on, practical, creative tips/ideas/facts while demonstrating expertise.
+
+Content Requirements:
+- Minimum {word_count} words total
+- Each section must have at least 150 words minimum
+- If listicle has 5 sub-headers: each section needs 500+ words
+- If listicle has 10 sub-headers: each section needs 300+ words
+- If listicle has 20 sub-headers: each section needs 150+ words
+- Integrate relevant statistics in at least 5 instances across the listicle
+- Underline expertise with specific hard facts, examples, numbers/data, and statistics
+- Include unique insights beyond obvious information
+
+Structure Requirements:
+- Create concise introduction demonstrating expertise with phrases like "We performed extensive tests..." or "Our team has thoroughly assessed..."
+- Number each sub-header starting with "1.", "2.", "3.", etc.
+- Use variable paragraph distribution: first sections have more paragraph elements than last sections
+- Include unique tip_title for each section's article_tip
+
+JSON Structure per section:
+- "sub_header" (numbered)
+- "bold_paragraph_text"
+- "paragraph_text" (use multiple times per section)
+- "article_tip" with unique "tip_title"
+
+Incorporate balance of perplexity and burstiness for human-like content.
+Target word count: {word_count} words""",
+            
+            "product_context_prompt": """For each product in the listicle:
+- Explain why it was selected for this specific list
+- Highlight unique selling points and differentiators
+- Provide specific technical details and real-world performance
+- Compare with similar alternatives when relevant
+- Give clear recommendations for target audience
+- Focus on practical differences that matter to buyers
+
+Ensure products genuinely fit the listicle's purpose and provide value to readers.""",
+            
+            "content_structure": {
+                "sections": [
+                    "introduction",
+                    "numbered_items"
+                ],
+                "min_products": 3,
+                "max_products": 20
+            },
+            
+            "seo_template": "{number} Best {category} {year} - Expert Picks & Reviews",
+            "meta_description_template": "Discover the top {number} {category} with our expert reviews. Compare features, prices, and performance to find your perfect match."
+        }
+
+    @staticmethod
+    def get_detailed_review_template() -> Dict[str, Any]:
+        """Template for comprehensive product reviews"""
+        return {
+            "name": "Comprehensive Product Review",
+            "template_type": "detailed_review",
+            "base_prompt": """You are an expert blog post writer with a deep knowledge of the {category} space, specializing in writing high quality SEO optimized reviews.
+
+Write a comprehensive {word_count} word review of the {product_name}. Ensure the tone is formal and professional, written in 1st person plural ("We", "Our team" - but avoid referencing a specific company). The aim is to educate readers about the brand by providing up-to-date, helpful content.
+
+Mandatory Structure (follow this sequence exactly):
+1. **Opening (3 paragraphs)** - Hook reader immediately, demonstrate expertise with "We performed extensive tests..." or similar. Format in bold. End with mini summary praising positive aspects. No "Introduction" headline.
+2. **"Short on Time? Here are Our Key Findings"** - Pros vs cons with detailed explanations
+3. **Features Table** - Generate features with accurate statistics/numbers
+4. **Quality & Performance Analysis (2 paragraphs)** - Include anecdotal evidence of product engagement with specific testing scenarios
+5. **Article Tip** - Most vital information or warnings for readers
+6. **3 Relevant Subheaders** - Topics like scope/reach, features/plans, policy/transparency, user experience. Each: 2 paragraphs of 5 sentences, format part of last paragraph as list with catchy bullet points
+7. **Setup/Installation Guide** - Include quick_guide with 3 easy steps
+8. **Pricing** - Comprehensive pricing analysis
+9. **Reliability & Support** - Include anecdotal reference with specific response times and resolution times (5 sentences per paragraph)
+10. **Summary** - Standout features with subtle drawbacks as hidden advantages ("While priced above competitors, it reflects superior quality")
+11. **Secret Tip** - 2-3 sentences of specific, beyond-obvious advice
+12. **FAQ** - Questions frequently asked online, 5+ sentences per answer
+13. **Comparison Footer** - "Compare {product_name} With Top Alternatives"
+
+Content Requirements:
+- Include anecdotal evidence demonstrating product engagement
+- Mention specific waiting times and resolution times for support
+- Provide accurate statistics/numbers in features table
+- Educational focus about the brand
+- Balance of perplexity and burstiness for human-like content
+
+Target word count: {word_count} words""",
+            
+            "product_context_prompt": """Focus primarily on the main product being reviewed. Include 1-2 direct competitors for comparison context:
+- Provide specific technical specifications and real testing results
+- Describe actual sound characteristics and performance you've experienced
+- Compare build quality, materials, and construction details
+- Explain real-world performance in different usage scenarios
+- Give honest assessment of value proposition and market positioning
+- Include anecdotal evidence of customer support interactions
+
+Comparisons should help readers understand market positioning and alternatives.""",
+            
+            "content_structure": {
+                "sections": [
+                    "opening_hook",
+                    "pro_cons_summary",
+                    "features_table",
+                    "performance_analysis",
+                    "vital_tip",
+                    "detailed_subheaders",
+                    "setup_guide",
+                    "pricing_analysis",
+                    "support_reliability",
+                    "summary_drawbacks",
+                    "secret_tip",
+                    "faq_section",
+                    "comparison_footer"
+                ],
+                "min_products": 1,
+                "max_products": 3
+            },
+            
+            "seo_template": "{product_name} Review {year} - Honest Expert Analysis",
+            "meta_description_template": "Comprehensive {product_name} review. Sound quality, build analysis, pros/cons, and value assessment from our expert team. Is it worth buying?"
+        }
+
 class BlogPromptBuilder:
     """
     Builder class for creating customized blog generation prompts
@@ -324,7 +507,7 @@ class BlogPromptBuilder:
         template_type: str,
         products: List[Dict[str, Any]],
         custom_variables: Dict[str, Any],
-        word_count: int = 800
+        word_count: int = 2500
     ) -> Dict[str, str]:
         """
         Build a complete prompt for blog generation

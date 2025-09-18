@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../src/components/BlogProductShowcase';
+import EnhancedBlogRenderer from '../../src/components/EnhancedBlogRenderer';
 import { BlogPost } from '../../src/types/blog';
 import ReactMarkdown from 'react-markdown';
 // @ts-ignore - optional plugin, ensure it's installed in the app
@@ -243,49 +244,33 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
         </header>
 
         {/* Article Content */}
-        {Array.isArray((post as any).structured_content?.sections) && (post as any).structured_content.sections.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
-            {/* Main content */}
-            <div className="lg:col-span-8 space-y-10">
-              {(post as any).structured_content.sections.map((sec: any, idx: number) => {
-                const type = (sec.type || sec.section_type || '').toString();
-                return (
-                  <section key={idx} className="prose prose-lg lg:prose-xl max-w-none">
-                    {sec.title && (
-                      <h2 id={`sec-${idx}`} className="mt-0 scroll-mt-24">{sec.title}</h2>
-                    )}
-                    {type.includes('pros') && (sec.pros || sec.cons) ? (
-                      <ProsCons pros={sec.pros || []} cons={sec.cons || []} />
-                    ) : type.includes('comparison') && (sec.headers && sec.rows) ? (
-                      <BlogComparisonTable headers={sec.headers} rows={sec.rows} />
-                    ) : (type.includes('spec') && (sec.specs && sec.specs.length)) ? (
-                      <SpecsList specs={sec.specs} />
-                    ) : (
-                      sec.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(sec.content)}</ReactMarkdown> : null
-                    )}
-                  </section>
-                );
-              })}
-            </div>
-            {/* Side rail TOC */}
-            <aside className="lg:col-span-4 lg:sticky lg:top-24 h-max">
-              <div className="rounded-lg border bg-white p-5 shadow-sm">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">On this page</h3>
-                <ul className="space-y-2 text-sm">
-                  {(post as any).structured_content.sections.map((sec: any, idx: number) => (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
+          {/* Main content */}
+          <div className="lg:col-span-8">
+            <EnhancedBlogRenderer post={post} showInlineProducts={true} />
+          </div>
+          {/* Side rail TOC */}
+          <aside className="lg:col-span-4 lg:sticky lg:top-24 h-max">
+            <div className="rounded-lg border bg-white p-5 shadow-sm">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">On this page</h3>
+              <ul className="space-y-2 text-sm">
+                {Array.isArray((post as any).structured_content?.sections) ? 
+                  (post as any).structured_content.sections.map((sec: any, idx: number) => (
                     <li key={idx}>
-                      <a href={`#sec-${idx}`} className="text-gray-600 hover:text-gray-900">{sec.title || `Section ${idx+1}`}</a>
+                      <a href={`#sec-${idx}`} className="text-gray-600 hover:text-gray-900">
+                        {sec.title || `Section ${idx+1}`}
+                      </a>
                     </li>
-                  ))}
-                </ul>
-              </div>
-            </aside>
-          </div>
-        ) : (
-          <div className="prose prose-lg lg:prose-xl max-w-none mb-12">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
-          </div>
-        )}
+                  )) : (
+                    <li>
+                      <a href="#content" className="text-gray-600 hover:text-gray-900">Article Content</a>
+                    </li>
+                  )
+                }
+              </ul>
+            </div>
+          </aside>
+        </div>
 
         {/* Featured Products */}
         {post.products && post.products.length > 0 && (
