@@ -127,7 +127,7 @@ export default function BlogProductShowcase({
               }`}
             >
               {/* Product Image */}
-              <div className="aspect-square bg-gray-100 overflow-hidden cursor-pointer relative" onClick={openPriorityStore} title="View at top store">
+              <div className="aspect-square bg-gray-100 overflow-hidden relative">
                 <img
                   src={imageUrl}
                   alt={product.name}
