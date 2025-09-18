@@ -214,8 +214,8 @@ class EnhancedAffiliateService:
         """Normalize Thomann URLs to use /intl/ path for better international compatibility"""
         parsed = urlparse(url)
         
-        # Only process thomann.de URLs
-        if not parsed.netloc or 'thomann.de' not in parsed.netloc:
+        # Process all Thomann domains (thomann.de, thomann.co.uk, etc.)
+        if not parsed.netloc or 'thomann' not in parsed.netloc:
             return url
         
         # Convert regional paths to /intl/ for better international compatibility
@@ -238,6 +238,7 @@ class EnhancedAffiliateService:
             if path == '/' or path == '':
                 path = '/intl/'
             elif not path.startswith('/intl/'):
+                # Convert direct product paths to /intl/ for better international compatibility
                 path = '/intl' + path
         
         # Reconstruct URL
