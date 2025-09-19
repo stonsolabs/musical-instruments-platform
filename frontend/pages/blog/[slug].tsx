@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../src/components/BlogProductShowcase';
-import EnhancedBlogRenderer from '../../src/components/EnhancedBlogRenderer';
+import SimpleBlogRenderer from '../../src/components/SimpleBlogRenderer';
 import { BlogPost } from '../../src/types/blog';
 import ReactMarkdown from 'react-markdown';
 // @ts-ignore - optional plugin, ensure it's installed in the app
@@ -107,21 +107,21 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
               articleSection: post.category?.name || undefined,
               wordCount: (() => {
                 try {
-                  const text = (post as any).structured_content?.sections?.map((s:any)=>s.content||'').join(' ') || post.content || '';
+                  const text = (post as any).content_json?.sections?.map((s:any)=>s.content||'').join(' ') || post.content || '';
                   return String(text.split(/\s+/).filter(Boolean).length);
                 } catch { return undefined; }
               })(),
             }),
           }}
         />
-        {(post as any).structured_content?.faqs && Array.isArray((post as any).structured_content.faqs) && (
+        {(post as any).content_json?.faqs && Array.isArray((post as any).content_json.faqs) && (
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
                 '@context': 'https://schema.org',
                 '@type': 'FAQPage',
-                mainEntity: (post as any).structured_content.faqs.map((f:any)=>({
+                mainEntity: (post as any).content_json.faqs.map((f:any)=>({
                   '@type': 'Question',
                   name: f.q || f.question,
                   acceptedAnswer: { '@type': 'Answer', text: f.a || f.answer }
@@ -247,15 +247,15 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
           {/* Main content */}
           <div className="lg:col-span-8">
-            <EnhancedBlogRenderer post={post} showInlineProducts={true} />
+            <SimpleBlogRenderer content={(post as any).content_json || { sections: [{ type: 'content', content: post.content || '' }] }} />
           </div>
           {/* Side rail TOC */}
           <aside className="lg:col-span-4 lg:sticky lg:top-24 h-max">
             <div className="rounded-lg border bg-white p-5 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">On this page</h3>
               <ul className="space-y-2 text-sm">
-                {Array.isArray((post as any).structured_content?.sections) ? 
-                  (post as any).structured_content.sections.map((sec: any, idx: number) => (
+                {Array.isArray((post as any).content_json?.sections) ? 
+                  (post as any).content_json.sections.map((sec: any, idx: number) => (
                     <li key={idx}>
                       <a href={`#sec-${idx}`} className="text-gray-600 hover:text-gray-900">
                         {sec.title || `Section ${idx+1}`}
@@ -285,19 +285,19 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
         )}
 
         {/* Key Takeaways */}
-        {(post as any).structured_content?.key_takeaways && (
+        {(post as any).content_json?.key_takeaways && (
           <div className="mb-12 p-6 bg-blue-50 border border-blue-200 rounded-lg">
             <h3 className="text-xl font-semibold mb-3">Key Takeaways</h3>
-            <ReactMarkdown>{String((post as any).structured_content.key_takeaways)}</ReactMarkdown>
+            <ReactMarkdown>{String((post as any).content_json.key_takeaways)}</ReactMarkdown>
           </div>
         )}
 
         {/* FAQs */}
-        {Array.isArray((post as any).structured_content?.faqs) && (post as any).structured_content.faqs.length > 0 && (
+        {Array.isArray((post as any).content_json?.faqs) && (post as any).content_json.faqs.length > 0 && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
             <div className="space-y-3">
-              {(post as any).structured_content.faqs.map((f: any, idx: number) => (
+              {(post as any).content_json.faqs.map((f: any, idx: number) => (
                 <details key={idx} className="group border rounded-md p-4 bg-white">
                   <summary className="cursor-pointer font-medium text-gray-800 group-open:text-brand-primary">{f.q || f.question}</summary>
                   <div className="mt-2 text-gray-700">
