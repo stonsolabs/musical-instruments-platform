@@ -1,0 +1,464 @@
+#!/usr/bin/env python3
+"""
+Simplified Blog Batch Generator Service
+Generates blog batches using the new simplified JSON structure and templates
+"""
+
+import asyncio
+import json
+import random
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..database import async_session_factory
+
+class SimpleBlogBatchGenerator:
+    def __init__(self):
+        self.templates = []
+        self.products = []
+        self.blog_ideas = []
+    
+    async def initialize(self):
+        """Initialize the service by loading all required data"""
+        async with async_session_factory() as session:
+            await self._load_templates(session)
+            await self._load_products(session)
+            self._generate_blog_ideas()
+    
+    async def _load_templates(self, session: AsyncSession):
+        """Load blog templates from simplified table"""
+        result = await session.execute(text('''
+            SELECT id, name, prompt, structure
+            FROM blog_templates 
+            ORDER BY name
+        '''))
+        self.templates = [dict(row._mapping) for row in result.fetchall()]
+    
+    async def _load_products(self, session: AsyncSession):
+        """Load quality products from database for blog content"""
+        query = """
+        SELECT DISTINCT
+            p.id,
+            p.name,
+            p.slug,
+            p.avg_rating as rating,
+            COALESCE(p.msrp_price, 0) as price,
+            b.name as brand_name,
+            c.name as category_name,
+            c.slug as category_slug
+        FROM products p
+        JOIN brands b ON p.brand_id = b.id
+        JOIN categories c ON p.category_id = c.id
+        WHERE p.is_active = true
+        AND b.name != 'Unknown Brand'
+        AND p.name IS NOT NULL
+        AND p.name != ''
+        ORDER BY p.avg_rating DESC NULLS LAST, p.name
+        LIMIT 300
+        """
+        result = await session.execute(text(query))
+        self.products = [dict(row._mapping) for row in result.fetchall()]
+        print(f"Loaded {len(self.products)} available products")
+    
+    def _generate_blog_ideas(self):
+        """Generate diverse blog post ideas using templates and products"""
+        ideas = []
+        
+        # Template-based ideas
+        for template in self.templates:
+            template_name = template['name']
+            
+            if template_name == 'buying-guide':
+                ideas.extend([
+                    f"Best Acoustic Guitars Under $500",
+                    f"Electric Guitar Buying Guide for Beginners",
+                    f"Best Bass Guitars for Recording",
+                    f"Keyboard Buying Guide: Digital vs Acoustic",
+                    f"Best Drum Sets for Small Spaces",
+                    f"Microphone Buying Guide for Home Studios",
+                    f"Best Guitar Amps Under $300",
+                    f"Audio Interface Buying Guide 2024"
+                ])
+                
+            elif template_name == 'review':
+                # Create reviews for top-rated products
+                top_products = sorted(self.products, key=lambda x: x['rating'] or 0, reverse=True)[:20]
+                for product in top_products:
+                    ideas.append(f"{product['brand_name']} {product['name']} Review")
+                    
+            elif template_name == 'comparison':
+                ideas.extend([
+                    f"Fender vs Gibson: Electric Guitar Showdown",
+                    f"Acoustic vs Electric Drums: Which is Better?",
+                    f"Yamaha vs Kawai Digital Pianos Compared",
+                    f"SM57 vs SM58: Which Shure Mic Should You Choose?",
+                    f"Martin vs Taylor Acoustic Guitars",
+                    f"Audio-Technica vs Shure Microphones"
+                ])
+                
+            elif template_name == 'artist-spotlight':
+                ideas.extend([
+                    f"Celebrating Jimi Hendrix: The Guitar Revolutionary",
+                    f"Ozzy Osbourne: The Prince of Darkness and His Gear",
+                    f"BB King: The King of Blues and His Lucille",
+                    f"John Bonham: The Thunderous Drummer",
+                    f"Geddy Lee: Bass Mastery and Progressive Rock",
+                    f"Keith Moon: The Wild Man Behind the Kit"
+                ])
+                
+            elif template_name == 'instrument-history':
+                ideas.extend([
+                    f"The Evolution of the Electric Guitar",
+                    f"Gibson SG: A Rock and Roll Icon's History",
+                    f"Fender Telecaster: The First Electric Guitar",
+                    f"The History of the Modern Drum Kit",
+                    f"Piano Evolution: From Acoustic to Digital",
+                    f"The Rise of the Electric Bass Guitar"
+                ])
+                
+            elif template_name == 'gear-tips':
+                ideas.extend([
+                    f"Guitar Maintenance: Keep Your Axe in Perfect Shape",
+                    f"Recording Studio Setup on a Budget",
+                    f"Live Sound Tips for Small Venues",
+                    f"How to EQ Your Guitar for Perfect Tone",
+                    f"Drum Tuning: Get Professional Sounds at Home",
+                    f"Microphone Placement Techniques for Home Recording"
+                ])
+                
+            elif template_name == 'news-feature':
+                ideas.extend([
+                    f"The Rise of Affordable High-Quality Instruments",
+                    f"How Streaming Changed Music Production",
+                    f"The Vinyl Revival: Why Analog is Back",
+                    f"AI in Music Production: Friend or Foe?",
+                    f"The Impact of COVID on Music Gear Sales",
+                    f"Sustainable Musical Instruments: Going Green"
+                ])
+        
+        # Shuffle and store
+        random.shuffle(ideas)
+        self.blog_ideas = ideas
+        print(f"Generated {len(ideas)} blog post ideas")
+    
+    async def generate_batch_requests(self, 
+                                    num_posts: int = 50,
+                                    output_file: Optional[str] = None,
+                                    word_count_range: tuple = (3000, 5000),
+                                    template_distribution: Optional[Dict[str, float]] = None) -> List[Dict]:
+        """
+        Generate batch requests for OpenAI batch API
+        
+        Args:
+            num_posts: Number of blog posts to generate
+            output_file: Output JSONL file path
+            word_count_range: Min and max word count (default 3000-5000)
+            template_distribution: Custom template distribution (optional)
+        """
+        
+        if not self.templates:
+            await self.initialize()
+        
+        # Default template distribution (more balanced across all types)
+        if not template_distribution:
+            template_distribution = {
+                'buying-guide': 0.25,
+                'review': 0.20,
+                'comparison': 0.15,
+                'instrument-history': 0.15,
+                'artist-spotlight': 0.15,
+                'gear-tips': 0.07,
+                'news-feature': 0.03
+            }
+        
+        requests = []
+        used_ideas = set()
+        template_counts = {name: 0 for name in template_distribution.keys()}
+        
+        for i in range(num_posts):
+            # Select template based on distribution
+            template = self._select_template_by_distribution(template_distribution)
+            template_counts[template['name']] += 1
+            
+            # Select unique topic
+            topic = self._select_unique_topic(template['name'], used_ideas)
+            used_ideas.add(topic)
+            
+            # Select relevant products
+            products = self._select_relevant_products(template['name'], topic)
+            
+            # Generate target word count
+            target_words = random.randint(word_count_range[0], word_count_range[1])
+            
+            # Build request
+            request = self._build_generation_request(
+                custom_id=f"blog_post_{i+1:03d}",
+                topic=topic,
+                template=template,
+                products=products,
+                target_words=target_words
+            )
+            
+            requests.append(request)
+        
+        # Save to file if specified
+        if output_file:
+            with open(output_file, 'w') as f:
+                for request in requests:
+                    f.write(json.dumps(request) + '\n')
+            print(f"Saved {len(requests)} requests to {output_file}")
+            
+            # Print actual template distribution
+            print(f"\n📊 Actual template distribution:")
+            for template_name, count in template_counts.items():
+                percentage = (count / num_posts) * 100
+                print(f"  {template_name}: {count} ({percentage:.1f}%)")
+        
+        return requests
+    
+    def _select_template_by_distribution(self, distribution: Dict[str, float]) -> Dict:
+        """Select template based on probability distribution"""
+        # Normalize distribution to ensure it sums to 1.0
+        total = sum(distribution.values())
+        normalized_dist = {k: v/total for k, v in distribution.items()}
+        
+        rand = random.random()
+        cumulative = 0
+        
+        for template_name, probability in normalized_dist.items():
+            cumulative += probability
+            if rand <= cumulative:
+                for template in self.templates:
+                    if template['name'] == template_name:
+                        return template
+        
+        # Fallback to random template if distribution fails
+        return random.choice(self.templates)
+    
+    def _select_unique_topic(self, template_name: str, used_ideas: set) -> str:
+        """Select a unique topic for the given template"""
+        available_ideas = [idea for idea in self.blog_ideas if idea not in used_ideas]
+        
+        if not available_ideas:
+            # Generate fallback topic
+            return f"Ultimate Guide to {template_name.replace('-', ' ').title()} - {datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Try to find template-appropriate topics first
+        template_keywords = {
+            'buying-guide': ['buying', 'guide', 'best', 'under'],
+            'review': ['review'],
+            'comparison': ['vs', 'compared', 'showdown'],
+            'artist-spotlight': ['celebrating', 'spotlight'],
+            'instrument-history': ['history', 'evolution'],
+            'gear-tips': ['tips', 'maintenance', 'setup'],
+            'news-feature': ['rise', 'impact', 'how']
+        }
+        
+        keywords = template_keywords.get(template_name, [])
+        
+        # First try to find topic matching template
+        for idea in available_ideas:
+            if any(keyword.lower() in idea.lower() for keyword in keywords):
+                return idea
+        
+        # Otherwise return random available idea
+        return random.choice(available_ideas)
+    
+    def _select_relevant_products(self, template_name: str, topic: str, max_products: int = 5) -> List[Dict]:
+        """Select products relevant to the topic with smart fallbacks"""
+        relevant_products = []
+        
+        # Extract keywords from topic
+        topic_lower = topic.lower()
+        
+        # Enhanced keyword matching with category mapping
+        product_keywords = {
+            'guitar': ['electric-guitars', 'acoustic-guitars', 'guitar-amps'],
+            'bass': ['bass-guitars', 'bass-amps'],
+            'drum': ['drums', 'percussion'],
+            'keyboard': ['keyboards', 'digital-pianos'],
+            'piano': ['keyboards', 'digital-pianos', 'acoustic-pianos'],
+            'microphone': ['microphones', 'recording'],
+            'amp': ['guitar-amps', 'bass-amps'],
+            'recording': ['microphones', 'audio-interfaces', 'studio-monitors'],
+            'vintage': ['electric-guitars', 'acoustic-guitars', 'guitar-amps'],
+            'rock': ['electric-guitars', 'guitar-amps', 'drums'],
+            'blues': ['electric-guitars', 'harmonicas', 'guitar-amps'],
+            'jazz': ['acoustic-guitars', 'keyboards', 'brass'],
+            'classical': ['acoustic-guitars', 'keyboards', 'violins']
+        }
+        
+        # Find direct keyword matches
+        matched_categories = set()
+        for keyword, categories in product_keywords.items():
+            if keyword in topic_lower:
+                matched_categories.update(categories)
+        
+        # Find products matching topic keywords or categories
+        for product in self.products:
+            product_text = f"{product['name']} {product['brand_name']} {product['category_name']}".lower()
+            category_slug = product.get('category_slug', '').lower()
+            
+            # Direct keyword match
+            topic_match = any(keyword in product_text for keyword in product_keywords.keys() if keyword in topic_lower)
+            # Category match
+            category_match = category_slug in matched_categories
+            
+            if topic_match or category_match:
+                relevant_products.append({
+                    'id': str(product['id']),
+                    'name': f"{product['brand_name']} {product['name']}",
+                    'price': f"${product['price']:.0f}" if product['price'] else "Check Price",
+                    'category': product['category_name'],
+                    'rating': product['rating'] or 4.0
+                })
+        
+        # If no specific matches, use strategic fallbacks based on template type
+        if not relevant_products:
+            top_products = sorted(self.products, key=lambda x: x['rating'] or 0, reverse=True)
+            
+            # Template-specific fallbacks
+            if template_name == 'artist-spotlight':
+                # For artist posts, show iconic instruments (guitars, keyboards, drums)
+                preferred_categories = ['electric-guitars', 'acoustic-guitars', 'keyboards', 'drums']
+                fallback_products = [p for p in top_products if p.get('category_slug') in preferred_categories]
+            elif template_name == 'instrument-history':
+                # For history posts, show classic instruments
+                preferred_categories = ['electric-guitars', 'acoustic-guitars', 'keyboards', 'drums']
+                fallback_products = [p for p in top_products if p.get('category_slug') in preferred_categories]
+            elif template_name == 'news-feature':
+                # For news, show trending/popular products
+                fallback_products = top_products[:15]  # Top rated across all categories
+            else:
+                # General fallback - mix of popular instruments
+                fallback_products = top_products[:20]
+            
+            if not fallback_products:
+                fallback_products = top_products[:20]
+            
+            relevant_products = [{
+                'id': str(p['id']),
+                'name': f"{p['brand_name']} {p['name']}",
+                'price': f"${p['price']:.0f}" if p['price'] else "Check Price",
+                'category': p['category_name'],
+                'rating': p['rating'] or 4.0
+            } for p in random.sample(fallback_products, min(max_products, len(fallback_products)))]
+        
+        return relevant_products[:max_products]
+    
+    def _build_generation_request(self, custom_id: str, topic: str, template: Dict, 
+                                products: List[Dict], target_words: int) -> Dict:
+        """Build OpenAI batch API request"""
+        
+        # Build the simplified prompt
+        prompt = f"""
+Create a comprehensive {template['name'].replace('-', ' ')} about "{topic}".
+
+CRITICAL REQUIREMENTS:
+- Target word count: {target_words} words (minimum 3000, maximum 5000)
+- Write in an engaging, expert tone
+- Include natural product recommendations with affiliate integration
+- Make content evergreen (no specific years unless essential)
+- Focus on providing genuine value to readers
+- ENFORCE JSON OUTPUT FORMAT - respond ONLY with valid JSON
+
+RESPONSE FORMAT:
+Respond ONLY with a valid JSON object in this exact structure:
+
+{{
+  "title": "SEO-optimized title (60 chars max)",
+  "excerpt": "Compelling excerpt (150-160 chars)",
+  "seo_title": "SEO title with keywords",
+  "seo_description": "Meta description (150-160 chars)",
+  "sections": [
+    {{
+      "type": "intro",
+      "content": "Hook + context + preview (400-600 words in markdown)"
+    }},
+    {{
+      "type": "content",
+      "content": "## Main Section\\n\\nDetailed content (800-1200 words)"
+    }},
+    {{
+      "type": "product_spotlight",
+      "product": {{
+        "id": "product_id",
+        "name": "Product Name",
+        "price": "$XXX",
+        "rating": 4.5,
+        "pros": ["Pro 1", "Pro 2"],
+        "cons": ["Con 1"],
+        "affiliate_url": "https://example.com/product"
+      }}
+    }},
+    {{
+      "type": "content",
+      "content": "## Additional Section\\n\\nMore detailed content (800-1200 words)"
+    }},
+    {{
+      "type": "conclusion",
+      "content": "## Final Thoughts\\n\\nSummary and recommendations (300-500 words)"
+    }}
+  ],
+  "tags": ["tag1", "tag2", "tag3"],
+  "category": "{template['name']}",
+  "featured_products": ["product_id1", "product_id2"]
+}}
+
+CONTENT GUIDELINES:
+- Write comprehensive, detailed sections that reach the target word count
+- Use proper markdown formatting (##, ###, -, *, etc.)
+- Include specific details, specs, and examples
+- Add personal insights and expert knowledge
+- Use lists, quotes, and structured content for readability
+- Integrate products naturally within the content flow
+- Focus on helping readers make informed decisions
+- Include relevant anecdotes and stories
+
+"""
+
+        # Add product context if available
+        if products:
+            product_context = "\n\nAVAILABLE PRODUCTS TO REFERENCE:\n"
+            for product in products:
+                product_context += f"- {product['name']} (ID: {product['id']}) - {product['price']} - {product['category']}\n"
+            
+            # Add guidance for non-product topics
+            if any(keyword in topic.lower() for keyword in ['history', 'evolution', 'biography', 'story', 'news', 'theory']):
+                product_context += """\n
+PRODUCT INTEGRATION GUIDANCE FOR NON-PRODUCT TOPICS:
+- Naturally weave product recommendations throughout the content
+- Present products as "Recommended Instruments" or "Popular Gear" 
+- Connect products to the topic (e.g., "instruments used in this era/style")
+- Include products in relevant sections, not forced placement
+- For artist spotlights: show instruments they made famous
+- For history posts: show modern versions of historical instruments
+- For theory/educational: show instruments that demonstrate concepts
+"""
+            
+            prompt += product_context
+
+        prompt += f"\n\nTopic: {topic}\nTarget words: {target_words}\n\nRespond with JSON only:"
+
+        return {
+            "custom_id": custom_id,
+            "method": "POST",
+            "url": "/v1/chat/completions",
+            "body": {
+                "model": "gpt-4.1",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are an expert music journalist and gear reviewer. Always respond with valid JSON only. Never include any text outside the JSON structure."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "max_tokens": 8000,
+                "temperature": 0.7
+            }
+        }

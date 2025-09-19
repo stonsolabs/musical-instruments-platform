@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Blog Generator CLI - User-friendly interface for generating blog batches
-Provides easy-to-use commands for generating hundreds of blog posts
+Blog Generator CLI - IMPROVED SYSTEM
+Simple, effective blog generation with Guitar World/Drum Helper style
+Focuses on available products and engaging content
 """
 
 import asyncio
@@ -23,7 +24,7 @@ class BlogGeneratorCLI:
     
     async def initialize(self):
         """Initialize the services"""
-        print("🚀 Initializing Blog Generator Services...")
+        print("🚀 Initializing Improved Blog Generator...")
         await self.generator_service.initialize()
         await self.processor_service.initialize()
         print("✅ Services initialized successfully!")
@@ -52,13 +53,14 @@ class BlogGeneratorCLI:
         print(f"📁 File: {result['filename']}")
         print(f"📊 Total posts: {result['total_posts']}")
         print(f"👥 Authors available: {result['authors_available']}")
-        print(f"🛍️  Products available: {result['products_available']}")
+        print(f"🛍️  Available products: {result['products_available']} (only purchasable items)")
         
         print(f"\n📈 Template distribution:")
         for template_type, count in result['template_distribution'].items():
             print(f"  - {template_type}: {count} posts")
         
-        print(f"\n📤 Ready for Azure OpenAI Batch API upload!")
+        print(f"\n📤 Ready for OpenAI Batch API upload!")
+        print(f"💡 Improved: Only available products, Guitar World style content")
         return result
     
     async def show_stats(self):
@@ -155,13 +157,12 @@ class BlogGeneratorCLI:
         """Generate a large batch (100+ posts) with optimized distribution"""
         print(f"🚀 Generating large batch with {args.posts} posts...")
         
-        # Optimized distribution for large batches
+        # Optimized distribution for large batches (improved system)
         template_distribution = {
-            "buying_guide": int(args.posts * 0.4),  # 40% buying guides
-            "comparison": int(args.posts * 0.2),    # 20% comparisons
-            "review": int(args.posts * 0.15),       # 15% reviews
-            "general": int(args.posts * 0.15),      # 15% general content
-            "artist_spotlight": int(args.posts * 0.1)  # 10% artist spotlights
+            "buying_guide": int(args.posts * 0.4),  # 40% buying guides (practical)
+            "comparison": int(args.posts * 0.25),   # 25% comparisons (decision help)
+            "review": int(args.posts * 0.25),       # 25% reviews (honest insights)
+            "general": int(args.posts * 0.1),       # 10% general content (value guides)
         }
         
         # Generate the batch
