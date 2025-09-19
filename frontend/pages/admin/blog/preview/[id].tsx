@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import BlogProductShowcase from '../../../../src/components/BlogProductShowcase';
-import EnhancedBlogRenderer from '../../../../src/components/EnhancedBlogRenderer';
+import SimpleBlogRenderer from '../../../../src/components/SimpleBlogRenderer';
 import { AIBlogPost } from '../../../../src/types/blog';
 import ReactMarkdown from 'react-markdown';
 // @ts-ignore - optional plugin, ensure it's installed
@@ -38,10 +38,10 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
           </div>
         )}
 
-        {/* Render using the enhanced structured renderer when available */}
-        {Boolean((post as any).structured_content) ? (
+        {/* Render using the simplified renderer when available */}
+        {Boolean((post as any).content_json) ? (
           <div className="mb-12">
-            <EnhancedBlogRenderer post={post} showInlineProducts={true} />
+            <SimpleBlogRenderer content={(post as any).content_json} />
           </div>
         ) : (
           <div className="prose prose-lg lg:prose-xl max-w-none mb-12">
@@ -61,11 +61,11 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
         )}
 
         {/* Inspector */}
-        {(post as any).structured_content && (
+        {(post as any).content_json && (
           <details className="mt-6 mb-12">
             <summary className="cursor-pointer text-sm text-gray-600">View structured JSON</summary>
             <pre className="mt-3 p-3 bg-gray-50 text-xs overflow-auto rounded border">
-              {JSON.stringify((post as any).structured_content, null, 2)}
+              {JSON.stringify((post as any).content_json, null, 2)}
             </pre>
           </details>
         )}
