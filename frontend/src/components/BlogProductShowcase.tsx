@@ -117,6 +117,21 @@ export default function BlogProductShowcase({
           const { full, half, empty } = getRatingStars(product.avg_rating || 0);
           const imageUrl = getProductImageUrl(product);
           
+          // Enhanced availability check - skip products that can't be purchased
+          const hasAvailablePrice = Array.isArray(product.prices) && product.prices.some(p => p.is_available);
+          const hasStoreLinks = Boolean(
+            product.content?.store_links && 
+            Object.keys(product.content.store_links || {}).length > 0
+          );
+          const hasThomann = Boolean(product.thomann_info?.url);
+          const isPurchasable = hasAvailablePrice || hasStoreLinks || hasThomann;
+          
+          // Don't render anything for unavailable products
+          if (!isPurchasable) {
+            console.log(`Skipping unavailable product: ${product.name}`);
+            return null;
+          }
+          
           // Primary store handled via AffiliateButtons
 
           return (
@@ -180,8 +195,8 @@ export default function BlogProductShowcase({
                   </span>
                 </div>
 
-                {/* Primary store button (streamlined) */}
-                {showAffiliateButtons && (
+                {/* Primary store button - only show if product is purchasable */}
+                {showAffiliateButtons && isPurchasable && (
                   <div className="space-y-3">
                     <AffiliateButtons product={product} variant="compact" maxButtons={1} />
                   </div>

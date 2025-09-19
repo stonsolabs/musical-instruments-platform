@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
-import { fetchProduct } from '../lib/api';
+import { fetchProduct, fetchProducts } from '../lib/api';
 import AffiliateButtons from './AffiliateButtons';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
@@ -29,11 +29,13 @@ export default function InlineProductShowcase({
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [triedFallback, setTriedFallback] = useState(false);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         setLoading(true);
+        setError(null);
         const productData = await fetchProduct(productId.toString());
         setProduct(productData);
       } catch (err) {
@@ -46,6 +48,45 @@ export default function InlineProductShowcase({
 
     fetchProductDetails();
   }, [productId]);
+
+  // Enhanced fallback: find similar available products if main product isn't purchasable
+  useEffect(() => {
+    const tryFallback = async () => {
+      if (!product || triedFallback) return;
+      const purchasable = isPurchasable(product);
+      if (purchasable) return;
+      
+      console.log(`Product ${product.name} is not purchasable, finding alternative...`);
+      setTriedFallback(true);
+      
+      try {
+        const catSlug = product.category?.slug;
+        if (!catSlug) return;
+        
+        const result = await fetchProducts({ 
+          category: catSlug, 
+          limit: 20, // Get more options
+          sort_by: 'rating', 
+          sort_order: 'desc' 
+        });
+        
+        const replacement = (result.products || [])
+          .filter(p => p.id !== product.id)
+          .find(p => isPurchasable(p));
+          
+        if (replacement) {
+          console.log(`Replaced ${product.name} with ${replacement.name}`);
+          setProduct(replacement);
+        } else {
+          console.log(`No available replacement found for ${product.name}`);
+          setError('No available alternatives found');
+        }
+      } catch (e) {
+        console.error('Fallback search failed:', e);
+      }
+    };
+    tryFallback();
+  }, [product, triedFallback]);
 
   if (loading) {
     return (
@@ -72,6 +113,14 @@ export default function InlineProductShowcase({
 
   const { full, half, empty } = getRatingStars(product.avg_rating || 0);
   const imageUrl = getProductImageUrl(product);
+  // Helper to determine if we can present a product for purchase
+  function isPurchasable(p: Product): boolean {
+    const hasAvailablePrice = Array.isArray(p.prices) && p.prices.some(pr => pr.is_available);
+    const hasStoreLinks = Boolean(p.content?.store_links && Object.keys(p.content.store_links || {}).length > 0);
+    const hasThomann = Boolean(p.thomann_info?.url);
+    return Boolean(hasAvailablePrice || hasStoreLinks || hasThomann);
+  }
+  if (!isPurchasable(product)) return null;
   
   // Store opening handled via AffiliateButtons
 

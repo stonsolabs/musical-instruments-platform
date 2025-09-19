@@ -214,27 +214,46 @@ class BlogAIGenerator:
         template: Dict[str, Any],
         category_id: Optional[int] = None
     ) -> List[Dict[str, Any]]:
-        """Select relevant products for the blog post"""
+        """Select relevant products for the blog post - ONLY AVAILABLE PRODUCTS"""
         
         # Start with requested products
         products = []
         
         if requested_product_ids:
+            # Enhanced query to check product availability
             query = """
             SELECT p.id, p.name, p.slug, p.description, p.avg_rating, 
-                   p.review_count, p.featured, b.name as brand_name,
-                   c.name as category_name, c.slug as category_slug
+                   p.review_count, b.name as brand_name,
+                   c.name as category_name, c.slug as category_slug,
+                   p.content,
+                   CASE 
+                       WHEN EXISTS(
+                           SELECT 1 FROM product_prices pp 
+                           WHERE pp.product_id = p.id AND pp.is_available = true
+                       ) THEN true
+                       WHEN p.content::text LIKE '%store_links%' 
+                           AND jsonb_path_exists(p.content, '$.store_links ? (@.size() > 0)') THEN true
+                       WHEN p.content::text LIKE '%thomann_info%' 
+                           AND p.content->>'thomann_info' IS NOT NULL THEN true
+                       ELSE false
+                   END as is_purchasable
             FROM products p
             LEFT JOIN brands b ON p.brand_id = b.id
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.id = ANY(:product_ids)
-            ORDER BY p.featured DESC, p.avg_rating DESC
+            WHERE p.id = ANY(:product_ids) AND p.is_active = true
+            ORDER BY p.avg_rating DESC NULLS LAST, p.review_count DESC
             """
             
             result = await self.db.execute(text(query), {'product_ids': requested_product_ids})
-            products = [dict(row._mapping) for row in result.fetchall()]
+            all_products = [dict(row._mapping) for row in result.fetchall()]
+            
+            # Filter to only available products
+            products = [p for p in all_products if p['is_purchasable']]
+            
+            if len(products) < len(all_products):
+                logger.warning(f"Filtered out {len(all_products) - len(products)} unavailable products")
         
-        # If we need more products, find relevant ones
+        # If we need more products, find relevant available ones
         needed_products = max(0, template['min_products'] - len(products))
         
         if needed_products > 0:
@@ -256,14 +275,27 @@ class BlogAIGenerator:
         exclude_ids: List[int],
         needed_count: int
     ) -> List[Dict[str, Any]]:
-        """Find additional relevant products"""
+        """Find additional relevant products - ONLY AVAILABLE PRODUCTS"""
         
         where_clauses = ["p.id NOT IN :exclude_ids" if exclude_ids else "1=1"]
         params = {'exclude_ids': exclude_ids if exclude_ids else []}
         
+        # CRITICAL: Only select purchasable products
+        availability_condition = """
+        (EXISTS(
+            SELECT 1 FROM product_prices pp 
+            WHERE pp.product_id = p.id AND pp.is_available = true
+        ) OR 
+        (p.content::text LIKE '%store_links%' 
+         AND jsonb_path_exists(p.content, '$.store_links ? (@.size() > 0)')) OR
+        (p.content::text LIKE '%thomann_info%' 
+         AND p.content->>'thomann_info' IS NOT NULL))
+        """
+        where_clauses.append(availability_condition)
+        
         # Filter by category if specified
         if category_id:
-            where_clauses.append("c.parent_id = :category_id OR p.category_id = :category_id")
+            where_clauses.append("(c.parent_id = :category_id OR p.category_id = :category_id)")
             params['category_id'] = category_id
         
         # Filter by required product types from template
@@ -276,20 +308,24 @@ class BlogAIGenerator:
         
         query = f"""
         SELECT p.id, p.name, p.slug, p.description, p.avg_rating, 
-               p.review_count, p.featured, b.name as brand_name,
-               c.name as category_name, c.slug as category_slug
+               p.review_count, b.name as brand_name,
+               c.name as category_name, c.slug as category_slug,
+               p.content
         FROM products p
         LEFT JOIN brands b ON p.brand_id = b.id
         LEFT JOIN categories c ON p.category_id = c.id
-        WHERE {' AND '.join(where_clauses)}
-        ORDER BY p.featured DESC, p.avg_rating DESC, p.review_count DESC
+        WHERE {' AND '.join(where_clauses)} AND p.is_active = true
+        ORDER BY p.avg_rating DESC NULLS LAST, p.review_count DESC
         LIMIT :limit
         """
         
-        params['limit'] = needed_count
+        params['limit'] = needed_count * 2  # Get more to account for any edge cases
         
         result = await self.db.execute(text(query), params)
-        return [dict(row._mapping) for row in result.fetchall()]
+        products = [dict(row._mapping) for row in result.fetchall()]
+        
+        # Double-check availability and return only needed count
+        return products[:needed_count]
     
     async def _build_generation_prompt(
         self,
@@ -321,64 +357,39 @@ class BlogAIGenerator:
         if request.custom_prompt_additions:
             prompt_parts.append(f"\nAdditional requirements: {request.custom_prompt_additions}")
         
-        # Add formatting requirements
+        # Add simple, effective formatting requirements based on successful examples
         prompt_parts.append(f"""
 
-IMPORTANT FORMATTING REQUIREMENTS:
-- Target word count: {request.target_word_count} words
-- Use markdown formatting for structure
-- Include proper headings (## for main sections, ### for subsections)
-- Write in an engaging, informative tone
-- Include specific product recommendations with detailed explanations
-- Make sure content is SEO-friendly and valuable to readers
- 
-DEPTH AND COMPLETENESS REQUIREMENTS:
-- Be comprehensive and practical; prefer 1,900–2,300 words for guides/reviews.
-- For each recommended product: include who it fits, why, key specs, pros/cons, and realistic trade-offs.
-- Include a comparison table (markdown) when multiple products are covered.
-- Include a short specs list (bullet points) for each main product.
-- Add a 'Who It's For' subsection per product or category segment.
-- Add a 'Setup & Tips' or 'Common Mistakes' section where relevant.
-- End with a concise 'Key Takeaways' and a 'Next Steps' section.
-- Include an FAQ section with 6–10 specific questions and concise, helpful answers.
- 
-HUMAN EDITORIAL STYLE (avoid AI telltales):
-- Write as an experienced musician/reviewer. Use conversational, precise language and contractions (doesn't, it's, you'll).
-- Vary sentence length and structure; avoid repetitive cadences and templates.
-- Prefer concrete, sensory specifics over vague generalities (e.g., "snappy attack on funk stabs", "weighted keys feel closer to GHS").
-- Show, don't tell: include short, realistic scenarios (studio, small club, apartment practice) and trade‑off explanations.
-- Be opinionated but fair; back claims with reasons or specs provided.
-- Do NOT use filler phrases like: "in this article", "overall", "comprehensive", "delve", "utilize", "cutting-edge", "must-have".
-- NEVER mention being an AI, never include meta commentary or section labels like "Introduction:" in text.
-- No hallucinations: use only supplied product data and generic domain knowledge; if unknown, omit rather than invent.
- 
-STRUCTURED JSON REQUIREMENTS (for flexible rendering):
-- Use sections with explicit section_type. Allowed types: introduction, comparison_table, pros_cons, specs, who_its_for, tips_tricks, common_mistakes, recommendations, quick_verdict, key_takeaways, faqs, verdict, conclusion.
-- For pros_cons sections, include arrays: pros: string[], cons: string[].
-- For comparison_table sections, include headers: string[] and rows: string[][] (same length as headers).
-- For specs sections, include specs: Array of objects with label and value fields.
-- Add a top-level best_features: string[] summarizing standout features readers care about.
- 
-Response format should be JSON:
+WRITING STYLE (Guitar World & Drum Helper approach):
+- Write like a passionate musician sharing real insights with friends
+- Use conversational tone with personal experiences and relatable scenarios
+- Include practical advice that musicians can actually use
+- Keep technical details balanced with human interest
+- Target {request.target_word_count} words with natural flow
+
+CONTENT STRUCTURE:
+- Start with an engaging hook that connects to musicians' real needs
+- Use clear headings (## and ###) but keep the flow conversational
+- Focus on ONLY the products provided - don't mention unavailable items
+- Include specific use cases: "perfect for bedroom practice", "stage-ready tone"
+- End with clear next steps and authentic recommendations
+
+PRODUCT INTEGRATION:
+- Weave products naturally into the narrative
+- Explain WHY each product matters to the reader
+- Include real-world scenarios where products shine
+- Focus on benefits that matter to musicians, not just specs
+- Only recommend products that are actually available for purchase
+
+SIMPLE JSON FORMAT:
 {{
-    "title": "Generated blog post title",
-    "excerpt": "Brief excerpt (1-2 sentences)",
-    "content": "Full blog post content in markdown",
-    "seo_title": "SEO optimized title",
-    "seo_description": "SEO meta description",
-    "sections": [
-        {{"type": "introduction", "title": "Introduction", "content": "markdown content"}},
-        {{"type": "pros_cons", "title": "Pros & Cons", "pros": ["..."], "cons": ["..."]}},
-        {{"type": "comparison_table", "title": "Comparison", "headers": ["Model","Key Feature","Best For"], "rows": [["..."]]}},
-        {{"type": "specs", "title": "Key Specs", "specs": [{{"label": "Scale Length", "value": "25.5\""}}]}},
-        {{"type": "key_takeaways", "title": "Key Takeaways", "content": "bullet list in markdown"}}
-    ],
-    "best_features": ["feature A", "feature B"],
-    "faqs": [
-        {{"q": "Question?", "a": "Answer in 2-4 sentences with specifics."}}
-    ],
+    "title": "Engaging title that promises value",
+    "excerpt": "1-2 sentences that hook the reader",
+    "content": "Full markdown content with natural product integration",
+    "seo_title": "SEO-friendly title",
+    "seo_description": "Compelling meta description",
     "product_recommendations": [
-        {{"product_id": 123, "relevance_score": 0.95, "reasoning": "Why this product fits", "suggested_context": "recommended", "suggested_sections": ["introduction", "recommendations"]}}
+        {{"product_id": 123, "relevance_score": 0.95, "reasoning": "Clear explanation of why this fits"}}
     ]
 }}
         """)
@@ -469,18 +480,23 @@ Response format should be JSON:
                 product_context = f"\nAlso, integrate these products naturally where relevant:\n{product_info}\n"
 
             rewrite_instructions = f"""
-Rewrite the following article in a unique way (no plagiarism), improving clarity, structure, and SEO. Preserve factual accuracy, use an engaging tone, and target about {request.target_word_count} words.
-Include headings and markdown formatting. If applicable, add callouts or tips. Do not reference the source site.
-{product_context}
-{('Additional editor instructions: ' + request.custom_instructions) if request.custom_instructions else ''}
+Rewrite this article with a fresh, engaging approach that musicians will love reading.
 
-SOURCE TITLE:
+RULES:
+- Make it conversational and practical
+- Target {request.target_word_count} words
+- Only mention products that are genuinely available
+- Focus on real musician needs and scenarios
+- Use clear headings and markdown formatting
+{product_context}
+{('Additional notes: ' + request.custom_instructions) if request.custom_instructions else ''}
+
+SOURCE:
 {title}
 
-SOURCE CONTENT (markdown):
 {content_markdown}
 
-Respond in JSON with fields: title, excerpt, content, seo_title, seo_description, sections (array of {{type,title,content}}), product_recommendations ([] if none).
+Respond in JSON: title, excerpt, content, seo_title, seo_description, product_recommendations
 """.strip()
 
             system_prompt = "You are an expert content editor and SEO specialist. Output valid JSON only."
