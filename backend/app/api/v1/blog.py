@@ -19,7 +19,7 @@ from app.blog_ai_schemas import (
     BlogGenerationResult, AIBlogPost, BlogGenerationHistory, EnhancedBlogPostProduct,
     BlogContentSection
 )
-from app.services.blog_ai_generator import BlogAIGenerator
+from app.services.simple_blog_generator import SimpleBlogGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -713,17 +713,62 @@ async def generate_blog_post(
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
         # Initialize AI generator
-        ai_generator = BlogAIGenerator(openai_api_key, db)
+        import openai
+        openai_client = openai.AsyncClient(api_key=openai_api_key)
+        ai_generator = SimpleBlogGenerator(openai_client)
         
         # Generate blog post
-        result = await ai_generator.generate_blog_post(request)
+        blog_content = ai_generator.generate_blog_post(
+            topic=request.topic,
+            template_name=getattr(request, 'template_name', 'buying-guide'),
+            products=getattr(request, 'products', []),
+            target_words=getattr(request, 'target_words', 4000)
+        )
         
-        if result.success:
-            logger.info(f"Generated AI blog post {result.blog_post_id}")
-        else:
-            logger.error(f"AI blog generation failed: {result.error_message}")
+        # Save to database using simplified structure
+        from sqlalchemy import text
+        insert_query = """
+        INSERT INTO blog_posts (title, slug, excerpt, seo_title, seo_description, content_json, 
+                               author_name, category, tags, featured_products, published_at, created_at, updated_at)
+        VALUES (:title, :slug, :excerpt, :seo_title, :seo_description, :content_json, 
+                :author_name, :category, :tags, :featured_products, NOW(), NOW(), NOW())
+        RETURNING id
+        """
         
-        return result
+        # Generate slug from title
+        import re
+        slug = re.sub(r'[^a-zA-Z0-9\s-]', '', blog_content['title'].lower())
+        slug = re.sub(r'\s+', '-', slug).strip('-')
+        
+        values = {
+            'title': blog_content['title'],
+            'slug': slug,
+            'excerpt': blog_content.get('excerpt', ''),
+            'seo_title': blog_content.get('seo_title', blog_content['title']),
+            'seo_description': blog_content.get('seo_description', ''),
+            'content_json': json.dumps(blog_content),
+            'author_name': 'GetYourMusicGear Team',
+            'category': blog_content.get('category', 'general'),
+            'tags': json.dumps(blog_content.get('tags', [])),
+            'featured_products': json.dumps(blog_content.get('featured_products', []))
+        }
+        
+        result = await db.execute(text(insert_query), values)
+        blog_post_id = result.fetchone()[0]
+        await db.commit()
+        
+        logger.info(f"Generated and saved AI blog post {blog_post_id}")
+        
+        # Return result in expected format
+        from app.blog_ai_schemas import BlogGenerationResult
+        return BlogGenerationResult(
+            success=True,
+            blog_post_id=blog_post_id,
+            title=blog_content['title'],
+            slug=slug,
+            content=blog_content,
+            error_message=None
+        )
         
     except HTTPException:
         raise
