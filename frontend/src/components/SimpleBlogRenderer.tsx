@@ -16,6 +16,8 @@ interface Product {
   pros?: string[];
   cons?: string[];
   affiliate_url: string;
+  store_url?: string;
+  cta_text?: string;
 }
 
 interface Section {
@@ -65,15 +67,28 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
                   {product.reason && (
                     <p className="text-gray-600 mb-4">{product.reason}</p>
                   )}
-                  <a 
-                    href={product.affiliate_url}
-                    className="inline-block text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors font-bold"
-                    style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Check Price
-                  </a>
+                  <div className="flex flex-col gap-2">
+                    <a 
+                      href={product.affiliate_url}
+                      className="inline-block text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors font-bold text-center"
+                      style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Check Price
+                    </a>
+                    {product.store_url && (
+                      <a 
+                        href={product.store_url}
+                        className="inline-block text-gray-700 border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 transition-colors font-semibold text-center"
+                        style={{fontFamily: 'Montserrat, sans-serif'}}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {product.cta_text || 'See Details'}
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -144,13 +159,24 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
               <div className="lg:w-64 flex flex-col justify-center">
                 <a 
                   href={product.affiliate_url}
-                  className="text-white px-8 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold mb-4 block"
+                  className="text-white px-8 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold mb-3 block"
                   style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Check Price
                 </a>
+                {product.store_url && (
+                  <a 
+                    href={product.store_url}
+                    className="text-gray-700 border border-gray-300 px-8 py-3 rounded-md hover:bg-gray-50 transition-colors text-center font-semibold mb-4 block"
+                    style={{fontFamily: 'Montserrat, sans-serif'}}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {product.cta_text || 'See Details on Our Store'}
+                  </a>
+                )}
                 <p className="text-xs text-gray-500 text-center">
                   As an affiliate, we earn from qualifying purchases
                 </p>

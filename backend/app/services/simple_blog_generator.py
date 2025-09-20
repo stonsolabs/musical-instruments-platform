@@ -118,7 +118,9 @@ Respond ONLY with a valid JSON object in this exact structure:
         "rating": 4.5,
         "pros": ["Pro 1", "Pro 2"],
         "cons": ["Con 1"],
-        "affiliate_url": "https://example.com/product"
+        "affiliate_url": "https://www.getyourmusicgear.com/products/{product_slug}?ref=blog&utm_source=blog&utm_campaign=product_spotlight",
+        "store_url": "https://www.getyourmusicgear.com/products/{product_slug}",
+        "cta_text": "See Details on Our Store"
       }}
     }},
     {{
