@@ -67,7 +67,8 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
                   )}
                   <a 
                     href={product.affiliate_url}
-                    className="inline-block bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors"
+                    className="inline-block text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors font-bold"
+                    style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -95,11 +96,11 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
         if (!product) return null;
         
         return (
-          <div key={index} className="mb-12 bg-gray-50 rounded-lg p-8">
+          <div key={index} className="mb-12 bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2">{product.name}</h3>
-                <p className="text-3xl font-bold text-red-600 mb-4">{product.price}</p>
+                <h3 className="text-2xl font-bold mb-2" style={{fontFamily: 'Montserrat, sans-serif'}}>{product.name}</h3>
+                <p className="text-3xl font-black mb-4" style={{color: '#cd2418'}}>{product.price}</p>
                 
                 {product.rating && (
                   <div className="flex items-center mb-4">
@@ -143,7 +144,8 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
               <div className="lg:w-64 flex flex-col justify-center">
                 <a 
                   href={product.affiliate_url}
-                  className="bg-red-600 text-white px-8 py-3 rounded-md hover:bg-red-700 transition-colors text-center font-semibold mb-4"
+                  className="text-white px-8 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold mb-4 block"
+                  style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

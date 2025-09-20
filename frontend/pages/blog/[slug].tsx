@@ -21,11 +21,17 @@ interface BlogPostPageProps {
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 
 const categoryColors = {
-  'buying-guide': 'bg-blue-100 text-blue-800 border-blue-200',
-  'reviews': 'bg-green-100 text-green-800 border-green-200', 
-  'tutorial': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  'history': 'bg-purple-100 text-purple-800 border-purple-200',
-  'default': 'bg-gray-100 text-gray-800 border-gray-200'
+  'buying-guide': 'bg-red-50 text-red-700 border-red-200',
+  'review': 'bg-red-50 text-red-700 border-red-200',
+  'reviews': 'bg-red-50 text-red-700 border-red-200', 
+  'comparison': 'bg-red-50 text-red-700 border-red-200',
+  'artist-spotlight': 'bg-red-50 text-red-700 border-red-200',
+  'instrument-history': 'bg-red-50 text-red-700 border-red-200',
+  'gear-tips': 'bg-red-50 text-red-700 border-red-200',
+  'news-feature': 'bg-red-50 text-red-700 border-red-200',
+  'tutorial': 'bg-red-50 text-red-700 border-red-200',
+  'history': 'bg-red-50 text-red-700 border-red-200',
+  'default': 'bg-red-50 text-red-700 border-red-200'
 };
 
 const getCategoryColorClass = (categorySlug?: string) => {
@@ -163,7 +169,7 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
           )}
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight mb-6" style={{fontFamily: 'Montserrat, sans-serif'}}>
             {post.title}
           </h1>
 
