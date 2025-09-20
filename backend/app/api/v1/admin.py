@@ -92,13 +92,13 @@ async def get_admin_stats(
 ):
     """Get admin dashboard statistics"""
     try:
-        # Blog post statistics
+        # Blog post statistics - simplified structure
         blog_stats_query = """
         SELECT 
             COUNT(*) as total_posts,
             COUNT(*) FILTER (WHERE status = 'published') as published_posts,
             COUNT(*) FILTER (WHERE generated_by_ai = true) as ai_generated_posts,
-            SUM(view_count) as total_views,
+            0 as total_views,  -- view_count column doesn't exist in simplified table
             COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days') as posts_last_week,
             COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') as posts_last_month
         FROM blog_posts
@@ -107,27 +107,27 @@ async def get_admin_stats(
         result = await db.execute(text(blog_stats_query))
         blog_stats = result.fetchone()
         
-        # Generation statistics  
+        # Generation statistics - simplified (no generation history table)
         gen_stats_query = """
         SELECT 
-            COUNT(*) as total_generations,
-            COUNT(*) FILTER (WHERE generation_status = 'completed') as successful_generations,
-            COUNT(*) FILTER (WHERE generation_status = 'failed') as failed_generations,
-            SUM(tokens_used) as total_tokens_used,
-            AVG(generation_time_ms) as avg_generation_time
-        FROM blog_generation_history
+            COUNT(*) FILTER (WHERE generated_by_ai = true) as total_generations,
+            COUNT(*) FILTER (WHERE generated_by_ai = true AND status = 'published') as successful_generations,
+            0 as failed_generations,  -- No failure tracking in simplified structure
+            0 as total_tokens_used,   -- No token tracking in simplified structure
+            0 as avg_generation_time  -- No timing tracking in simplified structure
+        FROM blog_posts
         WHERE created_at >= NOW() - INTERVAL '30 days'
         """
         
         result = await db.execute(text(gen_stats_query))
         gen_stats = result.fetchone()
         
-        # Top performing posts
+        # Top performing posts - simplified (no view_count tracking)
         top_posts_query = """
-        SELECT title, slug, view_count, generated_by_ai
+        SELECT title, slug, 0 as view_count, generated_by_ai
         FROM blog_posts 
         WHERE status = 'published'
-        ORDER BY view_count DESC
+        ORDER BY published_at DESC
         LIMIT 5
         """
         
@@ -664,27 +664,31 @@ async def get_generation_history(
 ):
     """Get blog generation history"""
     try:
-        where_clauses = []
+        where_clauses = ["bp.generated_by_ai = true"]  # Only show AI-generated posts
         params = {'limit': limit, 'offset': offset}
         
         if status:
-            where_clauses.append("generation_status = :status")
-            params['status'] = status
+            # Map status to simplified structure
+            if status == 'completed':
+                where_clauses.append("bp.status = 'published'")
+            elif status == 'failed':
+                where_clauses.append("bp.status = 'draft'")  # Consider drafts as "failed" for now
         
-        where_clause = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+        where_clause = "WHERE " + " AND ".join(where_clauses)
         
+        # Simplified query using blog_posts table as generation history
         query = f"""
         SELECT 
-            bgh.id, bgh.blog_post_id, bgh.template_id, bgh.generation_status,
-            bgh.model_used, bgh.tokens_used, bgh.generation_time_ms,
-            bgh.error_message, bgh.created_at,
+            bp.id, bp.id as blog_post_id, NULL as template_id, 
+            CASE WHEN bp.status = 'published' THEN 'completed' ELSE 'pending' END as generation_status,
+            COALESCE(bp.generation_model, 'gpt-4.1') as model_used, 
+            0 as tokens_used, 0 as generation_time_ms,
+            NULL as error_message, bp.created_at,
             bp.title as post_title, bp.slug as post_slug,
-            bgt.name as template_name
-        FROM blog_generation_history bgh
-        LEFT JOIN blog_posts bp ON bgh.blog_post_id = bp.id
-        LEFT JOIN blog_generation_templates bgt ON bgh.template_id = bgt.id
+            COALESCE(bp.content_json->>'category', 'general') as template_name
+        FROM blog_posts bp
         {where_clause}
-        ORDER BY bgh.created_at DESC
+        ORDER BY bp.created_at DESC
         LIMIT :limit OFFSET :offset
         """
         

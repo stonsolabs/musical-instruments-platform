@@ -324,17 +324,22 @@ async def get_blog_post(
         # Get the main post data
         query = """
         SELECT 
-            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.structured_content, bp.featured_image,
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.content_json, bp.featured_image,
             bp.author_name, bp.status, bp.seo_title, bp.seo_description,
-            bp.reading_time, bp.view_count, bp.featured, bp.published_at,
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time,
+            0 as view_count, false as featured, bp.published_at,
             bp.created_at, bp.updated_at,
             bp.noindex,
-            bc.id as category_id, bc.name as category_name, bc.slug as category_slug,
-            bc.description as category_description, bc.icon as category_icon, 
-            bc.color as category_color, bc.sort_order as category_sort_order,
-            bc.is_active as category_is_active
+            -- Create category from content_json
+            NULL as category_id,
+            COALESCE(bp.content_json->>'category', 'general') as category_name,
+            COALESCE(bp.content_json->>'category', 'general') as category_slug,
+            'Content category' as category_description,
+            '📝' as category_icon,
+            '#6366f1' as category_color,
+            1 as category_sort_order,
+            true as category_is_active
         FROM blog_posts bp
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
         WHERE bp.slug = :slug AND bp.status IN ('published', 'draft')
         """
         
@@ -549,18 +554,21 @@ async def search_blog_posts(
         query = """
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
-            bp.author_name, bp.reading_time, bp.published_at,
-            bc.name as category_name, bc.slug as category_slug,
-            bc.color as category_color
+            bp.author_name, 
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time, 
+            bp.published_at,
+            COALESCE(bp.content_json->>'category', 'general') as category_name,
+            COALESCE(bp.content_json->>'category', 'general') as category_slug,
+            '#6366f1' as category_color
         FROM blog_posts bp
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
         WHERE bp.status = 'published' 
         AND (
             bp.title ILIKE :search_term 
             OR bp.excerpt ILIKE :search_term 
             OR bp.content ILIKE :search_term
+            OR bp.content_json::text ILIKE :search_term
         )
-        ORDER BY bp.featured DESC, bp.published_at DESC
+        ORDER BY bp.published_at DESC
         LIMIT :limit
         """
         
