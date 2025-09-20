@@ -66,6 +66,7 @@ class BlogPost(BaseModel):
     excerpt: Optional[str]
     content: str
     structured_content: Optional[dict] = None
+    content_json: Optional[dict] = None
     featured_image: Optional[str]
     category: Optional[BlogCategory]
     author_name: str
@@ -381,28 +382,31 @@ async def get_blog_post_by_id(
                     for product_row in product_rows:
                         products.append(BlogPostProduct(
                             id=product_row[0],
-                            name=product_row[1],
-                            slug=product_row[2],
-                            price=float(product_row[3]) if product_row[3] else 0.0,
-                            rating=float(product_row[4]) if product_row[4] else 0.0,
-                            brand_name=product_row[5],
-                            category_name=product_row[6]
+                            product_id=product_row[0],  # Use same ID
+                            position=0,  # Default position
+                            context=None,  # No specific context
+                            product_name=product_row[1],
+                            product_slug=product_row[2],
+                            product_brand=product_row[5]
                         ))
             except Exception as e:
                 logger.warning(f"Error loading products for post {post_id}: {e}")
         
         # Generate content from content_json for compatibility
-        content = ""
+        content = "Content available in JSON format"  # Default fallback
         if content_json and 'sections' in content_json:
             content_parts = []
-            for section in content_json['sections']:
-                if section.get('type') == 'intro' and section.get('content'):
-                    content_parts.append(section['content'])
-                elif section.get('type') == 'content' and section.get('content'):
-                    content_parts.append(section['content'])
-                elif section.get('type') == 'conclusion' and section.get('content'):
-                    content_parts.append(section['content'])
-            content = '\n\n'.join(content_parts)
+            sections = content_json['sections']
+            for section in sections:
+                section_content = section.get('content', '')
+                if section_content and section_content.strip():
+                    content_parts.append(section_content.strip())
+            
+            if content_parts:
+                content = '\n\n'.join(content_parts)
+            
+            # Debug logging
+            logger.info(f"Post {post_id}: Found {len(sections)} sections, {len(content_parts)} with content, total content length: {len(content)}")
         
         return BlogPost(
             id=row[0],
@@ -410,6 +414,8 @@ async def get_blog_post_by_id(
             slug=row[2],
             excerpt=row[3],
             content=content or "Content available in JSON format",  # Fallback content
+            structured_content=content_json,  # Use content_json as structured_content
+            content_json=content_json,  # Also provide content_json for frontend compatibility
             featured_image=row[6],
             author_name=row[7],
             status=row[8],
@@ -448,9 +454,8 @@ async def get_blog_post(
     db: AsyncSession = Depends(get_db)
 ):
     """Get a single blog post by slug"""
-    
     try:
-        # Get the main post data
+        # Get the main post data using simplified structure
         query = """
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.content_json, bp.featured_image,
@@ -469,7 +474,7 @@ async def get_blog_post(
             1 as category_sort_order,
             true as category_is_active
         FROM blog_posts bp
-        WHERE bp.slug = :slug AND bp.status IN ('published', 'draft')
+        WHERE bp.slug = :slug AND bp.status = 'published'
         """
         
         result = await db.execute(text(query), {'slug': slug})
@@ -480,80 +485,84 @@ async def get_blog_post(
         
         post_id = row[0]
         
-        # Get tags
-        tags_query = """
-        SELECT bt.id, bt.name, bt.slug
-        FROM blog_post_tags bpt
-        JOIN blog_tags bt ON bpt.tag_id = bt.id
-        WHERE bpt.blog_post_id = :post_id
-        ORDER BY bt.name
-        """
+        # Extract tags from content_json
+        content_json = row[5]
+        tags = []
+        if content_json and 'tags' in content_json:
+            tag_names = content_json['tags']
+            if isinstance(tag_names, list):
+                for i, tag_name in enumerate(tag_names):
+                    import re
+                    tag_slug = re.sub(r'[^a-zA-Z0-9\s-]', '', tag_name.lower())
+                    tag_slug = re.sub(r'\s+', '-', tag_slug).strip('-')
+                    tags.append(BlogTag(id=i+1, name=tag_name, slug=tag_slug))
         
-        tags_result = await db.execute(text(tags_query), {'post_id': post_id})
-        tags_data = tags_result.fetchall()
-        tags = [BlogTag(id=tag[0], name=tag[1], slug=tag[2]) for tag in tags_data]
-        
-        # Get associated products
-        products_query = """
-        SELECT 
-            bpp.id, bpp.product_id, bpp.position, bpp.context,
-            p.name as product_name, p.slug as product_slug,
-            b.name as brand_name
-        FROM blog_post_products bpp
-        LEFT JOIN products p ON bpp.product_id = p.id
-        LEFT JOIN brands b ON p.brand_id = b.id
-        WHERE bpp.blog_post_id = :post_id
-        ORDER BY bpp.position, bpp.id
-        """
-        
-        products_result = await db.execute(text(products_query), {'post_id': post_id})
-        products_data = products_result.fetchall()
-        products = [
-            BlogPostProduct(
-                id=prod[0],
-                product_id=prod[1],
-                position=prod[2],
-                context=prod[3],
-                product_name=prod[4],
-                product_slug=prod[5],
-                product_brand=prod[6]
-            )
-            for prod in products_data
-        ]
-        
-        # Update view count
-        await db.execute(text("UPDATE blog_posts SET view_count = view_count + 1 WHERE id = :post_id"), {'post_id': post_id})
-        await db.commit()
-        
-        # Parse structured_content if it's a JSON string
-        structured_content = row[5]
-        if isinstance(structured_content, str):
+        # Extract products from content_json
+        products = []
+        if content_json and 'featured_products' in content_json:
             try:
-                structured_content = json.loads(structured_content)
-            except (json.JSONDecodeError, TypeError):
-                structured_content = None
+                featured_product_ids = content_json['featured_products']
+                if featured_product_ids:
+                    # Load products from database
+                    product_query = """
+                    SELECT p.id, p.name, p.slug, COALESCE(p.msrp_price, 0) as price,
+                           p.avg_rating, b.name as brand_name, c.name as category_name
+                    FROM products p
+                    JOIN brands b ON p.brand_id = b.id  
+                    JOIN categories c ON p.category_id = c.id
+                    WHERE p.id = ANY(:product_ids) AND p.is_active = true
+                    """
+                    product_result = await db.execute(text(product_query), {'product_ids': featured_product_ids})
+                    product_rows = product_result.fetchall()
+                    
+                    for product_row in product_rows:
+                        products.append(BlogPostProduct(
+                            id=product_row[0],
+                            product_id=product_row[0],  # Use same ID
+                            position=0,  # Default position
+                            context=None,  # No specific context
+                            product_name=product_row[1],
+                            product_slug=product_row[2],
+                            product_brand=product_row[5]
+                        ))
+            except Exception as e:
+                logger.warning(f"Error loading products for post {post_id}: {e}")
+        
+        # Generate content from content_json for compatibility
+        content = "Content available in JSON format"  # Default fallback
+        if content_json and 'sections' in content_json:
+            content_parts = []
+            sections = content_json['sections']
+            for section in sections:
+                section_content = section.get('content', '')
+                if section_content and section_content.strip():
+                    content_parts.append(section_content.strip())
+            
+            if content_parts:
+                content = '\n\n'.join(content_parts)
         
         return BlogPost(
             id=row[0],
             title=row[1],
             slug=row[2],
             excerpt=row[3],
-            content=row[4],
-            structured_content=structured_content,
+            content=content,
+            structured_content=content_json,  # Use content_json as structured_content
+            content_json=content_json,  # Also provide content_json for frontend compatibility
             featured_image=row[6],
             author_name=row[7],
             status=row[8],
             seo_title=row[9],
             seo_description=row[10],
             reading_time=row[11],
-            view_count=row[12] + 1,  # +1 for the current view
+            view_count=row[12],
             featured=row[13],
             published_at=row[14],
             created_at=row[15],
             updated_at=row[16],
             noindex=row[17] or False,
             category=BlogCategory(
-                id=row[18],
+                id=1,  # Default category ID
                 name=row[19],
                 slug=row[20],
                 description=row[21],
@@ -561,7 +570,7 @@ async def get_blog_post(
                 color=row[23],
                 sort_order=row[24],
                 is_active=row[25]
-            ) if row[18] else None,
+            ) if row[19] else None,
             tags=tags,
             products=products
         )
