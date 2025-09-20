@@ -360,12 +360,56 @@ async def get_blog_post_by_id(
                     tag_slug = re.sub(r'\s+', '-', tag_slug).strip('-')
                     tags.append(BlogTag(id=i+1, name=tag_name, slug=tag_slug))
         
+        # Extract products from content_json
+        products = []
+        if content_json and 'featured_products' in content_json:
+            try:
+                featured_product_ids = content_json['featured_products']
+                if featured_product_ids:
+                    # Load products from database
+                    product_query = """
+                    SELECT p.id, p.name, p.slug, COALESCE(p.msrp_price, 0) as price,
+                           p.avg_rating, b.name as brand_name, c.name as category_name
+                    FROM products p
+                    JOIN brands b ON p.brand_id = b.id  
+                    JOIN categories c ON p.category_id = c.id
+                    WHERE p.id = ANY(:product_ids) AND p.is_active = true
+                    """
+                    product_result = await db.execute(text(product_query), {'product_ids': featured_product_ids})
+                    product_rows = product_result.fetchall()
+                    
+                    for product_row in product_rows:
+                        products.append(BlogPostProduct(
+                            id=product_row[0],
+                            name=product_row[1],
+                            slug=product_row[2],
+                            price=float(product_row[3]) if product_row[3] else 0.0,
+                            rating=float(product_row[4]) if product_row[4] else 0.0,
+                            brand_name=product_row[5],
+                            category_name=product_row[6]
+                        ))
+            except Exception as e:
+                logger.warning(f"Error loading products for post {post_id}: {e}")
+        
+        # Generate content from content_json for compatibility
+        content = ""
+        if content_json and 'sections' in content_json:
+            content_parts = []
+            for section in content_json['sections']:
+                if section.get('type') == 'intro' and section.get('content'):
+                    content_parts.append(section['content'])
+                elif section.get('type') == 'content' and section.get('content'):
+                    content_parts.append(section['content'])
+                elif section.get('type') == 'conclusion' and section.get('content'):
+                    content_parts.append(section['content'])
+            content = '\n\n'.join(content_parts)
+        
         return BlogPost(
             id=row[0],
             title=row[1],
             slug=row[2],
             excerpt=row[3],
-            content=row[4],
+            content=content or "Content available in JSON format",  # Fallback content
             featured_image=row[6],
             author_name=row[7],
             status=row[8],
@@ -379,7 +423,7 @@ async def get_blog_post_by_id(
             updated_at=row[16],
             noindex=row[17],
             category=BlogCategory(
-                id=row[18],
+                id=1,  # Default category ID
                 name=row[19],
                 slug=row[20],
                 description=row[21],
@@ -387,8 +431,9 @@ async def get_blog_post_by_id(
                 color=row[23],
                 sort_order=row[24],
                 is_active=row[25]
-            ) if row[18] else None,
-            tags=tags
+            ) if row[19] else None,
+            tags=tags,
+            products=products
         )
         
     except HTTPException:
