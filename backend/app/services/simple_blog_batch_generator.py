@@ -72,40 +72,69 @@ class SimpleBlogBatchGenerator:
             
             if template_name == 'buying-guide':
                 ideas.extend([
-                    f"Best Acoustic Guitars Under $500",
-                    f"Electric Guitar Buying Guide for Beginners",
-                    f"Best Bass Guitars for Recording",
-                    f"Keyboard Buying Guide: Digital vs Acoustic",
-                    f"Best Drum Sets for Small Spaces",
-                    f"Microphone Buying Guide for Home Studios",
-                    f"Best Guitar Amps Under $300",
-                    f"Audio Interface Buying Guide 2024"
+                    f"Acoustic Guitars Under $500: Your Complete Buying Roadmap",
+                    f"Electric Guitar Shopping: A Beginner's Smart Approach",
+                    f"Recording Bass Guitars: Essential Gear Selection Guide",
+                    f"Digital vs Acoustic Keyboards: Making the Right Choice",
+                    f"Compact Drum Sets: Perfect Solutions for Limited Space",
+                    f"Home Studio Microphones: Professional Sound on Any Budget",
+                    f"Guitar Amplifiers Under $300: Power Without Breaking the Bank",
+                    f"Audio Interface Selection: Your Gateway to Professional Recording",
+                    f"Violin Shopping Made Simple: Quality Instruments for Every Level",
+                    f"DJ Equipment Essentials: Building Your First Professional Setup",
+                    f"Studio Monitor Selection: Accurate Sound for Home Producers",
+                    f"MIDI Controller Guide: Choosing Your Creative Command Center"
                 ])
                 
             elif template_name == 'review':
-                # Create reviews for top-rated products
-                top_products = sorted(self.products, key=lambda x: x['rating'] or 0, reverse=True)[:20]
-                for product in top_products:
-                    ideas.append(f"{product['brand_name']} {product['name']} Review")
+                # Create diverse review topics for top-rated products
+                top_products = sorted(self.products, key=lambda x: x['rating'] or 0, reverse=True)[:15]
+                review_formats = [
+                    "Inside Look: {}",
+                    "{}: Worth the Hype?", 
+                    "Real World Test: {}",
+                    "{}: Honest User Experience",
+                    "Breaking Down the {}",
+                    "{}: What They Don't Tell You",
+                    "Living With the {}: 6-Month Review",
+                    "{}: Game Changer or Marketing?",
+                    "Unboxing Truth: {}",
+                    "{}: Professional vs Amateur Perspective"
+                ]
+                
+                for i, product in enumerate(top_products):
+                    format_choice = review_formats[i % len(review_formats)]
+                    product_name = f"{product['brand_name']} {product['name']}"
+                    ideas.append(format_choice.format(product_name))
                     
             elif template_name == 'comparison':
                 ideas.extend([
-                    f"Fender vs Gibson: Electric Guitar Showdown",
-                    f"Acoustic vs Electric Drums: Which is Better?",
-                    f"Yamaha vs Kawai Digital Pianos Compared",
-                    f"SM57 vs SM58: Which Shure Mic Should You Choose?",
-                    f"Martin vs Taylor Acoustic Guitars",
-                    f"Audio-Technica vs Shure Microphones"
+                    f"Fender vs Gibson: The Legendary Guitar Rivalry Decoded",
+                    f"Acoustic vs Electric Drums: Sound, Space, and Style Considerations",
+                    f"Yamaha vs Kawai Digital Pianos: Touch, Tone, and Technology",
+                    f"SM57 vs SM58: Microphone Legends in Different Arenas",
+                    f"Martin vs Taylor: Acoustic Guitar Philosophy and Sound",
+                    f"Audio-Technica vs Shure: Dynamic Microphone Face-Off",
+                    f"Active vs Passive Bass Pickups: Tone Shaping Showdown",
+                    f"Tube vs Solid State Amps: The Great Guitar Tone Debate",
+                    f"Condenser vs Dynamic Mics: Studio Recording Solutions",
+                    f"In-Ear vs Over-Ear Monitors: Professional Audio Choices"
                 ])
                 
             elif template_name == 'artist-spotlight':
                 ideas.extend([
-                    f"Celebrating Jimi Hendrix: The Guitar Revolutionary",
-                    f"Ozzy Osbourne: The Prince of Darkness and His Gear",
-                    f"BB King: The King of Blues and His Lucille",
-                    f"John Bonham: The Thunderous Drummer",
-                    f"Geddy Lee: Bass Mastery and Progressive Rock",
-                    f"Keith Moon: The Wild Man Behind the Kit"
+                    f"Jimi Hendrix: Redefining Electric Guitar Forever",
+                    f"Ozzy Osbourne's Sonic Arsenal: Heavy Metal's Dark Prince",
+                    f"BB King and Lucille: A Blues Love Story",
+                    f"John Bonham: Drumming Power That Shook the World",
+                    f"Geddy Lee's Triple Threat: Bass, Keys, and Vocals",
+                    f"Keith Moon: Chaos and Brilliance Behind the Kit",
+                    f"Prince's Purple Rain Setup: Innovation in Every Note",
+                    f"Eddie Van Halen: The Tapping Revolution",
+                    f"Stevie Ray Vaughan's Texas Blues Fire",
+                    f"Les Claypool: Bass Playing Outside the Box",
+                    f"Neil Peart: The Professor of Progressive Drumming",
+                    f"Tori Amos: Piano Powerhouse and Unconventional Genius"
                 ])
                 
             elif template_name == 'instrument-history':
@@ -120,22 +149,30 @@ class SimpleBlogBatchGenerator:
                 
             elif template_name == 'gear-tips':
                 ideas.extend([
-                    f"Guitar Maintenance: Keep Your Axe in Perfect Shape",
-                    f"Recording Studio Setup on a Budget",
-                    f"Live Sound Tips for Small Venues",
-                    f"How to EQ Your Guitar for Perfect Tone",
-                    f"Drum Tuning: Get Professional Sounds at Home",
-                    f"Microphone Placement Techniques for Home Recording"
+                    f"Guitar Maintenance Secrets: Keeping Your Instrument Stage-Ready",
+                    f"Budget Studio Magic: Professional Recording Without Breaking Bank",
+                    f"Small Venue Sound: Making Every Performance Count",
+                    f"EQ Mastery: Sculpting Your Perfect Guitar Tone",
+                    f"Drum Tuning Decoded: From Bedroom to Stadium Sound",
+                    f"Microphone Placement Psychology: Capturing the Perfect Performance",
+                    f"Cable Management Strategies for Live Musicians",
+                    f"Pedal Chain Optimization: Signal Flow for Maximum Impact",
+                    f"Temperature and Humidity: Protecting Your Instruments",
+                    f"Touring Musician's Survival Kit: Essential Gear Maintenance"
                 ])
                 
             elif template_name == 'news-feature':
                 ideas.extend([
-                    f"The Rise of Affordable High-Quality Instruments",
-                    f"How Streaming Changed Music Production",
-                    f"The Vinyl Revival: Why Analog is Back",
-                    f"AI in Music Production: Friend or Foe?",
-                    f"The Impact of COVID on Music Gear Sales",
-                    f"Sustainable Musical Instruments: Going Green"
+                    f"Affordable Excellence: How Budget Instruments Got Professional",
+                    f"Streaming Revolution: Redefining Music Production Standards",
+                    f"Vinyl's Unexpected Comeback: Why Analog Still Matters",
+                    f"AI Meets Music: Creativity Enhancement or Creative Threat?",
+                    f"Pandemic's Silver Lining: Home Studio Revolution",
+                    f"Green Music: Sustainable Instrument Manufacturing Takes Center Stage",
+                    f"Bedroom Producers Going Global: The New Music Economy",
+                    f"Virtual Reality Concerts: The Future of Live Performance?",
+                    f"NFTs and Music: Digital Ownership Revolution",
+                    f"5G Technology: Transforming Remote Collaboration in Music"
                 ])
         
         # Shuffle and store
@@ -364,11 +401,29 @@ CRITICAL REQUIREMENTS:
 - Focus on providing genuine value to readers
 - ENFORCE JSON OUTPUT FORMAT - respond ONLY with valid JSON
 
+CONTENT DIVERSITY REQUIREMENTS:
+- Use different writing styles: conversational, technical, storytelling, analytical
+- Vary sentence structure: mix short punchy sentences with longer explanations
+- Include personal anecdotes, industry stories, or historical context
+- Use different opening strategies: questions, statistics, stories, controversial statements
+- Vary section structures: some with lists, others with narrative flow
+- Include unique perspectives that haven't been covered everywhere else
+
+TITLE CREATIVITY GUIDELINES:
+- ABSOLUTELY AVOID these overused phrases: "Ultimate Guide", "Best", "Top", "Complete Guide", "Everything You Need"
+- Use UNIQUE angles: storytelling, emotional hooks, contrarian viewpoints, personal experiences
+- Consider formats: "Why X Changed Everything", "The Hidden Truth About X", "X Nobody Talks About"  
+- Use numbers creatively: "3 Secrets", "The 15-Minute Solution", "7 Signs You Need"
+- Ask compelling questions: "Is Your Guitar Holding You Back?", "What If Everything You Know About X is Wrong?"
+- Use power words: Revolutionary, Decoded, Unveiled, Transformed, Breakthrough, Inside Story
+- Match the template's voice: buying guides = practical, reviews = honest, artist spotlights = inspiring
+- Each title should feel like it was written by a different person with a unique perspective
+
 RESPONSE FORMAT:
 Respond ONLY with a valid JSON object in this exact structure:
 
 {{
-  "title": "SEO-optimized title (60 chars max)",
+  "title": "Creative, engaging title that avoids generic phrases (50-65 chars)",
   "excerpt": "Compelling excerpt (150-160 chars)",
   "seo_title": "SEO title with keywords",
   "seo_description": "Meta description (150-160 chars)",
