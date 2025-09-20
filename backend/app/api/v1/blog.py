@@ -313,6 +313,90 @@ async def get_popular_tags(
         logger.error(f"Failed to fetch popular tags: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch popular tags")
 
+@router.get("/blog/posts/by-id/{post_id}", response_model=BlogPost)
+async def get_blog_post_by_id(
+    post_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get a single blog post by ID"""
+    try:
+        # Get the main post data
+        query = """
+        SELECT 
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.content_json, bp.featured_image,
+            bp.author_name, bp.status, bp.seo_title, bp.seo_description,
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time,
+            0 as view_count, false as featured, bp.published_at,
+            bp.created_at, bp.updated_at,
+            bp.noindex,
+            -- Create category from content_json
+            NULL as category_id,
+            COALESCE(bp.content_json->>'category', 'general') as category_name,
+            COALESCE(bp.content_json->>'category', 'general') as category_slug,
+            'Content category' as category_description,
+            '📝' as category_icon,
+            '#6366f1' as category_color,
+            1 as category_sort_order,
+            true as category_is_active
+        FROM blog_posts bp
+        WHERE bp.id = :post_id
+        """
+        
+        result = await db.execute(text(query), {'post_id': post_id})
+        row = result.fetchone()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail="Blog post not found")
+        
+        # Extract tags from content_json
+        content_json = row[5]
+        tags = []
+        if content_json and 'tags' in content_json:
+            tag_names = content_json['tags']
+            if isinstance(tag_names, list):
+                for i, tag_name in enumerate(tag_names):
+                    import re
+                    tag_slug = re.sub(r'[^a-zA-Z0-9\s-]', '', tag_name.lower())
+                    tag_slug = re.sub(r'\s+', '-', tag_slug).strip('-')
+                    tags.append(BlogTag(id=i+1, name=tag_name, slug=tag_slug))
+        
+        return BlogPost(
+            id=row[0],
+            title=row[1],
+            slug=row[2],
+            excerpt=row[3],
+            content=row[4],
+            featured_image=row[6],
+            author_name=row[7],
+            status=row[8],
+            seo_title=row[9],
+            seo_description=row[10],
+            reading_time=row[11],
+            view_count=row[12],
+            featured=row[13],
+            published_at=row[14],
+            created_at=row[15],
+            updated_at=row[16],
+            noindex=row[17],
+            category=BlogCategory(
+                id=row[18],
+                name=row[19],
+                slug=row[20],
+                description=row[21],
+                icon=row[22],
+                color=row[23],
+                sort_order=row[24],
+                is_active=row[25]
+            ) if row[18] else None,
+            tags=tags
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching blog post by ID {post_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch blog post")
+
 @router.get("/blog/posts/{slug}", response_model=BlogPost)
 async def get_blog_post(
     slug: str,
@@ -860,14 +944,16 @@ async def get_ai_blog_post(
     """Get AI-generated blog post with enhanced details"""
     
     try:
-        # Get the main post data with AI fields
+        # Get the main post data with AI fields - simplified structure
         query = """
         SELECT 
-            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.structured_content, bp.featured_image,
+            bp.id, bp.title, bp.slug, bp.excerpt, bp.content, bp.content_json, bp.featured_image,
             bp.author_name, bp.status, bp.seo_title, bp.seo_description,
-            bp.reading_time, bp.view_count, bp.featured, bp.published_at,
-            bp.created_at, bp.updated_at, bp.category_id,
-            bp.generated_by_ai, bp.generation_prompt, bp.generation_model,
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time,
+            0 as view_count, false as featured, bp.published_at,
+            bp.created_at, bp.updated_at, NULL as category_id,
+            COALESCE(bp.generated_by_ai, true) as generated_by_ai, 
+            bp.generation_prompt, bp.generation_model,
             bp.generation_params, bp.ai_notes
         FROM blog_posts bp
         WHERE bp.id = :post_id
@@ -879,55 +965,48 @@ async def get_ai_blog_post(
         if not row:
             raise HTTPException(status_code=404, detail="Blog post not found")
         
-        # Get enhanced product associations
-        products_query = """
-        SELECT 
-            bpp.id, bpp.product_id, bpp.position, bpp.context,
-            bpp.ai_context, bpp.relevance_score, bpp.mentioned_in_sections,
-            p.name as product_name, p.slug as product_slug,
-            b.name as brand_name
-        FROM blog_post_products bpp
-        LEFT JOIN products p ON bpp.product_id = p.id
-        LEFT JOIN brands b ON p.brand_id = b.id
-        WHERE bpp.blog_post_id = :post_id
-        ORDER BY bpp.position, bpp.id
-        """
+        # Extract products and sections from content_json (simplified structure)
+        content_json = row[5]  # content_json column
+        products_data = []
+        sections_data = []
         
-        products_result = await db.execute(text(products_query), {'post_id': post_id})
-        products_data = products_result.fetchall()
+        if content_json:
+            # Extract featured products from JSON
+            featured_products = content_json.get('featured_products', [])
+            for i, product_id in enumerate(featured_products):
+                products_data.append({
+                    'id': i,
+                    'product_id': product_id,
+                    'position': i,
+                    'context': 'featured',
+                    'ai_context': 'Generated by AI',
+                    'relevance_score': 1.0,
+                    'mentioned_in_sections': ['content'],
+                    'product_name': f'Product {product_id}',
+                    'product_slug': f'product-{product_id}',
+                    'brand_name': 'Unknown'
+                })
+            
+            # Extract sections from JSON
+            sections = content_json.get('sections', [])
+            for i, section in enumerate(sections):
+                sections_data.append({
+                    'id': i,
+                    'blog_post_id': post_id,
+                    'section_type': section.get('type', 'content'),
+                    'section_title': section.get('title', ''),
+                    'section_content': section.get('content', ''),
+                    'section_order': i,
+                    'products_featured': [],
+                    'ai_generated': True,
+                    'created_at': row[16]  # created_at
+                })
         
-        # Get content sections
-        sections_query = """
-        SELECT id, blog_post_id, section_type, section_title, section_content,
-               section_order, products_featured, ai_generated, created_at
-        FROM blog_content_sections
-        WHERE blog_post_id = :post_id
-        ORDER BY section_order
-        """
+        # Simplified structure - no separate generation history table
+        history_data = []
         
-        sections_result = await db.execute(text(sections_query), {'post_id': post_id})
-        sections_data = sections_result.fetchall()
-        
-        # Get generation history
-        history_query = """
-        SELECT id, blog_post_id, template_id, generation_status, prompt_used,
-               model_used, tokens_used, generation_time_ms, error_message,
-               generation_metadata, created_at
-        FROM blog_generation_history
-        WHERE blog_post_id = :post_id
-        ORDER BY created_at DESC
-        """
-        
-        history_result = await db.execute(text(history_query), {'post_id': post_id})
-        history_data = history_result.fetchall()
-        
-        # Parse structured_content if it's a JSON string
-        structured_content = row[5]
-        if isinstance(structured_content, str):
-            try:
-                structured_content = json.loads(structured_content)
-            except (json.JSONDecodeError, TypeError):
-                structured_content = None
+        # Use content_json directly (already parsed by SQLAlchemy)
+        structured_content = content_json
         
         return AIBlogPost(
             id=row[0],
@@ -955,49 +1034,34 @@ async def get_ai_blog_post(
             ai_notes=row[22],
             products=[
                 EnhancedBlogPostProduct(
-                    id=prod[0],
-                    product_id=prod[1],
-                    position=prod[2],
-                    context=prod[3],
-                    ai_context=prod[4],
-                    relevance_score=prod[5],
-                    mentioned_in_sections=prod[6] or [],
-                    product_name=prod[7],
-                    product_slug=prod[8],
-                    product_brand=prod[9]
+                    id=prod['id'],
+                    product_id=prod['product_id'],
+                    position=prod['position'],
+                    context=prod['context'],
+                    ai_context=prod['ai_context'],
+                    relevance_score=prod['relevance_score'],
+                    mentioned_in_sections=prod['mentioned_in_sections'],
+                    product_name=prod['product_name'],
+                    product_slug=prod['product_slug'],
+                    product_brand=prod['brand_name']
                 )
                 for prod in products_data
             ],
             sections=[
                 BlogContentSection(
-                    id=sec[0],
-                    blog_post_id=sec[1],
-                    section_type=sec[2],
-                    section_title=sec[3],
-                    section_content=sec[4],
-                    section_order=sec[5],
-                    products_featured=sec[6] or [],
-                    ai_generated=sec[7],
-                    created_at=sec[8]
+                    id=sec['id'],
+                    blog_post_id=sec['blog_post_id'],
+                    section_type=sec['section_type'],
+                    section_title=sec['section_title'],
+                    section_content=sec['section_content'],
+                    section_order=sec['section_order'],
+                    products_featured=sec['products_featured'],
+                    ai_generated=sec['ai_generated'],
+                    created_at=sec['created_at']
                 )
                 for sec in sections_data
             ],
-            generation_history=[
-                BlogGenerationHistory(
-                    id=hist[0],
-                    blog_post_id=hist[1],
-                    template_id=hist[2],
-                    generation_status=hist[3],
-                    prompt_used=hist[4],
-                    model_used=hist[5],
-                    tokens_used=hist[6],
-                    generation_time_ms=hist[7],
-                    error_message=hist[8],
-                    generation_metadata=hist[9] or {},
-                    created_at=hist[10]
-                )
-                for hist in history_data
-            ]
+            generation_history=[]  # Simplified structure - no separate history table
         )
         
     except HTTPException:

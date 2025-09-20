@@ -77,7 +77,7 @@ export default function BlogPreviewPage({ post }: PreviewProps) {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
     const { id } = params!;
-    const response = await fetch(`${API_BASE}/api/v1/blog/ai-posts/${id}`);
+    const response = await fetch(`${API_BASE}/api/v1/blog/posts/by-id/${id}`);
     if (!response.ok) {
       return { notFound: true };
     }
