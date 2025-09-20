@@ -402,12 +402,15 @@ CRITICAL REQUIREMENTS:
 - ENFORCE JSON OUTPUT FORMAT - respond ONLY with valid JSON
 
 CONTENT DIVERSITY REQUIREMENTS:
-- Use different writing styles: conversational, technical, storytelling, analytical
-- Vary sentence structure: mix short punchy sentences with longer explanations
-- Include personal anecdotes, industry stories, or historical context
-- Use different opening strategies: questions, statistics, stories, controversial statements
-- Vary section structures: some with lists, others with narrative flow
-- Include unique perspectives that haven't been covered everywhere else
+- Write like a seasoned musician talking to a friend, not a robot
+- Use conversational, human tone with personality and humor when appropriate
+- Mix short punchy sentences with longer explanations. Vary rhythm.
+- Include personal anecdotes, band stories, studio experiences, real-world scenarios
+- Start with hooks: "Here's what nobody tells you...", "I learned this the hard way...", "After 15 years of playing..."
+- Use contractions, colloquialisms, and natural speech patterns
+- Include specific brand mentions, model numbers, and technical details from experience
+- Reference real artists, songs, and musical contexts that resonate
+- Avoid corporate speak, buzzwords, and AI-generated phrases
 
 TITLE CREATIVITY GUIDELINES:
 - ABSOLUTELY AVOID these overused phrases: "Ultimate Guide", "Best", "Top", "Complete Guide", "Everything You Need"
@@ -484,13 +487,14 @@ CONTENT GUIDELINES:
             if any(keyword in topic.lower() for keyword in ['history', 'evolution', 'biography', 'story', 'news', 'theory']):
                 product_context += """\n
 PRODUCT INTEGRATION GUIDANCE FOR NON-PRODUCT TOPICS:
-- Naturally weave product recommendations throughout the content
-- Present products as "Recommended Instruments" or "Popular Gear" 
-- Connect products to the topic (e.g., "instruments used in this era/style")
-- Include products in relevant sections, not forced placement
-- For artist spotlights: show instruments they made famous
-- For history posts: show modern versions of historical instruments
-- For theory/educational: show instruments that demonstrate concepts
+- ONLY recommend products that exist in our database (from the provided product list)
+- Use natural language like "I've been playing the [Product Name] for years and..."
+- Include specific model numbers and technical specs from our database
+- Connect products naturally: "When I'm recording country licks, I reach for my [Product]..."
+- Create product spotlights within sections, not as separate blocks
+- Use affiliate buttons strategically - 2-3 per article maximum
+- Reference products by their exact database names and specifications
+- For each product mention, create a product_spotlight section with full details
 """
             
             prompt += product_context
