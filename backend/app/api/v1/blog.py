@@ -182,34 +182,42 @@ async def get_blog_posts(
         params = {}
         
         if category:
-            where_clauses.append("bc.slug = :category")
+            where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :category")
             params['category'] = category
             
         if tag:
-            where_clauses.append("EXISTS (SELECT 1 FROM blog_post_tags bpt JOIN blog_tags bt ON bpt.tag_id = bt.id WHERE bpt.blog_post_id = bp.id AND bt.slug = :tag)")
+            where_clauses.append("bp.content_json->'tags' ? :tag")
             params['tag'] = tag
             
         if featured is not None:
-            where_clauses.append("bp.featured = :featured")
+            # featured column doesn't exist in simplified table, use default false
+            where_clauses.append("false = :featured")
             params['featured'] = featured
         
         where_clause = "WHERE " + " AND ".join(where_clauses)
         
-        order_clause = "ORDER BY bp.featured DESC, bp.published_at DESC, bp.created_at DESC"
+        order_clause = "ORDER BY bp.published_at DESC, bp.created_at DESC"
         if sort_by == 'views':
-            order_clause = "ORDER BY bp.view_count DESC, bp.published_at DESC"
+            order_clause = "ORDER BY bp.published_at DESC, bp.created_at DESC"
 
         query = f"""
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
-            bp.author_name, bp.reading_time, bp.view_count, bp.featured,
+            bp.author_name, 
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time,
+            0 as view_count,
+            false as featured,
             bp.published_at,
-            bc.id as category_id, bc.name as category_name, bc.slug as category_slug,
-            bc.description as category_description, bc.icon as category_icon, 
-            bc.color as category_color, bc.sort_order as category_sort_order,
-            bc.is_active as category_is_active
+            -- Create category object from content_json
+            NULL as category_id,
+            COALESCE(bp.content_json->>'category', 'general') as category_name,
+            COALESCE(bp.content_json->>'category', 'general') as category_slug,
+            'General content category' as category_description,
+            '📝' as category_icon,
+            '#6366f1' as category_color,
+            1 as category_sort_order,
+            true as category_is_active
         FROM blog_posts bp
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
         {where_clause}
         {order_clause}
         LIMIT :limit OFFSET :offset
@@ -220,27 +228,33 @@ async def get_blog_posts(
         result = await db.execute(text(query), params)
         posts = result.fetchall()
         
-        # Get tags for each post
+        # Get tags from content_json for each post
         post_ids = [post[0] for post in posts]
-        tags_query = """
-        SELECT bpt.blog_post_id, bt.id, bt.name, bt.slug
-        FROM blog_post_tags bpt
-        JOIN blog_tags bt ON bpt.tag_id = bt.id
-        WHERE bpt.blog_post_id = ANY(:post_ids)
-        ORDER BY bt.name
-        """
         
         if post_ids:
+            # Get content_json for all posts to extract tags
+            tags_query = """
+            SELECT id, content_json->'tags' as tags_json
+            FROM blog_posts 
+            WHERE id = ANY(:post_ids)
+            """
             tags_result = await db.execute(text(tags_query), {'post_ids': post_ids})
             tags_data = tags_result.fetchall()
             
-            # Group tags by post_id
+            # Build tags for each post from JSON
             tags_by_post = {}
-            for tag_row in tags_data:
-                post_id = tag_row[0]
-                if post_id not in tags_by_post:
-                    tags_by_post[post_id] = []
-                tags_by_post[post_id].append(BlogTag(id=tag_row[1], name=tag_row[2], slug=tag_row[3]))
+            for post_id, tags_json in tags_data:
+                tags_by_post[post_id] = []
+                if tags_json:
+                    import json
+                    tag_names = json.loads(tags_json) if isinstance(tags_json, str) else tags_json
+                    if isinstance(tag_names, list):
+                        for i, tag_name in enumerate(tag_names):
+                            # Create slug from tag name
+                            import re
+                            tag_slug = re.sub(r'[^a-zA-Z0-9\s-]', '', tag_name.lower())
+                            tag_slug = re.sub(r'\s+', '-', tag_slug).strip('-')
+                            tags_by_post[post_id].append(BlogTag(id=i+1, name=tag_name, slug=tag_slug))
         else:
             tags_by_post = {}
         

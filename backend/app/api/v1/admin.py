@@ -187,7 +187,7 @@ async def get_admin_blog_posts(
             params['ai_generated'] = ai_generated
         
         if category:
-            where_clauses.append("bc.slug = :category")
+            where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :category")
             params['category'] = category
         
         if content_type:
@@ -213,38 +213,45 @@ async def get_admin_blog_posts(
                     params[f'pattern_{i}'] = f'%{pattern}%'
         
         if search:
-            where_clauses.append("(bp.title ILIKE :search OR bp.excerpt ILIKE :search)")
+            where_clauses.append("(bp.title ILIKE :search OR bp.excerpt ILIKE :search OR bp.content_json::text ILIKE :search)")
             params['search'] = f'%{search}%'
         
         where_clause = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
         
         # Get total count for pagination
         count_query = f"""
-        SELECT COUNT(DISTINCT bp.id)
+        SELECT COUNT(bp.id)
         FROM blog_posts bp
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
         {where_clause}
         """
         
         count_result = await db.execute(text(count_query), params)
         total_count = count_result.scalar()
         
-        # Get posts
+        # Get posts - simplified structure
         query = f"""
         SELECT 
             bp.id, bp.title, bp.slug, bp.excerpt, bp.featured_image,
-            bp.author_name, bp.status, bp.reading_time, bp.view_count, 
-            bp.featured, bp.published_at, bp.created_at, bp.updated_at,
-            bp.noindex,
+            bp.author_name, bp.status, 
+            bp.published_at, bp.created_at, bp.updated_at,
+            bp.noindex, bp.content_json,
             bp.generated_by_ai, bp.generation_model,
-            bc.name as category_name, bc.slug as category_slug,
-            bc.color as category_color,
-            COUNT(bpt.tag_id) as tag_count
+            -- Extract category from content_json or use simple text field
+            COALESCE(bp.content_json->>'category', 'general') as category_name,
+            COALESCE(bp.content_json->>'category', 'general') as category_slug,
+            '#6366f1' as category_color,  -- default color
+            -- Extract tags count from content_json
+            CASE 
+                WHEN bp.content_json->'tags' IS NOT NULL 
+                THEN jsonb_array_length(bp.content_json->'tags')
+                ELSE 0 
+            END as tag_count,
+            -- Calculate reading_time and view_count defaults
+            COALESCE((bp.content_json->>'word_count')::int / 200, 5) as reading_time,
+            0 as view_count,
+            false as featured
         FROM blog_posts bp
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
-        LEFT JOIN blog_post_tags bpt ON bp.id = bpt.blog_post_id
         {where_clause}
-        GROUP BY bp.id, bc.id
         ORDER BY bp.created_at DESC
         LIMIT :limit OFFSET :offset
         """
