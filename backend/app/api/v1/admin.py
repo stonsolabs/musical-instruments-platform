@@ -190,27 +190,24 @@ async def get_admin_blog_posts(
             where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :category")
             params['category'] = category
         
-        if content_type:
-            # Map content types to template patterns
-            content_type_mapping = {
-                'review': ['review', 'hands-on', 'deep dive'],
-                'buying_guide': ['buying guide', 'guide template', 'what to look for'],
-                'comparison': ['comparison', 'battle', 'showdown', 'vs'],
-                'tutorial': ['tutorial', 'how-to', 'setup', 'maintenance'],
-                'roundup': ['roundup', 'best picks', 'top'],
-                'seasonal': ['seasonal', 'deals', 'black friday', 'holiday'],
-                'artist': ['artist spotlight', 'rig'],
-                'historical': ['history', 'evolution'],
-                'quiz': ['quiz', 'interactive']
-            }
-            
-            if content_type in content_type_mapping:
-                patterns = content_type_mapping[content_type]
-                # Search in generation_model field which stores template name
-                pattern_conditions = " OR ".join([f"bp.generation_model ILIKE :pattern_{i}" for i in range(len(patterns))])
-                where_clauses.append(f"({pattern_conditions})")
-                for i, pattern in enumerate(patterns):
-                    params[f'pattern_{i}'] = f'%{pattern}%'
+    if content_type:
+        # In simplified structure, use content_json->>'category' where possible
+        # Map UI values to category slugs used in content_json
+        slug_map = {
+            'review': 'review',
+            'buying_guide': 'buying-guide',
+            'comparison': 'comparison',
+            'tutorial': 'tutorial',
+            'roundup': 'roundup',
+            'seasonal': 'seasonal',
+            'artist': 'artist-spotlight',
+            'historical': 'history',
+            'quiz': 'quiz',
+        }
+        mapped = slug_map.get(content_type)
+        if mapped:
+            where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :content_category")
+            params['content_category'] = mapped
         
         if search:
             where_clauses.append("(bp.title ILIKE :search OR bp.excerpt ILIKE :search OR bp.content_json::text ILIKE :search)")
