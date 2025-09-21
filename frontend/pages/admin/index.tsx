@@ -57,6 +57,23 @@ export default function AdminPage() {
       if (response.status === 401) {
         // User is not authenticated, redirect to Azure AD login
         // First try SSO bridge to obtain a short-lived admin token without relying on third-party cookies
+        // On iOS Safari, popups and cross-site cookies can be problematic; go straight to login to avoid loops
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+        const directLoginOnly = isIOS && isSafari;
+        // Avoid redirect loops: if we've already tried direct login once, stop and show a login button
+        const triedDirect = sessionStorage.getItem('admin_direct_login_attempted') === '1';
+        if (directLoginOnly) {
+          if (!triedDirect) {
+            sessionStorage.setItem('admin_direct_login_attempted', '1');
+            const loginUrl = `${apiBase}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
+            window.location.href = loginUrl;
+            return;
+          } else {
+            throw new Error('ios_direct_login_failed');
+          }
+        }
         const bridgeUrl = `${apiBase}/api/v1/admin/sso/bridge?origin=${encodeURIComponent(window.location.origin)}`;
         const w = 520, h = 600;
         const y = window.outerHeight / 2 + window.screenY - (h / 2);
@@ -116,12 +133,24 @@ export default function AdminPage() {
           }
           throw new Error(`retry_failed_${retry.status}`);
         } catch (e) {
-          // Fallback to direct Azure AD login
-          const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
-          const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
-          console.log('[ADMIN] SSO bridge failed, redirecting to login:', String(e));
-          window.location.href = loginUrl;
-          return;
+          // Fallback to direct Azure AD login (single attempt)
+          if (!triedDirect) {
+            sessionStorage.setItem('admin_direct_login_attempted', '1');
+            const azureBackend = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
+            const loginUrl = `${azureBackend}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
+            console.log('[ADMIN] SSO bridge failed, redirecting to login:', String(e));
+            window.location.href = loginUrl;
+            return;
+          } else {
+            // Show explicit login button via error state
+            setError({
+              error: 'authentication_required',
+              message: 'Authentication required to access admin panel.',
+              login_url: `${apiBase}/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`
+            });
+            setIsLoading(false);
+            return;
+          }
         }
       }
 
