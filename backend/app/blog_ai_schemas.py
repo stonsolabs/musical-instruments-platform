@@ -90,6 +90,10 @@ class BlogGenerationHistory(BaseModel):
     generation_metadata: Dict[str, Any] = {}
     created_at: datetime
     
+    # Pydantic v2: avoid reserved namespace conflict for 'model_used'
+    model_config = {
+        'protected_namespaces': ()
+    }
     class Config:
         from_attributes = True
 

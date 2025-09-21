@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AffiliateButtons from './AffiliateButtons';
+import { fetchProduct } from '../lib/api';
+import { getProductImageUrl } from '../lib/utils';
 
 interface Product {
   id: string | number;
@@ -26,7 +28,30 @@ interface BlogProductSpotlightProps {
 }
 
 export default function BlogProductSpotlight({ products, title, alternateLayout = true, variant = 'full', maxStores = 2 }: BlogProductSpotlightProps) {
-  if (!products || products.length === 0) return null;
+  const [resolved, setResolved] = useState<Product[]>(products || []);
+
+  useEffect(() => {
+    let mounted = true;
+    const resolveImages = async () => {
+      const updated = await Promise.all(
+        (products || []).map(async (p) => {
+          if (p.image_url || !p.slug) return p;
+          try {
+            const prod: any = await fetchProduct(p.slug);
+            const img = getProductImageUrl(prod);
+            return { ...p, image_url: img } as Product;
+          } catch {
+            return p;
+          }
+        })
+      );
+      if (mounted) setResolved(updated);
+    };
+    resolveImages();
+    return () => { mounted = false; };
+  }, [products]);
+
+  if (!resolved || resolved.length === 0) return null;
 
   return (
     <section className="mb-12 bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
@@ -35,7 +60,7 @@ export default function BlogProductSpotlight({ products, title, alternateLayout 
       )}
       {variant === 'compact' ? (
         <div className={`grid grid-cols-1 sm:grid-cols-2 ${products.length > 4 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-6`}>
-          {products.map((product, idx) => (
+          {resolved.map((product, idx) => (
             <div key={idx} className="flex items-start gap-4">
               <div className="w-20 h-20 rounded bg-gray-100 overflow-hidden flex-shrink-0">
                 {product.image_url ? (
@@ -59,7 +84,7 @@ export default function BlogProductSpotlight({ products, title, alternateLayout 
         </div>
       ) : (
         <div className="space-y-10">
-          {products.map((product, idx) => {
+          {resolved.map((product, idx) => {
             const reverse = alternateLayout && idx % 2 === 1;
             return (
               <div key={idx} className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8`}>

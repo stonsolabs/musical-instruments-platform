@@ -803,3 +803,58 @@ async def get_batch_jobs(
     except Exception as e:
         logger.error(f"Failed to fetch batch jobs: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch batch jobs")
+# === UPDATE BLOG POST (ADMIN) ===
+
+class AdminBlogPostUpdate(BaseModel):
+    title: Optional[str] = None
+    excerpt: Optional[str] = None
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
+    content_json: Optional[dict] = None
+    status: Optional[str] = Field(None, pattern=r"^(draft|published|archived)$")
+    noindex: Optional[bool] = None
+    published_at: Optional[datetime] = None
+
+@router.put("/blog/posts/{post_id}")
+async def update_admin_blog_post(
+    post_id: int,
+    payload: AdminBlogPostUpdate,
+    admin: dict = Depends(require_azure_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        # Build dynamic update
+        fields = []
+        params: Dict[str, Any] = { 'id': post_id }
+        import json as _json
+        if payload.title is not None:
+            fields.append("title = :title"); params['title'] = payload.title
+        if payload.excerpt is not None:
+            fields.append("excerpt = :excerpt"); params['excerpt'] = payload.excerpt
+        if payload.seo_title is not None:
+            fields.append("seo_title = :seo_title"); params['seo_title'] = payload.seo_title
+        if payload.seo_description is not None:
+            fields.append("seo_description = :seo_description"); params['seo_description'] = payload.seo_description
+        if payload.content_json is not None:
+            fields.append("content_json = CAST(:content_json AS JSONB)"); params['content_json'] = _json.dumps(payload.content_json)
+        if payload.status is not None:
+            fields.append("status = :status"); params['status'] = payload.status
+        if payload.noindex is not None:
+            fields.append("noindex = :noindex"); params['noindex'] = payload.noindex
+        if payload.published_at is not None:
+            fields.append("published_at = :published_at"); params['published_at'] = payload.published_at
+
+        if not fields:
+            raise HTTPException(status_code=400, detail="No fields to update")
+
+        fields.append("updated_at = NOW()")
+        q = f"UPDATE blog_posts SET {', '.join(fields)} WHERE id = :id"
+        await db.execute(text(q), params)
+        await db.commit()
+        return { 'id': post_id, 'updated': list(params.keys()) }
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Failed to update blog post {post_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update blog post")
