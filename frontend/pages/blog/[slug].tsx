@@ -255,23 +255,29 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
           <div className="lg:col-span-8">
             {(() => {
               const hydrateMap: Record<string, any> = {};
+              const fallbacks: any[] = [];
               try {
                 (post as any).products?.forEach((p: any) => {
                   const slug = p.product_slug || p.slug;
-                  if (!p.product_id) return;
-                  hydrateMap[String(p.product_id)] = {
-                    id: p.product_id,
-                    name: p.product_name || p.name,
-                    slug,
-                    affiliate_url: slug ? `/products/${slug}` : undefined,
-                    store_url: slug ? `/products/${slug}` : undefined,
-                  };
+                  if (p.product_id) {
+                    hydrateMap[String(p.product_id)] = {
+                      id: p.product_id,
+                      name: p.product_name || p.name,
+                      slug,
+                      affiliate_url: slug ? `/products/${slug}` : undefined,
+                      store_url: slug ? `/products/${slug}` : undefined,
+                    };
+                  }
+                  if (slug) {
+                    fallbacks.push({ id: p.product_id, name: p.product_name || p.name, slug });
+                  }
                 });
               } catch {}
               return (
                 <SimpleBlogRenderer 
                   content={(post as any).content_json || { sections: [{ type: 'content', content: post.content || '' }] }} 
                   hydrate={hydrateMap}
+                  fallbackProducts={fallbacks}
                 />
               );
             })()}

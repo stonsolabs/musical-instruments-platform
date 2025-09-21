@@ -8,6 +8,7 @@ interface SimpleBlogRendererProps {
   content: any;
   className?: string;
   hydrate?: Record<string, Partial<Product>>; // map by product_id as string
+  fallbackProducts?: Partial<Product>[]; // from post.products when spotlight JSON is wrong
 }
 
 interface Product {
@@ -33,7 +34,7 @@ interface Section {
   product?: Product;
 }
 
-const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, className = '', hydrate = {} }) => {
+const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, className = '', hydrate = {}, fallbackProducts = [] }) => {
   if (!content?.sections) {
     // Fallback to legacy content if no sections
     return (
@@ -112,10 +113,24 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
           ? (section.products as Product[])
           : (section.product ? [section.product as Product] : []);
 
-        // Hydrate products from map when IDs match (fixes generic/incorrect data)
+        // Build slug map for hydration by slug/name if id missing
+        const hydrateBySlug: Record<string, Partial<Product>> = {};
+        Object.values(hydrate).forEach((h: any) => {
+          if (h?.slug) hydrateBySlug[String(h.slug)] = h as any;
+        });
+
+        // Hydrate products from map when IDs match (or by slug/name)
         products = products.map((p) => {
           const key = String((p as any).id || '');
-          const h = key ? hydrate[key] : undefined;
+          let h = key ? hydrate[key] : undefined;
+          if (!h && (p as any).slug) {
+            h = hydrateBySlug[String((p as any).slug)];
+          }
+          if (!h && (p as any).name) {
+            // fuzzy name match
+            const pn = String((p as any).name).toLowerCase();
+            h = (Object.values(hydrate).find((x: any) => String(x?.name || '').toLowerCase().includes(pn)) as any) || undefined;
+          }
           if (!h) return p;
           return {
             ...p,
@@ -123,8 +138,22 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
             slug: (h as any).slug || p.slug,
             affiliate_url: (h as any).affiliate_url || p.affiliate_url,
             store_url: (h as any).store_url || p.store_url,
+            id: (h as any).id || p.id,
           };
         });
+
+        // Fallback: if after hydration none have slug and we have fallbackProducts, use them instead
+        const noneHydrated = !products.some(p => (p as any).slug);
+        if (noneHydrated && Array.isArray(fallbackProducts) && fallbackProducts.length > 0) {
+          products = fallbackProducts.slice(0, Math.max(products.length, 1)).map((fp) => ({
+            id: fp.id as any,
+            name: fp.name || 'Product',
+            slug: (fp as any).slug,
+            affiliate_url: (fp as any).slug ? `/products/${(fp as any).slug}` : undefined,
+            store_url: (fp as any).slug ? `/products/${(fp as any).slug}` : undefined,
+            price: '',
+          })) as Product[];
+        }
 
         if (products.length === 0) return null;
 
