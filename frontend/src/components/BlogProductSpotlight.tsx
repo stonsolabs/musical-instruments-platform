@@ -1,5 +1,5 @@
 import React from 'react';
-import BlogAffiliateButtons from './BlogAffiliateButtons';
+import AffiliateButtons from './AffiliateButtons';
 
 interface Product {
   id: string | number;
@@ -93,22 +93,21 @@ export default function BlogProductSpotlight({ products, title, alternateLayout 
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                  <BlogAffiliateButtons
-                    product={{ id: String(product.id), name: product.name, affiliate_url: product.affiliate_url, rating: product.rating }}
-                    variant="featured"
-                    ctaText="Check Current Price"
-                    showRating={Boolean(product.rating)}
+                <div className="flex flex-col gap-3 mt-2">
+                  <AffiliateButtons 
+                    product={{ id: Number(product.id), name: product.name, slug: product.slug || '' }} 
+                    variant="full" 
+                    maxButtons={2}
                   />
                   {(product.slug || product.store_url) && (
                     <a
                       href={product.slug ? `/products/${product.slug}` : product.store_url}
-                      className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md text-gray-800 font-semibold hover:bg-gray-50 transition-colors text-center"
+                      className="text-sm text-gray-700 underline hover:text-gray-900"
                       style={{fontFamily: 'Montserrat, sans-serif'}}
                       target={product.slug ? undefined : "_blank"}
                       rel={product.slug ? undefined : "noopener noreferrer"}
                     >
-                      {product.cta_text || 'See Details on Our Site'}
+                      View details
                     </a>
                   )}
                 </div>
@@ -124,4 +123,3 @@ export default function BlogProductSpotlight({ products, title, alternateLayout 
     </section>
   );
 }
-
