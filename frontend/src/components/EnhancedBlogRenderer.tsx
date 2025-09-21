@@ -92,7 +92,7 @@ const ProductSpotlight: React.FC<{ product: Product }> = ({ product }) => (
         )}
 
         <div className="mb-4">
-          <div className="text-2xl font-bold text-red-600 mb-2" style={{color: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}>
+          <div className="text-2xl font-extrabold text-gray-900 mb-2" style={{fontFamily: 'Montserrat, sans-serif'}}>
             {product.price}
           </div>
           {product.description && (
@@ -127,13 +127,13 @@ const ProductSpotlight: React.FC<{ product: Product }> = ({ product }) => (
             )}
             {product.cons && (
               <div>
-                <h4 className="font-semibold text-red-700 mb-2 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                <h4 className="font-semibold text-gray-700 mb-2 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
                   Cons
                 </h4>
                 <ul className="space-y-1">
                   {product.cons.map((con, i) => (
                     <li key={i} className="text-sm text-gray-600 flex items-start">
-                      <svg className="w-4 h-4 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                       {con}
@@ -150,8 +150,8 @@ const ProductSpotlight: React.FC<{ product: Product }> = ({ product }) => (
       <div className="lg:w-48 flex flex-col justify-center gap-3">
         <a 
           href={product.affiliate_url}
-          className="text-white px-6 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold block text-sm"
-          style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
+          className="bg-brand-primary text-white px-6 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold block text-sm"
+          style={{fontFamily: 'Montserrat, sans-serif'}}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -201,15 +201,15 @@ const ProductGrid: React.FC<{ products: Product[]; title?: string }> = ({ produc
             <StarRating rating={product.rating} reviewCount={product.review_count} />
           )}
           
-          <div className="text-xl font-bold text-red-600 mb-4" style={{color: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}>
+          <div className="text-xl font-extrabold text-gray-900 mb-4" style={{fontFamily: 'Montserrat, sans-serif'}}>
             {product.price}
           </div>
           
           <div className="flex flex-col gap-2">
             <a 
               href={product.affiliate_url}
-              className="text-white px-4 py-2 rounded-md hover:opacity-90 transition-colors text-center font-bold text-sm"
-              style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
+              className="bg-brand-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-colors text-center font-bold text-sm"
+              style={{fontFamily: 'Montserrat, sans-serif'}}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -266,22 +266,22 @@ const BlogNavigation: React.FC<{ title: string; category?: string }> = ({ title,
     
     {/* Blog Navigation Menu */}
     <div className="flex flex-wrap gap-4 pb-4 border-b border-gray-200">
-      <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Latest
       </Link>
-      <Link href="/blog/category/buying-guide" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog/category/buying-guide" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Buying Guides
       </Link>
-      <Link href="/blog/category/review" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog/category/review" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Reviews
       </Link>
-      <Link href="/blog/category/comparison" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog/category/comparison" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Comparisons
       </Link>
-      <Link href="/blog/category/artist-spotlight" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog/category/artist-spotlight" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Artists
       </Link>
-      <Link href="/blog/category/gear-tips" className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
+      <Link href="/blog/category/gear-tips" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" style={{fontFamily: 'Montserrat, sans-serif'}}>
         Tips & Guides
       </Link>
     </div>
@@ -333,7 +333,7 @@ const EnhancedBlogRenderer: React.FC<EnhancedBlogRendererProps> = ({ content, cl
                   h2: ({node, ...props}) => <h2 className="text-2xl font-bold mb-4 text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}} {...props} />,
                   h3: ({node, ...props}) => <h3 className="text-xl font-bold mb-3 text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}} {...props} />,
                   h4: ({node, ...props}) => <h4 className="text-lg font-bold mb-2 text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}} {...props} />,
-                  a: ({node, ...props}) => <a className="text-red-600 hover:text-red-700 underline" style={{color: '#cd2418'}} {...props} />,
+                  a: ({node, ...props}) => <a className="text-gray-900 underline hover:opacity-80" {...props} />,
                 }}
               >
                 {section.content || ''}
@@ -350,15 +350,15 @@ const EnhancedBlogRenderer: React.FC<EnhancedBlogRendererProps> = ({ content, cl
 
       case 'affiliate_banner':
         return (
-          <div key={index} className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div key={index} className="mb-8 bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
             <h3 className="font-bold text-lg mb-2" style={{fontFamily: 'Montserrat, sans-serif'}}>
               🎸 Ready to Buy?
             </h3>
             <p className="text-gray-700 mb-4">Check out our top recommendations and get the best deals!</p>
             <a 
               href="#quick_picks" 
-              className="inline-block text-white px-6 py-2 rounded-md transition-colors font-bold"
-              style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
+              className="inline-block bg-brand-primary text-white px-6 py-2 rounded-md transition-colors font-bold hover:opacity-90"
+              style={{fontFamily: 'Montserrat, sans-serif'}}
             >
               View Our Picks
             </a>

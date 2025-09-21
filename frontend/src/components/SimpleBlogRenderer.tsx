@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import BlogAffiliateButtons from './BlogAffiliateButtons';
+import BlogProductSpotlight from './BlogProductSpotlight';
 
 interface SimpleBlogRendererProps {
   content: any;
   className?: string;
+  hydrate?: Record<string, Partial<Product>>; // map by product_id as string
 }
 
 interface Product {
@@ -18,6 +21,8 @@ interface Product {
   affiliate_url: string;
   store_url?: string;
   cta_text?: string;
+  slug?: string;
+  image_url?: string;
 }
 
 interface Section {
@@ -28,7 +33,7 @@ interface Section {
   product?: Product;
 }
 
-const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, className = '' }) => {
+const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, className = '', hydrate = {} }) => {
   if (!content?.sections) {
     // Fallback to legacy content if no sections
     return (
@@ -63,27 +68,23 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
               {section.products?.map((product, i) => (
                 <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
                   <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                  <p className="text-2xl font-bold text-red-600 mb-3">{product.price}</p>
+                  <p className="text-2xl font-bold text-gray-900 mb-3">{product.price}</p>
                   {product.reason && (
                     <p className="text-gray-600 mb-4">{product.reason}</p>
                   )}
                   <div className="flex flex-col gap-2">
-                    <a 
-                      href={product.affiliate_url}
-                      className="inline-block text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors font-bold text-center"
-                      style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Check Price
-                    </a>
-                    {product.store_url && (
+                    <BlogAffiliateButtons
+                      product={{ id: String(product.id), name: product.name, affiliate_url: product.affiliate_url, rating: product.rating }}
+                      variant="inline"
+                      ctaText="Check Price"
+                    />
+                    {(product.slug || product.store_url) && (
                       <a 
-                        href={product.store_url}
-                        className="inline-block text-gray-700 border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 transition-colors font-semibold text-center"
+                        href={product.slug ? `/products/${product.slug}` : product.store_url}
+                        className="inline-block text-gray-800 border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 transition-colors font-semibold text-center"
                         style={{fontFamily: 'Montserrat, sans-serif'}}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target={product.slug ? undefined : "_blank"}
+                        rel={product.slug ? undefined : "noopener noreferrer"}
                       >
                         {product.cta_text || 'See Details'}
                       </a>
@@ -106,93 +107,40 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
           </div>
         );
 
-      case 'product_spotlight':
-        const product = section.product;
-        if (!product) return null;
-        
-        return (
-          <div key={index} className="mb-12 bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2" style={{fontFamily: 'Montserrat, sans-serif'}}>{product.name}</h3>
-                <p className="text-3xl font-black mb-4" style={{color: '#cd2418'}}>{product.price}</p>
-                
-                {product.rating && (
-                  <div className="flex items-center mb-4">
-                    <div className="flex text-yellow-400 mr-2">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i}>
-                          {i < Math.floor(product.rating!) ? '★' : '☆'}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-gray-600">{product.rating}/5</span>
-                  </div>
-                )}
+      case 'product_spotlight': {
+        let products: Product[] = Array.isArray(section.products) && section.products.length > 0
+          ? (section.products as Product[])
+          : (section.product ? [section.product as Product] : []);
 
-                {(product.pros || product.cons) && (
-                  <div className="grid md:grid-cols-2 gap-4 mb-6">
-                    {product.pros && (
-                      <div>
-                        <h4 className="font-semibold text-green-700 mb-2">Pros</h4>
-                        <ul className="space-y-1">
-                          {product.pros.map((pro, i) => (
-                            <li key={i} className="text-sm text-gray-600">✓ {pro}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {product.cons && (
-                      <div>
-                        <h4 className="font-semibold text-red-700 mb-2">Cons</h4>
-                        <ul className="space-y-1">
-                          {product.cons.map((con, i) => (
-                            <li key={i} className="text-sm text-gray-600">✗ {con}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="lg:w-64 flex flex-col justify-center">
-                <a 
-                  href={product.affiliate_url}
-                  className="text-white px-8 py-3 rounded-md hover:opacity-90 transition-colors text-center font-bold mb-3 block"
-                  style={{backgroundColor: '#cd2418', fontFamily: 'Montserrat, sans-serif'}}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Check Price
-                </a>
-                {product.store_url && (
-                  <a 
-                    href={product.store_url}
-                    className="text-gray-700 border border-gray-300 px-8 py-3 rounded-md hover:bg-gray-50 transition-colors text-center font-semibold mb-4 block"
-                    style={{fontFamily: 'Montserrat, sans-serif'}}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {product.cta_text || 'See Details on Our Store'}
-                  </a>
-                )}
-                <p className="text-xs text-gray-500 text-center">
-                  As an affiliate, we earn from qualifying purchases
-                </p>
-              </div>
-            </div>
-          </div>
+        // Hydrate products from map when IDs match (fixes generic/incorrect data)
+        products = products.map((p) => {
+          const key = String((p as any).id || '');
+          const h = key ? hydrate[key] : undefined;
+          if (!h) return p;
+          return {
+            ...p,
+            name: h.name || p.name,
+            slug: (h as any).slug || p.slug,
+            affiliate_url: (h as any).affiliate_url || p.affiliate_url,
+            store_url: (h as any).store_url || p.store_url,
+          };
+        });
+
+        if (products.length === 0) return null;
+
+        return (
+          <BlogProductSpotlight key={index} products={products} />
         );
+      }
 
       case 'affiliate_banner':
         return (
-          <div key={index} className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div key={index} className="mb-8 bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
             <h3 className="font-bold text-lg mb-2">🎸 Ready to Buy?</h3>
             <p className="text-gray-700 mb-4">Check out our top recommendations and get the best deals!</p>
             <a 
               href="#quick_picks" 
-              className="inline-block bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors"
+              className="inline-block bg-brand-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition-colors"
             >
               View Our Picks
             </a>

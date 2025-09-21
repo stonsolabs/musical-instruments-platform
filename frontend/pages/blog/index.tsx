@@ -199,6 +199,46 @@ export default function BlogPage({
           </section>
         )}
 
+        {/* Riffs-style Quick Nav */}
+        {!currentCategory && !currentTag && !searchQuery && (
+          <nav className="mb-10">
+            <ul className="flex flex-wrap gap-3">
+              <li>
+                <a href="/blog?category=buying-guide" className="px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium hover:bg-gray-200">Buying Guides</a>
+              </li>
+              <li>
+                <a href="/blog?category=review" className="px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium hover:bg-gray-200">Reviews</a>
+              </li>
+              <li>
+                <a href="/blog?category=comparison" className="px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium hover:bg-gray-200">Comparisons</a>
+              </li>
+              <li>
+                <a href="/blog?category=tutorial" className="px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium hover:bg-gray-200">How-To</a>
+              </li>
+              <li>
+                <a href="/blog?tag=deals" className="px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium hover:bg-gray-200">Deals</a>
+              </li>
+            </ul>
+          </nav>
+        )}
+
+        {/* Trending Now (horizontal) */}
+        {!currentCategory && !currentTag && !searchQuery && mostRead && mostRead.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
+              <a href="/blog?sort=views" className="text-gray-900 underline">See all</a>
+            </div>
+            <div className="flex overflow-x-auto gap-6 pb-2 -mx-2 px-2">
+              {mostRead.slice(0, 10).map((post) => (
+                <div key={post.id} className="w-80 flex-shrink-0">
+                  <BlogPostCard post={post} size="small" showExcerpt={false} showCategory={true} showMeta={true} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Search Bar with Enhanced Design */}
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
@@ -277,60 +317,53 @@ export default function BlogPage({
           </div>
         )}
 
-        {/* Featured Posts Section (enhanced) */}
-        {!currentCategory && !currentTag && !searchQuery && featuredPosts.length > 3 && (
-          <div className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-                Featured Articles
-              </h2>
-              <a href="/blog?featured=true" className="text-brand-primary hover:text-brand-dark font-medium">
-                View All Featured →
-              </a>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {featuredPosts.slice(3, 6).map((post) => (
-                <BlogPostCard
-                  key={post.id}
-                  post={post}
-                  size="large"
-                  showExcerpt={true}
-                  showCategory={true}
-                  showMeta={true}
-                />
-              ))}
-            </div>
-          </div>
+        {/* Category Rails (Riffs-style) */}
+        {!currentCategory && !currentTag && !searchQuery && (
+          <>
+            {/* Buying Guides */}
+            <section className="mb-14">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Buying Guides</h2>
+                <a href="/blog?category=buying-guide" className="text-gray-900 underline">View all</a>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {posts.filter(p => p.category?.slug === 'buying-guide').slice(0, 4).map((post) => (
+                  <BlogPostCard key={post.id} post={post} size="small" showExcerpt={false} showCategory={true} showMeta={true} />
+                ))}
+              </div>
+            </section>
+
+            {/* Reviews */}
+            <section className="mb-14">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Reviews</h2>
+                <a href="/blog?category=review" className="text-gray-900 underline">View all</a>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {posts.filter(p => ['review','reviews'].includes(p.category?.slug || '')).slice(0, 4).map((post) => (
+                  <BlogPostCard key={post.id} post={post} size="small" showExcerpt={false} showCategory={true} showMeta={true} />
+                ))}
+              </div>
+            </section>
+
+            {/* How-To */}
+            <section className="mb-14">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">How-To</h2>
+                <a href="/blog?category=tutorial" className="text-gray-900 underline">View all</a>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {posts.filter(p => ['tutorial','gear-tips'].includes(p.category?.slug || '')).slice(0, 4).map((post) => (
+                  <BlogPostCard key={post.id} post={post} size="small" showExcerpt={false} showCategory={true} showMeta={true} />
+                ))}
+              </div>
+            </section>
+          </>
         )}
 
         {/* Enhanced Content Sections */}
         {!currentCategory && !currentTag && !searchQuery && (
           <div className="mb-16">
-            {/* Most Read Section */}
-            <div className="mb-12">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-                  Most Read This Week
-                </h2>
-                <a href="/blog?sort=views" className="text-brand-primary hover:text-brand-dark font-medium">
-                  View All →
-                </a>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {mostRead.slice(0, 4).map((post) => (
-                  <BlogPostCard
-                    key={post.id}
-                    post={post}
-                    size="small"
-                    showExcerpt={false}
-                    showCategory={true}
-                    showMeta={true}
-                  />
-                ))}
-              </div>
-            </div>
-
-
             {/* Popular Tags Cloud */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Popular Topics</h2>

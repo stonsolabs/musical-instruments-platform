@@ -7,6 +7,39 @@ module.exports = {
   ],
   theme: {
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': '#111827',
+            '--tw-prose-headings': '#111827',
+            '--tw-prose-links': '#111827',
+            '--tw-prose-bold': '#111827',
+            '--tw-prose-counters': '#6b7280',
+            '--tw-prose-bullets': '#9ca3af',
+            '--tw-prose-hr': '#e5e7eb',
+            '--tw-prose-quotes': '#111827',
+            '--tw-prose-quote-borders': '#e5e7eb',
+            '--tw-prose-captions': '#6b7280',
+            '--tw-prose-code': '#111827',
+            '--tw-prose-th-borders': '#e5e7eb',
+            '--tw-prose-td-borders': '#e5e7eb',
+            h1: { fontFamily: 'Montserrat, sans-serif', fontWeight: '800', letterSpacing: '-0.01em' },
+            h2: { fontFamily: 'Montserrat, sans-serif', fontWeight: '800', fontSize: '1.75rem', marginTop: '1.5rem', marginBottom: '0.75rem' },
+            h3: { fontFamily: 'Montserrat, sans-serif', fontWeight: '700', fontSize: '1.375rem', marginTop: '1.25rem', marginBottom: '0.5rem' },
+            h4: { fontFamily: 'Montserrat, sans-serif', fontWeight: '700' },
+            p: { marginTop: '0.9rem', marginBottom: '0.9rem' },
+            a: { color: '#111827', textDecoration: 'underline' },
+            strong: { color: '#111827' },
+            blockquote: { fontStyle: 'normal', borderLeftColor: '#e5e7eb' },
+            ul: { marginTop: '0.8rem', marginBottom: '0.8rem' },
+            ol: { marginTop: '0.8rem', marginBottom: '0.8rem' },
+            code: { backgroundColor: '#f3f4f6', padding: '0.15rem 0.35rem', borderRadius: '0.25rem' },
+            pre: { backgroundColor: '#111827', color: '#f9fafb' },
+            hr: { borderColor: '#e5e7eb' },
+            img: { borderRadius: '0.5rem' }
+          }
+        }
+      },
       colors: {
         primary: {
           50: '#f8fafc',

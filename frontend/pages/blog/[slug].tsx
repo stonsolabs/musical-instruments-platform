@@ -21,17 +21,17 @@ interface BlogPostPageProps {
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://getyourmusicgear-api.azurewebsites.net';
 
 const categoryColors = {
-  'buying-guide': 'bg-red-50 text-red-700 border-red-200',
-  'review': 'bg-red-50 text-red-700 border-red-200',
-  'reviews': 'bg-red-50 text-red-700 border-red-200', 
-  'comparison': 'bg-red-50 text-red-700 border-red-200',
-  'artist-spotlight': 'bg-red-50 text-red-700 border-red-200',
-  'instrument-history': 'bg-red-50 text-red-700 border-red-200',
-  'gear-tips': 'bg-red-50 text-red-700 border-red-200',
-  'news-feature': 'bg-red-50 text-red-700 border-red-200',
-  'tutorial': 'bg-red-50 text-red-700 border-red-200',
-  'history': 'bg-red-50 text-red-700 border-red-200',
-  'default': 'bg-red-50 text-red-700 border-red-200'
+  'buying-guide': 'bg-gray-100 text-gray-800 border-gray-200',
+  'review': 'bg-gray-100 text-gray-800 border-gray-200',
+  'reviews': 'bg-gray-100 text-gray-800 border-gray-200', 
+  'comparison': 'bg-gray-100 text-gray-800 border-gray-200',
+  'artist-spotlight': 'bg-gray-100 text-gray-800 border-gray-200',
+  'instrument-history': 'bg-gray-100 text-gray-800 border-gray-200',
+  'gear-tips': 'bg-gray-100 text-gray-800 border-gray-200',
+  'news-feature': 'bg-gray-100 text-gray-800 border-gray-200',
+  'tutorial': 'bg-gray-100 text-gray-800 border-gray-200',
+  'history': 'bg-gray-100 text-gray-800 border-gray-200',
+  'default': 'bg-gray-100 text-gray-800 border-gray-200'
 };
 
 const getCategoryColorClass = (categorySlug?: string) => {
@@ -253,7 +253,28 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
           {/* Main content */}
           <div className="lg:col-span-8">
-            <SimpleBlogRenderer content={(post as any).content_json || { sections: [{ type: 'content', content: post.content || '' }] }} />
+            {(() => {
+              const hydrateMap: Record<string, any> = {};
+              try {
+                (post as any).products?.forEach((p: any) => {
+                  const slug = p.product_slug || p.slug;
+                  if (!p.product_id) return;
+                  hydrateMap[String(p.product_id)] = {
+                    id: p.product_id,
+                    name: p.product_name || p.name,
+                    slug,
+                    affiliate_url: slug ? `/products/${slug}` : undefined,
+                    store_url: slug ? `/products/${slug}` : undefined,
+                  };
+                });
+              } catch {}
+              return (
+                <SimpleBlogRenderer 
+                  content={(post as any).content_json || { sections: [{ type: 'content', content: post.content || '' }] }} 
+                  hydrate={hydrateMap}
+                />
+              );
+            })()}
           </div>
           {/* Side rail TOC */}
           <aside className="lg:col-span-4 lg:sticky lg:top-24 h-max">
@@ -278,17 +299,7 @@ export default function BlogPostPage({ post, relatedPosts = [] }: BlogPostPagePr
           </aside>
         </div>
 
-        {/* Featured Products */}
-        {post.products && post.products.length > 0 && (
-          <div className="mb-12 p-8 bg-gray-50 rounded-lg">
-            <BlogProductShowcase
-              products={post.products}
-              title="Products Featured in This Article"
-              layout="grid"
-              showAffiliateButtons={true}
-            />
-          </div>
-        )}
+        {/* Inline spotlights preferred; hide end-of-article showcase */}
 
         {/* Key Takeaways */}
         {(post as any).content_json?.key_takeaways && (

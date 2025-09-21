@@ -93,7 +93,7 @@ class SimpleBlogGenerator:
 TARGET WORD COUNT: {target_words} words (minimum 3000, maximum 5000)
 
 RESPONSE FORMAT:
-Respond ONLY with a valid JSON object in this exact structure:
+Respond ONLY with a valid JSON object in this exact structure and rules:
 
 {{
   "title": "Creative, engaging title (50-65 chars)",
@@ -111,17 +111,20 @@ Respond ONLY with a valid JSON object in this exact structure:
     }},
     {{
       "type": "product_spotlight",
-      "product": {{
-        "id": "product_id",
-        "name": "Product Name",
-        "price": "$XXX",
-        "rating": 4.5,
-        "pros": ["Pro 1", "Pro 2"],
-        "cons": ["Con 1"],
-        "affiliate_url": "https://www.getyourmusicgear.com/products/{product_slug}?ref=blog&utm_source=blog&utm_campaign=product_spotlight",
-        "store_url": "https://www.getyourmusicgear.com/products/{product_slug}",
-        "cta_text": "See Details on Our Store"
-      }}
+      "products": [
+        {{
+          "id": "EXACT_PRODUCT_ID_FROM_LIST",
+          "name": "Exact Product Name from list",
+          "slug": "exact-product-slug",
+          "price": "$XXX",
+          "rating": 4.5,
+          "pros": ["Specific Pro 1", "Specific Pro 2"],
+          "cons": ["Minor Con"],
+          "affiliate_url": "https://www.getyourmusicgear.com/products/EXACT_PRODUCT_SLUG?ref=blog&utm_source=blog&utm_campaign=product_spotlight",
+          "store_url": "https://www.getyourmusicgear.com/products/EXACT_PRODUCT_SLUG",
+          "cta_text": "See Details on Our Store"
+        }}
+      ]
     }},
     {{
       "type": "content",
@@ -137,13 +140,27 @@ Respond ONLY with a valid JSON object in this exact structure:
   "featured_products": ["product_id1", "product_id2"]
 }}
 
+RULES FOR PRODUCTS (if products are provided below):
+- ONLY use products from the provided list.
+- Use EXACT product ids and slugs from the list.
+- Include 2-4 total product spotlights in the article. You may use multiple product_spotlight sections OR a single product_spotlight with multiple products inside the "products" array.
+- featured_products MUST be the array of the product ids you included (2-5 ids).
+- Build affiliate_url and store_url using the exact slug: /products/{slug}.
+
+If NO products are provided, omit any product_spotlight sections and return featured_products as an empty array.
+
 CRITICAL: Respond with JSON only. No text before or after."""
 
         # Add product context if available
         if products:
-            product_context = "\n\nAVAILABLE PRODUCTS TO REFERENCE:\n"
+            product_context = "\n\nAVAILABLE PRODUCTS (USE ONLY THESE):\n"
             for product in products:
-                product_context += f"- {product.get('name', 'N/A')} (ID: {product.get('id', 'N/A')}) - ${product.get('price', 'N/A')}\n"
+                pid = product.get('id', 'N/A')
+                name = product.get('name', 'N/A')
+                slug = product.get('slug', '')
+                price = product.get('price', 'N/A')
+                rating = product.get('rating', '')
+                product_context += f"- id: {pid} | name: {name} | slug: {slug} | price: {price} | rating: {rating}\n"
             prompt += product_context
 
         prompt += f"\n\nTopic: {topic}\nTarget words: {target_words}\n\nRespond with JSON only:"
@@ -210,6 +227,14 @@ CRITICAL: Respond with JSON only. No text before or after."""
         # Add metadata
         content["generated_at"] = datetime.now().isoformat()
         content["word_count"] = self._estimate_word_count(content)
+        
+        # If products were provided but the model didn't include featured_products, fill with up to first 5 ids
+        if products and not content.get("featured_products"):
+            try:
+                ids = [int(p.get('id')) for p in products if p.get('id')][:5]
+                content["featured_products"] = ids
+            except Exception:
+                pass
         
         return content
     
