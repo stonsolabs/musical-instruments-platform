@@ -3,6 +3,7 @@ import BlogPostEditor from './BlogPostEditor';
 import BlogAIGenerator from './BlogAIGenerator';
 import BlogBatchManager from './BlogBatchManager';
 import BlogTemplatesManager from './BlogTemplatesManager';
+import BlogPostQuickEdit from './BlogPostQuickEdit';
 import BlogPostCard from './BlogPostCard';
 import { 
   BlogPostSummary, 
@@ -47,6 +48,8 @@ export default function BlogManager() {
     aiGeneratedPosts: 0,
     totalViews: 0
   });
+  const [quickEditOpen, setQuickEditOpen] = useState(false);
+  const [quickEditId, setQuickEditId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchBlogPosts();
@@ -638,7 +641,7 @@ export default function BlogManager() {
                       hrefOverride={hrefOverride}
                     />
                     {/* Explicit action bar below each card */}
-                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <div className="mt-2 flex items-center justify-between text-sm">
                       {!isPublished ? (
                         <a
                           href={`/admin/blog/preview/${post.id}`}
@@ -663,6 +666,13 @@ export default function BlogManager() {
                             }
                           </span>
                         )}
+                        <button
+                          onClick={() => { setQuickEditId(post.id); setQuickEditOpen(true); }}
+                          className="px-2 py-1 border rounded text-gray-700 hover:bg-gray-50"
+                          title="Quick Edit"
+                        >
+                          Quick Edit
+                        </button>
                         <a
                           href={`/_next/data/${process.env.__NEXT_BUILD_ID || 'dev'}/blog/${post.slug}.json?slug=${post.slug}`}
                           className="text-gray-500 hover:text-gray-700"
@@ -888,6 +898,15 @@ export default function BlogManager() {
         onClose={() => setIsAIGeneratorOpen(false)}
         onGenerated={handleAIGenerated}
       />
+
+      {quickEditOpen && quickEditId != null && (
+        <BlogPostQuickEdit
+          isOpen={quickEditOpen}
+          postId={quickEditId}
+          onClose={() => setQuickEditOpen(false)}
+          onSaved={() => { setQuickEditOpen(false); fetchBlogPosts(); }}
+        />
+      )}
     </div>
   );
 }
