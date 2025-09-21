@@ -191,23 +191,23 @@ async def get_admin_blog_posts(
             params['category'] = category
         
         if content_type:
-        # In simplified structure, use content_json->>'category' where possible
-        # Map UI values to category slugs used in content_json
-        slug_map = {
-            'review': 'review',
-            'buying_guide': 'buying-guide',
-            'comparison': 'comparison',
-            'tutorial': 'tutorial',
-            'roundup': 'roundup',
-            'seasonal': 'seasonal',
-            'artist': 'artist-spotlight',
-            'historical': 'history',
-            'quiz': 'quiz',
-        }
-        mapped = slug_map.get(content_type)
-        if mapped:
-            where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :content_category")
-            params['content_category'] = mapped
+            # In simplified structure, use content_json->>'category' where possible
+            # Map UI values to category slugs used in content_json
+            slug_map = {
+                'review': 'review',
+                'buying_guide': 'buying-guide',
+                'comparison': 'comparison',
+                'tutorial': 'tutorial',
+                'roundup': 'roundup',
+                'seasonal': 'seasonal',
+                'artist': 'artist-spotlight',
+                'historical': 'history',
+                'quiz': 'quiz',
+            }
+            mapped = slug_map.get(content_type)
+            if mapped:
+                where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :content_category")
+                params['content_category'] = mapped
         
         if search:
             where_clauses.append("(bp.title ILIKE :search OR bp.excerpt ILIKE :search OR bp.content_json::text ILIKE :search)")
