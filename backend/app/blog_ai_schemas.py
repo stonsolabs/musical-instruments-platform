@@ -90,12 +90,11 @@ class BlogGenerationHistory(BaseModel):
     generation_metadata: Dict[str, Any] = {}
     created_at: datetime
     
-    # Pydantic v2: avoid reserved namespace conflict for 'model_used'
+    # Pydantic v2 config: allow 'model_used' and support ORM mode
     model_config = {
-        'protected_namespaces': ()
+        'protected_namespaces': (),
+        'from_attributes': True,
     }
-    class Config:
-        from_attributes = True
 
 class EnhancedBlogPostProduct(BaseModel):
     id: int
