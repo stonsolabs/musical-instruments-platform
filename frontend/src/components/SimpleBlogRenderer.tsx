@@ -157,9 +157,20 @@ const SimpleBlogRenderer: React.FC<SimpleBlogRendererProps> = ({ content, classN
 
         if (products.length === 0) return null;
 
+        const variant: 'full' | 'compact' = (section as any).variant === 'compact' || products.length > 3 ? 'compact' : 'full';
+        const title = (section as any).title;
+        const maxStores = (section as any).maxStores || (variant === 'compact' ? 1 : 2);
         return (
-          <BlogProductSpotlight key={index} products={products} />
+          <BlogProductSpotlight key={index} products={products} title={title} variant={variant} maxStores={maxStores} />
         );
+      }
+      
+      case 'product_spotlight_compact': {
+        const products: Product[] = Array.isArray((section as any).products) ? (section as any).products : [];
+        if (products.length === 0) return null;
+        const title = (section as any).title;
+        const maxStores = (section as any).maxStores || 1;
+        return <BlogProductSpotlight key={index} products={products} title={title} variant="compact" maxStores={maxStores} />
       }
 
       case 'affiliate_banner':
