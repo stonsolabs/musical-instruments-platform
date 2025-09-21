@@ -39,7 +39,7 @@ class SimpleBlogBatchGenerator:
     async def _load_products(self, session: AsyncSession):
         """Load quality products from database for blog content"""
         query = """
-        SELECT DISTINCT
+        SELECT
             p.id,
             p.name,
             p.slug,
@@ -52,11 +52,10 @@ class SimpleBlogBatchGenerator:
         JOIN brands b ON p.brand_id = b.id
         JOIN categories c ON p.category_id = c.id
         WHERE p.is_active = true
-        AND b.name != 'Unknown Brand'
+        AND b.name <> 'Unknown Brand'
         AND p.name IS NOT NULL
-        AND p.name != ''
-        ORDER BY p.avg_rating DESC NULLS LAST, p.name
-        LIMIT 300
+        AND p.name <> ''
+        ORDER BY COALESCE(p.avg_rating, 0) DESC, p.name
         """
         result = await session.execute(text(query))
         self.products = [dict(row._mapping) for row in result.fetchall()]
@@ -312,19 +311,45 @@ class SimpleBlogBatchGenerator:
         
         # Enhanced keyword matching with category mapping
         product_keywords = {
-            'guitar': ['electric-guitars', 'acoustic-guitars', 'guitar-amps'],
-            'bass': ['bass-guitars', 'bass-amps'],
-            'drum': ['drums', 'percussion'],
-            'keyboard': ['keyboards', 'digital-pianos'],
-            'piano': ['keyboards', 'digital-pianos', 'acoustic-pianos'],
-            'microphone': ['microphones', 'recording'],
-            'amp': ['guitar-amps', 'bass-amps'],
-            'recording': ['microphones', 'audio-interfaces', 'studio-monitors'],
-            'vintage': ['electric-guitars', 'acoustic-guitars', 'guitar-amps'],
-            'rock': ['electric-guitars', 'guitar-amps', 'drums'],
-            'blues': ['electric-guitars', 'harmonicas', 'guitar-amps'],
-            'jazz': ['acoustic-guitars', 'keyboards', 'brass'],
-            'classical': ['acoustic-guitars', 'keyboards', 'violins']
+            'guitar': ['electric-guitars', 'acoustic-guitars'],
+            'electric guitar': ['electric-guitars'],
+            'acoustic guitar': ['acoustic-guitars'],
+            'bass': ['electric-basses'],
+            'drum': ['drums'],
+            'keyboard': ['midi-master-keyboards', 'digital-pianos', 'synthesizer-keyboards'],
+            'midi': ['midi-master-keyboards'],
+            'piano': ['digital-pianos', 'stage-pianos'],
+            'synthesizer': ['synthesizer-keyboards'],
+            'microphone': ['microphones'],
+            'recording': ['microphones', 'audio-interfaces'],
+            'dj': ['turntables', 'midi-master-keyboards'],
+            'akai': ['midi-master-keyboards', 'synthesizer-keyboards'],
+            'roland': ['digital-pianos', 'synthesizer-keyboards'],
+            'yamaha': ['digital-pianos', 'acoustic-guitars'],
+            'fender': ['electric-guitars', 'acoustic-guitars'],
+            'gibson': ['electric-guitars'],
+            'martin': ['acoustic-guitars'],
+            'taylor': ['acoustic-guitars'],
+            'arturia': ['midi-master-keyboards', 'synthesizer-keyboards'],
+            'novation': ['midi-master-keyboards'],
+            'native instruments': ['midi-master-keyboards']
+        }
+        
+        # Brand-specific matching
+        brand_keywords = {
+            'akai': 'AKAI Professional',
+            'roland': 'Roland',
+            'yamaha': 'Yamaha',
+            'fender': 'Fender',
+            'gibson': 'Gibson',
+            'martin': 'Martin',
+            'taylor': 'Taylor',
+            'arturia': 'Arturia',
+            'novation': 'Novation',
+            'kawai': 'Kawai',
+            'casio': 'Casio',
+            'shure': 'Shure',
+            'audio-technica': 'Audio-Technica'
         }
         
         # Find direct keyword matches
@@ -333,24 +358,45 @@ class SimpleBlogBatchGenerator:
             if keyword in topic_lower:
                 matched_categories.update(categories)
         
-        # Find products matching topic keywords or categories
+        # Find products matching topic keywords, categories, or brands
         for product in self.products:
             product_text = f"{product['name']} {product['brand_name']} {product['category_name']}".lower()
             category_slug = product.get('category_slug', '').lower()
+            brand_name = product['brand_name'].lower()
             
-            # Direct keyword match
-            topic_match = any(keyword in product_text for keyword in product_keywords.keys() if keyword in topic_lower)
+            # Direct keyword match in topic
+            topic_match = any(keyword in topic_lower for keyword in product_keywords.keys() if keyword in product_text)
+            
             # Category match
             category_match = category_slug in matched_categories
             
-            if topic_match or category_match:
-                relevant_products.append({
+            # Brand match (exact brand name in topic)
+            brand_match = any(brand_key in topic_lower and brand_value.lower() in brand_name 
+                            for brand_key, brand_value in brand_keywords.items())
+            
+            # Specific product name match (for reviews)
+            product_name_match = any(word in product['name'].lower() for word in topic_lower.split() 
+                                   if len(word) > 3)  # Only match words longer than 3 chars
+            
+            if topic_match or category_match or brand_match or product_name_match:
+                score = 0
+                if brand_match: score += 3  # Highest priority for brand match
+                if product_name_match: score += 2  # High priority for specific product
+                if category_match: score += 1  # Medium priority for category
+                if topic_match: score += 1  # Base score
+                
+                relevant_products.append(({
                     'id': str(product['id']),
                     'name': f"{product['brand_name']} {product['name']}",
                     'price': f"${product['price']:.0f}" if product['price'] else "Check Price",
                     'category': product['category_name'],
-                    'rating': product['rating'] or 4.0
-                })
+                    'rating': product['rating'] or 4.0,
+                    'slug': product['slug']
+                }, score))
+        
+        # Sort by relevance score (highest first)
+        relevant_products.sort(key=lambda x: x[1], reverse=True)
+        relevant_products = [product[0] for product in relevant_products]  # Remove scores
         
         # If no specific matches, use strategic fallbacks based on template type
         if not relevant_products:
@@ -382,6 +428,27 @@ class SimpleBlogBatchGenerator:
                 'category': p['category_name'],
                 'rating': p['rating'] or 4.0
             } for p in random.sample(fallback_products, min(max_products, len(fallback_products)))]
+        
+        # Ensure we have enough products
+        if len(relevant_products) < max_products:
+            # Add high-quality fallback products from popular categories
+            fallback_categories = ['electric-guitars', 'digital-pianos', 'midi-master-keyboards', 'electric-basses']
+            for category in fallback_categories:
+                category_products = [p for p in self.products if p.get('category_slug') == category]
+                for product in category_products[:5]:  # Top 5 from each category
+                    if not any(rp['id'] == str(product['id']) for rp in relevant_products):
+                        relevant_products.append({
+                            'id': str(product['id']),
+                            'name': f"{product['brand_name']} {product['name']}",
+                            'price': f"${product['price']:.0f}" if product['price'] else "Check Price",
+                            'category': product['category_name'],
+                            'rating': product['rating'] or 4.0,
+                            'slug': product['slug']
+                        })
+                        if len(relevant_products) >= max_products:
+                            break
+                if len(relevant_products) >= max_products:
+                    break
         
         return relevant_products[:max_products]
     
@@ -448,8 +515,8 @@ Respond ONLY with a valid JSON object in this exact structure:
         "rating": 4.5,
         "pros": ["Pro 1", "Pro 2"],
         "cons": ["Con 1"],
-        "affiliate_url": "https://www.getyourmusicgear.com/products/{product_slug}?ref=blog&utm_source=blog&utm_campaign=product_spotlight",
-        "store_url": "https://www.getyourmusicgear.com/products/{product_slug}",
+        "affiliate_url": "https://www.getyourmusicgear.com/products/[PRODUCT_SLUG]?ref=blog&utm_source=blog&utm_campaign=product_spotlight",
+        "store_url": "https://www.getyourmusicgear.com/products/[PRODUCT_SLUG]",
         "cta_text": "See Details on Our Store"
       }}
     }},
@@ -502,6 +569,11 @@ PRODUCT INTEGRATION GUIDANCE FOR NON-PRODUCT TOPICS:
             prompt += product_context
 
         prompt += f"\n\nTopic: {topic}\nTarget words: {target_words}\n\nRespond with JSON only:"
+        
+        # Replace any remaining placeholder URLs with actual product data
+        if products:
+            sample_product = products[0]  # Use first product as example
+            prompt = prompt.replace('[PRODUCT_SLUG]', sample_product.get('slug', 'sample-product'))
 
         return {
             "custom_id": custom_id,
