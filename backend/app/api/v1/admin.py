@@ -190,7 +190,7 @@ async def get_admin_blog_posts(
             where_clauses.append("COALESCE(bp.content_json->>'category', 'general') = :category")
             params['category'] = category
         
-    if content_type:
+        if content_type:
         # In simplified structure, use content_json->>'category' where possible
         # Map UI values to category slugs used in content_json
         slug_map = {
