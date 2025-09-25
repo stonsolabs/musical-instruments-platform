@@ -169,14 +169,55 @@ export default function AffiliateButtons({
     fetchAffiliateData();
   }, [product.id, maxButtons, isHydrated, preloadedStores]);
   
-  // Legacy fallback method
+  // Legacy fallback method with URL normalization
   const getLegacyStoreLinks = (): AffiliateStoreWithUrl[] => {
     const storeLinks: AffiliateStoreWithUrl[] = [];
+    
+    // Helper function to normalize Thomann URLs
+    const normalizeThomannUrl = (url: string): string => {
+      if (!url || !url.includes('thomann')) return url;
+      
+      try {
+        const urlObj = new URL(url);
+        // Always use thomann.de domain for affiliate links
+        urlObj.hostname = 'www.thomann.de';
+        
+        // Convert regional paths to /intl/
+        const path = urlObj.pathname;
+        const regionalPatterns = ['/gb/', '/de/', '/fr/', '/it/', '/es/', '/nl/', '/be/', '/at/', '/ch/', '/us/'];
+        
+        for (const pattern of regionalPatterns) {
+          if (path.startsWith(pattern)) {
+            urlObj.pathname = path.replace(pattern, '/intl/', 1);
+            break;
+          }
+        }
+        
+        // If it's already /intl/ or doesn't have a regional prefix, keep as is
+        if (!path.startsWith('/intl/') && !regionalPatterns.some(p => path.startsWith(p))) {
+          if (path === '/' || path === '') {
+            urlObj.pathname = '/intl/';
+          } else if (!path.startsWith('/intl/')) {
+            urlObj.pathname = '/intl' + path;
+          }
+        }
+        
+        // Add affiliate parameters
+        urlObj.searchParams.set('offid', '1');
+        urlObj.searchParams.set('affid', '4419'); // This should come from environment or config
+        
+        return urlObj.toString();
+      } catch (error) {
+        console.warn('Failed to normalize Thomann URL:', url, error);
+        return url;
+      }
+    };
     
     if (product.content?.store_links) {
       Object.entries(product.content.store_links).forEach(([key, url]) => {
         const storeKey = key.toLowerCase() as StoreKey;
         if (STORES_CONFIG[storeKey] && url) {
+          const affiliateUrl = storeKey === 'thomann' ? normalizeThomannUrl(url) : url;
           storeLinks.push({
             id: 0,
             name: STORES_CONFIG[storeKey].name,
@@ -187,6 +228,7 @@ export default function AffiliateButtons({
             priority: 1,
             is_active: true,
             original_url: url,
+            affiliate_url: affiliateUrl,
           });
         }
       });
@@ -196,6 +238,7 @@ export default function AffiliateButtons({
     if (product.thomann_info?.url) {
       const existingThomann = storeLinks.find(link => link.slug === 'thomann');
       if (!existingThomann) {
+        const affiliateUrl = normalizeThomannUrl(product.thomann_info.url);
         storeLinks.push({
           id: 0,
           name: 'Thomann',
@@ -206,6 +249,7 @@ export default function AffiliateButtons({
           priority: 1,
           is_active: true,
           original_url: product.thomann_info.url,
+          affiliate_url: affiliateUrl,
         });
       }
     }

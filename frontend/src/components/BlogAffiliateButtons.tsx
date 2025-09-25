@@ -68,9 +68,59 @@ export default function BlogAffiliateButtons({
   showRating = false
 }: BlogAffiliateButtonsProps) {
   
-  // Default affiliate URLs (in real implementation, these would come from the backend)
+  // Get affiliate URL with Thomann URL normalization
   const getAffiliateUrl = () => {
-    return product.affiliate_url || `https://example.com/product/${product.id}`;
+    // If we have a direct affiliate URL, use it
+    if (product.affiliate_url) {
+      return product.affiliate_url;
+    }
+    
+    // If we have Thomann info, normalize the URL
+    if (product.thomann_info?.url) {
+      const normalizeThomannUrl = (url: string): string => {
+        if (!url || !url.includes('thomann')) return url;
+        
+        try {
+          const urlObj = new URL(url);
+          // Always use thomann.de domain for affiliate links
+          urlObj.hostname = 'www.thomann.de';
+          
+          // Convert regional paths to /intl/
+          const path = urlObj.pathname;
+          const regionalPatterns = ['/gb/', '/de/', '/fr/', '/it/', '/es/', '/nl/', '/be/', '/at/', '/ch/', '/us/'];
+          
+          for (const pattern of regionalPatterns) {
+            if (path.startsWith(pattern)) {
+              urlObj.pathname = path.replace(pattern, '/intl/', 1);
+              break;
+            }
+          }
+          
+          // If it's already /intl/ or doesn't have a regional prefix, keep as is
+          if (!path.startsWith('/intl/') && !regionalPatterns.some(p => path.startsWith(p))) {
+            if (path === '/' || path === '') {
+              urlObj.pathname = '/intl/';
+            } else if (!path.startsWith('/intl/')) {
+              urlObj.pathname = '/intl' + path;
+            }
+          }
+          
+          // Add affiliate parameters
+          urlObj.searchParams.set('offid', '1');
+          urlObj.searchParams.set('affid', '4419'); // This should come from environment or config
+          
+          return urlObj.toString();
+        } catch (error) {
+          console.warn('Failed to normalize Thomann URL:', url, error);
+          return url;
+        }
+      };
+      
+      return normalizeThomannUrl(product.thomann_info.url);
+    }
+    
+    // Fallback to example URL
+    return `https://example.com/product/${product.id}`;
   };
 
   // Determine preferred store based on product or default to Thomann
