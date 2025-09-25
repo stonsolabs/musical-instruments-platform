@@ -190,11 +190,11 @@ class EnhancedAffiliateService:
                 else:
                     query_params[key] = [str(value)]
         
-        # Special handling for Thomann's RediR™ system
-        if store.slug == "thomann" and "redir" in store.affiliate_parameters:
-            # RediR™ handles regional redirects automatically
-            # We can use the base Thomann URL and RediR™ will redirect to the correct regional domain
-            # This ensures users get redirected to their local Thomann store (thomann.de, thomann.co.uk, etc.)
+        # Special handling for Thomann's manual affiliate system
+        if store.slug == "thomann":
+            # Using manual affiliate format with /intl/ for automatic regional display
+            # The /intl/ path ensures users see the correct regional website based on their location
+            # This provides localized experience without requiring RediR™
             pass
         
         # Reconstruct URL with affiliate parameters

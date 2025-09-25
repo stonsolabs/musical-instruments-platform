@@ -30,9 +30,9 @@ async def setup_enhanced_affiliate_stores():
                     "website_url": "https://www.thomann.de/intl",
                     "logo_url": "https://thumbs.static-thomann.de/thumb/original/pics/bdb/_58/585150/19376401_800.jpg",
                     "description": "Europe's largest online music store (uses RediR™ for regional redirects)",
-                    "commission_rate": 5.0,
+                    "commission_rate": 2.0,
                     "has_affiliate_program": True,
-                    "affiliate_id": "4419",
+                    "affiliate_id": "4419",  # Replace with your actual affiliate ID
                     "domain_affiliate_ids": {
                         "DE": "4419",
                         "UK": "4419",
@@ -44,7 +44,7 @@ async def setup_enhanced_affiliate_stores():
                     "affiliate_parameters": {
                         "offid": "1",
                         "affid": "4419"
-                        # Note: "redir": "1" will be added when RediR is enabled
+                        # Using manual affiliate format with /intl/ for automatic regional display
                     },
                     "show_affiliate_buttons": True,
                     "priority": 10,

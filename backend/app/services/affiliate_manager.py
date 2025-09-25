@@ -59,7 +59,7 @@ class AffiliateManager:
         for product in products:
             try:
                 search_query = product.name.replace(" ", "%20")
-                search_url = f"https://www.thomann.de/gb/search_dir.html?sw={search_query}"
+                search_url = f"https://www.thomann.de/intl/search_dir.html?sw={search_query}"
                 headers = {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -77,8 +77,35 @@ class AffiliateManager:
                         price_match = re.search(r"€\s*(\d+[\.,]?\d*)", price_text)
                         if price_match:
                             price = float(price_match.group(1).replace(",", "."))
-                            product_url = "https://www.thomann.de" + product_link["href"]
-                            affiliate_url = f"{product_url}?partner_id={settings.THOMANN_AFFILIATE_ID}"
+                            # Ensure we use /intl/ path for better international compatibility
+                            product_href = product_link["href"]
+                            if not product_href.startswith('/intl/'):
+                                # Convert regional paths to /intl/ for better international compatibility
+                                if product_href.startswith('/gb/'):
+                                    product_href = product_href.replace('/gb/', '/intl/', 1)
+                                elif product_href.startswith('/de/'):
+                                    product_href = product_href.replace('/de/', '/intl/', 1)
+                                elif product_href.startswith('/fr/'):
+                                    product_href = product_href.replace('/fr/', '/intl/', 1)
+                                elif not product_href.startswith('/intl/'):
+                                    # For other paths, ensure they use /intl/
+                                    product_href = '/intl' + product_href
+                            
+                            product_url = "https://www.thomann.de" + product_href
+                            # Use enhanced affiliate service for proper URL generation
+                            from .enhanced_affiliate_service import EnhancedAffiliateService
+                            enhanced_service = EnhancedAffiliateService(db_session)
+                            
+                            # Get the Thomann store configuration
+                            thomann_store_query = select(AffiliateStore).where(AffiliateStore.slug == "thomann")
+                            thomann_result = await db_session.execute(thomann_store_query)
+                            thomann_store = thomann_result.scalar_one_or_none()
+                            
+                            if thomann_store:
+                                affiliate_url = enhanced_service._add_affiliate_parameters(thomann_store, product_url)
+                            else:
+                                # Fallback to old method if store not found
+                                affiliate_url = f"{product_url}?offid=1&affid={settings.THOMANN_AFFILIATE_ID}"
                             await self._upsert_price(db_session, product.id, store.id, price, "EUR", affiliate_url)
                 await asyncio.sleep(2)
             except Exception as e:  # noqa: BLE001
