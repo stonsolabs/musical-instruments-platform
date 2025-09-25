@@ -175,12 +175,7 @@ class EnhancedAffiliateService:
         parsed = urlparse(url)
         query_params = parse_qs(parsed.query)
         
-        # Handle domain-specific affiliate IDs
-        affiliate_id = self._get_domain_specific_affiliate_id(store, parsed.netloc)
-        if affiliate_id:
-            query_params[affiliate_id] = ['1']
-        
-        # Add custom affiliate parameters
+        # Add custom affiliate parameters first
         if store.affiliate_parameters:
             for key, value in store.affiliate_parameters.items():
                 if isinstance(value, str):
@@ -189,6 +184,12 @@ class EnhancedAffiliateService:
                     query_params[key] = [str(v) for v in value]
                 else:
                     query_params[key] = [str(value)]
+        
+        # Handle domain-specific affiliate IDs (this will override any existing affid parameter)
+        affiliate_id = self._get_domain_specific_affiliate_id(store, parsed.netloc)
+        if affiliate_id and store.slug == "thomann":
+            # For Thomann, ensure the affiliate ID is used as the value for 'affid' parameter
+            query_params['affid'] = [affiliate_id]
         
         # Special handling for Thomann's manual affiliate system
         if store.slug == "thomann":
@@ -211,12 +212,16 @@ class EnhancedAffiliateService:
         return affiliate_url
     
     def _normalize_thomann_url(self, url: str) -> str:
-        """Normalize Thomann URLs to use /intl/ path for better international compatibility"""
+        """Normalize Thomann URLs to use thomann.de/intl/ path for better international compatibility"""
         parsed = urlparse(url)
         
         # Process all Thomann domains (thomann.de, thomann.co.uk, etc.)
         if not parsed.netloc or 'thomann' not in parsed.netloc:
             return url
+        
+        # Always use thomann.de domain for affiliate links
+        # This ensures consistent affiliate tracking and proper regional redirects
+        normalized_netloc = 'www.thomann.de'
         
         # Convert regional paths to /intl/ for better international compatibility
         # Examples:
@@ -241,10 +246,10 @@ class EnhancedAffiliateService:
                 # Convert direct product paths to /intl/ for better international compatibility
                 path = '/intl' + path
         
-        # Reconstruct URL
+        # Reconstruct URL with thomann.de domain
         return urlunparse((
             parsed.scheme,
-            parsed.netloc,
+            normalized_netloc,
             path,
             parsed.params,
             parsed.query,

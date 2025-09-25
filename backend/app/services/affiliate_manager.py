@@ -91,6 +91,7 @@ class AffiliateManager:
                                     # For other paths, ensure they use /intl/
                                     product_href = '/intl' + product_href
                             
+                            # Always use thomann.de domain for consistent affiliate tracking
                             product_url = "https://www.thomann.de" + product_href
                             # Use enhanced affiliate service for proper URL generation
                             from .enhanced_affiliate_service import EnhancedAffiliateService

@@ -54,14 +54,15 @@ async def setup_enhanced_affiliate_stores():
                     "use_store_fallback": True,
                     "store_fallback_url": "https://www.thomann.de/intl/search_dir.html?sw=",
                 },
+                # Other stores are disabled - only Thomann is active
                 {
                     "name": "Amazon",
                     "slug": "amazon",
                     "website_url": "https://www.amazon.com",
                     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-                    "description": "Global e-commerce platform",
+                    "description": "Global e-commerce platform (DISABLED)",
                     "commission_rate": 4.0,
-                    "has_affiliate_program": True,
+                    "has_affiliate_program": False,  # Disabled
                     "affiliate_id": "your-amazon-default-affiliate-id",
                     "domain_affiliate_ids": {
                         "US": "your-amazon-us-affiliate-id",
@@ -74,7 +75,7 @@ async def setup_enhanced_affiliate_stores():
                         "JP": "your-amazon-jp-affiliate-id"
                     },
                     "affiliate_parameters": {"tag": "your-amazon-tag", "ref": "your-amazon-ref"},
-                    "show_affiliate_buttons": True,
+                    "show_affiliate_buttons": False,  # Disabled
                     "priority": 5,
                     "available_regions": ["US", "UK", "DE", "FR", "IT", "ES", "CA", "JP"],
                     "primary_region": "US",
@@ -87,9 +88,9 @@ async def setup_enhanced_affiliate_stores():
                     "slug": "gear4music",
                     "website_url": "https://www.gear4music.com",
                     "logo_url": "https://www.gear4music.com/media/logo.png",
-                    "description": "UK-based music equipment retailer",
+                    "description": "UK-based music equipment retailer (DISABLED)",
                     "commission_rate": 3.5,
-                    "has_affiliate_program": True,
+                    "has_affiliate_program": False,  # Disabled
                     "affiliate_id": "your-gear4music-default-affiliate-id",
                     "domain_affiliate_ids": {
                         "UK": "your-gear4music-uk-affiliate-id",
@@ -97,7 +98,7 @@ async def setup_enhanced_affiliate_stores():
                         "FR": "your-gear4music-fr-affiliate-id"
                     },
                     "affiliate_parameters": {"aff": "your-gear4music-aff-id"},
-                    "show_affiliate_buttons": True,
+                    "show_affiliate_buttons": False,  # Disabled
                     "priority": 8,
                     "available_regions": ["UK", "EU"],
                     "primary_region": "UK",
@@ -110,12 +111,12 @@ async def setup_enhanced_affiliate_stores():
                     "slug": "sweetwater",
                     "website_url": "https://www.sweetwater.com",
                     "logo_url": "https://www.sweetwater.com/images/logo.png",
-                    "description": "US-based music equipment retailer",
+                    "description": "US-based music equipment retailer (DISABLED)",
                     "commission_rate": 4.5,
-                    "has_affiliate_program": True,
+                    "has_affiliate_program": False,  # Disabled
                     "affiliate_id": "your-sweetwater-affiliate-id",
                     "affiliate_parameters": {"pkey": "your-sweetwater-pkey"},
-                    "show_affiliate_buttons": True,
+                    "show_affiliate_buttons": False,  # Disabled
                     "priority": 7,
                     "available_regions": ["US"],
                     "primary_region": "US",
@@ -128,12 +129,12 @@ async def setup_enhanced_affiliate_stores():
                     "slug": "donner",
                     "website_url": "https://www.donnerdeal.com",
                     "logo_url": "https://www.donnerdeal.com/logo.png",
-                    "description": "Donner official store",
+                    "description": "Donner official store (DISABLED)",
                     "commission_rate": 3.0,
-                    "has_affiliate_program": True,
+                    "has_affiliate_program": False,  # Disabled
                     "affiliate_id": "your-donner-affiliate-id",
                     "affiliate_parameters": {"ref": "your-donner-ref"},
-                    "show_affiliate_buttons": True,
+                    "show_affiliate_buttons": False,  # Disabled
                     "priority": 6,
                     "available_regions": ["US", "EU", "UK", "CA"],
                     "primary_region": "US",
@@ -146,12 +147,12 @@ async def setup_enhanced_affiliate_stores():
                     "slug": "guitarcenter",
                     "website_url": "https://www.guitarcenter.com",
                     "logo_url": "https://www.guitarcenter.com/logo.png",
-                    "description": "US-based music equipment retailer",
+                    "description": "US-based music equipment retailer (DISABLED)",
                     "commission_rate": 4.0,
-                    "has_affiliate_program": True,
+                    "has_affiliate_program": False,  # Disabled
                     "affiliate_id": "your-guitarcenter-affiliate-id",
                     "affiliate_parameters": {"ref": "your-guitarcenter-ref"},
-                    "show_affiliate_buttons": True,
+                    "show_affiliate_buttons": False,  # Disabled
                     "priority": 4,
                     "available_regions": ["US"],
                     "primary_region": "US",
@@ -173,7 +174,7 @@ async def setup_enhanced_affiliate_stores():
             # Get store IDs for brand exclusivity
             store_map = {store.slug: store.id for store in stores}
             
-            # Set up brand exclusivity rules
+            # Set up brand exclusivity rules - Only Thomann is active
             exclusivity_rules = [
                 # Harley Benton is exclusive to Thomann
                 {
@@ -183,43 +184,41 @@ async def setup_enhanced_affiliate_stores():
                     "regions": None,  # All regions
                     "priority_boost": 50,
                 },
-                # Donner is exclusive to Donner store
+                # All other brands will show only Thomann since other stores are disabled
                 {
-                    "brand_name": "Donner",
-                    "store_slug": "donner",
-                    "is_exclusive": True,
+                    "brand_name": "Fender",
+                    "store_slug": "thomann",
+                    "is_exclusive": False,
                     "regions": None,  # All regions
-                    "priority_boost": 50,
-                },
-                # Sweetwater preferred for US brands
-                {
-                    "brand_name": "Fender",
-                    "store_slug": "sweetwater",
-                    "is_exclusive": False,
-                    "regions": None,  # All regions (regional control is at store level)
-                    "priority_boost": 20,
+                    "priority_boost": 30,
                 },
                 {
                     "brand_name": "Gibson",
-                    "store_slug": "sweetwater",
+                    "store_slug": "thomann",
                     "is_exclusive": False,
-                    "regions": None,  # All regions (regional control is at store level)
-                    "priority_boost": 20,
-                },
-                # Guitar Center preferred for US brands
-                {
-                    "brand_name": "Fender",
-                    "store_slug": "guitarcenter",
-                    "is_exclusive": False,
-                    "regions": None,  # All regions (regional control is at store level)
-                    "priority_boost": 15,
+                    "regions": None,  # All regions
+                    "priority_boost": 30,
                 },
                 {
-                    "brand_name": "Gibson",
-                    "store_slug": "guitarcenter",
+                    "brand_name": "Yamaha",
+                    "store_slug": "thomann",
                     "is_exclusive": False,
-                    "regions": None,  # All regions (regional control is at store level)
-                    "priority_boost": 15,
+                    "regions": None,  # All regions
+                    "priority_boost": 30,
+                },
+                {
+                    "brand_name": "Ibanez",
+                    "store_slug": "thomann",
+                    "is_exclusive": False,
+                    "regions": None,  # All regions
+                    "priority_boost": 30,
+                },
+                {
+                    "brand_name": "Epiphone",
+                    "store_slug": "thomann",
+                    "is_exclusive": False,
+                    "regions": None,  # All regions
+                    "priority_boost": 30,
                 },
             ]
             
@@ -242,7 +241,8 @@ async def setup_enhanced_affiliate_stores():
             
             print("\n📋 Store Configuration Summary:")
             for store in stores:
-                print(f"   • {store.name}: {store.primary_region} (Priority: {store.priority})")
+                status = "ACTIVE" if store.show_affiliate_buttons and store.has_affiliate_program else "DISABLED"
+                print(f"   • {store.name}: {store.primary_region} (Priority: {store.priority}) - {status}")
             
             print("\n🎯 Brand Exclusivity Rules:")
             for rule in exclusivity_rules:
@@ -250,7 +250,10 @@ async def setup_enhanced_affiliate_stores():
                 regions = "All regions" if not rule["regions"] else ", ".join(rule["regions"])
                 print(f"   • {rule['brand_name']} → {rule['store_slug']} ({exclusivity_type}) - {regions}")
             
-            print("\n⚠️  IMPORTANT: Update affiliate IDs in this script before running!")
+            print("\n✅ CONFIGURATION: Only Thomann is active - all other stores are disabled")
+            print("   • Only Thomann affiliate buttons will be shown")
+            print("   • All brands will route to Thomann")
+            print("   • Harley Benton remains exclusive to Thomann")
             
         except Exception as e:
             print(f"❌ Error setting up enhanced affiliate stores: {e}")
