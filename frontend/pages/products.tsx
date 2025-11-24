@@ -116,13 +116,16 @@ export default function ProductsPage({ initialProducts, categories, brands }: Pr
     }
   };
 
+  // Check if this is a template search URL (should not be indexed)
+  const isTemplateSearchUrl = router.query.search === '{search_term_string}';
+  
   return (
     <>
       <Head>
         <title>Musical Instruments - GetYourMusicGear</title>
         <meta name="description" content="Browse and compare musical instruments from top brands. Find guitars, basses, pianos, drums, and more with expert reviews and best prices." />
-        <link rel="canonical" href={`https://www.getyourmusicgear.com/products${router.query.category ? `?category=${router.query.category}` : ''}${router.query.brand ? `${router.query.category ? '&' : '?'}brand=${router.query.brand}` : ''}${router.query.search ? `${(router.query.category || router.query.brand) ? '&' : '?'}search=${router.query.search}` : ''}`} />
-        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <link rel="canonical" href={`https://www.getyourmusicgear.com/products${router.query.category ? `?category=${router.query.category}` : ''}${router.query.brand ? `${router.query.category ? '&' : '?'}brand=${router.query.brand}` : ''}${router.query.search && !isTemplateSearchUrl ? `${(router.query.category || router.query.brand) ? '&' : '?'}search=${router.query.search}` : ''}`} />
+        <meta name="robots" content={isTemplateSearchUrl ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'} />
         <meta property="og:url" content={`https://www.getyourmusicgear.com/products${router.query.category ? `?category=${router.query.category}` : ''}`} />
       </Head>
 

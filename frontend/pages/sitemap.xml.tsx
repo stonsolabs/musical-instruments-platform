@@ -15,10 +15,9 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     '/products',
     '/compare',
     '/blog',
-    '/about',
     '/contact',
-    '/privacy-policy',
-    '/terms-of-service',
+    '/privacy',
+    '/terms',
   ];
   
   try {

@@ -31,6 +31,22 @@ const nextConfig = {
         destination: '/products/:slug',
         permanent: true,
       },
+      // Redirect old URLs to new URLs (if they were previously used)
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/privacy-policy',
+        destination: '/privacy',
+        permanent: true,
+      },
+      {
+        source: '/terms-of-service',
+        destination: '/terms',
+        permanent: true,
+      },
     ];
   },
   async headers() {
