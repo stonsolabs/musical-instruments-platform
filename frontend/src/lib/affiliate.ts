@@ -39,7 +39,7 @@ export async function resolveTopAffiliateUrl(product: AnyProduct): Promise<strin
       
       for (const pattern of regionalPatterns) {
         if (path.startsWith(pattern)) {
-          urlObj.pathname = path.replace(pattern, '/intl/', 1);
+          urlObj.pathname = path.replace(pattern, '/intl/');
           break;
         }
       }
