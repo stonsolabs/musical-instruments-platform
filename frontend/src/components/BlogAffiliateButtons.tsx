@@ -50,6 +50,12 @@ interface BlogProduct {
   price?: string;
   affiliate_url?: string;
   rating?: number;
+  thomann_info?: {
+    url: string;
+  };
+  content?: {
+    store_links?: Record<string, string>;
+  };
 }
 
 interface BlogAffiliateButtonsProps {
