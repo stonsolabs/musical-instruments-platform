@@ -34,10 +34,12 @@ export default function HomePage({ trendingProducts, categories, featuredCompari
         <title>GetYourMusicGear - Find Your Perfect Musical Instrument</title>
         <meta name="description" content="Expert Reviews, Detailed Comparisons, and Trusted Recommendations for Musical Instruments. Compare guitars, basses, pianos, and more from top retailers worldwide." />
         <meta name="keywords" content="musical instruments, guitar comparison, bass guitar, digital piano, music gear reviews" />
+        <link rel="canonical" href="https://www.getyourmusicgear.com/" />
         <meta property="og:title" content="GetYourMusicGear - Find Your Perfect Musical Instrument" />
         <meta property="og:description" content="Expert Reviews, Detailed Comparisons, and Trusted Recommendations for Musical Instruments" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://getyourmusicgear.com" />
+        <meta property="og:url" content="https://www.getyourmusicgear.com" />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </Head>
 
         <div className="min-h-screen">

@@ -17,6 +17,22 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   generateEtags: true,
+  async redirects() {
+    return [
+      // Redirect trailing slash URLs to non-trailing slash (301 permanent redirect)
+      // This ensures consistency since trailingSlash is set to false
+      {
+        source: '/blog/:slug/',
+        destination: '/blog/:slug',
+        permanent: true,
+      },
+      {
+        source: '/products/:slug/',
+        destination: '/products/:slug',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

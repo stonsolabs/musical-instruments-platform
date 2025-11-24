@@ -8,6 +8,7 @@ export default function Terms() {
         <title>Terms of Service | GetYourMusicGear</title>
         <meta name="robots" content="noindex" />
         <meta name="description" content="Read the terms that govern use of GetYourMusicGear." />
+        <link rel="canonical" href="https://www.getyourmusicgear.com/terms" />
       </Head>
       <div className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-3">Terms of Service</h1>

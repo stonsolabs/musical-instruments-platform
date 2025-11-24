@@ -8,6 +8,7 @@ export default function Privacy() {
         <title>Privacy Policy | GetYourMusicGear</title>
         <meta name="robots" content="noindex" />
         <meta name="description" content="Learn how GetYourMusicGear collects, uses, and protects your data." />
+        <link rel="canonical" href="https://www.getyourmusicgear.com/privacy" />
       </Head>
       <div className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-3">Privacy Policy</h1>

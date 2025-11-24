@@ -201,6 +201,9 @@ export default function ComparePage({ initialComparison, affiliateStoresByProduc
       <Head>
         <title>Compare Musical Instruments - GetYourMusicGear</title>
         <meta name="description" content="Compare musical instruments side by side. View specifications, prices, and reviews to make informed decisions on your next musical investment." />
+        <link rel="canonical" href="https://www.getyourmusicgear.com/compare" />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta property="og:url" content="https://www.getyourmusicgear.com/compare" />
       </Head>
 
       <div className="min-h-screen bg-gray-50 overflow-x-hidden">

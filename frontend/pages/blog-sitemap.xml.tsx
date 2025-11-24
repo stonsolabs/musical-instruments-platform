@@ -14,11 +14,26 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     const response = await fetch(`${API_BASE}/api/v1/blog/posts?limit=1000&status=published`);
     const blogPosts = response.ok ? await response.json() : [];
     
-    const blogPages = [
-      '/blog',
-      // Add individual blog post URLs
-      ...blogPosts.map((post: any) => `/blog/${post.slug}`)
-    ];
+    // Validate and filter blog posts
+    const validPosts = blogPosts.filter((post: any) => {
+      // Ensure slug exists and is valid
+      if (!post.slug || typeof post.slug !== 'string') {
+        return false;
+      }
+      
+      // Ensure slug doesn't have invalid characters or trailing slashes
+      const slug = post.slug.trim();
+      if (slug.length === 0 || slug.includes('//') || slug.endsWith('/')) {
+        return false;
+      }
+      
+      // Ensure slug matches expected pattern (alphanumeric, hyphens)
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        return false;
+      }
+      
+      return true;
+    });
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -28,12 +43,14 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  ${blogPosts
+  ${validPosts
     .map((post: any) => {
       const lastmod = post.updated_at || post.published_at || post.created_at || new Date().toISOString();
+      // Ensure slug is properly encoded
+      const slug = encodeURIComponent(post.slug).replace(/%2F/g, '/');
       return `
     <url>
-      <loc>${baseUrl}/blog/${post.slug}</loc>
+      <loc>${baseUrl}/blog/${slug}</loc>
       <lastmod>${lastmod}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>

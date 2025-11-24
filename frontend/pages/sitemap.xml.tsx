@@ -43,10 +43,20 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     })
     .join('')}
   ${productsData.products
+    .filter(product => {
+      // Validate product slug
+      if (!product.slug || typeof product.slug !== 'string') {
+        return false;
+      }
+      const slug = product.slug.trim();
+      return slug.length > 0 && !slug.includes('//') && !slug.endsWith('/');
+    })
     .map(product => {
+      // Ensure slug is properly encoded
+      const slug = encodeURIComponent(product.slug).replace(/%2F/g, '/');
       return `
     <url>
-      <loc>${baseUrl}/products/${product.slug}</loc>
+      <loc>${baseUrl}/products/${slug}</loc>
       <lastmod>${new Date().toISOString()}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.7</priority>
