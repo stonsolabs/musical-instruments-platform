@@ -5,6 +5,7 @@ Allow: /
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
+Disallow: /products?search=* <-- Add this line
 
 # Allow important pages
 Allow: /products
